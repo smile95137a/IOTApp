@@ -201,22 +201,22 @@ function AdminStack() {
       <Stack.Screen
         name="DeviceManagement"
         component={DeviceManagementScreen}
-        options={{ title: '設備管理' }}
+        options={{ headerShown: false, title: '設備管理' }}
       />
       <Stack.Screen
         name="EnvironmentManagement"
         component={EnvironmentManagementScreen}
-        options={{ title: '環境管理' }}
+        options={{ headerShown: false, title: '環境管理' }}
       />
       <Stack.Screen
         name="TableManagement"
         component={TableManagementScreen}
-        options={{ title: '桌檯管理' }}
+        options={{ headerShown: false, title: '桌檯管理' }}
       />
       <Stack.Screen
         name="TableDetails"
         component={TableDetailsScreen}
-        options={{ title: '桌檯設定' }}
+        options={{ headerShown: false, title: '桌檯設定' }}
       />
 
       {/* 新增的頁面 */}
