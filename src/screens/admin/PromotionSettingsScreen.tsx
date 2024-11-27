@@ -67,7 +67,7 @@ const PromotionSettingsScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('AddPromotionScreen')}
           >
             <Text style={styles.addButtonText}>新增</Text>
-          </TouchableOpacity>{' '}
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
