@@ -20,13 +20,13 @@ const tableData = [
 ];
 
 const StoreDetailScreen = ({ route, navigation }: any) => {
-  const { store } = route.params; // 从 navigation 传递的参数中获取门市数据
+  const { store } = route.params;
 
   const handleShare = async () => {
     try {
       const result = await Share.share({
         message: `店铺名称: ${store.name}\n地址: ${store.address}\n快来看看吧！`,
-        url: 'https://example.com', // 可以替换为实际店铺链接
+        url: 'https://example.com',
       });
 
       if (result.action === Share.sharedAction) {
@@ -109,6 +109,24 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         </TouchableOpacity>
       </View>
 
+      {/* Pricing Section */}
+      <View style={styles.pricingContainer}>
+        <View style={styles.pricingTitleContainer}>
+          <Text style={styles.pricingTitle}>時段</Text>
+          <Text style={styles.pricingTitle}>計費</Text>
+        </View>
+        <TouchableOpacity style={styles.pricingCard}>
+          <Text style={styles.pricingAmount}>100元/小時</Text>
+          <Text style={styles.pricingDetails}>一般時段</Text>
+          <Text style={styles.pricingDetails}>週一～日18:00~02:00</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.pricingCard}>
+          <Text style={styles.pricingAmount}>60元/小時</Text>
+          <Text style={styles.pricingDetails}>優惠時段</Text>
+          <Text style={styles.pricingDetails}>週一～五08:00~18:00</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Tables */}
       <View style={styles.tablesSection}>
         <View style={styles.tablesHeader}>
@@ -135,7 +153,7 @@ const styles = StyleSheet.create({
 
   storeDetails: {
     flexDirection: 'row',
-    padding: 20,
+    marginHorizontal: 20,
     backgroundColor: '#4CAF50',
     alignItems: 'center',
   },
@@ -156,19 +174,6 @@ const styles = StyleSheet.create({
   },
   storeAddress: {
     fontSize: 14,
-    color: '#fff',
-    marginTop: 5,
-  },
-  storePricing: {
-    alignItems: 'flex-end',
-  },
-  pricingTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  pricingDetail: {
-    fontSize: 12,
     color: '#fff',
     marginTop: 5,
   },
@@ -240,6 +245,41 @@ const styles = StyleSheet.create({
   },
   tableTextContainerIcon: {
     marginLeft: 8, // 图标和文字之间的间距
+  },
+
+  pricingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    margin: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 10,
+  },
+  pricingCard: {
+    flex: 1,
+    padding: 12,
+    alignItems: 'center',
+  },
+  pricingTitleContainer: {
+    width: 70,
+    backgroundColor: '#FFFFFF',
+    padding: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pricingTitle: {
+    fontSize: 14,
+    color: '#555',
+  },
+  pricingAmount: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  pricingDetails: {
+    fontSize: 12,
+    color: '#fff',
   },
 });
 

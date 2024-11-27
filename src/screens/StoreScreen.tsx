@@ -1,4 +1,5 @@
 import Header from '@/component/Header';
+import ImageCarousel from '@/component/ImageCarousel';
 import React from 'react';
 import {
   View,
@@ -58,10 +59,12 @@ const StoreScreen = ({ navigation }: any) => {
           navigation.navigate('StoreDetailScreen', { store: item })
         }
       >
-        <Image
-          source={{ uri: 'https://via.placeholder.com/100' }} // Placeholder image
-          style={styles.storeImage}
-        />
+        <View style={styles.storeImageContainer}>
+          <Image
+            source={{ uri: 'https://via.placeholder.com/100' }} // Placeholder image
+            style={styles.storeImage}
+          />
+        </View>
         <View style={styles.storeDetails}>
           <Text style={styles.storeName}>{item.name}</Text>
           <Text style={styles.storeAddress}>{item.address}</Text>
@@ -86,23 +89,30 @@ const StoreScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header title="門市探索" />
-      <View style={styles.carouselContainer}></View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Header title="門市探索" />
+        <ImageCarousel />
 
-      <FlatList
-        data={storeData}
-        renderItem={renderStoreItem}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.storeList}
-      />
+        <FlatList
+          data={storeData}
+          renderItem={renderStoreItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.storeList}
+        />
+      </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f8f8f8',
+  },
   container: {
     flex: 1,
+    padding: 16, // Padding for the entire container
     backgroundColor: '#f8f8f8',
   },
   header: {
@@ -141,10 +151,15 @@ const styles = StyleSheet.create({
     height: 106,
     overflow: 'hidden',
   },
+  storeImageContainer: {
+    marginLeft: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   storeImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
+    width: 74,
+    height: 74,
+    borderRadius: 200,
   },
   storeDetails: {
     flex: 1,
@@ -162,7 +177,7 @@ const styles = StyleSheet.create({
   },
   storeDistance: {
     fontSize: 12,
-    color: '#999',
+    color: '#F67943',
     marginTop: 5,
   },
   storeVisit: {
