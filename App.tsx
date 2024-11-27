@@ -223,22 +223,25 @@ function AdminStack() {
       <Stack.Screen
         name="MyStoreHome"
         component={MyStoreHomeScreen}
-        options={{ title: '我的門店', headerShown: false }}
+        options={{
+          headerShown: false,
+          title: '我的門店',
+        }}
       />
       <Stack.Screen
         name="PermissionSettings"
         component={PermissionSettingsScreen}
-        options={{ title: '權限設定' }}
+        options={{ headerShown: false, title: '權限設定' }}
       />
       <Stack.Screen
         name="AccountSettings"
         component={AccountSettingsScreen}
-        options={{ title: '帳號設定' }}
+        options={{ headerShown: false, title: '帳號設定' }}
       />
       <Stack.Screen
         name="StoreSettings"
         component={StoreSettingsScreen}
-        options={{ title: '門市設定' }}
+        options={{ headerShown: false, title: '門市設定' }}
       />
     </Stack.Navigator>
   );
