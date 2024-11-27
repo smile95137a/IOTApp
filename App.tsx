@@ -34,8 +34,6 @@ import PermissionSettingsScreen from '@/screens/admin/PermissionSettingsScreen';
 import StoreSettingsScreen from '@/screens/admin/StoreSettingsScreen';
 import MemberDetailsScreen from '@/screens/admin/MemberDetailsScreen';
 import EditMemberScreen from '@/screens/admin/EditMemberScreen';
-import IncomeAnalysisScreen from '@/screens/admin/IncomeAnalysisScreen';
-import PaymentAnalysisScreen from '@/screens/admin/PaymentAnalysisScreen';
 import ReportSummaryScreen from '@/screens/admin/ReportSummaryScreen';
 
 const isLoggedIn = true;
@@ -157,17 +155,7 @@ function AdminStack() {
       <Stack.Screen
         name="ReportSummaryScreen"
         component={ReportSummaryScreen}
-        options={{ title: '經營報表' }}
-      />
-      <Stack.Screen
-        name="IncomeAnalysisScreen"
-        component={IncomeAnalysisScreen}
-        options={{ title: '收入項目分析' }}
-      />
-      <Stack.Screen
-        name="PaymentAnalysisScreen"
-        component={PaymentAnalysisScreen}
-        options={{ title: '支付方式分析' }}
+        options={{ headerShown: false, title: '經營報表' }}
       />
 
       {/*  */}
