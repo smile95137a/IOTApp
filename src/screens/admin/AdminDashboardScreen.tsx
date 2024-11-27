@@ -57,7 +57,7 @@ const AdminDashboardScreen = ({ navigation }) => {
 };
 
 const features = [
-  { icon: 'chart-line', label: '經營報表', route: 'BusinessReport' },
+  { icon: 'chart-line', label: '經營報表', route: 'ReportSummaryScreen' },
   { icon: 'account-group', label: '會員管理', route: 'MemberManagementScreen' },
   { icon: 'crown', label: '優惠方案設定', route: 'PromotionSettings' },
   { icon: 'pool', label: '桌台管理', route: 'TableManagement' },
