@@ -24,6 +24,14 @@ import AdminDashboardScreen from '@/screens/admin/AdminDashboardScreen';
 import MemberManagementScreen from '@/screens/admin/MemberManagementScreen';
 import PromotionSettingsScreen from '@/screens/admin/PromotionSettingsScreen';
 import AddPromotionScreen from '@/screens/admin/AddPromotionScreen';
+import DeviceManagementScreen from '@/screens/admin/DeviceManagement';
+import EnvironmentManagementScreen from '@/screens/admin/EnvironmentManagementScreen';
+import TableDetailsScreen from '@/screens/admin/TableDetailsScreen';
+import TableManagementScreen from '@/screens/admin/TableManagementScreen';
+import AccountSettingsScreen from '@/screens/admin/AccountSettingsScreen';
+import MyStoreHomeScreen from '@/screens/admin/MyStoreHomeScreen';
+import PermissionSettingsScreen from '@/screens/admin/PermissionSettingsScreen';
+import StoreSettingsScreen from '@/screens/admin/StoreSettingsScreen';
 
 const isLoggedIn = true;
 
@@ -154,6 +162,49 @@ function AdminStack() {
         name="AddPromotionScreen"
         component={AddPromotionScreen}
         options={{ headerShown: false, headerTitle: '新增優惠方案' }}
+      />
+      {/*  */}
+      <Stack.Screen
+        name="DeviceManagement"
+        component={DeviceManagementScreen}
+        options={{ title: '設備管理' }}
+      />
+      <Stack.Screen
+        name="EnvironmentManagement"
+        component={EnvironmentManagementScreen}
+        options={{ title: '環境管理' }}
+      />
+      <Stack.Screen
+        name="TableManagement"
+        component={TableManagementScreen}
+        options={{ title: '桌檯管理' }}
+      />
+      <Stack.Screen
+        name="TableDetails"
+        component={TableDetailsScreen}
+        options={{ title: '桌檯設定' }}
+      />
+
+      {/* 新增的頁面 */}
+      <Stack.Screen
+        name="MyStoreHome"
+        component={MyStoreHomeScreen}
+        options={{ title: '我的門店', headerShown: false }}
+      />
+      <Stack.Screen
+        name="PermissionSettings"
+        component={PermissionSettingsScreen}
+        options={{ title: '權限設定' }}
+      />
+      <Stack.Screen
+        name="AccountSettings"
+        component={AccountSettingsScreen}
+        options={{ title: '帳號設定' }}
+      />
+      <Stack.Screen
+        name="StoreSettings"
+        component={StoreSettingsScreen}
+        options={{ title: '門市設定' }}
       />
     </Stack.Navigator>
   );

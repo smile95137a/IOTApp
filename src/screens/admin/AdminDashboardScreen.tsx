@@ -61,8 +61,8 @@ const features = [
   { icon: 'account-group', label: '會員管理', route: 'MemberManagementScreen' },
   { icon: 'crown', label: '優惠方案設定', route: 'PromotionSettings' },
   { icon: 'pool', label: '桌台管理', route: 'TableManagement' },
-  { icon: 'tools', label: '設備管理', route: 'EquipmentManagement' },
-  { icon: 'store', label: '我的門店', route: 'MyStore' },
+  { icon: 'tools', label: '設備管理', route: 'DeviceManagement' },
+  { icon: 'store', label: '我的門店', route: 'MyStoreHome' },
 ];
 
 const styles = StyleSheet.create({
