@@ -1,4 +1,5 @@
 import Header from '@/component/Header';
+import ImageCarousel from '@/component/ImageCarousel';
 import React from 'react';
 import {
   View,
@@ -28,6 +29,38 @@ const newsData = [
       '內容內容內容內容內容內容內容內容內容內容內容內容內容內容內容內容內容內容內容內容內容內容',
     image: 'https://via.placeholder.com/400x200.png?text=News+Image',
   },
+  {
+    id: 3,
+    title: "Well help walk somebody learn institution ten.",
+    date: "2024.01.28",
+    content:
+      "Require law dream similar whom environmental free. Child time voice or interest. Point section station play. Accept letter section sing scientist.",
+    image: "https://via.placeholder.com/400x200.png?text=News+Image+3",
+  },
+  {
+    id: 4,
+    title: "Cut yourself western.",
+    date: "2024.09.02",
+    content:
+      "Wish expert rather safe religious become road. Throughout southern deep agency allow realize market fly. Senior ready anyone dog professional physical.",
+    image: "https://via.placeholder.com/400x200.png?text=News+Image+4",
+  },
+  {
+    id: 5,
+    title: "Hot relate picture position also.",
+    date: "2024.01.27",
+    content:
+      "Message establish hundred similar know where. Than we or develop price what international better. Language and expect major allow.",
+    image: "https://via.placeholder.com/400x200.png?text=News+Image+5",
+  },
+  {
+    id: 6,
+    title: "Camera bit east.",
+    date: "2024.11.06",
+    content:
+      "Thing toward mouth. Stock enjoy can paper fall. A my follow together. Fight short similar she.",
+    image: "https://via.placeholder.com/400x200.png?text=News+Image+6",
+  },
 ];
 
 const NewsScreen = ({ navigation }: any) => {
@@ -52,22 +85,29 @@ const NewsScreen = ({ navigation }: any) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
       <Header title="最新消息" />
+      <ImageCarousel />
       <FlatList
         data={newsData}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
       />
-    </SafeAreaView>
+      </View>
+      </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#f8f8f8',
-    padding: 10,
+  },
+  container: {
+    flex: 1,
+    padding: 16, // Padding for the entire container
+    backgroundColor: '#f8f8f8',
   },
   newsItem: {
     flexDirection: 'row',
