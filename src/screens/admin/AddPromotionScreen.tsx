@@ -1,3 +1,4 @@
+import Header from '@/component/Header';
 import React, { useState } from 'react';
 import {
   View,
@@ -7,75 +8,105 @@ import {
   SafeAreaView,
   TextInput,
   Image,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { launchImageLibrary } from 'react-native-image-picker';
 
-const AddPromotionScreen = ({ route }) => {
+const AddPromotionScreen = ({ route, navigation }) => {
   const [promotionName, setPromotionName] = useState('');
   const [promotionAmount, setPromotionAmount] = useState('');
   const [actualCharge, setActualCharge] = useState('');
-  const promotion = route.params?.promotion;
+  const [imageUri, setImageUri] = useState(null); // 儲存上傳圖片的路徑
+
+  const handleSelectImage = () => {
+    launchImageLibrary({ mediaType: 'photo' }, (response) => {
+      if (response.didCancel) {
+        Alert.alert('取消', '您已取消選擇圖片');
+      } else if (response.errorMessage) {
+        Alert.alert('錯誤', response.errorMessage);
+      } else {
+        const uri = response.assets[0]?.uri;
+        setImageUri(uri);
+      }
+    });
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity>
-            <Text style={styles.backButton}>{'< 返回'}</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>優惠方案設定</Text>
-          <Icon name="dots-vertical" size={24} color="#616161" />
-        </View>
-
-        {/* Image Section */}
-        <View style={styles.imageSection}>
+        <View style={styles.fixedImageContainer}>
           <Image
             source={require('@/assets/iot-threeBall.png')}
-            style={styles.image}
+            resizeMode="contain" // Adjust to fit properly
           />
-          <TouchableOpacity style={styles.cameraIcon}>
-            <Icon name="camera" size={20} color="#FFF" />
+        </View>
+        {/* Header */}
+        <View style={styles.header}>
+          <Header
+            title="優惠方案設置"
+            onBackPress={() => navigation.goBack()}
+          />
+        </View>
+        <View style={styles.mainContainer}>
+          {/* Image Upload Section */}
+          <View style={styles.imageSection}>
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.image} />
+            ) : (
+              <TouchableOpacity
+                style={styles.imagePlaceholder}
+                onPress={handleSelectImage}
+              >
+                <Text style={styles.placeholderText}>點擊上傳圖片</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={handleSelectImage}
+              style={styles.cameraIcon}
+            >
+              <Icon name="photo-camera" size={24} color="#FFF" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Form Section */}
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>名稱：</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="輸入優惠名稱"
+                value={promotionName}
+                onChangeText={setPromotionName}
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>儲值額度：</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="輸入儲值金額"
+                value={promotionAmount}
+                onChangeText={setPromotionAmount}
+                keyboardType="numeric"
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>實收費用：</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="輸入實收金額"
+                value={actualCharge}
+                onChangeText={setActualCharge}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+
+          {/* Save Button */}
+          <TouchableOpacity style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>儲存</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Form Section */}
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>名稱：</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="輸入優惠名稱"
-              value={promotionName}
-              onChangeText={setPromotionName}
-            />
-          </View>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>儲值額度：</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="輸入儲值金額"
-              value={promotionAmount}
-              onChangeText={setPromotionAmount}
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>實收費用：</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="輸入實收金額"
-              value={actualCharge}
-              onChangeText={setActualCharge}
-              keyboardType="numeric"
-            />
-          </View>
-        </View>
-
-        {/* Save Button */}
-        <TouchableOpacity style={styles.saveButton}>
-          <Text style={styles.saveButtonText}>儲存</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -84,51 +115,63 @@ const AddPromotionScreen = ({ route }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#E3F2FD',
   },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
     backgroundColor: '#E3F2FD',
   },
+  fixedImageContainer: {
+    position: 'absolute', // Fix it to the block
+    right: -200,
+    bottom: 0,
+    zIndex: 2, // Push it behind other content
+    alignItems: 'center', // Center horizontally
+    justifyContent: 'center', // Center vertically
+    opacity: 0.1, // Make it subtle as a background
+  },
+  fixedImage: {
+    width: 400,
+    height: 400,
+  },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 20,
+    backgroundColor: '#FFFFFF',
   },
-  backButton: {
-    fontSize: 16,
-    color: '#2C3E50',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2C3E50',
+  mainContainer: {
+    flex: 1,
+    padding: 20,
+    zIndex: 3,
   },
   imageSection: {
     alignItems: 'center',
     marginBottom: 20,
   },
   image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#ddd',
+  },
+  imagePlaceholder: {
+    width: 120,
+    height: 120,
+    backgroundColor: '#F0F0F0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  placeholderText: {
+    color: '#AAA',
   },
   cameraIcon: {
     position: 'absolute',
-    bottom: 0,
-    right: '40%',
+    bottom: -10,
+    right: '30%',
     backgroundColor: '#FF7043',
     padding: 10,
     borderRadius: 20,
   },
-  form: {
-    backgroundColor: '#FFF',
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
-  },
+  form: {},
   inputGroup: {
     marginBottom: 15,
   },
@@ -138,17 +181,17 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   input: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 5,
     paddingHorizontal: 10,
     paddingVertical: 10,
     fontSize: 16,
     color: '#616161',
+    borderBottomWidth: 1,
+    borderColor: '#D9D9D9',
   },
   saveButton: {
-    backgroundColor: '#FF7043',
+    backgroundColor: '#F67943',
     paddingVertical: 15,
-    borderRadius: 10,
+    borderRadius: 100,
     alignItems: 'center',
   },
   saveButtonText: {

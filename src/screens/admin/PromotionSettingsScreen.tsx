@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#FFFFFF',
   },
-
   mainContainer: {
     flex: 1,
     padding: 20,
