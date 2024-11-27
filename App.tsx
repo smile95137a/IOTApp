@@ -20,8 +20,9 @@ import RegisterScreen from '@/screens/RegisterScreen';
 import PersonalInformationScreen from '@/screens/PersonalInformationScreen';
 import LoginHomeScreen from '@/screens/LoginHomeScreen';
 import HomeScreen from '@/screens/HomeScreen';
+import AdminDashboardScreen from '@/screens/admin/AdminDashboardScreen';
 
-const isLoggedIn = false;
+const isLoggedIn = true;
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -128,6 +129,18 @@ function MemberStack() {
   );
 }
 
+function AdminStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="AdminDashboardScreen"
+        component={AdminDashboardScreen}
+        options={{ headerShown: false, headerTitle: '管理後台' }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 export default function App() {
   return (
     <Provider store={store}>
@@ -178,6 +191,7 @@ export default function App() {
 
             <Tab.Screen name="門市探索" component={StoreStack} />
             <Tab.Screen name="會員" component={MemberStack} />
+            <Tab.Screen name="後台" component={AdminStack} />
           </Tab.Navigator>
         </NavigationContainer>
       </PaperProvider>
