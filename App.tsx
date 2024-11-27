@@ -32,6 +32,8 @@ import AccountSettingsScreen from '@/screens/admin/AccountSettingsScreen';
 import MyStoreHomeScreen from '@/screens/admin/MyStoreHomeScreen';
 import PermissionSettingsScreen from '@/screens/admin/PermissionSettingsScreen';
 import StoreSettingsScreen from '@/screens/admin/StoreSettingsScreen';
+import MemberDetailsScreen from '@/screens/admin/MemberDetailsScreen';
+import EditMemberScreen from '@/screens/admin/EditMemberScreen';
 
 const isLoggedIn = true;
 
@@ -153,6 +155,17 @@ function AdminStack() {
         component={MemberManagementScreen}
         options={{ headerShown: false, headerTitle: '會員管理' }}
       />
+      <Stack.Screen
+        name="MemberDetailsScreen"
+        component={MemberDetailsScreen}
+        options={{ title: '會員詳細資訊' }}
+      />
+      <Stack.Screen
+        name="EditMemberScreen"
+        component={EditMemberScreen}
+        options={{ title: '編輯會員資料' }}
+      />
+      {/*  */}
       <Stack.Screen
         name="PromotionSettings"
         component={PromotionSettingsScreen}

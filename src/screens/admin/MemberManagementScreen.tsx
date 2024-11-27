@@ -1,113 +1,157 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
+  TextInput,
   TouchableOpacity,
-  SafeAreaView,
+  StyleSheet,
+  Image,
+  Alert,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const members = [
-  { id: '1', name: '王小明', phone: '0912345678', points: 1200 },
-  { id: '2', name: '李大華', phone: '0922334455', points: 800 },
-  { id: '3', name: '陳美美', phone: '0933445566', points: 1500 },
-];
+const MemberManagementScreen = ({ navigation }) => {
+  const [searchText, setSearchText] = useState('');
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const members = [
+    {
+      id: '1',
+      name: '王小明',
+      phone: '0927123456',
+      email: 'wangming@gmail.com',
+      gender: '男',
+    },
+    {
+      id: '2',
+      name: '李小華',
+      phone: '0912345678',
+      email: 'lihua@gmail.com',
+      gender: '女',
+    },
+    {
+      id: '3',
+      name: '張小龍',
+      phone: '0935123456',
+      email: 'zhanglong@gmail.com',
+      gender: '男',
+    },
+  ];
 
-const MemberManagementScreen = () => {
-  const renderMember = ({ item }) => (
-    <View style={styles.memberCard}>
-      <View style={styles.memberInfo}>
-        <Text style={styles.memberName}>{item.name}</Text>
-        <Text style={styles.memberDetails}>電話: {item.phone}</Text>
-        <Text style={styles.memberDetails}>積分: {item.points}</Text>
-      </View>
-      <TouchableOpacity style={styles.manageButton}>
-        <Icon name="eye" size={20} color="#fff" />
-        <Text style={styles.manageButtonText}>查看</Text>
-      </TouchableOpacity>
-    </View>
+  const filteredMembers = members.filter(
+    (member) =>
+      member.name.includes(searchText) ||
+      member.phone.includes(searchText) ||
+      member.email.includes(searchText)
   );
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>會員管理</Text>
-        </View>
+  const handleSelectMember = (id) => {
+    setSelectedMembers((prev) =>
+      prev.includes(id)
+        ? prev.filter((memberId) => memberId !== id)
+        : [...prev, id]
+    );
+  };
 
-        {/* Member List */}
-        <FlatList
-          data={members}
-          renderItem={renderMember}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContainer}
-        />
+  const handleBatchDelete = () => {
+    Alert.alert(
+      '批次刪除',
+      `確定刪除 ${selectedMembers.length} 筆會員資料嗎？`,
+      [
+        { text: '取消', style: 'cancel' },
+        { text: '確定', onPress: () => Alert.alert('已刪除') },
+      ]
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="搜尋姓名、手機或電子郵件"
+        value={searchText}
+        onChangeText={setSearchText}
+      />
+      <FlatList
+        data={filteredMembers}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[
+              styles.memberItem,
+              selectedMembers.includes(item.id) && styles.selectedMember,
+            ]}
+            onPress={() =>
+              navigation.navigate('MemberDetailsScreen', { member: item })
+            }
+            onLongPress={() => handleSelectMember(item.id)}
+          >
+            <Image
+              source={{ uri: 'https://via.placeholder.com/50' }}
+              style={styles.memberImage}
+            />
+            <View>
+              <Text style={styles.memberName}>{item.name}</Text>
+              <Text style={styles.memberPhone}>{item.phone}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
+      <View style={styles.batchActions}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={handleBatchDelete}
+        >
+          <Text style={styles.actionButtonText}>批次刪除</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton}>
+          <Text style={styles.actionButtonText}>加入黑名單</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton}>
+          <Text style={styles.actionButtonText}>移出黑名單</Text>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#f8f8f8',
+  container: { flex: 1, padding: 20, backgroundColor: '#E3F2FD' },
+  searchInput: {
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#DDD',
   },
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 20,
-  },
-  header: {
-    marginVertical: 20,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  memberCard: {
+  memberItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#F0F0F0',
+    padding: 10,
+    backgroundColor: '#FFF',
     borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
+    marginBottom: 10,
     elevation: 2,
   },
-  memberInfo: {
-    flex: 1,
-  },
-  memberName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-  },
-  memberDetails: {
-    fontSize: 14,
-    color: '#7F8C8D',
-    marginTop: 5,
-  },
-  manageButton: {
+  selectedMember: { backgroundColor: '#D3F2D8' },
+  memberImage: { width: 50, height: 50, borderRadius: 25, marginRight: 10 },
+  memberName: { fontSize: 16, fontWeight: 'bold' },
+  memberPhone: { color: '#666' },
+  batchActions: {
     flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+  },
+  actionButton: {
+    flex: 1,
+    backgroundColor: '#FF7043',
+    padding: 15,
+    marginHorizontal: 5,
+    borderRadius: 10,
     alignItems: 'center',
-    backgroundColor: '#409D62',
-    borderRadius: 5,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
   },
-  manageButtonText: {
-    fontSize: 14,
-    color: '#FFFFFF',
-    marginLeft: 5,
-  },
+  actionButtonText: { color: '#FFF', fontSize: 14, fontWeight: 'bold' },
 });
 
 export default MemberManagementScreen;
