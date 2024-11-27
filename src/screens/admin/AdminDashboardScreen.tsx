@@ -9,7 +9,13 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const AdminDashboardScreen = () => {
+const AdminDashboardScreen = ({ navigation }) => {
+  const handleFeaturePress = (feature) => {
+    if (feature.route) {
+      navigation.navigate(feature.route); // Navigate to the defined route
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -34,12 +40,16 @@ const AdminDashboardScreen = () => {
           {/* Features Section */}
           <View style={styles.featuresContainer}>
             {features.map((feature, index) => (
-              <TouchableOpacity key={index} style={styles.featureItem}>
+              <TouchableOpacity
+                key={index}
+                style={styles.featureItem}
+                onPress={() => handleFeaturePress(feature)} // Handle feature click
+              >
                 <Icon name={feature.icon} size={30} color="#000" />
                 <Text style={styles.featureText}>{feature.label}</Text>
               </TouchableOpacity>
             ))}
-          </View>{' '}
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -47,12 +57,12 @@ const AdminDashboardScreen = () => {
 };
 
 const features = [
-  { icon: 'chart-line', label: '經營報表' },
-  { icon: 'account-group', label: '會員管理' },
-  { icon: 'crown', label: '優惠方案設定' },
-  { icon: 'pool', label: '桌台管理' },
-  { icon: 'tools', label: '設備管理' },
-  { icon: 'store', label: '我的門店' },
+  { icon: 'chart-line', label: '經營報表', route: 'BusinessReport' },
+  { icon: 'account-group', label: '會員管理', route: 'MemberManagementScreen' },
+  { icon: 'crown', label: '優惠方案設定', route: 'PromotionSettings' },
+  { icon: 'pool', label: '桌台管理', route: 'TableManagement' },
+  { icon: 'tools', label: '設備管理', route: 'EquipmentManagement' },
+  { icon: 'store', label: '我的門店', route: 'MyStore' },
 ];
 
 const styles = StyleSheet.create({

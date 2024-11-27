@@ -21,6 +21,9 @@ import PersonalInformationScreen from '@/screens/PersonalInformationScreen';
 import LoginHomeScreen from '@/screens/LoginHomeScreen';
 import HomeScreen from '@/screens/HomeScreen';
 import AdminDashboardScreen from '@/screens/admin/AdminDashboardScreen';
+import MemberManagementScreen from '@/screens/admin/MemberManagementScreen';
+import PromotionSettingsScreen from '@/screens/admin/PromotionSettingsScreen';
+import AddPromotionScreen from '@/screens/admin/AddPromotionScreen';
 
 const isLoggedIn = true;
 
@@ -136,6 +139,21 @@ function AdminStack() {
         name="AdminDashboardScreen"
         component={AdminDashboardScreen}
         options={{ headerShown: false, headerTitle: '管理後台' }}
+      />
+      <Stack.Screen
+        name="MemberManagementScreen"
+        component={MemberManagementScreen}
+        options={{ headerShown: false, headerTitle: '會員管理' }}
+      />
+      <Stack.Screen
+        name="PromotionSettings"
+        component={PromotionSettingsScreen}
+        options={{ headerShown: false, headerTitle: '優惠方案設定' }}
+      />
+      <Stack.Screen
+        name="AddPromotionScreen"
+        component={AddPromotionScreen}
+        options={{ headerShown: false, headerTitle: '新增優惠方案' }}
       />
     </Stack.Navigator>
   );
