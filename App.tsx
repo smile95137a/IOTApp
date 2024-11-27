@@ -179,12 +179,12 @@ function AdminStack() {
       <Stack.Screen
         name="MemberDetailsScreen"
         component={MemberDetailsScreen}
-        options={{ title: '會員詳細資訊' }}
+        options={{ headerShown: false, title: '會員詳細資訊' }}
       />
       <Stack.Screen
         name="EditMemberScreen"
         component={EditMemberScreen}
-        options={{ title: '編輯會員資料' }}
+        options={{ headerShown: false, title: '編輯會員資料' }}
       />
       {/*  */}
       <Stack.Screen
