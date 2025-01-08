@@ -33,6 +33,7 @@ const RechargeScreen = () => {
         contentContainerStyle={styles.listContainer}
         data={rechargeOptions}
         numColumns={2}
+        windowSize={10}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity

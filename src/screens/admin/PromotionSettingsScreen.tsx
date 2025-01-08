@@ -56,6 +56,7 @@ const PromotionSettingsScreen = ({ navigation }) => {
         <View style={styles.mainContainer}>
           {/* Promotion List */}
           <FlatList
+            windowSize={10}
             data={promotions}
             renderItem={renderPromotion}
             keyExtractor={(item) => item.id}

@@ -97,6 +97,7 @@ const MemberCenterScreen = ({ navigation }: any) => {
           data={menuItems}
           renderItem={renderMenuItem}
           keyExtractor={(item) => item.id.toString()}
+          windowSize={10}
         />
       </View>
     </SafeAreaView>

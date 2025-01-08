@@ -58,6 +58,7 @@ const TransactionHistoryScreen = ({ navigation }: any) => {
     <SafeAreaView style={styles.container}>
       {/* Transaction List */}
       <FlatList
+        windowSize={10}
         data={transactionHistory}
         renderItem={renderTransaction}
         keyExtractor={(item) => item.id.toString()}

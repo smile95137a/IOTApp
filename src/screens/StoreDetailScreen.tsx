@@ -134,6 +134,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
           <Text style={styles.tablesAvailable}>目前可用：5台</Text>
         </View>
         <FlatList
+          windowSize={10}
           data={tableData}
           renderItem={renderTableItem}
           keyExtractor={(item) => item.id}

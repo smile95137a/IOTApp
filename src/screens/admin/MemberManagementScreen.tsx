@@ -87,6 +87,7 @@ const MemberManagementScreen = ({ navigation }) => {
             onChangeText={setSearchText}
           />
           <FlatList
+            windowSize={10}
             data={filteredMembers}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (

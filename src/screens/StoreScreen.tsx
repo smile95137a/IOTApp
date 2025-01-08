@@ -95,6 +95,7 @@ const StoreScreen = ({ navigation }: any) => {
         <ImageCarousel />
 
         <FlatList
+          windowSize={10}
           data={storeData}
           renderItem={renderStoreItem}
           keyExtractor={(item) => item.id.toString()}
