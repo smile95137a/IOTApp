@@ -109,6 +109,7 @@ const NotificationsScreen = ({ navigation }: any) => {
       />
 
       <FlatList
+        windowSize={10}
         data={notifications}
         renderItem={renderNotification}
         keyExtractor={(item) => item.id.toString()}
