@@ -69,7 +69,7 @@ const PoolTableManagementScreen = () => {
             <TouchableOpacity
               style={styles.poolTableItem}
               onPress={() =>
-                navigation.navigate('EditPoolTable', { poolTable: item })
+                navigation.navigate('AddPoolTable', { poolTable: item })
               }
             >
               <View style={styles.poolTableInfo}>
