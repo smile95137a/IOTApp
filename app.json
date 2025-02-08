@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "iiot",
+    "slug": "iiot",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.jim081728.iiot"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "ENCRYPTION_KEY": "my_secure_encryption_key_123",
+        "HASH_KEY": "MYHASHSTART",
+        "HASH_VALUE": "MYHASHEND",
+        "API_BASE_URL": "http://172.20.10.4:8081",
+        "projectId": "a9f981a8-30e0-4d5e-ba21-25e6e6512792"
+      }
+    }
+  }
+}
