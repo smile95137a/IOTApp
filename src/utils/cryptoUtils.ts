@@ -1,36 +1,37 @@
-import CryptoJS from 'crypto-js';
+import CryptoJS from 'react-native-crypto-js';
 import Constants from 'expo-constants';
 
-const extra = Constants.expoConfig?.extra || {}; // 確保不會是 `null`
-const ENCRYPTION_KEY = extra.eas.ENCRYPTION_KEY || 'default_encryption_key';
-const HASH_KEY = extra.eas.HASH_KEY || 'DEFAULT_HASH_START';
-const HASH_VALUE = extra.eas.HASH_VALUE || 'DEFAULT_HASH_END';
-const API_BASE_URL = extra.eas.API_BASE_URL || 'http://172.20.10.4:8081';
+// 從 `expo.extra` 取得加密金鑰
+const ENCRYPTION_KEY =
+  Constants.expoConfig?.extra?.eas?.ENCRYPTION_KEY || 'default_secret_key';
 
-console.log('API Base URL:', API_BASE_URL);
-console.log('Encryption Key:', ENCRYPTION_KEY);
-console.log('Hash Key:', HASH_KEY);
-console.log('Hash Value:', HASH_VALUE);
-
-// 加密函數
+/**
+ * AES 加密
+ * @param data 要加密的字串
+ * @returns 加密後的字串 (Base64)
+ */
 export const encryptData = (data: string): string => {
-  const dataWithHash = `${HASH_KEY}${data}${HASH_VALUE}`;
-  return CryptoJS.AES.encrypt(dataWithHash, ENCRYPTION_KEY).toString();
+  try {
+    const encrypted = CryptoJS.AES.encrypt(data, ENCRYPTION_KEY).toString();
+    return encrypted;
+  } catch (error) {
+    console.error('加密失敗:', error);
+    return '';
+  }
 };
 
-// 解密函數
-export const decryptData = (ciphertext: string): string => {
+/**
+ * AES 解密
+ * @param encryptedData 加密過的字串 (Base64)
+ * @returns 解密後的原始字串
+ */
+export const decryptData = (encryptedData: string): string => {
   try {
-    const bytes = CryptoJS.AES.decrypt(ciphertext, ENCRYPTION_KEY);
-    const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
-    if (
-      decryptedData.startsWith(HASH_KEY) &&
-      decryptedData.endsWith(HASH_VALUE)
-    ) {
-      return decryptedData.replace(HASH_KEY, '').replace(HASH_VALUE, '');
-    }
-    throw new Error('無效的數據');
+    const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    return decrypted;
   } catch (error) {
-    return '解密失敗';
+    console.error('解密失敗:', error);
+    return '';
   }
 };
