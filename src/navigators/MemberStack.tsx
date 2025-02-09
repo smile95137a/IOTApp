@@ -26,6 +26,7 @@ import { showLoading, hideLoading } from '@/store/loadingSlice';
 import RechargeSuccess from '@/screens/memner-center/RechargeSuccess';
 import { clearUser, setUser } from '@/store/userSlice';
 import DepositHistoryScreen from '@/screens/memner-center/DepositHistoryScreen';
+import GameHistoryScreen from '@/screens/memner-center/GameHistoryScreen';
 
 const Stack = createStackNavigator();
 
@@ -142,6 +143,13 @@ const MemberStack = () => {
         {(props) => (
           <MainLayout>
             <TransactionHistoryScreen {...props} />
+          </MainLayout>
+        )}
+      </Stack.Screen>
+      <Stack.Screen name="GameHistory">
+        {(props) => (
+          <MainLayout>
+            <GameHistoryScreen {...props} />
           </MainLayout>
         )}
       </Stack.Screen>

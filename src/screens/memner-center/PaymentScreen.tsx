@@ -1,3 +1,7 @@
+import { checkoutGame, startGame } from '@/api/gameApi';
+import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
   View,
@@ -10,10 +14,35 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useDispatch } from 'react-redux';
 
 const PaymentScreen = ({ navigation }: any) => {
-  const handlePaymentPress = (method) => {
-    navigation.navigate('PaymentSuccess');
+  const route = useRoute();
+  const { type, payData, totalAmount } = route.params || {}; // 從參數中獲取付款資訊
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handlePaymentPress = async (method) => {
+    try {
+      dispatch(showLoading());
+      const { success, data, message } =
+        type === 'game'
+          ? await startGame({ poolTableUId: payData.uid })
+          : type === 'gameEnd'
+          ? await checkoutGame({ payType: 1, gameId: payData.uid })
+          : await startGame({ poolTableUId: payData.uid });
+      dispatch(hideLoading());
+      if (success) {
+        navigation.navigate('PaymentSuccess', { totalAmount });
+      } else {
+        Alert.alert('錯誤', message || '無法載入店家資訊');
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      Alert.alert('錯誤', errorMessage);
+    }
   };
 
   return (
@@ -22,9 +51,9 @@ const PaymentScreen = ({ navigation }: any) => {
         {/* Order Details */}
         <View style={styles.orderDetails}>
           <Text style={styles.orderItem}>訂單內容：</Text>
-          <Text style={styles.orderDetail}>- 2小時球桌租金 200</Text>
+          <Text style={styles.orderDetail}>- 球桌租金 {totalAmount}</Text>
           <View style={styles.totalContainer}>
-            <Text style={styles.totalAmount}>總金額：200元</Text>
+            <Text style={styles.totalAmount}>總金額：{totalAmount}元</Text>
           </View>
         </View>
 
@@ -33,7 +62,7 @@ const PaymentScreen = ({ navigation }: any) => {
           {[
             {
               label: '儲值金結帳',
-              detail: '餘800元',
+              detail: '',
               icon: 'account-balance-wallet',
             },
             { label: '信用卡結帳', detail: '', icon: 'credit-card' },

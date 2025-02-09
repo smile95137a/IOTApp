@@ -21,7 +21,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { store } = route.params;
-  const [tables, setTables] = useState<PoolTable[]>([]);
+  const [tables, setTables] = useState<any[]>([]);
 
   useEffect(() => {
     const loadTables = async () => {
@@ -77,6 +77,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
           if (status === 'available') {
             navigation.navigate('Member', {
               screen: 'Reservation',
+              params: { tableUid: item.uid }, // 傳遞桌檯 UID
             });
           }
         }}
@@ -100,7 +101,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         >
           <View style={styles.tableTextContainerRow}>
             <Text style={styles.tableTextContainerId}>
-              {item.tableNumber.toString().substring(0, 3)}
+              {item.tableNumber.toString()}
             </Text>
 
             <Text style={styles.tableTextContainerText}>

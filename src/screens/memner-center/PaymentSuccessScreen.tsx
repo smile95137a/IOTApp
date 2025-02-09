@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
   View,
@@ -8,27 +9,22 @@ import {
 } from 'react-native';
 
 const PaymentSuccessScreen = ({ navigation }) => {
+  const route = useRoute();
+  const { totalAmount } = route.params || {}; // 獲取付款金額
+
   const handleStartGame = () => {
-    // 導航到下一畫面或執行相關邏輯
     navigation.navigate('Contact'); // 確保該路由已定義
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.messageContainer}>
         <Text style={styles.successText}>付費成功！</Text>
-        <View style={styles.divider} /> {/* 添加水平線 */}
+        <View style={styles.divider} />
         <Text style={styles.totalAmount}>
-          <Text style={styles.totalAmountLabel}>總金額：</Text>200元
+          <Text style={styles.totalAmountLabel}>總金額：</Text>
+          <Text>${~~totalAmount} 元</Text>
         </Text>
       </View>
-
-      <TouchableOpacity
-        style={styles.startGameButton}
-        onPress={handleStartGame}
-      >
-        <Text style={styles.startGameText}>開始球局</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 };

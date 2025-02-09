@@ -1,4 +1,8 @@
-import React from 'react';
+import { fetchPoolTableByUid } from '@/api/poolTableAPI';
+import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
+import { useRoute } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,17 +14,50 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useDispatch } from 'react-redux';
 
 const ReservationScreen = ({ navigation }) => {
-  const handleReservationPress = (timeSlot) => {
-    Alert.alert('預約時段', `您選擇了 ${timeSlot}`);
-  };
+  const dispatch = useDispatch<AppDispatch>();
+  const route = useRoute();
+  const { tableUid } = route.params || {}; // 從參數中獲取桌檯 UID
+  console.log(tableUid);
 
+  const [poolTable, setPoolTable] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(200); // 預設金額 200 元
+
+  useEffect(() => {
+    if (tableUid) {
+      loadPoolTable();
+    }
+  }, [tableUid]);
+
+  const loadPoolTable = async () => {
+    try {
+      dispatch(showLoading());
+      const response = await fetchPoolTableByUid(tableUid);
+      dispatch(hideLoading());
+      if (response.success) {
+        setPoolTable(response.data);
+      } else {
+        Alert.alert('錯誤', response.message || '無法獲取桌檯資訊');
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      console.error('Error fetching pool table:', error);
+    }
+  };
+  const handleConfirmPayment = () => {
+    navigation.navigate('Payment', {
+      type: 'game',
+      payData: { uid: tableUid },
+      totalAmount: poolTable?.deposit,
+    });
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
         {/* Time Slots */}
-        <View style={styles.timeSlots}>
+        {/* <View style={styles.timeSlots}>
           {[
             { time: '16:00~18:00', price: '100元/小時', reserved: false },
             { time: '18:00~20:00', price: '100元/小時', reserved: false },
@@ -64,14 +101,18 @@ const ReservationScreen = ({ navigation }) => {
               </View>
             </TouchableOpacity>
           ))}
-        </View>
+        </View> */}
 
         {/* Order Details */}
         <View style={styles.orderDetails}>
           <Text style={styles.orderItem}>訂單內容：</Text>
-          <Text style={styles.orderDetail}>- 2小時球桌租金 200</Text>
+          <Text style={styles.orderDetail}>
+            - 球桌租金 {poolTable?.deposit}
+          </Text>
           <View style={styles.totalContainer}>
-            <Text style={styles.totalAmount}>總金額：200元</Text>
+            <Text style={styles.totalAmount}>
+              總金額：{poolTable?.deposit}元
+            </Text>
           </View>
         </View>
 
@@ -79,7 +120,7 @@ const ReservationScreen = ({ navigation }) => {
         <View style={styles.confirmButtonWrapper}>
           <TouchableOpacity
             style={styles.confirmButton}
-            onPress={() => navigation.navigate('Payment')}
+            onPress={handleConfirmPayment}
           >
             <Text style={styles.confirmButtonText}>確認付費</Text>
           </TouchableOpacity>

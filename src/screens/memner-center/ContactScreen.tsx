@@ -1,14 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import moment from 'moment';
+import { endGame, startGame } from '@/api/gameApi';
+import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
+import { useDispatch } from 'react-redux';
 
-const ContactScreen = ({ navigation }) => {
+const ContactScreen = ({ navigation, route }) => {
+  const { transaction } = route.params || {}; // 安全獲取 transaction
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    if (transaction?.startTime) {
+      const startTime = moment(transaction.startTime);
+      const updateTimer = () => {
+        const now = moment();
+        setElapsedTime(now.diff(startTime, 'seconds'));
+      };
+
+      updateTimer(); // 立即更新一次
+      const timer = setInterval(updateTimer, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [transaction]);
+
+  // 計算小時、分鐘、秒
+  const hours = Math.floor(elapsedTime / 3600);
+  const minutes = Math.floor((elapsedTime % 3600) / 60);
+  const seconds = elapsedTime % 60;
+
+  // 點擊結束球局
+  const handleEndGame = async () => {
+    try {
+      dispatch(showLoading());
+      const { success, data, message } = await endGame({
+        gameId: transaction.gameId,
+      });
+      dispatch(hideLoading());
+      if (success) {
+        navigation.navigate('Payment', {
+          type: 'gameEnd',
+          payData: { uid: transaction.gameId },
+          totalAmount: data.totalPrice,
+        });
+      } else {
+        Alert.alert('錯誤', message || '無法載入店家資訊');
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      Alert.alert('錯誤', errorMessage);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -17,11 +73,15 @@ const ContactScreen = ({ navigation }) => {
           <Text style={styles.timerText}>球局已進行</Text>
           <View style={styles.timerTimeContainer}>
             <View style={styles.timeBox}>
-              <Text style={styles.timerNumber}>00</Text>
+              <Text style={styles.timerNumber}>
+                {String(hours).padStart(2, '0')}
+              </Text>
             </View>
             <Text style={styles.timerColon}>小時</Text>
             <View style={styles.timeBox}>
-              <Text style={styles.timerNumber}>03</Text>
+              <Text style={styles.timerNumber}>
+                {String(minutes).padStart(2, '0')}
+              </Text>
             </View>
             <Text style={styles.timerColon}>分</Text>
           </View>
@@ -37,7 +97,7 @@ const ContactScreen = ({ navigation }) => {
           <View style={styles.textContainer}>
             <Text style={styles.contactTitle}>聯絡店長</Text>
             <Text style={styles.contactSubtitle}>
-              機台操作問題，請聯繫店長！
+              機台操作問題，請聯繫{transaction?.vendorName}店長！
             </Text>
           </View>
         </View>
@@ -53,7 +113,7 @@ const ContactScreen = ({ navigation }) => {
         </View>
 
         {/* End Button */}
-        <TouchableOpacity style={styles.endButton}>
+        <TouchableOpacity style={styles.endButton} onPress={handleEndGame}>
           <Text style={styles.endButtonText}>結束球局</Text>
         </TouchableOpacity>
       </View>
@@ -72,7 +132,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#ff7043',
-    padding: 16,
+    paddingHorizontal: 6,
+    paddingVertical: 12,
     borderRadius: 12,
     marginBottom: 16,
   },

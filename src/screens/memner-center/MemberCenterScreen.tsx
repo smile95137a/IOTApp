@@ -1,6 +1,5 @@
 import Header from '@/component/Header';
 import { logOut } from '@/store/authSlice';
-import React from 'react';
 import {
   View,
   Text,
@@ -18,7 +17,7 @@ const menuItems = [
     id: 1,
     title: '訊息通知',
     icon: 'chat',
-    badge: 3,
+    // badge: 3,
     screen: 'Notifications',
   },
   {
@@ -32,6 +31,12 @@ const menuItems = [
     title: '儲值記錄',
     icon: 'history',
     screen: 'DepositHistory',
+  },
+  {
+    id: 322,
+    title: '開局記錄',
+    icon: 'history',
+    screen: 'GameHistory',
   },
   { id: 3, title: '儲值', icon: 'attach-money', screen: 'Recharge' },
   {
