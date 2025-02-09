@@ -19,6 +19,7 @@ import { useDispatch } from 'react-redux';
 import { fetchAllStores } from '@/api/storeApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { decryptData, encryptData } from '@/utils/cryptoUtils';
+import { openCamera } from '@/store/cameraSlice';
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -146,7 +147,10 @@ const HomeScreen = ({ navigation }) => {
                   掃描球桌上的QRcode開台/關台
                 </Text>
               </View>
-              <TouchableOpacity style={styles.cardButton}>
+              <TouchableOpacity
+                style={styles.cardButton}
+                onPress={() => dispatch(openCamera())}
+              >
                 <Text style={styles.cardButtonText}>掃碼開台</Text>
                 <MaterialIcons name="chevron-right" size={20} color="#000" />
               </TouchableOpacity>
