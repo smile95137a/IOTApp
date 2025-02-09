@@ -8,6 +8,8 @@ import {
   SafeAreaView,
   Alert,
   Image,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import RNPickerSelect from 'react-native-picker-select';
@@ -155,120 +157,132 @@ const PersonalInfoScreen = ({ route, navigation }: any) => {
     }
   };
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Header onBackPress={() => navigation.goBack()} rightIcon="more-vert" />
-        <Text style={styles.title}>個人資料</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <Header
+            onBackPress={() => navigation.goBack()}
+            rightIcon="more-vert"
+          />
+          <Text style={styles.title}>個人資料</Text>
 
-        {/* 姓名 */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>姓名 *</Text>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              placeholder="請輸入真實姓名"
-              value={name}
-              onChangeText={setName}
-            />
+          {/* 姓名 */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>姓名 *</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="請輸入真實姓名"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
           </View>
-        </View>
-        {/* 密碼 */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>密碼 *</Text>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              placeholder="請輸入密碼"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={true}
-            />
+          {/* 密碼 */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>密碼 *</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="請輸入密碼"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={true}
+              />
+            </View>
           </View>
-        </View>
 
-        {/* 匿名 ID */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>匿名 ID *</Text>
-          <View style={[styles.inputWrapper, styles.disabledInputWrapper]}>
-            <TextInput
-              style={styles.input}
-              placeholder="請輸入真實姓名"
-              value={anonymousId}
-              editable={false}
-            />
+          {/* 匿名 ID */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>匿名 ID *</Text>
+            <View style={[styles.inputWrapper, styles.disabledInputWrapper]}>
+              <TextInput
+                style={styles.input}
+                placeholder="請輸入真實姓名"
+                value={anonymousId}
+                editable={false}
+              />
+            </View>
           </View>
-        </View>
 
-        {/* 性別選擇 */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>性別 *</Text>
-          <View style={styles.pickerWrapper}>
-            <>
+          {/* 性別選擇 */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>性別 *</Text>
+            <View style={styles.pickerWrapper}>
+              <>
+                <TouchableOpacity
+                  style={styles.pickerContainer}
+                  activeOpacity={1}
+                  onPress={() => pickerRef.current?.togglePicker()}
+                >
+                  <Text style={styles.pickerText}>{selectedGenderLabel}</Text>
+                  <MaterialIcons
+                    name="arrow-drop-down"
+                    size={24}
+                    color="#888"
+                  />
+                </TouchableOpacity>
+
+                <RNPickerSelect
+                  ref={pickerRef}
+                  value={gender}
+                  onValueChange={(value) => setGender(value)}
+                  items={genderOptions}
+                  style={{
+                    inputIOS: { display: 'none' },
+                    inputAndroid: { display: 'none' },
+                  }}
+                  useNativeAndroidPickerStyle={false}
+                  placeholder={{ label: '請選擇', value: '' }}
+                />
+              </>
+            </View>
+          </View>
+
+          {/* 上傳頭像照片 */}
+          <View style={styles.uploadContainer}>
+            <Text style={styles.inputLabel}>上傳頭像照片</Text>
+            <View style={styles.uploadWrapper}>
+              {profileImage && (
+                <Image
+                  source={{ uri: profileImage }}
+                  style={styles.profileImage}
+                />
+              )}
               <TouchableOpacity
-                style={styles.pickerContainer}
-                activeOpacity={1}
-                onPress={() => pickerRef.current?.togglePicker()}
+                style={styles.uploadButton}
+                onPress={handleUploadPhoto}
               >
-                <Text style={styles.pickerText}>{selectedGenderLabel}</Text>
-                <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
+                <MaterialIcons name="file-upload" size={30} color="#666666" />
               </TouchableOpacity>
-
-              <RNPickerSelect
-                ref={pickerRef}
-                value={gender}
-                onValueChange={(value) => setGender(value)}
-                items={genderOptions}
-                style={{
-                  inputIOS: { display: 'none' },
-                  inputAndroid: { display: 'none' },
-                }}
-                useNativeAndroidPickerStyle={false}
-                placeholder={{ label: '請選擇', value: '' }}
-              />
-            </>
+              <TouchableOpacity
+                style={styles.uploadButton}
+                onPress={handleTakePhoto}
+              >
+                <MaterialIcons name="camera-alt" size={30} color="#666666" />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
 
-        {/* 上傳頭像照片 */}
-        <View style={styles.uploadContainer}>
-          <Text style={styles.inputLabel}>上傳頭像照片</Text>
-          <View style={styles.uploadWrapper}>
-            {profileImage && (
-              <Image
-                source={{ uri: profileImage }}
-                style={styles.profileImage}
-              />
-            )}
+          {/* 底部按鈕 */}
+          <View style={styles.bottomContainer}>
             <TouchableOpacity
-              style={styles.uploadButton}
-              onPress={handleUploadPhoto}
+              style={styles.homeButton}
+              onPress={resetAndNavigateToMain}
             >
-              <MaterialIcons name="file-upload" size={30} color="#666666" />
+              <MaterialIcons name="home" size={18} color="#000" />
+              <Text style={styles.homeButtonText}>回首頁</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.uploadButton}
-              onPress={handleTakePhoto}
+              style={styles.loginButton}
+              onPress={handleNextStep}
             >
-              <MaterialIcons name="camera-alt" size={30} color="#666666" />
+              <Text style={styles.loginButtonText}>下一步</Text>
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* 底部按鈕 */}
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity
-            style={styles.homeButton}
-            onPress={resetAndNavigateToMain}
-          >
-            <MaterialIcons name="home" size={18} color="#000" />
-            <Text style={styles.homeButtonText}>回首頁</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.loginButton} onPress={handleNextStep}>
-            <Text style={styles.loginButtonText}>下一步</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 

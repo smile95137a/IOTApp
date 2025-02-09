@@ -8,6 +8,8 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select'; // Import picker select
 import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons
@@ -72,129 +74,140 @@ const RegisterScreen = ({ route, navigation }: any) => {
     navigation.navigate('PersonalInfo');
   };
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <Header onBackPress={() => navigation.goBack()} rightIcon="more-vert" />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.safeArea}>
+        <Header onBackPress={() => navigation.goBack()} rightIcon="more-vert" />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
-        <Text style={styles.title}>註冊</Text>
-        <Text style={styles.subtitle}>選擇一個方式手機或信箱來進行註冊</Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.container}
+        >
+          <Text style={styles.title}>註冊</Text>
+          <Text style={styles.subtitle}>選擇一個方式手機或信箱來進行註冊</Text>
 
-        {/* Email Field */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>電子信箱</Text>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              placeholder="請輸入電子信箱"
-              value={email}
-              onChangeText={setEmail}
-            />
-          </View>
-        </View>
-
-        {/* Phone Field */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>手機</Text>
-          <View style={styles.inputWrapper}>
-            <>
-              <TouchableOpacity
-                style={styles.pickerContainer}
-                activeOpacity={1}
-                onPress={() => pickerRef.current?.togglePicker()}
-              >
-                <Text style={styles.pickerText}>{countryCode || '請選擇'}</Text>
-                <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
-              </TouchableOpacity>
-
-              <RNPickerSelect
-                ref={pickerRef}
-                value={countryCode || countryCodes[0].value}
-                onValueChange={(value) => {
-                  if (value) setCountryCode(value);
-                }}
-                items={countryCodes}
-                style={{
-                  inputIOS: { display: 'none' },
-                  inputAndroid: { display: 'none' },
-                }} // 隱藏原本的輸入框
-                useNativeAndroidPickerStyle={false}
-                placeholder={{ label: '請選擇', value: '' }}
-              />
-
+          {/* Email Field */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>電子信箱</Text>
+            <View style={styles.inputWrapper}>
               <TextInput
                 style={styles.input}
-                placeholder="請輸入手機號碼"
-                keyboardType="phone-pad"
-                value={phone}
-                onChangeText={setPhone}
+                placeholder="請輸入電子信箱"
+                value={email}
+                onChangeText={setEmail}
               />
-            </>
+            </View>
           </View>
-        </View>
 
-        {/* Send Code Button */}
-        <View>
-          <TouchableOpacity
-            style={[
-              styles.sendButton,
-              isCodeSent ? styles.disabledButton : null,
-            ]}
-            onPress={handleSendCode}
-            disabled={isCodeSent}
-          >
-            <Text
+          {/* Phone Field */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>手機</Text>
+            <View style={styles.inputWrapper}>
+              <>
+                <TouchableOpacity
+                  style={styles.pickerContainer}
+                  activeOpacity={1}
+                  onPress={() => pickerRef.current?.togglePicker()}
+                >
+                  <Text style={styles.pickerText}>
+                    {countryCode || '請選擇'}
+                  </Text>
+                  <MaterialIcons
+                    name="arrow-drop-down"
+                    size={24}
+                    color="#888"
+                  />
+                </TouchableOpacity>
+
+                <RNPickerSelect
+                  ref={pickerRef}
+                  value={countryCode || countryCodes[0].value}
+                  onValueChange={(value) => {
+                    if (value) setCountryCode(value);
+                  }}
+                  items={countryCodes}
+                  style={{
+                    inputIOS: { display: 'none' },
+                    inputAndroid: { display: 'none' },
+                  }} // 隱藏原本的輸入框
+                  useNativeAndroidPickerStyle={false}
+                  placeholder={{ label: '請選擇', value: '' }}
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="請輸入手機號碼"
+                  keyboardType="phone-pad"
+                  value={phone}
+                  onChangeText={setPhone}
+                />
+              </>
+            </View>
+          </View>
+
+          {/* Send Code Button */}
+          <View>
+            <TouchableOpacity
               style={[
-                styles.sendButtonText,
-                timer > 0 ? styles.disabledText : null, // 文字變灰
+                styles.sendButton,
+                isCodeSent ? styles.disabledButton : null,
               ]}
+              onPress={handleSendCode}
+              disabled={isCodeSent}
             >
-              {isCodeSent ? `等待重新發送驗證碼` : '發送驗證碼'}
-            </Text>
-            <MaterialIcons
-              name="send"
-              size={16}
-              color={isCodeSent ? '#aaa' : '#007BFF'}
-              style={styles.sendIcon}
-            />
-          </TouchableOpacity>
-        </View>
-
-        {/* Verification Code Field */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>驗證碼</Text>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              placeholder="請輸入驗證碼"
-              value={verificationCode}
-              onChangeText={setVerificationCode}
-              keyboardType="number-pad"
-            />
+              <Text
+                style={[
+                  styles.sendButtonText,
+                  timer > 0 ? styles.disabledText : null, // 文字變灰
+                ]}
+              >
+                {isCodeSent ? `等待重新發送驗證碼` : '發送驗證碼'}
+              </Text>
+              <MaterialIcons
+                name="send"
+                size={16}
+                color={isCodeSent ? '#aaa' : '#007BFF'}
+                style={styles.sendIcon}
+              />
+            </TouchableOpacity>
           </View>
-        </View>
 
-        <TouchableOpacity onPress={handleResendCode} disabled={timer > 0}>
-          <Text style={styles.resendText}>沒收到驗證信?重寄({timer}S)</Text>
-        </TouchableOpacity>
+          {/* Verification Code Field */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>驗證碼</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="請輸入驗證碼"
+                value={verificationCode}
+                onChangeText={setVerificationCode}
+                keyboardType="number-pad"
+              />
+            </View>
+          </View>
 
-        {/* Bottom Buttons */}
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity
-            style={styles.homeButton}
-            onPress={resetAndNavigateToMain}
-          >
-            <MaterialIcons name="home" size={18} color="#000" />
-            <Text style={styles.homeButtonText}>回首頁</Text>
+          <TouchableOpacity onPress={handleResendCode} disabled={timer > 0}>
+            <Text style={styles.resendText}>沒收到驗證信?重寄({timer}S)</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.loginButton} onPress={handleNextStep}>
-            <Text style={styles.loginButtonText}>下一步</Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+          {/* Bottom Buttons */}
+          <View style={styles.bottomContainer}>
+            <TouchableOpacity
+              style={styles.homeButton}
+              onPress={resetAndNavigateToMain}
+            >
+              <MaterialIcons name="home" size={18} color="#000" />
+              <Text style={styles.homeButtonText}>回首頁</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={handleNextStep}
+            >
+              <Text style={styles.loginButtonText}>下一步</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
