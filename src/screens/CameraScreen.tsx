@@ -6,11 +6,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { closeCamera } from '@/store/cameraSlice';
 import { RootState } from '@/store/store';
 import { decryptData } from '@/utils/cryptoUtils';
-import { useNavigation } from '@react-navigation/native';
 
 const CameraScreen = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
   const isCameraOpen = useSelector(
     (state: RootState) => state.camera.isCameraOpen
   );
@@ -34,6 +32,9 @@ const CameraScreen = () => {
     if (!scannedRef.current) {
       scannedRef.current = true;
       const tableUid = decryptData(data);
+      Alert.alert('QR Code Scanned', `桌檯的uid: ${decryptData(data)}`, [
+        { text: 'OK', onPress: () => (scannedRef.current = false) },
+      ]);
     }
   };
 
