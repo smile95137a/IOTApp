@@ -1,65 +1,126 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   Alert,
   Image,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
-
+import { Picker } from '@react-native-picker/picker';
+import { fetchAllNews, uploadNewsImages } from '@/api/admin/newsApi';
+import {
+  createBanner,
+  updateBanner,
+  uploadBannerImage,
+} from '@/api/admin/BannerApi';
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
   const banner = route.params?.banner || {};
-  const [title, setTitle] = useState(banner.title || '');
-  const [imageUrl, setImageUrl] = useState(banner.imageUrl || '');
+  console.log('@@@@@@@@@@@@@@@@', banner);
+
+  const [status, setStatus] = useState(banner.status || 'AVAILABLE');
+  const [newsId, setNewsId] = useState(banner?.news?.id || '');
+  const [image, setImage] = useState(null);
+  const [newsList, setNewsList] = useState([]);
+
+  useEffect(() => {
+    const loadNews = async () => {
+      try {
+        const response = await fetchAllNews();
+        setNewsList(response.data || []);
+      } catch (error) {
+        console.error('Error fetching news:', error);
+      }
+    };
+    loadNews();
+  }, []);
 
   const handleSave = async () => {
-    // dispatch(showLoading());
-    // try {
-    //   if (banner.id) {
-    //     await updateBanner({ id: banner.id, title, imageUrl });
-    //   } else {
-    //     await createBanner({ title, imageUrl });
-    //   }
-    //   navigation.goBack();
-    // } catch (error) {
-    //   Alert.alert('錯誤', '操作失敗');
-    // } finally {
-    //   dispatch(hideLoading());
-    // }
+    dispatch(showLoading());
+    try {
+      const bannerData = {
+        status,
+        newsId,
+      };
+
+      let savedBanner;
+      console.log(banner.bannerId);
+
+      if (banner.bannerId) {
+        savedBanner = await updateBanner(banner.bannerId, {
+          bannerId: banner.bannerId,
+          ...bannerData,
+        });
+      } else {
+        savedBanner = await createBanner(bannerData);
+      }
+
+      if (image && savedBanner?.data?.bannerId) {
+        await uploadBannerImage(savedBanner?.data?.bannerId, image);
+      }
+
+      navigation.goBack();
+    } catch (error) {
+      console.log(error);
+
+      Alert.alert('錯誤', '操作失敗');
+    } finally {
+      dispatch(hideLoading());
+    }
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      setImage(result.assets[0].uri);
+    }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.header}>
-          {banner.id ? '編輯 Banner' : '新增 Banner'}
-        </Text>
+        <Text style={styles.header}>{banner.id ? '編輯橫幅' : '新增橫幅'}</Text>
+        <Picker
+          selectedValue={String(newsId)}
+          onValueChange={(itemValue) => setNewsId(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="選擇新聞" value="" />
+          {newsList.map((news) => (
+            <Picker.Item
+              key={news.id}
+              label={news.title}
+              value={String(news.id)}
+            /> // 轉成字串
+          ))}
+        </Picker>
 
-        <TextInput
-          placeholder="標題"
-          value={title}
-          onChangeText={setTitle}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="圖片 URL"
-          value={imageUrl}
-          onChangeText={setImageUrl}
-          style={styles.input}
-        />
-        {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={styles.bannerPreview} />
-        ) : null}
-
+        <Picker
+          selectedValue={status}
+          onValueChange={(itemValue) => setStatus(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="啟用" value="AVAILABLE" />
+          <Picker.Item label="停用" value="UNAVAILABLE" />
+        </Picker>
+        <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+          <Text style={styles.uploadButtonText}>上傳圖片</Text>
+        </TouchableOpacity>
+        {image && <Image source={{ uri: image }} style={styles.image} />}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>保存</Text>
         </TouchableOpacity>
@@ -72,15 +133,22 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   container: { flex: 1, padding: 20, backgroundColor: '#E3F2FD' },
   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
-  input: {
+  picker: {
     backgroundColor: '#fff',
-    padding: 15,
     borderRadius: 8,
     marginBottom: 15,
   },
-  bannerPreview: {
+  uploadButton: {
+    backgroundColor: '#28a745',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  uploadButtonText: { color: '#fff', fontSize: 18 },
+  image: {
     width: '100%',
-    height: 150,
+    height: 200,
     borderRadius: 8,
     marginBottom: 15,
   },

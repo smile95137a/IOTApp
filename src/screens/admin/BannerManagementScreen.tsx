@@ -11,10 +11,10 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-// import { fetchAllBanners, deleteBanner } from '@/api/bannerApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
+import { deleteBanner, fetchAllBanners } from '@/api/admin/BannerApi';
 
 const BannerManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -22,19 +22,19 @@ const BannerManagementScreen = () => {
   const [banners, setBanners] = useState([]);
 
   const loadBanners = async () => {
-    // try {
-    //   dispatch(showLoading());
-    //   const { success, data, message } = await fetchAllBanners();
-    //   dispatch(hideLoading());
-    //   if (success) {
-    //     setBanners(data);
-    //   } else {
-    //     Alert.alert('錯誤', message || '無法載入 Banner');
-    //   }
-    // } catch (error) {
-    //   dispatch(hideLoading());
-    //   Alert.alert('錯誤', '發生錯誤，請稍後再試');
-    // }
+    try {
+      dispatch(showLoading());
+      const { success, data, message } = await fetchAllBanners();
+      dispatch(hideLoading());
+      if (success) {
+        setBanners(data);
+      } else {
+        Alert.alert('錯誤', message || '無法載入 Banner');
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+    }
   };
 
   useEffect(() => {
@@ -43,11 +43,11 @@ const BannerManagementScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      loadBanners(); // 當頁面獲取焦點時刷新數據
+      loadBanners();
     }, [])
   );
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     Alert.alert('刪除確認', '確定要刪除此 Banner 嗎？', [
       { text: '取消', style: 'cancel' },
       {
@@ -70,7 +70,6 @@ const BannerManagementScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Header */}
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Banner 管理</Text>
           <TouchableOpacity
@@ -81,10 +80,9 @@ const BannerManagementScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Banner 列表 */}
         <FlatList
           data={banners}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.bannerId.toString()}
           contentContainerStyle={styles.listContainer}
           renderItem={({ item }) => (
             <View style={styles.bannerItem}>
@@ -92,17 +90,25 @@ const BannerManagementScreen = () => {
                 source={{ uri: item.imageUrl }}
                 style={styles.bannerImage}
               />
+              <View style={styles.bannerInfo}>
+                <Text style={styles.bannerText}>ID: {item.bannerId}</Text>
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={styles.bannerImage}
+                />
+              </View>
+
               <View style={styles.actions}>
                 <TouchableOpacity
                   onPress={() =>
-                    navigation.navigate('EditBanner', { banner: item })
+                    navigation.navigate('AddBanner', { banner: item })
                   }
                   style={styles.actionButton}
                 >
                   <Icon name="pencil" size={22} color="#007bff" />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => handleDelete(item.id)}
+                  onPress={() => handleDelete(item.bannerId)}
                   style={styles.actionButton}
                 >
                   <Icon name="delete" size={22} color="#FF4D4D" />
@@ -177,6 +183,16 @@ const styles = StyleSheet.create({
   actionButton: {
     padding: 8,
     marginLeft: 10,
+  },
+  bannerInfo: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  bannerText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#555',
   },
 });
 

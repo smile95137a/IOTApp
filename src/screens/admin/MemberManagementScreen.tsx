@@ -25,9 +25,7 @@ const MemberManagementScreen = ({ navigation }) => {
 
   const filteredMembers = userList.filter(
     (member) =>
-      member.name.includes(searchText) ||
-      member.phone.includes(searchText) ||
-      member.email.includes(searchText)
+      member.name.includes(searchText) || member.email.includes(searchText)
   );
 
   const loadMembers = async () => {

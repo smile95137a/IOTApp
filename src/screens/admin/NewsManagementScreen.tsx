@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-// import { fetchAllNews, deleteNews } from '@/api/newsApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
+import { deleteNewsById, fetchAllNews } from '@/api/admin/newsApi';
 
 const NewsManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,19 +21,20 @@ const NewsManagementScreen = () => {
   const [newsList, setNewsList] = useState([]);
 
   const loadNews = async () => {
-    // try {
-    //   dispatch(showLoading());
-    //   const { success, data, message } = await fetchAllNews();
-    //   dispatch(hideLoading());
-    //   if (success) {
-    //     setNewsList(data);
-    //   } else {
-    //     Alert.alert('錯誤', message || '無法載入最新消息');
-    //   }
-    // } catch (error) {
-    //   dispatch(hideLoading());
-    //   Alert.alert('錯誤', '發生錯誤，請稍後再試');
-    // }
+    try {
+      dispatch(showLoading());
+      const { success, data, message } = await fetchAllNews();
+      dispatch(hideLoading());
+
+      if (success) {
+        setNewsList(data);
+      } else {
+        Alert.alert('錯誤', message || '無法載入最新消息');
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+    }
   };
 
   useEffect(() => {
@@ -42,28 +43,28 @@ const NewsManagementScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      loadNews(); // 當頁面獲取焦點時刷新數據
+      loadNews();
     }, [])
   );
 
   const handleDelete = async (id: string) => {
-    // Alert.alert('刪除確認', '確定要刪除此新聞嗎？', [
-    //   { text: '取消', style: 'cancel' },
-    //   {
-    //     text: '確定',
-    //     onPress: async () => {
-    //       dispatch(showLoading());
-    //       try {
-    //         await deleteNews(id);
-    //         loadNews();
-    //       } catch (error) {
-    //         Alert.alert('錯誤', '刪除失敗');
-    //       } finally {
-    //         dispatch(hideLoading());
-    //       }
-    //     },
-    //   },
-    // ]);
+    Alert.alert('刪除確認', '確定要刪除此新聞嗎？', [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '確定',
+        onPress: async () => {
+          try {
+            dispatch(showLoading());
+            await deleteNewsById(id);
+            await loadNews();
+          } catch (error) {
+            Alert.alert('錯誤', '刪除失敗');
+          } finally {
+            dispatch(hideLoading());
+          }
+        },
+      },
+    ]);
   };
 
   return (
@@ -83,7 +84,7 @@ const NewsManagementScreen = () => {
         {/* 新聞列表 */}
         <FlatList
           data={newsList}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContainer}
           renderItem={({ item }) => (
             <View style={styles.newsItem}>
@@ -95,15 +96,13 @@ const NewsManagementScreen = () => {
               </View>
               <View style={styles.actions}>
                 <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('EditNews', { news: item })
-                  }
+                  onPress={() => navigation.navigate('AddNews', { news: item })}
                   style={styles.actionButton}
                 >
                   <Icon name="pencil" size={20} color="#007bff" />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => handleDelete(item.id)}
+                  onPress={() => handleDelete(item.newsUid)}
                   style={styles.actionButton}
                 >
                   <Icon name="delete" size={20} color="#FF4D4D" />

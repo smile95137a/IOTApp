@@ -10,7 +10,11 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { fetchAllPoolTables, PoolTable } from '@/api/admin/poolTableApi';
+import {
+  fetchAllPoolTables,
+  deletePoolTable,
+  PoolTable,
+} from '@/api/admin/poolTableApi'; // 引入刪除 API
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
@@ -46,6 +50,34 @@ const PoolTableManagementScreen = () => {
     }, [])
   );
 
+  // 刪除桌檯
+  const handleDelete = (poolTableUid, tableNumber) => {
+    Alert.alert('確認刪除', `確定要刪除桌檯「${tableNumber}」嗎？`, [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '刪除',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            dispatch(showLoading());
+            const response = await deletePoolTable(poolTableUid);
+            dispatch(hideLoading());
+
+            if (response.success) {
+              Alert.alert('成功', '桌檯已刪除');
+              loadPoolTables(); // 重新載入列表
+            } else {
+              Alert.alert('錯誤', response.message || '刪除失敗');
+            }
+          } catch (error) {
+            dispatch(hideLoading());
+            Alert.alert('錯誤', '刪除失敗，請稍後再試');
+          }
+        },
+      },
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -66,29 +98,50 @@ const PoolTableManagementScreen = () => {
           keyExtractor={(item) => item.uid}
           contentContainerStyle={styles.listContainer}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.poolTableItem}
-              onPress={() =>
-                navigation.navigate('AddPoolTable', { poolTable: item })
-              }
-            >
-              <View style={styles.poolTableInfo}>
-                <Text style={styles.poolTableName}>
-                  桌檯號碼: {item.tableNumber}
-                </Text>
-                <Text
-                  style={[
-                    styles.poolTableStatus,
-                    item.status === '可用'
-                      ? styles.statusAvailable
-                      : styles.statusUnavailable,
-                  ]}
+            <View style={styles.poolTableItem}>
+              {/* 桌檯資訊 */}
+              <TouchableOpacity
+                style={styles.poolTableInfoContainer}
+                onPress={() =>
+                  navigation.navigate('AddPoolTable', { poolTable: item })
+                }
+              >
+                <View style={styles.poolTableInfo}>
+                  <Text style={styles.poolTableName}>
+                    桌檯號碼: {item.tableNumber}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.poolTableStatus,
+                      item.status === '可用'
+                        ? styles.statusAvailable
+                        : styles.statusUnavailable,
+                    ]}
+                  >
+                    狀態: {item.status}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+              {/* 編輯 & 刪除按鈕 */}
+              <View style={styles.actionButtons}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('AddPoolTable', { poolTable: item })
+                  }
+                  style={styles.iconButton}
                 >
-                  狀態: {item.status}
-                </Text>
+                  <Icon name="pencil" size={24} color="#007bff" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => handleDelete(item.uid, item.tableNumber)}
+                  style={styles.iconButton}
+                >
+                  <Icon name="trash-can-outline" size={24} color="#dc3545" />
+                </TouchableOpacity>
               </View>
-              <Icon name="chevron-right" size={24} color="#007bff" />
-            </TouchableOpacity>
+            </View>
           )}
         />
       </View>
@@ -145,6 +198,9 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
+  poolTableInfoContainer: {
+    flex: 1,
+  },
   poolTableInfo: {
     flex: 1,
   },
@@ -163,6 +219,13 @@ const styles = StyleSheet.create({
   },
   statusUnavailable: {
     color: 'red',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    padding: 8,
   },
 });
 

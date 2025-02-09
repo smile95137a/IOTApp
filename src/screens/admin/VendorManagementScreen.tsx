@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Vendor, fetchAllVendors } from '@/api/admin/vendorApi';
+import { Vendor, fetchAllVendors, deleteVendor } from '@/api/admin/vendorApi'; // 加入刪除 API
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
@@ -32,9 +32,10 @@ const VendorManagementScreen = () => {
       }
     } catch (error) {
       dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      Alert.alert('錯誤', errorMessage);
+      Alert.alert(
+        '錯誤',
+        error instanceof Error ? error.message : String(error)
+      );
     }
   };
 
@@ -47,6 +48,36 @@ const VendorManagementScreen = () => {
       loadVendors(); // 當頁面獲取焦點時刷新數據
     }, [])
   );
+
+  // 刪除廠商
+  const handleDelete = (vendorId, vendorName) => {
+    Alert.alert('確認刪除', `確定要刪除廠商「${vendorName}」嗎？`, [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '刪除',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            dispatch(showLoading());
+            console.log('AAAAAAAAAA', vendorId);
+
+            const response = await deleteVendor(vendorId);
+            dispatch(hideLoading());
+
+            if (response.success) {
+              Alert.alert('成功', '廠商已刪除');
+              loadVendors(); // 重新載入列表
+            } else {
+              Alert.alert('錯誤', response.message || '刪除失敗');
+            }
+          } catch (error) {
+            dispatch(hideLoading());
+            Alert.alert('錯誤', '刪除失敗，請稍後再試');
+          }
+        },
+      },
+    ]);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -69,18 +100,37 @@ const VendorManagementScreen = () => {
           contentContainerStyle={styles.listContainer}
           renderItem={({ item }) => (
             <View style={styles.vendorItem}>
-              <View style={styles.vendorInfo}>
-                <Text style={styles.vendorName}>{item.name}</Text>
-                <Text style={styles.vendorContact}>{item.contactInfo}</Text>
-              </View>
+              {/* 廠商資訊 */}
               <TouchableOpacity
+                style={styles.vendorInfoContainer}
                 onPress={() =>
-                  Alert.alert('詳細資訊', `這是 ${item.name} 的資訊`)
+                  navigation.navigate('AddVendor', { vendor: item })
                 }
-                style={styles.infoButton}
               >
-                <Icon name="chevron-right" size={24} color="#007bff" />
+                <View style={styles.vendorInfo}>
+                  <Text style={styles.vendorName}>{item.name}</Text>
+                  <Text style={styles.vendorContact}>{item.contactInfo}</Text>
+                </View>
               </TouchableOpacity>
+
+              {/* 編輯 & 刪除按鈕 */}
+              <View style={styles.actionButtons}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('AddVendor', { vendor: item })
+                  }
+                  style={styles.iconButton}
+                >
+                  <Icon name="pencil" size={24} color="#007bff" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => handleDelete(item.uid, item.name)}
+                  style={styles.iconButton}
+                >
+                  <Icon name="trash-can-outline" size={24} color="#dc3545" />
+                </TouchableOpacity>
+              </View>
             </View>
           )}
         />
@@ -138,6 +188,9 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
+  vendorInfoContainer: {
+    flex: 1,
+  },
   vendorInfo: {
     flex: 1,
   },
@@ -151,7 +204,11 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 4,
   },
-  infoButton: {
+  actionButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
     padding: 8,
   },
 });

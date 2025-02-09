@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,38 +7,103 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
-import { createStore } from '@/api/admin/storeApi';
+import { createStore, updateStore } from '@/api/admin/storeApi';
+import { fetchAllVendors } from '@/api/admin/vendorApi';
+import { Picker } from '@react-native-picker/picker';
+
+const weekDays = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+];
 
 const AddStoreScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
 
-  // 狀態管理：表單欄位
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [vendorId, setVendorId] = useState('');
-  const [lat, setLat] = useState('');
-  const [lon, setLon] = useState('');
-  const [deposit, setDeposit] = useState('');
-  const [discountRate, setDiscountRate] = useState('');
-  const [regularRate, setRegularRate] = useState('');
-  const [regularDateStart, setRegularDateStart] = useState('');
-  const [regularDateEnd, setRegularDateEnd] = useState('');
-  const [discountDateStart, setDiscountDateStart] = useState('');
-  const [discountDateEnd, setDiscountDateEnd] = useState('');
-  const [regularTimeStart, setRegularTimeStart] = useState('');
-  const [regularTimeEnd, setRegularTimeEnd] = useState('');
-  const [discountTimeStart, setDiscountTimeStart] = useState('');
-  const [discountTimeEnd, setDiscountTimeEnd] = useState('');
+  const store = route.params?.store || null;
+  const isEditMode = !!store;
 
-  // 提交店家資訊
+  console.log('@@@@@@@', store);
+
+  const [name, setName] = useState(store?.name || '');
+  const [address, setAddress] = useState(store?.address || '');
+  const [vendorId, setVendorId] = useState(
+    store?.vendor?.id ? String(store.vendor.id) : ''
+  );
+  const [lat, setLat] = useState(store?.lat ? String(store.lat) : '');
+  const [lon, setLon] = useState(store?.lon ? String(store.lon) : '');
+  const [deposit, setDeposit] = useState(
+    store?.deposit ? String(store.deposit) : ''
+  );
+  const [discountRate, setDiscountRate] = useState(
+    store?.discountRate ? String(store.discountRate) : ''
+  );
+  const [regularRate, setRegularRate] = useState(
+    store?.regularRate ? String(store.regularRate) : ''
+  );
+  const [vendors, setVendors] = useState([]);
+
+  // 初始化價格排程（確保所有天都有完整數據）
+  const [pricingSchedules, setPricingSchedules] = useState(
+    weekDays.map((day) => {
+      const existingSchedule = store?.pricingSchedules?.find(
+        (schedule) => schedule.dayOfWeek === day
+      );
+      return {
+        dayOfWeek: day,
+        regularStartTime: existingSchedule?.regularStartTime || '10:00',
+        regularEndTime: existingSchedule?.regularEndTime || '18:00',
+        regularRate: existingSchedule?.regularRate
+          ? String(existingSchedule.regularRate)
+          : '100',
+        discountStartTime: existingSchedule?.discountStartTime || '18:00',
+        discountEndTime: existingSchedule?.discountEndTime || '23:00',
+        discountRate: existingSchedule?.discountRate
+          ? String(existingSchedule.discountRate)
+          : '80',
+      };
+    })
+  );
+
+  useEffect(() => {
+    const loadVendors = async () => {
+      try {
+        dispatch(showLoading());
+        const response = await fetchAllVendors();
+        dispatch(hideLoading());
+
+        if (response.success) {
+          setVendors(response.data);
+        } else {
+          Alert.alert('錯誤', '無法獲取供應商列表');
+        }
+      } catch (error) {
+        dispatch(hideLoading());
+        Alert.alert('錯誤', '獲取供應商失敗');
+      }
+    };
+
+    loadVendors();
+  }, []);
+
+  // 更新價格排程
+  const updateSchedule = (dayIndex, key, value) => {
+    const updatedSchedules = [...pricingSchedules];
+    updatedSchedules[dayIndex][key] = value;
+    setPricingSchedules(updatedSchedules);
+  };
+
   const handleSubmit = async () => {
     if (
       !name.trim() ||
@@ -54,37 +119,39 @@ const AddStoreScreen = () => {
     const storeData = {
       name,
       address,
-      vendor: {
-        id: parseInt(vendorId),
-      },
-      poolTables: [],
-      equipments: [],
+      vendor: { id: parseInt(vendorId) },
       lat: parseFloat(lat),
       lon: parseFloat(lon),
       deposit: parseFloat(deposit) || 0,
       discountRate: parseFloat(discountRate) || 0,
       regularRate: parseFloat(regularRate) || 0,
-      regularDateRangeStart: regularDateStart,
-      regularDateRangeEnd: regularDateEnd,
-      discountDateRangeStart: discountDateStart,
-      discountDateRangeEnd: discountDateEnd,
-      regularTimeRangeStart: regularTimeStart,
-      regularTimeRangeEnd: regularTimeEnd,
-      discountTimeRangeStart: discountTimeStart,
-      discountTimeRangeEnd: discountTimeEnd,
+      pricingSchedules: pricingSchedules.map((schedule) => ({
+        ...schedule,
+        regularRate: parseFloat(schedule.regularRate) || 0,
+        discountRate: parseFloat(schedule.discountRate) || 0,
+      })),
     };
 
     try {
       dispatch(showLoading());
-      const { success, message } = await createStore(storeData);
+
+      let response;
+      console.log('@@@@@@@@@@@@@@@', storeData);
+
+      if (isEditMode) {
+        response = await updateStore(store.uid, storeData);
+      } else {
+        response = await createStore(storeData);
+      }
+
       dispatch(hideLoading());
 
-      if (success) {
-        Alert.alert('成功', '店家新增成功', [
+      if (response.success) {
+        Alert.alert('成功', isEditMode ? '店家資訊更新成功' : '店家新增成功', [
           { text: '確定', onPress: () => navigation.goBack() },
         ]);
       } else {
-        Alert.alert('錯誤', message || '新增失敗');
+        Alert.alert('錯誤', response.message || '操作失敗');
       }
     } catch (error) {
       dispatch(hideLoading());
@@ -93,155 +160,214 @@ const AddStoreScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.header}>新增店家</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.header}>{isEditMode ? '編輯店家' : '新增店家'}</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="店家名稱"
-          value={name}
-          onChangeText={setName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="地址"
-          value={address}
-          onChangeText={setAddress}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="廠商 ID"
-          keyboardType="numeric"
-          value={vendorId}
-          onChangeText={setVendorId}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="緯度 (Lat)"
-          keyboardType="numeric"
-          value={lat}
-          onChangeText={setLat}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="經度 (Lon)"
-          keyboardType="numeric"
-          value={lon}
-          onChangeText={setLon}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="保證金 (可選)"
-          keyboardType="numeric"
-          value={deposit}
-          onChangeText={setDeposit}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="折扣費率 (可選)"
-          keyboardType="numeric"
-          value={discountRate}
-          onChangeText={setDiscountRate}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="一般費率 (可選)"
-          keyboardType="numeric"
-          value={regularRate}
-          onChangeText={setRegularRate}
-        />
+      <TextInput
+        style={styles.input}
+        placeholder="店家名稱"
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="地址"
+        value={address}
+        onChangeText={setAddress}
+      />
 
-        <TextInput
-          style={styles.input}
-          placeholder="一般價格 日期範圍開始"
-          value={regularDateStart}
-          onChangeText={setRegularDateStart}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="一般價格 日期範圍結束"
-          value={regularDateEnd}
-          onChangeText={setRegularDateEnd}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="折扣價格 日期範圍開始"
-          value={discountDateStart}
-          onChangeText={setDiscountDateStart}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="折扣價格 日期範圍結束"
-          value={discountDateEnd}
-          onChangeText={setDiscountDateEnd}
-        />
+      <Picker
+        selectedValue={vendorId}
+        onValueChange={setVendorId}
+        style={styles.picker}
+      >
+        <Picker.Item label="請選擇供應商" value="" />
+        {vendors.map((vendor) => (
+          <Picker.Item
+            key={vendor.id}
+            label={vendor.name}
+            value={String(vendor.id)}
+          />
+        ))}
+      </Picker>
+      <TextInput
+        style={styles.input}
+        placeholder="緯度 (Lat)"
+        keyboardType="numeric"
+        value={lat}
+        onChangeText={setLat}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="經度 (Lon)"
+        keyboardType="numeric"
+        value={lon}
+        onChangeText={setLon}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="保證金 (可選)"
+        keyboardType="numeric"
+        value={deposit}
+        onChangeText={setDeposit}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="折扣費率 (可選)"
+        keyboardType="numeric"
+        value={discountRate}
+        onChangeText={setDiscountRate}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="一般費率 (可選)"
+        keyboardType="numeric"
+        value={regularRate}
+        onChangeText={setRegularRate}
+      />
+      {pricingSchedules.map((schedule, index) => (
+        <View key={schedule.dayOfWeek} style={styles.scheduleContainer}>
+          <Text style={styles.dayLabel}>
+            {schedule.dayOfWeek.toUpperCase()}
+          </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="一般開始時間"
+            value={schedule.regularStartTime}
+            onChangeText={(value) =>
+              updateSchedule(index, 'regularStartTime', value)
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="一般結束時間"
+            value={schedule.regularEndTime}
+            onChangeText={(value) =>
+              updateSchedule(index, 'regularEndTime', value)
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="一般價格"
+            keyboardType="numeric"
+            value={schedule.regularRate}
+            onChangeText={(value) =>
+              updateSchedule(index, 'regularRate', value)
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="折扣開始時間"
+            value={schedule.discountStartTime}
+            onChangeText={(value) =>
+              updateSchedule(index, 'discountStartTime', value)
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="折扣結束時間"
+            value={schedule.discountEndTime}
+            onChangeText={(value) =>
+              updateSchedule(index, 'discountEndTime', value)
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="折扣價格"
+            keyboardType="numeric"
+            value={schedule.discountRate}
+            onChangeText={(value) =>
+              updateSchedule(index, 'discountRate', value)
+            }
+          />
+        </View>
+      ))}
 
-        <TextInput
-          style={styles.input}
-          placeholder="一般價格 時間範圍開始"
-          value={regularTimeStart}
-          onChangeText={setRegularTimeStart}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="一般價格 時間範圍結束"
-          value={regularTimeEnd}
-          onChangeText={setRegularTimeEnd}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="折扣價格 時間範圍開始"
-          value={discountTimeStart}
-          onChangeText={setDiscountTimeStart}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="折扣價格 時間範圍結束"
-          value={discountTimeEnd}
-          onChangeText={setDiscountTimeEnd}
-        />
-
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>提交</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.submitButtonText}>
+          {isEditMode ? '更新' : '提交'}
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#fff',
-  },
-  scrollContainer: {
     padding: 20,
   },
+
   header: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color: '#333',
   },
+
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 10,
+    color: '#444',
+  },
+
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
-    padding: 10,
+    padding: 12,
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 12,
+    backgroundColor: '#f9f9f9',
   },
+
+  picker: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 12,
+    backgroundColor: '#f9f9f9',
+  },
+
+  subHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 10,
+    color: '#222',
+  },
+
+  scheduleContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+    backgroundColor: '#fdfdfd',
+  },
+
+  dayLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#555',
+  },
+
   submitButton: {
     backgroundColor: '#007bff',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
+
   submitButtonText: {
     color: '#fff',
     fontSize: 18,

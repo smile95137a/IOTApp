@@ -21,6 +21,7 @@
     "crypto-js": "^4.2.0",
     "expo": "~52.0.25",
     "expo-camera": "~16.0.14",
+    "expo-checkbox": "^4.0.1",
     "expo-constants": "~17.0.5",
     "expo-image-picker": "^16.0.5",
     "expo-location": "~18.0.5",

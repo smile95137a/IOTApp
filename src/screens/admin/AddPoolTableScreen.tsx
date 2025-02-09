@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,8 @@ import { AppDispatch } from '@/store/store';
 import { createPoolTable, updatePoolTable } from '@/api/admin/poolTableApi';
 import QRCode from 'react-native-qrcode-svg';
 import { encryptData } from '@/utils/cryptoUtils';
+import { fetchAllStores } from '@/api/admin/storeApi';
+import { Picker } from '@react-native-picker/picker';
 
 // 定義 `route.params` 可能的類型
 type PoolTableParams = {
@@ -36,16 +38,39 @@ const AddPoolTableScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const poolTable = route.params?.poolTable;
+  console.log('________', poolTable);
+
   const isEditMode = !!poolTable; // 只有有傳入 poolTable 時才是編輯模式
 
   const [tableNumber, setTableNumber] = useState(poolTable?.tableNumber || '');
   const [status, setStatus] = useState(poolTable?.status || 'active');
   const [storeId, setStoreId] = useState(
-    poolTable?.store?.id ? String(poolTable.store.id) : ''
+    poolTable?.storeId ? String(poolTable.storeId) : ''
   );
   const [isUse, setIsUse] = useState(poolTable?.isUse ?? false);
   const [qrCodeVal, setQrCodeVal] = useState('');
   const [showQRCode, setShowQRCode] = useState(false);
+  const [stores, setStores] = useState([]);
+  useEffect(() => {
+    const loadStores = async () => {
+      try {
+        dispatch(showLoading());
+        const response = await fetchAllStores();
+        dispatch(hideLoading());
+
+        if (response.success) {
+          setStores(response.data); // 存入店家列表
+        } else {
+          Alert.alert('錯誤', '無法獲取店家列表');
+        }
+      } catch (error) {
+        dispatch(hideLoading());
+        Alert.alert('錯誤', '獲取店家失敗，請稍後再試');
+      }
+    };
+
+    loadStores();
+  }, []);
 
   const handleSubmit = async () => {
     if (!tableNumber.trim() || !status.trim() || !storeId.trim()) {
@@ -78,6 +103,8 @@ const AddPoolTableScreen = () => {
           Alert.alert('錯誤', message || '更新失敗');
         }
       } else {
+        console.log('))))))))))(((((((', poolTableData);
+
         const { success, message } = await createPoolTable(poolTableData);
         dispatch(hideLoading());
 
@@ -118,19 +145,30 @@ const AddPoolTableScreen = () => {
           value={tableNumber}
           onChangeText={setTableNumber}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="狀態 (active, inactive, maintenance)"
-          value={status}
-          onChangeText={setStatus}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="店家 ID"
-          keyboardType="numeric"
-          value={storeId}
-          onChangeText={setStoreId}
-        />
+        <Picker
+          selectedValue={status}
+          onValueChange={(itemValue) => setStatus(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="可用" value="AVAILABLE" />
+          <Picker.Item label="不可用" value="UNAVAILABLE" />
+        </Picker>
+        {/* 店家選擇 Picker */}
+        <Text style={styles.label}>選擇店家</Text>
+        <Picker
+          selectedValue={storeId}
+          onValueChange={(itemValue) => setStoreId(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="請選擇店家" value="" />
+          {stores.map((store) => (
+            <Picker.Item
+              key={store.id}
+              label={store.name}
+              value={String(store.id)}
+            />
+          ))}
+        </Picker>
 
         <TouchableOpacity
           style={[
@@ -244,6 +282,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButtonText: { color: '#fff', fontSize: 16 },
+  label: { fontSize: 16, fontWeight: 'bold', marginTop: 10 },
+
+  picker: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 10,
+  },
 });
 
 export default AddPoolTableScreen;
