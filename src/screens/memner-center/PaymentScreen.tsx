@@ -32,7 +32,7 @@ const PaymentScreen = ({ navigation }: any) => {
           : await startGame({ poolTableUId: payData.uid });
       dispatch(hideLoading());
       if (success) {
-        navigation.navigate('PaymentSuccess', { totalAmount });
+        navigation.navigate('PaymentSuccess', { totalAmount, data });
       } else {
         Alert.alert('錯誤', message || '無法載入店家資訊');
       }

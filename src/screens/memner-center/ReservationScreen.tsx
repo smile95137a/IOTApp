@@ -40,6 +40,10 @@ const ReservationScreen = ({ navigation }) => {
         setPoolTable(response.data);
       } else {
         Alert.alert('錯誤', response.message || '無法獲取桌檯資訊');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
       }
     } catch (error) {
       dispatch(hideLoading());

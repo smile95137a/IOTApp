@@ -6,9 +6,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { closeCamera } from '@/store/cameraSlice';
 import { RootState } from '@/store/store';
 import { decryptData } from '@/utils/cryptoUtils';
+import { useNavigation } from '@react-navigation/native';
 
 const CameraScreen = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const isCameraOpen = useSelector(
     (state: RootState) => state.camera.isCameraOpen
   );
@@ -32,9 +34,10 @@ const CameraScreen = () => {
     if (!scannedRef.current) {
       scannedRef.current = true;
       const tableUid = decryptData(data);
-      Alert.alert('QR Code Scanned', `桌檯的uid: ${decryptData(data)}`, [
-        { text: 'OK', onPress: () => (scannedRef.current = false) },
-      ]);
+      navigation.navigate('Member', {
+        screen: 'Reservation',
+        params: { tableUid }, // 傳遞桌檯 UID
+      });
     }
   };
 
@@ -46,6 +49,12 @@ const CameraScreen = () => {
     return <View />;
   }
 
+  const handleClose = () => {
+    scannedRef.current = false; // 重設 `scanned` 狀態
+    dispatch(closeCamera());
+    navigation.goBack(); // 返回上一個畫面
+  };
+
   return (
     <Modal visible={isCameraOpen} animationType="slide" transparent={false}>
       <CameraView
@@ -53,13 +62,7 @@ const CameraScreen = () => {
         barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
         onBarcodeScanned={handleBarCodeScanned} // 直接使用函數，避免 undefined 導致不觸發掃描
       />
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => {
-          scannedRef.current = false; // 關閉相機時重設 `scanned` 狀態
-          dispatch(closeCamera());
-        }}
-      >
+      <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
         <Icon name="close" size={30} color="#fff" />
       </TouchableOpacity>
     </Modal>

@@ -1,94 +1,66 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Alert,
-  Modal,
-  Text,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import HomeScreen from '@/screens/HomeScreen';
 import NewsStack from '@/navigators/NewsStack';
 import MemberStack from '@/navigators/MemberStack';
 import StoreStack from './StoreStack';
-import { Camera, CameraView } from 'expo-camera';
-import CameraScreen from '@/screens/CameraScreen';
-import { RootState } from '@/store/store';
-import { useSelector, useDispatch } from 'react-redux';
+import CameraStack from './CameraStack';
+import { useNavigation } from '@react-navigation/native';
 import { openCamera } from '@/store/cameraSlice';
+import { useDispatch } from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 
 const MainStackNavigator = () => {
-  const isCameraOpen = useSelector(
-    (state: RootState) => state.camera.isCameraOpen
-  );
   const dispatch = useDispatch();
-
   return (
-    <>
-      {isCameraOpen && <CameraScreen />}
-      <Tab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: styles.tabBar,
-          tabBarLabelStyle: styles.tabLabel,
-          tabBarActiveTintColor: '#151D3D',
-          tabBarInactiveTintColor: '#8A9493',
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.tabLabel,
+        tabBarActiveTintColor: '#151D3D',
+        tabBarInactiveTintColor: '#8A9493',
+      }}
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: '首頁',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="home" color={color} size={size} />
+          ),
         }}
-      >
-        <Tab.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            tabBarLabel: '首頁',
-            tabBarIcon: ({ color, size }) => (
-              <Icon name="home" color={color} size={size} />
-            ),
-          }}
-          listeners={({ navigation }) => ({
-            tabPress: (e) => {
-              e.preventDefault();
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Home' }],
-              });
-            },
-          })}
-        />
-        <Tab.Screen
-          name="News"
-          component={NewsStack}
-          options={{
-            tabBarLabel: '最新消息',
-            tabBarIcon: ({ color, size }) => (
-              <Icon name="star" color={color} size={size} />
-            ),
-          }}
-          listeners={({ navigation }) => ({
-            tabPress: (e) => {
-              e.preventDefault();
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'News' }],
-              });
-            },
-          })}
-        />
+      />
+      <Tab.Screen
+        name="News"
+        component={NewsStack}
+        options={{
+          tabBarLabel: '最新消息',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="star" color={color} size={size} />
+          ),
+        }}
+      />
 
-        <Tab.Screen
-          name="Camera"
-          component={HomeScreen}
-          options={{
-            tabBarLabel: '',
-            tabBarButton: () => (
+      <Tab.Screen
+        name="Camera"
+        component={CameraStack}
+        options={{
+          tabBarLabel: '',
+          tabBarButton: () => {
+            const navigation = useNavigation();
+            return (
               <View style={styles.cameraButtonWrapper}>
                 <TouchableOpacity
                   style={styles.cameraButton}
-                  onPress={() => dispatch(openCamera())}
+                  onPress={() => {
+                    dispatch(openCamera());
+                    navigation.navigate('Camera');
+                  }}
                 >
                   <Image
                     source={require('@/assets/iot-camera-logo.png')}
@@ -96,58 +68,35 @@ const MainStackNavigator = () => {
                   />
                 </TouchableOpacity>
               </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Explore"
-          component={StoreStack}
-          options={{
-            tabBarLabel: '門市探索',
-            tabBarIcon: ({ color, size }) => (
-              <Icon name="explore" color={color} size={size} />
-            ),
-          }}
-          listeners={({ navigation }) => ({
-            tabPress: (e) => {
-              e.preventDefault();
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Explore' }],
-              });
-            },
-          })}
-        />
-        <Tab.Screen
-          name="Member"
-          component={MemberStack}
-          options={{
-            tabBarLabel: '會員',
-            tabBarIcon: ({ color, size }) => (
-              <Icon name="person" color={color} size={size} />
-            ),
-          }}
-          listeners={({ navigation }) => ({
-            tabPress: (e) => {
-              e.preventDefault();
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Member' }],
-              });
-            },
-          })}
-        />
-      </Tab.Navigator>
-    </>
+            );
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Explore"
+        component={StoreStack}
+        options={{
+          tabBarLabel: '門市探索',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="explore" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Member"
+        component={MemberStack}
+        options={{
+          tabBarLabel: '會員',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="person" color={color} size={size} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   tabBar: {
     backgroundColor: '#fff',
   },
@@ -179,14 +128,6 @@ const styles = StyleSheet.create({
   cameraImage: {
     width: 63,
     height: 63,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 10,
-    borderRadius: 50,
   },
 });
 
