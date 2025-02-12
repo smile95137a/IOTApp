@@ -26,7 +26,7 @@ const AddNewsScreen = () => {
   const [title, setTitle] = useState(news.title || '');
   const [content, setContent] = useState(news.content || '');
   const [status, setStatus] = useState(news.status || 'AVAILABLE');
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<any>(null);
 
   const handleSave = async () => {
     dispatch(showLoading());
@@ -49,7 +49,7 @@ const AddNewsScreen = () => {
       console.log('HHHHHHHH', image);
       const savedNewsId = savedNews.data?.id;
       if (image && savedNewsId) {
-        await uploadNewsImages(savedNewsId, [image]);
+        await uploadNewsImages(savedNewsId, image);
       }
 
       navigation.goBack();

@@ -141,25 +141,32 @@ export const deleteNewsById = async (
  * 上傳新聞圖片
  */
 export const uploadNewsImages = async (
-  id: number,
-  files: File[]
-): Promise<ApiResponse<string[]>> => {
-  const url = `${API_BASE_URL}${basePath}/${id}/upload-profile-image`;
-  console.log(`[News API] Uploading images for news ID: ${id} at: ${url}`);
-
-  const formData = new FormData();
-  files.forEach((file) => {
-    formData.append('file', file);
-  });
+  userId: number,
+  imageUri: string
+): Promise<boolean> => {
+  const url = `${API_BASE_URL}${basePath}/${userId}/upload-image`;
+  console.log(
+    `[NEWS API] Uploading profile image for user: ${userId} to ${url}`
+  );
 
   try {
+    const formData = new FormData();
+    formData.append('file', {
+      uri: imageUri,
+      name: `news_${userId}.jpg`,
+      type: 'image/jpeg',
+    });
+
+    console.log(`[NEWS API] FormData:`, formData);
+
     const response = await api.post(url, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    console.log(`[News API] Response:`, response.data);
-    return response.data;
+
+    console.log(`[NEWS API] Profile Image Upload Success:`, response.data);
+    return response.status === 200;
   } catch (error) {
-    console.error(`[News API] Error uploading images:`, error);
-    throw error;
+    console.error(`[NEWS API] Error uploading profile image:`, error);
+    return false;
   }
 };
