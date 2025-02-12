@@ -7,6 +7,7 @@ import { closeCamera } from '@/store/cameraSlice';
 import { RootState } from '@/store/store';
 import { decryptData } from '@/utils/cryptoUtils';
 import { useNavigation } from '@react-navigation/native';
+import { fetchPoolTableByUid } from '@/api/poolTableAPI';
 
 const CameraScreen = () => {
   const dispatch = useDispatch();
@@ -24,20 +25,57 @@ const CameraScreen = () => {
     })();
   }, []);
 
-  const handleBarCodeScanned = ({
+  const handleBarCodeScanned = async ({
     type,
     data,
   }: {
     type: string;
     data: string;
   }) => {
-    if (!scannedRef.current) {
-      scannedRef.current = true;
+    if (scannedRef.current) return; // 已掃描過則直接返回，避免重複觸發
+    scannedRef.current = true;
+
+    try {
       const tableUid = decryptData(data);
-      navigation.navigate('Member', {
-        screen: 'Reservation',
-        params: { tableUid }, // 傳遞桌檯 UID
-      });
+      const response = await fetchPoolTableByUid(tableUid);
+
+      if (response.success) {
+        Alert.alert('已掃描到', '前往開台', [
+          {
+            text: '確定',
+            onPress: () => {
+              dispatch(closeCamera());
+              setTimeout(() => {
+                navigation.navigate('Member', {
+                  screen: 'Reservation',
+                  params: { tableUid }, // 傳遞桌檯 UID
+                });
+                setTimeout(() => {
+                  scannedRef.current = false; // 重設 `scanned` 狀態
+                }, 500);
+              }, 300);
+            },
+          },
+        ]);
+      } else {
+        Alert.alert('錯誤', response.message || '無法獲取桌檯資訊', [
+          {
+            text: '確定',
+            onPress: () => {
+              handleClose();
+            },
+          },
+        ]);
+      }
+    } catch (error) {
+      Alert.alert('錯誤', '發生錯誤，請重試', [
+        {
+          text: '確定',
+          onPress: () => {
+            handleClose();
+          },
+        },
+      ]);
     }
   };
 
@@ -50,9 +88,11 @@ const CameraScreen = () => {
   }
 
   const handleClose = () => {
-    scannedRef.current = false; // 重設 `scanned` 狀態
     dispatch(closeCamera());
-    navigation.goBack(); // 返回上一個畫面
+    navigation.goBack();
+    setTimeout(() => {
+      scannedRef.current = false; // 重設 `scanned` 狀態
+    }, 300);
   };
 
   return (

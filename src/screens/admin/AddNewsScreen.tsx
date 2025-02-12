@@ -146,12 +146,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-  image: {
-    width: '100%',
-    height: 200,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
   saveButtonText: { color: '#fff', fontSize: 18 },
 });
 

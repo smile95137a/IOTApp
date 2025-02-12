@@ -35,7 +35,6 @@ const MainLayout = ({ children }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const user = useSelector((state: RootState) => state.user.user); // Get user from Redux
-  console.log(user);
 
   const [localUser, setLocalUser] = useState(user);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);

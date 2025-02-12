@@ -20,7 +20,6 @@ const ReservationScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const route = useRoute();
   const { tableUid } = route.params || {}; // 從參數中獲取桌檯 UID
-  console.log(tableUid);
 
   const [poolTable, setPoolTable] = useState(null);
   const [totalAmount, setTotalAmount] = useState(200); // 預設金額 200 元

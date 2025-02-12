@@ -13,6 +13,7 @@ import { endGame, startGame } from '@/api/gameApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const ContactScreen = ({ navigation, route }) => {
   const { transaction } = route.params || {}; // 安全獲取 transaction
@@ -67,7 +68,7 @@ const ContactScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <View style={styles.timerSection}>
           <Text style={styles.price}>100元/小時</Text>
           <Text style={styles.timerText}>球局已進行</Text>
@@ -119,7 +120,7 @@ const ContactScreen = ({ navigation, route }) => {
         <TouchableOpacity style={styles.endButton} onPress={handleEndGame}>
           <Text style={styles.endButtonText}>結束球局</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
