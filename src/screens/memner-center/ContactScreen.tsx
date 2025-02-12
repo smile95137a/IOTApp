@@ -99,6 +99,9 @@ const ContactScreen = ({ navigation, route }) => {
             <Text style={styles.contactSubtitle}>
               機台操作問題，請聯繫{transaction?.vendorName}店長！
             </Text>
+            <Text style={styles.contactSubtitle}>
+              聯絡資訊{transaction?.contactInfo}
+            </Text>
           </View>
         </View>
 
