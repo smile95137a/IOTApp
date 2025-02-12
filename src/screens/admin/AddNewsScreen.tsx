@@ -46,7 +46,6 @@ const AddNewsScreen = () => {
       } else {
         savedNews = await createNews(newsData);
       }
-      console.log('HHHHHHHH', image);
       const savedNewsId = savedNews.data?.id;
       if (image && savedNewsId) {
         await uploadNewsImages(savedNewsId, image);
@@ -146,6 +145,12 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 15,
   },
   saveButtonText: { color: '#fff', fontSize: 18 },
 });

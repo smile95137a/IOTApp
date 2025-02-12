@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
+  Image,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,6 +15,7 @@ import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { deleteNewsById, fetchAllNews } from '@/api/admin/newsApi';
+import { getImageUrl } from '@/utils/ImageUtils';
 
 const NewsManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -89,6 +91,11 @@ const NewsManagementScreen = () => {
           renderItem={({ item }) => (
             <View style={styles.newsItem}>
               <View style={styles.newsInfo}>
+                <Image
+                  src={getImageUrl(item.imageUrl)}
+                  style={styles.newsImage}
+                  resizeMode="cover"
+                />
                 <Text style={styles.newsTitle}>{item.title}</Text>
                 <Text numberOfLines={2} style={styles.newsContent}>
                   {item.content}
@@ -151,6 +158,12 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 20,
+  },
+  newsImage: {
+    width: '100%',
+    height: 230,
+    borderRadius: 10,
+    marginBottom: 15,
   },
   newsItem: {
     backgroundColor: '#ffffff',

@@ -15,6 +15,7 @@ import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { deleteBanner, fetchAllBanners } from '@/api/admin/BannerApi';
+import { getImageUrl } from '@/utils/ImageUtils';
 
 const BannerManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -87,15 +88,11 @@ const BannerManagementScreen = () => {
           renderItem={({ item }) => (
             <View style={styles.bannerItem}>
               <Image
-                source={{ uri: item.imageUrl }}
+                src={getImageUrl(item.imageUrl)}
                 style={styles.bannerImage}
               />
               <View style={styles.bannerInfo}>
                 <Text style={styles.bannerText}>ID: {item.bannerId}</Text>
-                <Image
-                  source={{ uri: item.imageUrl }}
-                  style={styles.bannerImage}
-                />
               </View>
 
               <View style={styles.actions}>

@@ -4,6 +4,7 @@ import Header from '@/component/Header';
 import ImageCarousel from '@/component/ImageCarousel';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
+import { getImageUrl } from '@/utils/ImageUtils';
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -49,10 +50,7 @@ const NewsScreen = ({ navigation }: any) => {
       style={styles.newsItem}
       onPress={() => navigation.navigate('NewsDetailScreen', { news: item })}
     >
-      <Image
-        source={require('@/assets/iot-news.png')}
-        style={styles.newsImage}
-      />
+      <Image src={getImageUrl(item.imageUrl)} style={styles.newsImage} />
       <View style={styles.newsContent}>
         <Text style={styles.newsTitle}>{item.title}</Text>
         <Text style={styles.newsDescription} numberOfLines={2}>

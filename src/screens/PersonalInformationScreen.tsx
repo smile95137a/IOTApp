@@ -119,11 +119,11 @@ const PersonalInfoScreen = ({ route, navigation }: any) => {
       }
 
       console.log('[Register] 註冊成功:', data);
-      const userUUID = data.uid;
+      const userId = data.id;
 
       if (profileImage) {
         console.log('[Upload] 開始上傳頭像...');
-        const uploadSuccess = await uploadProfileImage(userUUID, profileImage);
+        const uploadSuccess = await uploadProfileImage(userId, profileImage);
         if (!uploadSuccess) {
           console.warn('[Upload] 頭像上傳失敗');
           Alert.alert('錯誤', '頭像上傳失敗，請稍後重試');

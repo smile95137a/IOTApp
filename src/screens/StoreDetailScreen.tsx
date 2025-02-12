@@ -16,12 +16,41 @@ import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import NumberFormatter from '@/component/NumberFormatter';
+import { getImageUrl } from '@/utils/ImageUtils';
 
 const StoreDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { store } = route.params;
   const [tables, setTables] = useState<any[]>([]);
+
+  const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
+  const weekdayTimes = store.pricingSchedules.filter((day) =>
+    weekdays.includes(day.dayOfWeek)
+  );
+
+  const formatTime = (time) =>
+    `${String(time).padStart(4, '0').slice(0, 2)}:${String(time)
+      .padStart(4, '0')
+      .slice(2, 4)}`;
+
+  const minRegularTime = Math.min(
+    ...weekdayTimes.map((day) =>
+      parseInt(day.regularStartTime.replace(':', ''))
+    )
+  );
+  const maxRegularTime = Math.max(
+    ...weekdayTimes.map((day) => parseInt(day.regularEndTime.replace(':', '')))
+  );
+  const minDiscountTime = Math.min(
+    ...weekdayTimes.map((day) =>
+      parseInt(day.discountStartTime.replace(':', ''))
+    )
+  );
+  const maxDiscountTime = Math.max(
+    ...weekdayTimes.map((day) => parseInt(day.discountEndTime.replace(':', '')))
+  );
 
   useEffect(() => {
     const loadTables = async () => {
@@ -133,10 +162,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
 
       {/* Store Details */}
       <View style={styles.storeDetails}>
-        <Image
-          source={require('@/assets/iot-login-logo.png')}
-          style={styles.storeImage}
-        />
+        <Image src={getImageUrl(store?.imgUrl)} style={styles.storeImage} />
         <View style={styles.storeInfo}>
           <Text style={styles.storeName}>{store.name}</Text>
           <Text style={styles.storeAddress}>{store.address}</Text>
@@ -154,25 +180,22 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         </View>
         <TouchableOpacity style={styles.pricingCard}>
           <Text style={styles.pricingAmount}>
-            <NumberFormatter number={store.regularRate} />
+            <NumberFormatter number={store.pricingSchedules[0].regularRate} />
             元/小時
           </Text>
           <Text style={styles.pricingDetails}>一般時段</Text>
           <Text style={styles.pricingDetails}>
-            {' '}
-            {store.regularDateRange}
-            {store.regularTimeRange}
+            {formatTime(minRegularTime)}~{formatTime(maxRegularTime)}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.pricingCard}>
           <Text style={styles.pricingAmount}>
-            <NumberFormatter number={store.discountRate} />
+            <NumberFormatter number={store.pricingSchedules[0].discountRate} />
             元/小時
           </Text>
           <Text style={styles.pricingDetails}>優惠時段</Text>
           <Text style={styles.pricingDetails}>
-            {store.discountDateRange}
-            {store.discountTimeRange}
+            {formatTime(minDiscountTime)}~{formatTime(maxDiscountTime)}
           </Text>
         </TouchableOpacity>
       </View>

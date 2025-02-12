@@ -1,6 +1,7 @@
 import { Banner, fetchAllBanners } from '@/api/bannerApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
+import { getImageUrl } from '@/utils/ImageUtils';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -41,8 +42,6 @@ const ImageCarousel = () => {
       try {
         const { success, data, message } = await fetchAllBanners();
         if (success) {
-          console.log('////////////', data[0].news);
-
           setBanners(data);
         } else {
           Alert.alert('錯誤', message || '無法載入資訊');
@@ -68,7 +67,7 @@ const ImageCarousel = () => {
         }
         style={styles.bannerItem}
       >
-        <Image source={bannerData[0].image} style={styles.bannerImage} />
+        <Image src={getImageUrl(item.imageUrl)} style={styles.bannerImage} />
       </TouchableOpacity>
     );
   };

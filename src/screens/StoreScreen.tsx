@@ -21,6 +21,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import * as Location from 'expo-location';
 import { findNearestStores } from '@/utils/LocationUtils';
+import { getImageUrl } from '@/utils/ImageUtils';
 
 const StoreScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -86,10 +87,7 @@ const StoreScreen = ({ navigation }: any) => {
         onPress={() => navigation.navigate('StoreDetail', { store: item })}
       >
         <View style={styles.storeImageContainer}>
-          <Image
-            source={require('@/assets/iot-login-logo.png')}
-            style={styles.storeImage}
-          />
+          <Image src={getImageUrl(item?.imgUrl)} style={styles.storeImage} />
         </View>
         <View style={styles.storeDetails}>
           <Text style={styles.storeName}>{item.name}</Text>

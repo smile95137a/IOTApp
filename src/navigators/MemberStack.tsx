@@ -27,6 +27,7 @@ import RechargeSuccess from '@/screens/memner-center/RechargeSuccess';
 import { clearUser, setUser } from '@/store/userSlice';
 import DepositHistoryScreen from '@/screens/memner-center/DepositHistoryScreen';
 import GameHistoryScreen from '@/screens/memner-center/GameHistoryScreen';
+import { getImageUrl } from '@/utils/ImageUtils';
 
 const Stack = createStackNavigator();
 
@@ -34,6 +35,8 @@ const MainLayout = ({ children }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const user = useSelector((state: RootState) => state.user.user); // Get user from Redux
+  console.log(user);
+
   const [localUser, setLocalUser] = useState(user);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   useEffect(() => {
@@ -41,6 +44,7 @@ const MainLayout = ({ children }) => {
       const getUserInfo = async () => {
         if (user) {
           setLocalUser(user);
+
           return;
         }
 
@@ -80,10 +84,7 @@ const MainLayout = ({ children }) => {
       {/* User Info */}
       <View style={styles.userInfoContainer}>
         <View style={styles.userInfoLeft}>
-          <Image
-            source={require('@/assets/iot-user.jpeg')}
-            style={styles.avatar}
-          />
+          <Image src={getImageUrl(localUser?.imgUrl)} style={styles.avatar} />
         </View>
         <View style={styles.userInfoRight}>
           <Text style={styles.userName}>{localUser?.name || ''}</Text>

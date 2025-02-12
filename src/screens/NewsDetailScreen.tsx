@@ -1,5 +1,6 @@
 import DateFormatter from '@/component/DateFormatter';
 import Header from '@/component/Header';
+import { getImageUrl } from '@/utils/ImageUtils';
 import React from 'react';
 import {
   View,
@@ -12,9 +13,7 @@ import {
 
 const NewsDetailScreen = ({ route, navigation }: any) => {
   const { news } = route.params;
-  const imageUrl = !!news.image
-    ? { uri: news.image }
-    : require('@/assets/iot-news.png');
+
   return (
     <SafeAreaView style={styles.container}>
       <Header
@@ -29,7 +28,11 @@ const NewsDetailScreen = ({ route, navigation }: any) => {
           <DateFormatter date={news.createdDate} format="YYYY.MM.DD" />
         </Text>
 
-        <Image source={imageUrl} style={styles.newsImage} resizeMode="cover" />
+        <Image
+          src={getImageUrl(news.imageUrl)}
+          style={styles.newsImage}
+          resizeMode="cover"
+        />
 
         <Text style={styles.newsContent}>{news.content}</Text>
       </ScrollView>

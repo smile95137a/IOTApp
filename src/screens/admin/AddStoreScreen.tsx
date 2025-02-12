@@ -7,15 +7,20 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
-import { createStore, updateStore } from '@/api/admin/storeApi';
+import {
+  createStore,
+  updateStore,
+  uploadStoreImages,
+} from '@/api/admin/storeApi';
 import { fetchAllVendors } from '@/api/admin/vendorApi';
 import { Picker } from '@react-native-picker/picker';
-
+import * as ImagePicker from 'expo-image-picker';
 const weekDays = [
   'monday',
   'tuesday',
@@ -34,8 +39,6 @@ const AddStoreScreen = () => {
   const store = route.params?.store || null;
   const isEditMode = !!store;
 
-  console.log('@@@@@@@', store);
-
   const [name, setName] = useState(store?.name || '');
   const [address, setAddress] = useState(store?.address || '');
   const [vendorId, setVendorId] = useState(
@@ -53,6 +56,7 @@ const AddStoreScreen = () => {
     store?.regularRate ? String(store.regularRate) : ''
   );
   const [vendors, setVendors] = useState([]);
+  const [image, setImage] = useState<any>(null);
 
   // 初始化價格排程（確保所有天都有完整數據）
   const [pricingSchedules, setPricingSchedules] = useState(
@@ -136,12 +140,15 @@ const AddStoreScreen = () => {
       dispatch(showLoading());
 
       let response;
-      console.log('@@@@@@@@@@@@@@@', storeData);
 
       if (isEditMode) {
         response = await updateStore(store.uid, storeData);
       } else {
         response = await createStore(storeData);
+      }
+      const savedNewsId = response.data?.id;
+      if (image && savedNewsId) {
+        await uploadStoreImages(savedNewsId, image);
       }
 
       dispatch(hideLoading());
@@ -156,6 +163,19 @@ const AddStoreScreen = () => {
     } catch (error) {
       dispatch(hideLoading());
       Alert.alert('錯誤', '發生錯誤，請稍後再試');
+    }
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      setImage(result.assets[0].uri);
     }
   };
 
@@ -282,7 +302,10 @@ const AddStoreScreen = () => {
           />
         </View>
       ))}
-
+      <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+        <Text style={styles.uploadButtonText}>上傳圖片</Text>
+      </TouchableOpacity>
+      {image && <Image source={{ uri: image }} style={styles.image} />}
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>
           {isEditMode ? '更新' : '提交'}
@@ -373,6 +396,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  uploadButton: {
+    backgroundColor: '#28a745',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  uploadButtonText: { color: '#fff', fontSize: 18 },
 });
 
 export default AddStoreScreen;

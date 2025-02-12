@@ -1,5 +1,11 @@
+import { fetchUserInfo } from '@/api/userApi';
 import Header from '@/component/Header';
 import { logOut } from '@/store/authSlice';
+import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { RootState } from '@/store/store';
+import { setUser } from '@/store/userSlice';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -45,6 +51,7 @@ const menuItems = [
     icon: 'admin-panel-settings',
     color: '#3F51B5',
     screen: 'Admin',
+    authRoleId: [1, 2],
   },
   {
     id: 5,
@@ -56,8 +63,42 @@ const menuItems = [
 ];
 
 const MemberCenterScreen = ({ navigation }: any) => {
-  const dispatch = useDispatch(); // Get Redux dispatch function
-  const user = useSelector((state: any) => state.auth.user);
+  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user.user); // Get user from Redux
+
+  const [localUser, setLocalUser] = useState(user);
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+  useEffect(() => {
+    if (isLoggedIn) {
+      const getUserInfo = async () => {
+        if (user) {
+          setLocalUser(user);
+
+          return;
+        }
+
+        try {
+          dispatch(showLoading());
+          const response = await fetchUserInfo();
+          dispatch(hideLoading());
+
+          if (response.success) {
+            console.log('[User Info] API Response:', response.data);
+            dispatch(setUser(response.data));
+            setLocalUser(response.data);
+          } else {
+            console.warn('[User Info] Fetch failed:', response.message);
+          }
+        } catch (error) {
+          dispatch(hideLoading());
+
+          console.error('[User Info] Fetch error:', error);
+        }
+      };
+
+      getUserInfo();
+    }
+  }, [user]);
 
   const handleLogOut = () => {
     dispatch(logOut());
@@ -67,31 +108,43 @@ const MemberCenterScreen = ({ navigation }: any) => {
     });
   };
 
-  const renderMenuItem = ({ item }: { item: any }) => (
-    <TouchableOpacity
-      style={styles.menuItem}
-      onPress={() => {
-        if (item.screen === 'LoginScreen') {
-          handleLogOut();
-        } else {
-          navigation.navigate(item.screen);
-        }
-      }}
-    >
-      <View style={styles.menuItemLeft}>
-        <Icon name={item.icon} size={24} color={item.color || '#333'} />
-        <Text style={styles.menuItemText}>{item.title}</Text>
-      </View>
-      <View style={styles.menuItemRight}>
-        {item.badge && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{item.badge}</Text>
-          </View>
-        )}
-        <Icon name="chevron-right" size={24} color="#999" />
-      </View>
-    </TouchableOpacity>
-  );
+  const renderMenuItem = ({ item }: { item: any }) => {
+    // 取得當前選單項目的權限角色
+    const authRoleId = item.authRoleId;
+
+    // 取得使用者的角色 ID 陣列
+    const roleIds = localUser?.roles?.map((role) => role.id) || [];
+
+    // 若該選單項目需要特定權限，但當前使用者沒有，則不顯示
+    if (authRoleId && !authRoleId.some((id) => roleIds.includes(id))) {
+      return null;
+    }
+    return (
+      <TouchableOpacity
+        style={styles.menuItem}
+        onPress={() => {
+          if (item.screen === 'LoginScreen') {
+            handleLogOut();
+          } else {
+            navigation.navigate(item.screen);
+          }
+        }}
+      >
+        <View style={styles.menuItemLeft}>
+          <Icon name={item.icon} size={24} color={item.color || '#333'} />
+          <Text style={styles.menuItemText}>{item.title}</Text>
+        </View>
+        <View style={styles.menuItemRight}>
+          {item.badge && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{item.badge}</Text>
+            </View>
+          )}
+          <Icon name="chevron-right" size={24} color="#999" />
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <>

@@ -24,7 +24,6 @@ const AddBannerScreen = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const banner = route.params?.banner || {};
-  console.log('@@@@@@@@@@@@@@@@', banner);
 
   const [status, setStatus] = useState(banner.status || 'AVAILABLE');
   const [newsId, setNewsId] = useState(banner?.news?.id || '');

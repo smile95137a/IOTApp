@@ -10,7 +10,7 @@ import {
 
 const PaymentSuccessScreen = ({ navigation }) => {
   const route = useRoute();
-  const { totalAmount, data } = route.params || {}; // 獲取付款金額
+  const { totalAmount, showStartGame, data } = route.params || {}; // 獲取付款金額
 
   const handleStartGame = () => {
     navigation.navigate('Contact', { transaction: data });
@@ -26,12 +26,15 @@ const PaymentSuccessScreen = ({ navigation }) => {
           <Text>${~~totalAmount} 元</Text>
         </Text>
       </View>
-      <TouchableOpacity
-        style={styles.startGameButton}
-        onPress={handleStartGame}
-      >
-        <Text style={styles.startGameText}>開始球局</Text>
-      </TouchableOpacity>
+
+      {showStartGame && (
+        <TouchableOpacity
+          style={styles.startGameButton}
+          onPress={handleStartGame}
+        >
+          <Text style={styles.startGameText}>開始球局</Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };

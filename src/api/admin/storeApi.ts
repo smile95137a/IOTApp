@@ -119,3 +119,37 @@ export const deleteStore = async (uid: string): Promise<ApiResponse<void>> => {
     throw error;
   }
 };
+
+/**
+ * 上傳新聞圖片
+ */
+export const uploadStoreImages = async (
+  userId: number,
+  imageUri: string
+): Promise<boolean> => {
+  const url = `${API_BASE_URL}${basePath}/${userId}/upload-image`;
+  console.log(
+    `[Store API] Uploading profile image for user: ${userId} to ${url}`
+  );
+
+  try {
+    const formData = new FormData();
+    formData.append('file', {
+      uri: imageUri,
+      name: `news_${userId}.jpg`,
+      type: 'image/jpeg',
+    });
+
+    console.log(`[Store API] FormData:`, formData);
+
+    const response = await api.post(url, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    console.log(`[Store API] Profile Image Upload Success:`, response.data);
+    return response.status === 200;
+  } catch (error) {
+    console.error(`[Store API] Error uploading profile image:`, error);
+    return false;
+  }
+};
