@@ -34,6 +34,13 @@ const EditMemberScreen = ({ route, navigation }) => {
   const handleSave = async () => {
     try {
       dispatch(showLoading());
+      console.log('@@@@@', {
+        id: member.id,
+        name,
+        phoneNumber: phone,
+        email,
+      });
+
       const { success, message } = await updateUser({
         id: member.id,
         name,

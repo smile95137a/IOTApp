@@ -15,24 +15,25 @@ import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { createVendor, updateVendor } from '@/api/admin/vendorApi';
-import { fetchAllStores } from '@/api/admin/storeApi'; // 取得店家列表的 API
-import Checkbox from 'expo-checkbox'; // 選擇店家用的 Checkbox
+import { fetchAllStores } from '@/api/admin/storeApi';
+import { fetchAllUsers } from '@/api/admin/adminUserApi';
+import { Picker } from '@react-native-picker/picker';
 
 const AddVendorScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
 
-  const vendor = route.params?.vendor || null; // 檢查是否有傳入 vendor，若無則為新增模式
+  const vendor = route.params?.vendor || null;
+
+  console.log('232323232@@@', vendor);
 
   const [name, setName] = useState(vendor?.name || '');
   const [contactInfo, setContactInfo] = useState(vendor?.contactInfo || '');
-  const [stores, setStores] = useState([]); // API 回傳的店家列表
-  const [selectedStores, setSelectedStores] = useState(
-    vendor?.stores?.map((store) => store.id) || []
-  ); // 預先填充已關聯的店家 ID
+  const [stores, setStores] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(`${vendor?.userId}` || '');
 
-  // 取得 `stores` 列表
   useEffect(() => {
     const loadStores = async () => {
       try {
@@ -41,7 +42,7 @@ const AddVendorScreen = () => {
         dispatch(hideLoading());
 
         if (response.success) {
-          setStores(response.data); // 存入店家列表
+          setStores(response.data);
         } else {
           Alert.alert('錯誤', '無法獲取店家列表');
         }
@@ -51,21 +52,41 @@ const AddVendorScreen = () => {
       }
     };
 
+    const loadUsers = async () => {
+      try {
+        dispatch(showLoading());
+        const response = await fetchAllUsers();
+        dispatch(hideLoading());
+
+        if (response.success) {
+          console.log('原始使用者資料:', response.data); // 確認 API 回傳的資料格式
+
+          // 過濾 roles 陣列中包含 roleId 為 1 或 2 的使用者
+          const filteredUsers = response.data.filter((user) => {
+            console.log(`使用者 ${user.name} 的角色:`, user.roles); // 確認 roles 陣列內容
+            return user.roles.some((role) => {
+              return role.id === 1 || role.id === 2;
+            });
+          });
+
+          console.log('過濾後的使用者:', filteredUsers); // 確認篩選後的結果
+          setUsers(filteredUsers);
+        } else {
+          Alert.alert('錯誤', '無法獲取使用者列表');
+        }
+      } catch (error) {
+        dispatch(hideLoading());
+        console.error('獲取使用者時發生錯誤:', error);
+        Alert.alert('錯誤', '獲取使用者失敗，請稍後再試');
+      }
+    };
+
     loadStores();
+    loadUsers();
   }, []);
 
-  // 切換 `Checkbox` 狀態
-  const toggleStoreSelection = (storeId) => {
-    setSelectedStores((prevSelected) =>
-      prevSelected.includes(storeId)
-        ? prevSelected.filter((id) => id !== storeId)
-        : [...prevSelected, storeId]
-    );
-  };
-
-  // 提交 `Vendor` 資料
   const handleSubmit = async () => {
-    if (!name.trim() || !contactInfo.trim()) {
+    if (!name.trim() || !contactInfo.trim() || !selectedUser) {
       Alert.alert('錯誤', '請填寫完整資訊');
       return;
     }
@@ -73,20 +94,16 @@ const AddVendorScreen = () => {
     const vendorData = {
       name,
       contactInfo,
+      userId: selectedUser,
     };
 
     try {
       dispatch(showLoading());
-      console.log('提交資料:', vendorData);
-
       let response;
+
       if (vendor?.id) {
-        // **編輯模式**
         response = await updateVendor(vendor.uid, vendorData);
       } else {
-        // **新增模式**
-        console.log(vendorData);
-
         response = await createVendor(vendorData);
       }
 
@@ -112,7 +129,6 @@ const AddVendorScreen = () => {
           {vendor?.id ? '編輯廠商' : '新增廠商'}
         </Text>
 
-        {/* 廠商名稱 */}
         <TextInput
           style={styles.input}
           placeholder="廠商名稱"
@@ -123,7 +139,6 @@ const AddVendorScreen = () => {
           maxLength={50}
         />
 
-        {/* 聯絡資訊 */}
         <TextInput
           style={styles.input}
           placeholder="聯絡資訊 (電子郵件或電話)"
@@ -135,7 +150,21 @@ const AddVendorScreen = () => {
           maxLength={100}
         />
 
-        {/* 提交按鈕 */}
+        <Picker
+          selectedValue={selectedUser}
+          onValueChange={setSelectedUser}
+          style={styles.picker}
+        >
+          <Picker.Item label="請選擇使用者" value="" />
+          {users.map((user) => (
+            <Picker.Item
+              key={user.id}
+              label={user.name}
+              value={String(user.id)}
+            />
+          ))}
+        </Picker>
+
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>
             {vendor?.id ? '更新' : '提交'}
@@ -157,12 +186,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
-  subHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
-  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -171,20 +194,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 15,
   },
-  noStoresText: {
-    fontSize: 16,
-    color: 'gray',
-    marginBottom: 10,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  checkbox: {
-    marginRight: 10,
-    width: 20,
-    height: 20,
+  picker: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 15,
   },
   submitButton: {
     backgroundColor: '#007bff',

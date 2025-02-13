@@ -2,6 +2,7 @@ import { fetchAllUsers } from '@/api/admin/adminUserApi';
 import Header from '@/component/Header';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
+import { getImageUrl } from '@/utils/ImageUtils';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -34,6 +35,8 @@ const MemberManagementScreen = ({ navigation }) => {
       const { success, data, message } = await fetchAllUsers();
       dispatch(hideLoading());
       if (success) {
+        console.log('@@@@@@', data);
+
         setUserList(data);
       } else {
         Alert.alert('錯誤', message || '無法載入資訊');
@@ -88,7 +91,7 @@ const MemberManagementScreen = ({ navigation }) => {
                 }
               >
                 <Image
-                  source={require('@/assets/iot-user-logo.jpg')}
+                  src={getImageUrl(item?.imgUrl)}
                   style={styles.memberImage}
                 />
                 <View style={styles.memberInfo}>
