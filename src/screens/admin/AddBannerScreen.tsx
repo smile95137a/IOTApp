@@ -19,6 +19,7 @@ import {
   updateBanner,
   uploadBannerImage,
 } from '@/api/admin/BannerApi';
+import { ScrollView } from 'react-native-gesture-handler';
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -91,7 +92,7 @@ const AddBannerScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <Text style={styles.header}>{banner.id ? '編輯橫幅' : '新增橫幅'}</Text>
         <Picker
           selectedValue={String(newsId)}
@@ -123,7 +124,7 @@ const AddBannerScreen = () => {
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>保存</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
