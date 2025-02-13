@@ -1,4 +1,9 @@
-import { News, fetchAllNews, fetchNewsByStatus } from '@/api/newsApi';
+import {
+  News,
+  fetchAllNews,
+  fetchNewsByStatus,
+  fetchNewsByStatusNoUser,
+} from '@/api/newsApi';
 import DateFormatter from '@/component/DateFormatter';
 import Header from '@/component/Header';
 import ImageCarousel from '@/component/ImageCarousel';
@@ -27,7 +32,9 @@ const NewsScreen = ({ navigation }: any) => {
     const loadNews = async () => {
       try {
         dispatch(showLoading());
-        const { success, data, message } = await fetchNewsByStatus('AVAILABLE');
+        const { success, data, message } = await fetchNewsByStatusNoUser(
+          'AVAILABLE'
+        );
         dispatch(hideLoading());
         if (success) {
           setNewsData(data);
