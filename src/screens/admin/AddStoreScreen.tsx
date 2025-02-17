@@ -21,6 +21,8 @@ import {
 import { fetchAllVendors } from '@/api/admin/vendorApi';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
+import MapView from 'react-native-maps';
+
 const weekDays = [
   'monday',
   'tuesday',
@@ -57,6 +59,10 @@ const AddStoreScreen = () => {
   );
   const [vendors, setVendors] = useState([]);
   const [image, setImage] = useState<any>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(store ? { latitude: store.lat, longitude: store.lon } : null);
 
   // 初始化價格排程（確保所有天都有完整數據）
   const [pricingSchedules, setPricingSchedules] = useState(
@@ -178,6 +184,27 @@ const AddStoreScreen = () => {
       setImage(result.assets[0].uri);
     }
   };
+  const handleMapPress = (event) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    Alert.alert(
+      '確認選擇',
+      `你選擇的位置：\n緯度: ${latitude}\n經度: ${longitude}`,
+      [
+        {
+          text: '取消',
+          style: 'cancel',
+        },
+        {
+          text: '確定',
+          onPress: () => {
+            setSelectedLocation({ latitude, longitude });
+            setLat(String(latitude));
+            setLon(String(longitude));
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -210,12 +237,25 @@ const AddStoreScreen = () => {
           />
         ))}
       </Picker>
+      <View style={styles.mapContainer}>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: selectedLocation?.latitude || 25.033964, // 台北101為預設
+            longitude: selectedLocation?.longitude || 121.564468,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
+          onPress={handleMapPress}
+        ></MapView>
+      </View>
       <TextInput
         style={styles.input}
         placeholder="緯度 (Lat)"
         keyboardType="numeric"
         value={lat}
         onChangeText={setLat}
+        readOnly={true}
       />
       <TextInput
         style={styles.input}
@@ -223,6 +263,7 @@ const AddStoreScreen = () => {
         keyboardType="numeric"
         value={lon}
         onChangeText={setLon}
+        readOnly={true}
       />
       <TextInput
         style={styles.input}
@@ -410,6 +451,19 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   uploadButtonText: { color: '#fff', fontSize: 18 },
+  mapContainer: {
+    width: '100%',
+    height: 300,
+    borderRadius: 8,
+    overflow: 'hidden',
+    marginBottom: 15,
+    borderColor: '#ccc',
+    borderWidth: 1,
+  },
+
+  map: {
+    flex: 1,
+  },
 });
 
 export default AddStoreScreen;
