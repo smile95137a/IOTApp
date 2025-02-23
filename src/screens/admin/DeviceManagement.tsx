@@ -1,4 +1,5 @@
 import Header from '@/component/Header';
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
   View,
@@ -11,13 +12,16 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons'; // 添加箭頭圖標
 
 const DeviceManagementScreen = ({ navigation }) => {
+  const route = useRoute();
+  const storeId = route.params?.storeId;
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.fixedImageContainer}>
           <Image
             source={require('@/assets/iot-threeBall.png')}
-            resizeMode="contain" // Adjust to fit properly
+            resizeMode="contain"
           />
         </View>
         {/* Header */}
@@ -27,7 +31,9 @@ const DeviceManagementScreen = ({ navigation }) => {
         <View style={styles.mainContainer}>
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('EnvironmentManagement')}
+            onPress={() =>
+              navigation.navigate('EnvironmentManagement', { storeId })
+            }
           >
             <View style={styles.cardContent}>
               <Image
@@ -47,7 +53,9 @@ const DeviceManagementScreen = ({ navigation }) => {
           {/* 桌檯管理卡片 */}
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('TableManagement')}
+            onPress={() =>
+              navigation.navigate('DeviceTableManagement', { storeId })
+            }
           >
             <View style={styles.cardContent}>
               <Image

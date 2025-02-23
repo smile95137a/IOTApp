@@ -1,10 +1,14 @@
 import {
   createStoreEquipment,
+  createTableEquipment,
   fetchAllStoreEquipments,
   fetchStoreEquipmentById,
   fetchStoreEquipmentsByStoreId,
+  fetchTableEquipmentsByTableId,
   updateStoreEquipment,
   updateStoreEquipmentStatus,
+  updateTableEquipment,
+  updateTableEquipmentStatus,
 } from '@/api/admin/equipmentApi';
 import { fetchAllVendors } from '@/api/admin/vendorApi';
 import Header from '@/component/Header';
@@ -28,9 +32,10 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 
-const EnvironmentManagementScreen = ({ navigation }) => {
+const EnvironmentTableManagementScreen = ({ navigation }) => {
   const route = useRoute();
-  const storeId = route.params?.storeId;
+  const tableId = route.params?.tableId;
+
   const dispatch = useDispatch<AppDispatch>();
 
   const [equipments, setEquipments] = useState([]);
@@ -110,12 +115,12 @@ const EnvironmentManagementScreen = ({ navigation }) => {
           autoStopTime,
           description: equipmentDescription || '',
         };
-        response = await createStoreEquipment({
+        response = await createTableEquipment({
           name: newEquipment.name,
           autoStartTime: newEquipment.autoStartTime,
           autoStopTime: newEquipment.autoStopTime,
           description: newEquipment.description || '',
-          store: { id: storeId },
+          poolTable: { id: tableId },
         });
       } else {
         const editEquipment = {
@@ -124,12 +129,12 @@ const EnvironmentManagementScreen = ({ navigation }) => {
           autoStopTime,
           description: equipmentDescription || '',
         };
-        response = await updateStoreEquipment(equipmentId, {
+        response = await updateTableEquipment(equipmentId, {
           name: editEquipment.name,
           autoStartTime: editEquipment.autoStartTime,
           autoStopTime: editEquipment.autoStopTime,
           description: editEquipment.description || '',
-          store: { id: storeId },
+          poolTable: { id: tableId },
         });
       }
 
@@ -157,7 +162,7 @@ const EnvironmentManagementScreen = ({ navigation }) => {
   const loadVendors = async () => {
     try {
       dispatch(showLoading());
-      const response = await fetchStoreEquipmentsByStoreId(storeId);
+      const response = await fetchTableEquipmentsByTableId(tableId);
       dispatch(hideLoading());
 
       if (response.success) {
@@ -169,7 +174,6 @@ const EnvironmentManagementScreen = ({ navigation }) => {
           description: item.description || '',
           enabled: !!item.status,
         }));
-        console.log('OOOOOOOO', formattedData);
 
         setEquipments(formattedData);
       } else {
@@ -195,7 +199,7 @@ const EnvironmentManagementScreen = ({ navigation }) => {
 
     try {
       dispatch(showLoading());
-      await updateStoreEquipmentStatus(equipmentId, newStatus);
+      await updateTableEquipmentStatus(equipmentId, newStatus);
       dispatch(hideLoading());
       loadVendors();
       console.log('設備狀態更新成功！');
@@ -493,4 +497,4 @@ const styles = StyleSheet.create({
   confirmButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
 });
 
-export default EnvironmentManagementScreen;
+export default EnvironmentTableManagementScreen;

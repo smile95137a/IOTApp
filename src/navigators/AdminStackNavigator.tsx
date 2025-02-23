@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
 } from '@react-navigation/drawer';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AdminDashboardScreen from '@/screens/admin/AdminDashboardScreen';
 import ReportSummaryScreen from '@/screens/admin/ReportSummaryScreen';
@@ -31,79 +31,119 @@ import AddBannerScreen from '@/screens/admin/AddBannerScreen';
 import AddNewsScreen from '@/screens/admin/AddNewsScreen';
 import BannerManagementScreen from '@/screens/admin/BannerManagementScreen';
 import NewsManagementScreen from '@/screens/admin/NewsManagementScreen';
+import { fetchAllBanners } from '@/api/bannerApi';
+import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { fetchAllMenus } from '@/api/admin/menuApi';
+import EquipmentManagementScreen from '@/screens/admin/EquipmentManagementScreen';
+import StoreEquipmentEdit from '@/screens/admin/StoreEquipmentEdit';
+import DeviceTableManagementScreen from '@/screens/admin/DeviceTableManagementScreen';
+import EnvironmentTableManagementScreen from '@/screens/admin/EnvironmentTableManagementScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
+const menuItems = {
+  dashboard: {
+    stack: 'DashboardStack',
+    screen: 'Dashboard',
+    icon: 'view-dashboard',
+    label: '管理首頁',
+  },
+  member: {
+    stack: 'MemberManagementStack',
+    screen: 'MemberManagement',
+    icon: 'account-group',
+    label: '會員管理',
+  },
+  vendor: {
+    stack: 'VendorManagementStack',
+    screen: 'VendorManagement',
+    icon: 'account-group',
+    label: '廠商管理',
+  },
+  store: {
+    stack: 'StoreManagementStack',
+    screen: 'StoreManagement',
+    icon: 'storefront',
+    label: '店家管理',
+  },
+  poolTable: {
+    stack: 'PoolTableManagementStack',
+    screen: 'PoolTableManagement',
+    icon: 'table-furniture',
+    label: '桌檯管理',
+  },
+  banner: {
+    stack: 'BannerManagementStack',
+    screen: 'BannerManagement',
+    icon: 'image',
+    label: 'Banner 管理',
+  },
+  news: {
+    stack: 'NewsManagementStack',
+    screen: 'NewsManagement',
+    icon: 'newspaper',
+    label: '最新消息管理',
+  },
+  equipment: {
+    stack: 'EquipmentStack',
+    screen: 'EquipmentManagement',
+    icon: 'newspaper',
+    label: '設備管理',
+  },
+};
+
 const CustomDrawerContent = (props: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigation = useNavigation();
+  const [menus, setMenus] = useState([]); // 改變名稱以符合邏輯
+
+  const loadMenus = async () => {
+    try {
+      dispatch(showLoading());
+      const { success, data, message } = await fetchAllMenus();
+      dispatch(hideLoading());
+      if (success) {
+        setMenus(data);
+      } else {
+        Alert.alert('錯誤', message || '無法載入選單');
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+    }
+  };
+
+  useEffect(() => {
+    loadMenus();
+  }, []);
+
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.drawerItemsContainer}>
-        <TouchableOpacity
-          style={styles.drawerItemColumn}
-          onPress={() =>
-            props.navigation.navigate('MemberManagementStack', {
-              screen: 'MemberManagement',
-            })
-          }
-        >
-          <Icon name="account-group" size={24} color="#333" />
-          <Text style={styles.drawerItemText}>會員管理</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.drawerItemColumn}
-          onPress={() =>
-            props.navigation.navigate('VendorManagementStack', {
-              screen: 'VendorManagement',
-            })
-          }
-        >
-          <Icon name="account-group" size={24} color="#333" />
-          <Text style={styles.drawerItemText}>廠商管理</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.drawerItemColumn}
-          onPress={() =>
-            props.navigation.navigate('StoreManagementStack', {
-              screen: 'StoreManagement',
-            })
-          }
-        >
-          <Icon name="storefront" size={24} color="#333" />
-          <Text style={styles.drawerItemText}>店家管理</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.drawerItemColumn}
-          onPress={() =>
-            props.navigation.navigate('PoolTableManagementStack', {
-              screen: 'PoolTableManagement',
-            })
-          }
-        >
-          <Icon name="table-furniture" size={24} color="#333" />
-          <Text style={styles.drawerItemText}>桌檯管理</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.drawerItemColumn}
-          onPress={() =>
-            props.navigation.navigate('BannerManagementStack', {
-              screen: 'BannerManagement',
-            })
-          }
-        >
-          <Icon name="image" size={24} color="#333" />
-          <Text style={styles.drawerItemText}>Banner 管理</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.drawerItemColumn}
-          onPress={() =>
-            props.navigation.navigate('NewsManagementStack', {
-              screen: 'NewsManagement',
-            })
-          }
-        >
-          <Icon name="newspaper" size={24} color="#333" />
-          <Text style={styles.drawerItemText}>最新消息管理</Text>
-        </TouchableOpacity>
+        {menus.map((menu) => {
+          const key = menu.url;
+          const menuItem = menuItems[key]; // 取得 menuItems 內的物件
+
+          if (!menuItem) return null; // 若沒有找到對應的 key，就不顯示這個項目
+
+          return (
+            <TouchableOpacity
+              key={menu.id}
+              style={styles.drawerItemColumn}
+              onPress={() =>
+                props.navigation.navigate(menuItem.stack, {
+                  screen: menuItem.screen,
+                })
+              }
+            >
+              <Icon name={menuItem.icon} size={24} color="#333" />
+              <Text style={styles.drawerItemText}>{menuItem.label}</Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {/* Logout Button */}
@@ -121,7 +161,7 @@ const CustomDrawerContent = (props: any) => {
 const AdminDrawerNavigator = () => {
   return (
     <Drawer.Navigator
-      initialRouteName="AdminDashboard"
+      initialRouteName="DashboardStack"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         drawerStyle: {
@@ -131,9 +171,9 @@ const AdminDrawerNavigator = () => {
       }}
     >
       <Drawer.Screen
-        name="AdminDashboard"
-        component={AdminDashboardScreen}
-        options={{ title: '管理首頁' }}
+        name="DashboardStack"
+        component={DashboardStack}
+        options={{ headerShown: false, title: '管理首頁' }}
       />
       <Drawer.Screen
         name="MemberManagementStack"
@@ -165,6 +205,11 @@ const AdminDrawerNavigator = () => {
         component={NewsStack}
         options={{ headerShown: false, title: '最新消息管理' }}
       />
+      <Drawer.Screen
+        name="EquipmentStack"
+        component={EquipmentStack}
+        options={{ headerShown: false, title: '設備管理' }}
+      />
     </Drawer.Navigator>
   );
 };
@@ -180,6 +225,18 @@ const VendorStack = () => {
         name="AddVendor"
         component={AddVendorScreen}
         options={{ title: '新增廠商' }} // 讓返回按鈕可用
+      />
+    </Stack.Navigator>
+  );
+};
+
+const DashboardStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Dashboard"
+        component={AdminDashboardScreen}
+        options={{ title: '店家管理', headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -276,7 +333,43 @@ const NewsStack = () => {
     </Stack.Navigator>
   );
 };
+const EquipmentStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="EquipmentManagement"
+        component={EquipmentManagementScreen}
+        options={{ title: '設備管理', headerShown: false }} // 隱藏 Header
+      />
+      <Stack.Screen
+        name="StoreEquipmentEdit"
+        component={StoreEquipmentEdit}
+        options={{ title: '店家設備管理' }}
+      />
+      <Stack.Screen
+        name="DeviceManagement"
+        component={DeviceManagementScreen}
+        options={{ title: '店家設備管理', headerShown: false }}
+      />
 
+      <Stack.Screen
+        name="EnvironmentManagement"
+        component={EnvironmentManagementScreen}
+        options={{ title: '店家設備管理', headerShown: false }}
+      />
+      <Stack.Screen
+        name="DeviceTableManagement"
+        component={DeviceTableManagementScreen}
+        options={{ title: '店家設備管理', headerShown: false }}
+      />
+      <Stack.Screen
+        name="EnvironmentTableManagement"
+        component={EnvironmentTableManagementScreen}
+        options={{ title: '店家設備管理', headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
 const styles = StyleSheet.create({
   drawerItemsContainer: {
     paddingHorizontal: 20,

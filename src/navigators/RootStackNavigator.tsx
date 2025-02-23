@@ -19,7 +19,6 @@ const RootStackNavigator = () => {
 
   return (
     <>
-      <LoadingMask />
       <Tab.Navigator
         screenOptions={{
           headerShown: false,

@@ -17,7 +17,7 @@ import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { getImageUrl } from '@/utils/ImageUtils';
 
-const StoreManagementScreen = () => {
+const EquipmentManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const [stores, setStores] = useState<Store[]>([]);
@@ -48,105 +48,49 @@ const StoreManagementScreen = () => {
     }, [])
   );
 
-  // 刪除店家
-  const handleDelete = (storeUid, storeName) => {
-    Alert.alert('確認刪除', `確定要刪除店家「${storeName}」嗎？`, [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '刪除',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            dispatch(showLoading());
-            const response = await deleteStore(storeUid);
-            dispatch(hideLoading());
-
-            if (response.success) {
-              Alert.alert('成功', '店家已刪除');
-              loadStores(); // 重新載入列表
-            } else {
-              Alert.alert('錯誤', response.message || '刪除失敗');
-            }
-          } catch (error) {
-            dispatch(hideLoading());
-            Alert.alert('錯誤', '刪除失敗，請稍後再試');
-          }
-        },
-      },
-    ]);
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>店家管理</Text>
+          <Text style={styles.header}>設備管理</Text>
         </View>
 
         {/* 店家列表 */}
         <FlatList
-          data={[...stores, { uid: 'addButton', isAddButton: true }]}
+          data={[...stores]}
           keyExtractor={(item) => item.uid}
           contentContainerStyle={styles.listContainer}
           windowSize={1}
           numColumns={2}
-          renderItem={({ item }) =>
-            item.isAddButton ? (
-              <TouchableOpacity
-                style={styles.addTableButton}
-                onPress={() => navigation.navigate('AddStore')}
-              >
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              key={item.uid}
+              style={styles.card}
+              onPress={() =>
+                navigation.navigate('DeviceManagement', { storeId: item.id })
+              }
+            >
+              <View style={styles.row}>
+                {/* 左側圖標 */}
+
                 <Image
-                  source={require('@/assets/iot-login-logo.png')}
-                  style={styles.tableIcon}
-                />
-                <Text style={styles.addTableText}>新增店家 +</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity key={item.uid} style={styles.card}>
-                <View style={styles.row}>
-                  {/* 左側圖標 */}
-
-                  <Image
-                    source={
-                      item?.imgUrl
-                        ? { uri: getImageUrl(item.imgUrl) }
-                        : require('@/assets/iot-user-logo.jpg')
-                    }
-                    style={styles.cardIcon}
-                  />
-                  {/* 右側信息 */}
-
-                  <View style={{ flex: 1, flexDirection: 'column' }}>
-                    <Text style={styles.cardTitle}>{item.name}</Text>
-                    <Text style={styles.cardSubtitle}>{item.address}</Text>
-                  </View>
-                </View>
-                {/* 設定按鈕 */}
-                <TouchableOpacity
-                  style={styles.settingsButton}
-                  onPress={() =>
-                    navigation.navigate('AddStore', { store: item })
+                  source={
+                    item?.imgUrl
+                      ? { uri: getImageUrl(item.imgUrl) }
+                      : require('@/assets/iot-user-logo.jpg')
                   }
-                >
-                  <Text style={styles.settingsButtonText}>編輯</Text>
-                  <Icon
-                    name="chevron-right"
-                    size={20}
-                    color="#FFF"
-                    style={styles.arrowIcon}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleDelete(item.uid, item.name)}
-                >
-                  <Icon name="delete" size={20} color="#dc3545" />
-                </TouchableOpacity>
-              </TouchableOpacity>
-            )
-          }
+                  style={styles.cardIcon}
+                />
+                {/* 右側信息 */}
+
+                <View style={{ flex: 1, flexDirection: 'column' }}>
+                  <Text style={styles.cardTitle}>{item.name}</Text>
+                  <Text style={styles.cardSubtitle}>{item.address}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
         />
       </View>
     </SafeAreaView>
@@ -298,4 +242,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StoreManagementScreen;
+export default EquipmentManagementScreen;

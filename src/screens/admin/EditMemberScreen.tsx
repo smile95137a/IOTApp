@@ -20,10 +20,14 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import * as ImagePicker from 'expo-image-picker';
 import { useDispatch } from 'react-redux';
+import { getImageUrl } from '@/utils/ImageUtils';
 
 const EditMemberScreen = ({ route, navigation }) => {
   const { member } = route.params;
+  console.log('@@@@@@@', member);
+
   const dispatch = useDispatch<AppDispatch>();
   const [name, setName] = useState(member.name);
   const [phone, setPhone] = useState(member.phoneNumber);
@@ -31,45 +35,49 @@ const EditMemberScreen = ({ route, navigation }) => {
   const [profileImage, setProfileImage] = useState(
     'https://via.placeholder.com/100' // 默認圖片
   );
-  const handleSave = async () => {
-    try {
-      dispatch(showLoading());
-      console.log('@@@@@', {
-        id: member.id,
-        name,
-        phoneNumber: phone,
-        email,
-      });
 
-      const { success, message } = await updateUser({
-        id: member.id,
-        name,
-        phoneNumber: phone,
-        email,
-      });
-      dispatch(hideLoading());
-      if (success) {
-        Alert.alert('保存成功', '會員資料已更新', [
-          {
-            text: '確定',
-            onPress: () => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'MemberManagement' }],
-              });
-            },
-          },
-        ]);
-      } else {
-        Alert.alert('錯誤', message || '無法載入資訊');
-      }
-    } catch (error) {
-      dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      Alert.alert('錯誤', errorMessage);
-    }
-  };
+  const memberRoles = member.roles.map((x) => x.roleName);
+  const isBlackMember = memberRoles.includes('ROLE_BLACKLIST');
+
+  // const handleSave = async () => {
+  //   try {
+  //     dispatch(showLoading());
+  //     console.log('@@@@@', {
+  //       id: member.id,
+  //       name,
+  //       phoneNumber: phone,
+  //       email,
+  //     });
+
+  //     const { success, message } = await updateUser({
+  //       id: member.id,
+  //       name,
+  //       phoneNumber: phone,
+  //       email,
+  //     });
+  //     dispatch(hideLoading());
+  //     if (success) {
+  //       Alert.alert('保存成功', '會員資料已更新', [
+  //         {
+  //           text: '確定',
+  //           onPress: () => {
+  //             navigation.reset({
+  //               index: 0,
+  //               routes: [{ name: 'MemberManagement' }],
+  //             });
+  //           },
+  //         },
+  //       ]);
+  //     } else {
+  //       Alert.alert('錯誤', message || '無法載入資訊');
+  //     }
+  //   } catch (error) {
+  //     dispatch(hideLoading());
+  //     const errorMessage =
+  //       error instanceof Error ? error.message : String(error);
+  //     Alert.alert('錯誤', errorMessage);
+  //   }
+  // };
 
   const handleBlacklist = async () => {
     try {
@@ -163,6 +171,48 @@ const EditMemberScreen = ({ route, navigation }) => {
     ]);
   };
 
+  const handleUploadPhoto = async () => {
+    let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permission.status !== 'granted') {
+      Alert.alert('權限不足', '請允許存取相簿權限');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri);
+    }
+  };
+
+  // 拍照
+  const handleTakePhoto = async () => {
+    let permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (permission.status !== 'granted') {
+      Alert.alert('權限不足', '請允許存取相機權限');
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri);
+    }
+  };
+
+  const getGender = (gender) => {
+    return gender === 'female' ? '女' : gender === 'male' ? '男' : '未知';
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -181,64 +231,56 @@ const EditMemberScreen = ({ route, navigation }) => {
             {/* 頭像組件 */}
             <View style={styles.profileImageContainer}>
               <Image
-                source={require('@/assets/iot-user-logo.jpg')}
+                source={
+                  member?.userImg
+                    ? { uri: getImageUrl(member.userImg) }
+                    : require('@/assets/iot-user-logo.jpg')
+                }
                 style={styles.profileImage}
               />
-              <TouchableOpacity style={styles.editIcon}>
-                <Icon name="camera-alt" size={20} color="#4285F4" />
-              </TouchableOpacity>
             </View>
 
             {/* 會員資料表單 */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>姓名：</Text>
-              <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-              />
+              <Text style={styles.inputVal}>{name}</Text>
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>性別：</Text>
-              <TextInput
-                style={styles.input}
-                value={member.gender}
-                editable={false}
-              />
+              <Text style={styles.inputVal}>{getGender(member.gender)}</Text>
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>手機：</Text>
-              <TextInput
-                style={styles.input}
-                value={phone}
-                onChangeText={setPhone}
-              />
+              <Text style={styles.inputVal}>
+                {member.countryCode}
+                {member.phoneNumber}
+              </Text>
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email：</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-              />
+              <Text style={styles.inputVal}>{email}</Text>
             </View>
 
             {/* 按鈕組 */}
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <TouchableOpacity style={styles.saveButton}>
               <Text style={styles.saveButtonText}>確定</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.blacklistButton}
-              onPress={handleBlacklist}
-            >
-              <Text style={styles.blacklistText}>加入黑名單</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.unblacklistButton}
-              onPress={handleUnblacklist}
-            >
-              <Text style={styles.unblacklistText}>移出黑名單</Text>
-            </TouchableOpacity>
+
+            {isBlackMember ? (
+              <TouchableOpacity
+                style={styles.unblacklistButton}
+                onPress={handleUnblacklist}
+              >
+                <Text style={styles.unblacklistText}>移出黑名單</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.blacklistButton}
+                onPress={handleBlacklist}
+              >
+                <Text style={styles.blacklistText}>加入黑名單</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={styles.deleteButton}
               onPress={handleDeleteUser}
@@ -315,6 +357,12 @@ const styles = StyleSheet.create({
     flex: 2,
     marginLeft: 10,
   },
+  inputVal: {
+    borderRadius: 5,
+    padding: 10,
+    flex: 2,
+    marginLeft: 10,
+  },
   saveButton: {
     backgroundColor: '#FF7043',
     padding: 15,
@@ -346,6 +394,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 10,
   },
+  unblacklistText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
   deleteButton: {
     backgroundColor: '#D32F2F',
     padding: 15,

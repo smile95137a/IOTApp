@@ -66,7 +66,7 @@ export const registerUser = async (
  */
 export const updateUser = async (
   userReq: Partial<User>
-): Promise<ApiResponse<User>> => {
+): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/updateUser`;
   console.log(`[User API] Updating user at ${url} with data:`, userReq);
 

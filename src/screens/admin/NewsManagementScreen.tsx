@@ -50,7 +50,7 @@ const NewsManagementScreen = () => {
   );
 
   const handleDelete = async (id: string) => {
-    Alert.alert('刪除確認', '確定要刪除此新聞嗎？', [
+    Alert.alert('刪除確認', '確定要刪除此最新消息嗎？', [
       { text: '取消', style: 'cancel' },
       {
         text: '確定',
@@ -83,7 +83,6 @@ const NewsManagementScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* 新聞列表 */}
         <FlatList
           data={newsList}
           keyExtractor={(item) => item.id.toString()}

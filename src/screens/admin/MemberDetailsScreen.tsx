@@ -1,5 +1,6 @@
 import Header from '@/component/Header';
 import NumberFormatter from '@/component/NumberFormatter';
+import { getImageUrl } from '@/utils/ImageUtils';
 import React from 'react';
 import {
   View,
@@ -12,6 +13,9 @@ import {
 
 const MemberDetailsScreen = ({ route, navigation }) => {
   const { member } = route.params;
+  const getGender = (gender) => {
+    return gender === 'female' ? '女' : gender === 'male' ? '男' : '未知';
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -29,12 +33,18 @@ const MemberDetailsScreen = ({ route, navigation }) => {
         <View style={styles.mainContainer}>
           <View style={styles.profileContainer}>
             <Image
-              source={require('@/assets/iot-user-logo.jpg')}
+              source={
+                member?.userImg
+                  ? { uri: getImageUrl(member.userImg) }
+                  : require('@/assets/iot-user-logo.jpg')
+              }
               style={styles.profileImage}
             />
             <Text style={styles.memberName}>{member.name}</Text>
           </View>
-          <Text style={styles.memberInfo}>性別：{member.gender}</Text>
+          <Text style={styles.memberInfo}>
+            性別：{getGender(member.gender)}
+          </Text>
           <Text style={styles.memberInfo}>
             手機： {member.countryCode}
             {member.phoneNumber}

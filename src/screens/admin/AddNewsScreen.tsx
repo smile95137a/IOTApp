@@ -17,6 +17,7 @@ import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { createNews, updateNews, uploadNewsImages } from '@/api/admin/newsApi';
 import { Picker } from '@react-native-picker/picker';
+import { getImageUrl } from '@/utils/ImageUtils';
 const AddNewsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -76,7 +77,9 @@ const AddNewsScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          <Text style={styles.header}>{news.id ? '編輯新聞' : '新增新聞'}</Text>
+          <Text style={styles.header}>
+            {news.id ? '編輯最新消息' : '新增最新消息'}
+          </Text>
           <TextInput
             placeholder="標題"
             value={title}
@@ -98,10 +101,30 @@ const AddNewsScreen = () => {
             <Picker.Item label="可用" value="AVAILABLE" />
             <Picker.Item label="不可用" value="UNAVAILABLE" />
           </Picker>
+          {news.id ? (
+            <>
+              {image ? (
+                <>
+                  <Image source={{ uri: image }} style={styles.image} />
+                </>
+              ) : (
+                <>
+                  <Image
+                    src={getImageUrl(news.imageUrl)}
+                    style={styles.image}
+                    resizeMode="cover"
+                  />
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              {image && <Image source={{ uri: image }} style={styles.image} />}
+            </>
+          )}
           <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
             <Text style={styles.uploadButtonText}>上傳圖片</Text>
           </TouchableOpacity>
-          {image && <Image source={{ uri: image }} style={styles.image} />}
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.saveButtonText}>保存</Text>
           </TouchableOpacity>

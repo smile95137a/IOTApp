@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
+  Image,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -84,65 +85,56 @@ const PoolTableManagementScreen = () => {
         {/* Header */}
         <View style={styles.headerContainer}>
           <Text style={styles.header}>桌檯管理</Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('AddPoolTable')}
-            style={styles.addButton}
-          >
-            <Icon name="plus" size={28} color="#fff" />
-          </TouchableOpacity>
         </View>
 
         {/* 桌檯列表 */}
         <FlatList
-          data={poolTables}
-          keyExtractor={(item) => item.uid}
+          data={[...poolTables, { uid: 'addButton', isAddButton: true }]}
+          keyExtractor={(item) => item.uid.toString()}
           contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) => (
-            <View style={styles.poolTableItem}>
-              {/* 桌檯資訊 */}
+          windowSize={1}
+          numColumns={2}
+          renderItem={({ item }) =>
+            item.isAddButton ? (
               <TouchableOpacity
-                style={styles.poolTableInfoContainer}
+                style={styles.addTableButton}
+                onPress={() => navigation.navigate('AddPoolTable')}
+              >
+                <Image
+                  source={require('@/assets/iot-home1.png')}
+                  style={styles.tableIcon}
+                />
+                <Text style={styles.addTableText}>新增桌台 +</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                key={item.uid}
+                style={styles.card}
                 onPress={() =>
                   navigation.navigate('AddPoolTable', { poolTable: item })
                 }
               >
-                <View style={styles.poolTableInfo}>
-                  <Text style={styles.poolTableName}>
-                    桌檯號碼: {item.tableNumber}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.poolTableStatus,
-                      item.status === '可用'
-                        ? styles.statusAvailable
-                        : styles.statusUnavailable,
-                    ]}
-                  >
-                    狀態: {item.status}
-                  </Text>
+                <View style={styles.row}>
+                  {/* 圖標和桌台名稱在同一行 */}
+                  <Image
+                    source={require('@/assets/iot-home1.png')} // 替換為桌台圖標路徑
+                    style={styles.cardIcon}
+                  />
+                  <Text style={styles.cardTitle}>{item.tableNumber}</Text>
                 </View>
+                {/* 設定按鈕 */}
+                <TouchableOpacity style={styles.settingsButton}>
+                  <Text style={styles.settingsButtonText}>設定</Text>
+                  <Icon
+                    name="chevron-right"
+                    size={20}
+                    color="#FFF"
+                    style={styles.arrowIcon}
+                  />
+                </TouchableOpacity>
               </TouchableOpacity>
-
-              {/* 編輯 & 刪除按鈕 */}
-              <View style={styles.actionButtons}>
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('AddPoolTable', { poolTable: item })
-                  }
-                  style={styles.iconButton}
-                >
-                  <Icon name="pencil" size={24} color="#007bff" />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => handleDelete(item.uid, item.tableNumber)}
-                  style={styles.iconButton}
-                >
-                  <Icon name="trash-can-outline" size={24} color="#dc3545" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
+            )
+          }
         />
       </View>
     </SafeAreaView>
@@ -186,17 +178,9 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   poolTableItem: {
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
     flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
   },
   poolTableInfoContainer: {
     flex: 1,
@@ -226,6 +210,66 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 8,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cardIcon: {
+    width: 40,
+    height: 40,
+    marginRight: 10, // 圖標和桌台名稱間距
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  settingsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end', // 將按鈕內容靠右
+  },
+  settingsButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  arrowIcon: {
+    marginLeft: 5, // 與文字保持距離
+  },
+  addTableButton: {
+    backgroundColor: '#8FDC96',
+    width: '49%',
+    height: 128,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+  },
+  tableIcon: {
+    width: 50,
+    height: 50,
+    marginBottom: 10,
+  },
+  addTableText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  card: {
+    backgroundColor: '#2C9252',
+    width: '48%',
+    height: 128,
+    aspectRatio: 1.5,
+    borderRadius: 20,
+    padding: 10,
+    justifyContent: 'space-between',
+    marginBottom: 4,
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    marginHorizontal: '1%',
   },
 });
 

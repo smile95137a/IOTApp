@@ -33,7 +33,26 @@ export const fetchAllPoolTables = async (): Promise<
     throw error;
   }
 };
+export const fetchPoolTablesByStoreId = async (
+  storeId: number
+): Promise<ApiResponse<PoolTable[]>> => {
+  const url = `${API_BASE_URL}${basePath}/store/${storeId}`;
+  console.log(
+    `[PoolTable API] Fetching pool tables for store ID ${storeId} from: ${url}`
+  );
 
+  try {
+    const response = await api.get(url);
+    console.log(`[PoolTable API] Response:`, response.data);
+    return response.data;
+  } catch (error) {
+    console.error(
+      `[PoolTable API] Error fetching pool tables for store:`,
+      error
+    );
+    throw error;
+  }
+};
 /**
  * 根據 UID 取得桌台資訊
  * @param uid 桌台 UID

@@ -4,8 +4,8 @@ import { logOut } from '@/store/authSlice';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { RootState } from '@/store/store';
 import { setUser } from '@/store/userSlice';
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,32 +22,37 @@ import { useDispatch, useSelector } from 'react-redux';
 const menuItems = [
   {
     id: 1,
-    title: '訊息通知',
-    icon: 'chat',
-    // badge: 3,
-    screen: 'Notifications',
+    title: '編輯會員',
+    icon: 'edit',
+    screen: 'EditPersonalInfo',
   },
   {
     id: 2,
+    title: '訊息通知',
+    icon: 'chat',
+    screen: 'Notifications',
+  },
+  {
+    id: 3,
     title: '消費記錄',
     icon: 'calendar-today',
     screen: 'TransactionHistory',
   },
   {
-    id: 22,
+    id: 4,
     title: '儲值記錄',
     icon: 'history',
     screen: 'DepositHistory',
   },
   {
-    id: 322,
+    id: 5,
     title: '開局記錄',
     icon: 'history',
     screen: 'GameHistory',
   },
-  { id: 3, title: '儲值', icon: 'attach-money', screen: 'Recharge' },
+  { id: 6, title: '儲值', icon: 'attach-money', screen: 'Recharge' },
   {
-    id: 4,
+    id: 7,
     title: '前往後台',
     icon: 'admin-panel-settings',
     color: '#3F51B5',
@@ -54,7 +60,7 @@ const menuItems = [
     authRoleId: [1, 2],
   },
   {
-    id: 5,
+    id: 8,
     title: '登出',
     icon: 'logout',
     color: '#F44336',
@@ -68,38 +74,34 @@ const MemberCenterScreen = ({ navigation }: any) => {
 
   const [localUser, setLocalUser] = useState(user);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
-  useEffect(() => {
-    if (isLoggedIn) {
-      const getUserInfo = async () => {
-        if (user) {
-          setLocalUser(user);
 
-          return;
-        }
+  useFocusEffect(
+    useCallback(() => {
+      if (isLoggedIn) {
+        const getUserInfo = async () => {
+          try {
+            dispatch(showLoading());
+            const response = await fetchUserInfo();
+            dispatch(hideLoading());
 
-        try {
-          dispatch(showLoading());
-          const response = await fetchUserInfo();
-          dispatch(hideLoading());
+            if (response.success) {
+              console.log('[User Info] API Response:', response.data);
+              dispatch(setUser(response.data));
+              setLocalUser(response.data);
+            } else {
+              console.warn('[User Info] Fetch failed:', response.message);
+            }
+          } catch (error) {
+            dispatch(hideLoading());
 
-          if (response.success) {
-            console.log('[User Info] API Response:', response.data);
-            dispatch(setUser(response.data));
-            setLocalUser(response.data);
-          } else {
-            console.warn('[User Info] Fetch failed:', response.message);
+            console.error('[User Info] Fetch error:', error);
           }
-        } catch (error) {
-          dispatch(hideLoading());
+        };
 
-          console.error('[User Info] Fetch error:', error);
-        }
-      };
-
-      getUserInfo();
-    }
-  }, [user]);
-
+        getUserInfo();
+      }
+    }, [])
+  );
   const handleLogOut = () => {
     dispatch(logOut());
     navigation.reset({

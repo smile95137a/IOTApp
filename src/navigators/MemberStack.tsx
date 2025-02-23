@@ -28,6 +28,7 @@ import { clearUser, setUser } from '@/store/userSlice';
 import DepositHistoryScreen from '@/screens/memner-center/DepositHistoryScreen';
 import GameHistoryScreen from '@/screens/memner-center/GameHistoryScreen';
 import { getImageUrl } from '@/utils/ImageUtils';
+import EditPersonalInfoScreen from '@/screens/memner-center/EditPersonalInfoScreen';
 
 const Stack = createStackNavigator();
 
@@ -122,6 +123,13 @@ const MemberStack = () => {
         {(props) => (
           <MainLayout>
             <MemberCenterScreen {...props} />
+          </MainLayout>
+        )}
+      </Stack.Screen>
+      <Stack.Screen name="EditPersonalInfo">
+        {(props) => (
+          <MainLayout>
+            <EditPersonalInfoScreen {...props} />
           </MainLayout>
         )}
       </Stack.Screen>

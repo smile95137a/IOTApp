@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
+  Image,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -85,54 +86,74 @@ const VendorManagementScreen = () => {
         {/* Header */}
         <View style={styles.headerContainer}>
           <Text style={styles.header}>廠商管理</Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('AddVendor')}
-            style={styles.addButton}
-          >
-            <Icon name="plus" size={28} color="#fff" />
-          </TouchableOpacity>
         </View>
 
         {/* 廠商列表 */}
         <FlatList
-          data={vendors}
+          data={[...vendors, { uid: 'addButton', isAddButton: true }]}
           keyExtractor={(item) => item.uid}
           contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) => (
-            <View style={styles.vendorItem}>
-              {/* 廠商資訊 */}
+          windowSize={1}
+          numColumns={2}
+          renderItem={({ item }) =>
+            item.isAddButton ? (
               <TouchableOpacity
-                style={styles.vendorInfoContainer}
-                onPress={() =>
-                  navigation.navigate('AddVendor', { vendor: item })
-                }
+                style={styles.addTableButton}
+                onPress={() => navigation.navigate('AddVendor')}
               >
-                <View style={styles.vendorInfo}>
-                  <Text style={styles.vendorName}>{item.name}</Text>
-                  <Text style={styles.vendorContact}>{item.contactInfo}</Text>
-                </View>
+                <Image
+                  source={require('@/assets/iot-login-logo.png')}
+                  style={styles.tableIcon}
+                />
+                <Text style={styles.addTableText}>新增廠商 +</Text>
               </TouchableOpacity>
+            ) : (
+              <TouchableOpacity key={item.uid} style={styles.card}>
+                <View style={styles.row}>
+                  {/* 左側圖標 */}
+                  <Image
+                    source={require('@/assets/iot-login-logo.png')}
+                    style={styles.cardIcon}
+                  />
 
-              {/* 編輯 & 刪除按鈕 */}
-              <View style={styles.actionButtons}>
+                  {/* 右側信息 */}
+
+                  <View style={{ flex: 1, flexDirection: 'column' }}>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+                    <Text style={styles.cardSubtitle}>{item.contactInfo}</Text>
+                  </View>
+                </View>
+                {/* 設定按鈕 */}
                 <TouchableOpacity
+                  style={styles.settingsButton}
                   onPress={() =>
                     navigation.navigate('AddVendor', { vendor: item })
                   }
-                  style={styles.iconButton}
                 >
-                  <Icon name="pencil" size={24} color="#007bff" />
+                  <Text style={styles.settingsButtonText}>編輯</Text>
+                  <Icon
+                    name="chevron-right"
+                    size={20}
+                    color="#FFF"
+                    style={styles.arrowIcon}
+                  />
                 </TouchableOpacity>
 
                 <TouchableOpacity
+                  style={styles.deleteButton}
                   onPress={() => handleDelete(item.uid, item.name)}
-                  style={styles.iconButton}
                 >
-                  <Icon name="trash-can-outline" size={24} color="#dc3545" />
+                  <Text style={styles.deleteButtonText}>刪除</Text>
+                  <Icon
+                    name="delete"
+                    size={20}
+                    color="#f23857"
+                    style={styles.deleteButtonIcon}
+                  />
                 </TouchableOpacity>
-              </View>
-            </View>
-          )}
+              </TouchableOpacity>
+            )
+          }
         />
       </View>
     </SafeAreaView>
@@ -172,9 +193,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
   },
-  listContainer: {
-    paddingBottom: 20,
-  },
+
   vendorItem: {
     backgroundColor: '#ffffff',
     padding: 16,
@@ -210,6 +229,114 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 8,
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  poolTableItem: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  poolTableInfoContainer: {
+    flex: 1,
+  },
+  poolTableInfo: {
+    flex: 1,
+  },
+  poolTableName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+  },
+  poolTableStatus: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop: 4,
+  },
+  statusAvailable: {
+    color: 'green',
+  },
+  statusUnavailable: {
+    color: 'red',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cardIcon: {
+    width: 40,
+    height: 40,
+    marginRight: 10, // 圖標和桌台名稱間距
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  settingsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end', // 將按鈕內容靠右
+  },
+  settingsButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  arrowIcon: {
+    marginLeft: 5, // 與文字保持距離
+  },
+  addTableButton: {
+    backgroundColor: '#c7dbee',
+    width: '49%',
+    height: 128,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+  },
+  tableIcon: {
+    width: 50,
+    height: 50,
+    marginBottom: 10,
+  },
+  addTableText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  card: {
+    backgroundColor: '#4787C7',
+    width: '48%',
+    height: 128,
+    aspectRatio: 1.5,
+    borderRadius: 20,
+    padding: 10,
+    justifyContent: 'space-between',
+    marginBottom: 4,
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    marginHorizontal: '1%',
+  },
+  cardSubtitle: {
+    fontSize: 14,
+    color: '#DDD',
+    marginTop: 4,
+  },
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end', // 將按鈕內容靠右
+  },
+  deleteButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#f23857',
+  },
+  deleteButtonIcon: {
+    marginLeft: 5, // 與文字保持距離
   },
 });
 

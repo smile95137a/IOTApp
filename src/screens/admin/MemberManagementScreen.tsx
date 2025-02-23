@@ -91,9 +91,14 @@ const MemberManagementScreen = ({ navigation }) => {
                 }
               >
                 <Image
-                  src={getImageUrl(item?.imgUrl)}
+                  source={
+                    item?.userImg
+                      ? { uri: getImageUrl(item.userImg) }
+                      : require('@/assets/iot-user-logo.jpg')
+                  }
                   style={styles.memberImage}
                 />
+
                 <View style={styles.memberInfo}>
                   <Text style={styles.memberName}>{item.name}</Text>
                   <Text style={styles.memberPhone}>

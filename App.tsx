@@ -9,6 +9,7 @@ import 'react-native-reanimated';
 export default function App() {
   return (
     <Provider store={store}>
+      <LoadingMask />
       <NavigationContainer>
         <RootStackNavigator />
       </NavigationContainer>

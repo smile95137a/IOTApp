@@ -20,6 +20,7 @@ import {
   uploadBannerImage,
 } from '@/api/admin/BannerApi';
 import { ScrollView } from 'react-native-gesture-handler';
+import { getImageUrl } from '@/utils/ImageUtils';
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -30,6 +31,7 @@ const AddBannerScreen = () => {
   const [newsId, setNewsId] = useState(banner?.news?.id || '');
   const [image, setImage] = useState(null);
   const [newsList, setNewsList] = useState([]);
+  console.log(banner);
 
   useEffect(() => {
     const loadNews = async () => {
@@ -93,13 +95,15 @@ const AddBannerScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
-        <Text style={styles.header}>{banner.id ? '編輯橫幅' : '新增橫幅'}</Text>
+        <Text style={styles.header}>
+          {banner.bannerId ? '編輯Banner' : '新增Banner'}
+        </Text>
         <Picker
           selectedValue={String(newsId)}
           onValueChange={(itemValue) => setNewsId(itemValue)}
           style={styles.picker}
         >
-          <Picker.Item label="選擇新聞" value="" />
+          <Picker.Item label="選擇連結最新消息" value="" />
           {newsList.map((news) => (
             <Picker.Item
               key={news.id}
@@ -117,10 +121,29 @@ const AddBannerScreen = () => {
           <Picker.Item label="啟用" value="AVAILABLE" />
           <Picker.Item label="停用" value="UNAVAILABLE" />
         </Picker>
+        {banner.bannerId ? (
+          <>
+            {image ? (
+              <>
+                <Image source={{ uri: image }} style={styles.image} />
+              </>
+            ) : (
+              <>
+                <Image
+                  src={getImageUrl(banner.imageUrl)}
+                  style={styles.newsImage}
+                  resizeMode="cover"
+                />
+              </>
+            )}
+          </>
+        ) : (
+          <>{image && <Image source={{ uri: image }} style={styles.image} />}</>
+        )}
+
         <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
           <Text style={styles.uploadButtonText}>上傳圖片</Text>
         </TouchableOpacity>
-        {image && <Image source={{ uri: image }} style={styles.image} />}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>保存</Text>
         </TouchableOpacity>
@@ -157,6 +180,12 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  newsImage: {
+    width: '100%',
+    height: 230,
+    borderRadius: 10,
+    marginBottom: 15,
   },
   saveButtonText: { color: '#fff', fontSize: 18 },
 });
