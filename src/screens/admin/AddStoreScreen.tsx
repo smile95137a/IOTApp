@@ -8,8 +8,6 @@ import {
   Alert,
   ScrollView,
   Image,
-  Modal,
-  Switch,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
@@ -24,7 +22,6 @@ import { fetchAllVendors } from '@/api/admin/vendorApi';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import MapView from 'react-native-maps';
-import { createStoreEquipment } from '@/api/admin/equipmentApi';
 
 const weekDays = [
   'monday',
@@ -43,13 +40,6 @@ const AddStoreScreen = () => {
 
   const store = route.params?.store || null;
   const isEditMode = !!store;
-  const [equipments, setEquipments] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [equipmentName, setEquipmentName] = useState('');
-  const [autoStartTime, setAutoStartTime] = useState('');
-  const [autoStopTime, setAutoStopTime] = useState('');
-  const [equipmentDescription, setEquipmentDescription] = useState('');
-  const [editingEquipmentIndex, setEditingEquipmentIndex] = useState(null);
 
   const [name, setName] = useState(store?.name || '');
   const [address, setAddress] = useState(store?.address || '');
@@ -161,23 +151,6 @@ const AddStoreScreen = () => {
         response = await updateStore(store.uid, storeData);
       } else {
         response = await createStore(storeData);
-        if (response?.data?.id) {
-          const storeId = response.data.id;
-
-          // **使用 Promise.all 來處理設備批量新增**
-          await Promise.all(
-            equipments.map(async (equipment) => {
-              await createStoreEquipment({
-                name: equipment.name,
-                autoStartTime: equipment.autoStartTime,
-                autoStopTime: equipment.autoStopTime,
-                description: equipment.description || '',
-                enabled: equipment.enabled,
-                store: { id: storeId },
-              });
-            })
-          );
-        }
       }
       const savedNewsId = response.data?.id;
       if (image && savedNewsId) {
@@ -232,66 +205,6 @@ const AddStoreScreen = () => {
       ]
     );
   };
-  const handleEditEquipment = (index) => {
-    const equipment = equipments[index];
-    setEquipmentName(equipment.name);
-    setAutoStartTime(equipment.autoStartTime);
-    setAutoStopTime(equipment.autoStopTime);
-    setEquipmentDescription(equipment.description);
-    setEditingEquipmentIndex(index);
-    setModalVisible(true);
-  };
-
-  const handleDeleteEquipment = (index) => {
-    Alert.alert('確認刪除', '確定要刪除此設備嗎？', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '刪除',
-        onPress: () => {
-          const updatedEquipments = equipments.filter((_, i) => i !== index);
-          setEquipments(updatedEquipments);
-        },
-        style: 'destructive',
-      },
-    ]);
-  };
-
-  const handleAddOrUpdateEquipment = () => {
-    if (
-      !equipmentName.trim() ||
-      !autoStartTime.trim() ||
-      !autoStopTime.trim()
-    ) {
-      Alert.alert('錯誤', '請填寫完整設備資訊');
-      return;
-    }
-
-    const newEquipment = {
-      name: equipmentName,
-      autoStartTime,
-      autoStopTime,
-      description: equipmentDescription || '',
-      enabled: true,
-    };
-
-    if (editingEquipmentIndex !== null) {
-      // 編輯模式
-      const updatedEquipments = [...equipments];
-      updatedEquipments[editingEquipmentIndex] = newEquipment;
-      setEquipments(updatedEquipments);
-    } else {
-      // 新增模式
-      setEquipments([...equipments, newEquipment]);
-    }
-
-    // 清空欄位 & 關閉 Modal
-    setEquipmentName('');
-    setAutoStartTime('');
-    setAutoStopTime('');
-    setEquipmentDescription('');
-    setEditingEquipmentIndex(null);
-    setModalVisible(false);
-  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -339,6 +252,7 @@ const AddStoreScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="緯度 (Lat)"
+        keyboardType="numeric"
         value={lat}
         onChangeText={setLat}
         readOnly={true}
@@ -346,6 +260,7 @@ const AddStoreScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="經度 (Lon)"
+        keyboardType="numeric"
         value={lon}
         onChangeText={setLon}
         readOnly={true}
@@ -428,91 +343,6 @@ const AddStoreScreen = () => {
           />
         </View>
       ))}
-      {/* Modal 彈窗 */}
-      <Modal animationType="slide" transparent={true} visible={modalVisible}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>新增設備</Text>
-            <Text style={styles.modalLabel}>設備名稱</Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="設備名稱"
-              value={equipmentName}
-              onChangeText={setEquipmentName}
-            />
-            <Text style={styles.modalLabel}>自動開始時間</Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="自動開始時間 (HH:mm)"
-              value={autoStartTime}
-              onChangeText={setAutoStartTime}
-            />
-            <Text style={styles.modalLabel}>自動結束時間</Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="自動結束時間 (HH:mm)"
-              value={autoStopTime}
-              onChangeText={setAutoStopTime}
-            />
-            <Text style={styles.modalLabel}>設備描述</Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="設備描述 (可選)"
-              value={equipmentDescription}
-              onChangeText={setEquipmentDescription}
-            />
-
-            <View style={styles.modalButtonContainer}>
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.cancelButtonText}>取消</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.confirmButton}
-                onPress={handleAddOrUpdateEquipment}
-              >
-                <Text style={styles.confirmButtonText}>確定</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.addButtonText}>新增設備</Text>
-      </TouchableOpacity>
-
-      {/* 顯示設備列表 */}
-      {equipments.map((equipment, index) => (
-        <View key={index} style={styles.equipmentItem}>
-          <TouchableOpacity onPress={() => handleEditEquipment(index)}>
-            <Text style={styles.equipmentText}>
-              {equipment.name} ({equipment.autoStartTime} -{' '}
-              {equipment.autoStopTime})
-            </Text>
-          </TouchableOpacity>
-          <View style={{ flexDirection: 'row' }}>
-            <Switch
-              value={equipment.enabled}
-              onValueChange={(newValue) => {
-                const updatedEquipments = [...equipments];
-                updatedEquipments[index].enabled = newValue;
-                setEquipments(updatedEquipments);
-              }}
-            />
-            <TouchableOpacity onPress={() => handleDeleteEquipment(index)}>
-              <Text style={styles.deleteButtonText}>刪除</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      ))}
-
       <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
         <Text style={styles.uploadButtonText}>上傳圖片</Text>
       </TouchableOpacity>
@@ -633,95 +463,6 @@ const styles = StyleSheet.create({
 
   map: {
     flex: 1,
-  },
-  equipmentInputContainer: { marginBottom: 20 },
-  addButton: {
-    backgroundColor: '#28a745',
-    padding: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  addButtonText: { color: 'white', fontSize: 16 },
-  equipmentItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  equipmentText: { fontSize: 16 },
-
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 半透明背景
-  },
-  modalContent: {
-    width: '90%',
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-    color: '#333',
-  },
-
-  modalLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  modalInput: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 10,
-    backgroundColor: '#f9f9f9',
-  },
-  modalButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 15,
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: 'gray',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginRight: 5,
-  },
-  cancelButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  confirmButton: {
-    flex: 1,
-    backgroundColor: '#28a745',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginLeft: 5,
-  },
-  confirmButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 
