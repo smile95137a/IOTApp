@@ -41,6 +41,9 @@ import EquipmentManagementScreen from '@/screens/admin/EquipmentManagementScreen
 import StoreEquipmentEdit from '@/screens/admin/StoreEquipmentEdit';
 import DeviceTableManagementScreen from '@/screens/admin/DeviceTableManagementScreen';
 import EnvironmentTableManagementScreen from '@/screens/admin/EnvironmentTableManagementScreen';
+import ReportVendorScreen from '@/screens/admin/ReportVendorScreen';
+import ReportStoreScreen from '@/screens/admin/ReportStoreScreen';
+import ReportDetailScreen from '@/screens/admin/ReportDetailScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -90,8 +93,14 @@ const menuItems = {
   equipment: {
     stack: 'EquipmentStack',
     screen: 'EquipmentManagement',
-    icon: 'newspaper',
+    icon: 'wrench',
     label: '設備管理',
+  },
+  report: {
+    stack: 'ReportStack',
+    screen: '',
+    icon: 'chart-bar',
+    label: '報表管理',
   },
 };
 
@@ -104,9 +113,11 @@ const CustomDrawerContent = (props: any) => {
     try {
       dispatch(showLoading());
       const { success, data, message } = await fetchAllMenus();
+
       dispatch(hideLoading());
       if (success) {
-        setMenus(data);
+        const sortedMenus = data.sort((a, b) => a.menuOrder - b.menuOrder);
+        setMenus(sortedMenus);
       } else {
         Alert.alert('錯誤', message || '無法載入選單');
       }
@@ -208,6 +219,11 @@ const AdminDrawerNavigator = () => {
       <Drawer.Screen
         name="EquipmentStack"
         component={EquipmentStack}
+        options={{ headerShown: false, title: '設備管理' }}
+      />
+      <Drawer.Screen
+        name="ReportStack"
+        component={ReportStack}
         options={{ headerShown: false, title: '設備管理' }}
       />
     </Drawer.Navigator>
@@ -370,6 +386,37 @@ const EquipmentStack = () => {
     </Stack.Navigator>
   );
 };
+
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+
+const ReportStack = () => {
+  const user = useSelector((state: RootState) => state.user);
+  const isAdmin = user.user?.roles?.map((x) => x.id).includes(1);
+
+  return (
+    <Stack.Navigator>
+      {isAdmin && (
+        <Stack.Screen
+          name="ReportVendor"
+          component={ReportVendorScreen}
+          options={{ title: '報表總覽', headerShown: false }}
+        />
+      )}
+      <Stack.Screen
+        name="ReportStore"
+        component={ReportStoreScreen}
+        options={{ title: '報表總覽', headerShown: false }}
+      />
+      <Stack.Screen
+        name="ReportDetail"
+        component={ReportDetailScreen}
+        options={{ title: '報表詳情' }} // 讓返回按鈕可用
+      />
+    </Stack.Navigator>
+  );
+};
+
 const styles = StyleSheet.create({
   drawerItemsContainer: {
     paddingHorizontal: 20,

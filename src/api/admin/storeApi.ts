@@ -153,3 +153,18 @@ export const uploadStoreImages = async (
     return false;
   }
 };
+export const fetchStoresByVendorId = async (
+  vendorId: number
+): Promise<ApiResponse<Store[]>> => {
+  const url = `${API_BASE_URL}${basePath}/${vendorId}/stores`;
+  console.log(`[Store API] Fetching stores by vendor ID: ${url}`);
+
+  try {
+    const response = await api.get(url);
+    console.log(`[Store API] Response:`, response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`[Store API] Error fetching stores by vendor ID:`, error);
+    throw error;
+  }
+};

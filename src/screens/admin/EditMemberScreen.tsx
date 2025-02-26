@@ -7,7 +7,7 @@ import {
 import Header from '@/component/Header';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -18,11 +18,14 @@ import {
   Image,
   ScrollView,
   SafeAreaView,
+  FlatList,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { useDispatch } from 'react-redux';
 import { getImageUrl } from '@/utils/ImageUtils';
+import { fetchAllRoles } from '@/api/admin/roleApi';
+import CheckBox from 'expo-checkbox';
 
 const EditMemberScreen = ({ route, navigation }) => {
   const { member } = route.params;
@@ -32,52 +35,80 @@ const EditMemberScreen = ({ route, navigation }) => {
   const [name, setName] = useState(member.name);
   const [phone, setPhone] = useState(member.phoneNumber);
   const [email, setEmail] = useState(member.email);
-  const [profileImage, setProfileImage] = useState(
-    'https://via.placeholder.com/100' // 默認圖片
-  );
+  const [roles, setRoles] = useState([]);
 
   const memberRoles = member.roles.map((x) => x.roleName);
   const isBlackMember = memberRoles.includes('ROLE_BLACKLIST');
+  const [selectedRoles, setSelectedRoles] = useState(
+    member.roles.map((x) => x.roleName)
+  );
 
-  // const handleSave = async () => {
-  //   try {
-  //     dispatch(showLoading());
-  //     console.log('@@@@@', {
-  //       id: member.id,
-  //       name,
-  //       phoneNumber: phone,
-  //       email,
-  //     });
+  useEffect(() => {
+    const loadRoles = async () => {
+      try {
+        dispatch(showLoading());
+        const { success, data, message } = await fetchAllRoles();
+        dispatch(hideLoading());
+        if (success) {
+          setRoles(data);
+        } else {
+          Alert.alert('錯誤', message || '無法獲取角色資訊');
+        }
+      } catch (error) {
+        dispatch(hideLoading());
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        Alert.alert('錯誤', errorMessage);
+      }
+    };
 
-  //     const { success, message } = await updateUser({
-  //       id: member.id,
-  //       name,
-  //       phoneNumber: phone,
-  //       email,
-  //     });
-  //     dispatch(hideLoading());
-  //     if (success) {
-  //       Alert.alert('保存成功', '會員資料已更新', [
-  //         {
-  //           text: '確定',
-  //           onPress: () => {
-  //             navigation.reset({
-  //               index: 0,
-  //               routes: [{ name: 'MemberManagement' }],
-  //             });
-  //           },
-  //         },
-  //       ]);
-  //     } else {
-  //       Alert.alert('錯誤', message || '無法載入資訊');
-  //     }
-  //   } catch (error) {
-  //     dispatch(hideLoading());
-  //     const errorMessage =
-  //       error instanceof Error ? error.message : String(error);
-  //     Alert.alert('錯誤', errorMessage);
-  //   }
-  // };
+    loadRoles();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      dispatch(showLoading());
+
+      const { success, message } = await updateUser({
+        id: member.id,
+        name,
+        phoneNumber: phone,
+        email,
+        roles: selectedRoles, // 這裡傳入選中的角色
+      });
+
+      console.log('@@@@@4444', {
+        id: member.id,
+        name,
+        phoneNumber: phone,
+        email,
+        roles: selectedRoles, // 這裡傳入選中的角色
+      });
+
+      dispatch(hideLoading());
+
+      if (success) {
+        Alert.alert('更新成功', '會員資料已更新', [
+          {
+            text: '確定',
+            onPress: () => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'MemberManagement' }],
+              });
+            },
+          },
+        ]);
+      } else {
+        Alert.alert('錯誤', message || '無法更新會員資訊');
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      Alert.alert('錯誤', errorMessage);
+    }
+  };
 
   const handleBlacklist = async () => {
     try {
@@ -171,42 +202,12 @@ const EditMemberScreen = ({ route, navigation }) => {
     ]);
   };
 
-  const handleUploadPhoto = async () => {
-    let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相簿權限');
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
-    }
-  };
-
-  // 拍照
-  const handleTakePhoto = async () => {
-    let permission = await ImagePicker.requestCameraPermissionsAsync();
-    if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相機權限');
-      return;
-    }
-
-    let result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
-    }
+  const toggleRoleSelection = (roleName) => {
+    setSelectedRoles((prevSelectedRoles) =>
+      prevSelectedRoles.includes(roleName)
+        ? prevSelectedRoles.filter((role) => role !== roleName)
+        : [...prevSelectedRoles, roleName]
+    );
   };
 
   const getGender = (gender) => {
@@ -260,9 +261,22 @@ const EditMemberScreen = ({ route, navigation }) => {
               <Text style={styles.label}>Email：</Text>
               <Text style={styles.inputVal}>{email}</Text>
             </View>
-
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>角色：</Text>
+            </View>
+            <View style={styles.roleContainer}>
+              {roles.map((item) => (
+                <View key={item.roleName} style={styles.checkboxContainer}>
+                  <CheckBox
+                    value={selectedRoles.includes(item.roleName)}
+                    onValueChange={() => toggleRoleSelection(item.roleName)}
+                  />
+                  <Text style={styles.checkboxLabel}>{item.roleName}</Text>
+                </View>
+              ))}
+            </View>
             {/* 按鈕組 */}
-            <TouchableOpacity style={styles.saveButton}>
+            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
               <Text style={styles.saveButtonText}>確定</Text>
             </TouchableOpacity>
 
@@ -411,6 +425,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  checkboxLabel: { marginLeft: 10, fontSize: 16, color: '#333' },
 });
 
 export default EditMemberScreen;

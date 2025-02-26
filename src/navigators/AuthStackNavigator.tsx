@@ -5,6 +5,7 @@ import RegisterScreen from '@/screens/RegisterScreen';
 import LoginHomeScreen from '@/screens/LoginHomeScreen';
 import PersonalInformationScreen from '@/screens/PersonalInformationScreen';
 import ForgotPasswordScreen from '@/screens/ForgotPasswordScreen';
+import ResetPasswordScreen from '@/screens/ResetPasswordScreen';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +16,7 @@ const AuthStackNavigator = () => {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInformationScreen} />
     </Stack.Navigator>
   );

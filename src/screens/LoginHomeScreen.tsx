@@ -6,8 +6,14 @@ import {
   StyleSheet,
   Image,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import axios from 'axios';
+import * as Google from 'expo-auth-session/providers/google';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Facebook from 'expo-auth-session/providers/facebook';
+import { useAuthRequest } from 'expo-auth-session';
 
 const LoginHomeScreen = ({ navigation }: any) => {
   const resetAndNavigateToMain = () => {
@@ -15,6 +21,74 @@ const LoginHomeScreen = ({ navigation }: any) => {
       index: 0,
       routes: [{ name: 'Main' }],
     });
+  };
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: '你的 Android 客戶端 ID',
+    iosClientId: '你的 iOS 客戶端 ID',
+    webClientId: '你的 Web 客戶端 ID',
+  });
+
+  const handleGoogleLogin = async () => {
+    const result = await promptAsync();
+    if (result?.type === 'success') {
+      sendTokenToBackend(result.authentication?.idToken, 'google');
+    } else {
+      Alert.alert('Google 登入失敗');
+    }
+  };
+
+  // Apple Login
+  const handleAppleLogin = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      sendTokenToBackend(credential.identityToken, 'apple');
+    } catch (error) {
+      Alert.alert('Apple 登入失敗');
+    }
+  };
+
+  // Facebook Login
+  const [fbRequest, fbResponse, fbPromptAsync] = Facebook.useAuthRequest({
+    clientId: '你的 Facebook App ID',
+  });
+
+  const handleFacebookLogin = async () => {
+    const result = await fbPromptAsync();
+    if (result?.type === 'success') {
+      sendTokenToBackend(result.authentication?.accessToken, 'facebook');
+    } else {
+      Alert.alert('Facebook 登入失敗');
+    }
+  };
+
+  // 傳送 Token 至後端
+  const sendTokenToBackend = async (
+    token: string | undefined,
+    provider: string
+  ) => {
+    if (!token) {
+      Alert.alert(`${provider} 登入失敗`);
+      return;
+    }
+    try {
+      const response = await axios.post(`${BACKEND_URL}/login`, {
+        token,
+        provider,
+      });
+      Alert.alert(`${provider} 登入成功`);
+      navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+    } catch (error) {
+      Alert.alert(
+        `${provider} 登入失敗`,
+        error.response?.data?.message || '未知錯誤'
+      );
+    }
   };
 
   return (
@@ -68,7 +142,10 @@ const LoginHomeScreen = ({ navigation }: any) => {
 
         {/* Social Login Buttons */}
         <View style={styles.socialButtonGroup}>
-          <TouchableOpacity style={styles.socialButton}>
+          <TouchableOpacity
+            style={styles.socialButton}
+            onPress={handleGoogleLogin}
+          >
             <Image
               source={require('@/assets/iot-google.png')}
               style={styles.socialIcon}
@@ -77,7 +154,10 @@ const LoginHomeScreen = ({ navigation }: any) => {
               <Text style={styles.socialButtonText}>使用 Google 登入</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
+          <TouchableOpacity
+            style={styles.socialButton}
+            onPress={handleAppleLogin}
+          >
             <Image
               source={require('@/assets/iot-apple.png')}
               style={styles.socialIcon}
@@ -86,7 +166,10 @@ const LoginHomeScreen = ({ navigation }: any) => {
               <Text style={styles.socialButtonText}>使用 Apple ID 登入</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
+          <TouchableOpacity
+            style={styles.socialButton}
+            onPress={handleFacebookLogin}
+          >
             <Image
               source={require('@/assets/iot-fb.png')}
               style={styles.socialIcon}
