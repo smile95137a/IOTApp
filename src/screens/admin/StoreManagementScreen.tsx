@@ -9,44 +9,69 @@ import {
   Alert,
   Image,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { fetchAllStores, deleteStore, Store } from '@/api/admin/storeApi'; // 引入刪除 API
+import {
+  fetchAllStores,
+  deleteStore,
+  Store,
+  fetchStoresByVendorId,
+} from '@/api/admin/storeApi'; // 引入刪除 API
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { getImageUrl } from '@/utils/ImageUtils';
 
 const StoreManagementScreen = () => {
+  const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const [stores, setStores] = useState<Store[]>([]);
 
+  const vendor = route.params?.vendor;
+
   const loadStores = async () => {
     try {
       dispatch(showLoading());
-      const { success, data, message } = await fetchAllStores();
+
+      let response;
+
+      if (vendor) {
+        console.log('Fetching stores for vendor:', vendor.id);
+        response = await fetchStoresByVendorId(vendor.id); // 呼叫特定供應商的 API
+      } else {
+        console.log('Fetching all stores');
+        response = await fetchAllStores(); // 呼叫所有店家的 API
+      }
+
       dispatch(hideLoading());
+
+      const { success, data, message } = response;
+
       if (success) {
         setStores(data);
+        console.log('Fetched stores:', data);
       } else {
         Alert.alert('錯誤', message || '無法載入店家資訊');
       }
     } catch (error) {
       dispatch(hideLoading());
+      console.error('Error loading stores:', error);
       Alert.alert('錯誤', '發生錯誤，請稍後再試');
     }
   };
-
   useEffect(() => {
-    loadStores();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      loadStores(); // 當頁面獲取焦點時刷新數據
-    }, [])
-  );
+    if (vendor) {
+      console.log('Vendor updated:', vendor);
+      loadStores();
+    } else {
+      loadStores();
+    }
+  }, [vendor]);
 
   // 刪除店家
   const handleDelete = (storeUid, storeName) => {

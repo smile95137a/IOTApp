@@ -108,7 +108,16 @@ const VendorManagementScreen = () => {
                 <Text style={styles.addTableText}>新增廠商 +</Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity key={item.uid} style={styles.card}>
+              <TouchableOpacity
+                key={item.uid}
+                style={styles.card}
+                onPress={() =>
+                  navigation.navigate('StoreManagementStack', {
+                    screen: 'StoreManagement',
+                    params: { vendor: item }, // 若有要傳資料
+                  })
+                }
+              >
                 <View style={styles.row}>
                   {/* 左側圖標 */}
                   <Image
