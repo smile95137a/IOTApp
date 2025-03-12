@@ -38,11 +38,12 @@ const StoreManagementScreen = () => {
     try {
       dispatch(showLoading());
 
-      let response;
+      let response1, response2, response;
 
       if (vendor) {
         console.log('Fetching stores for vendor:', vendor.id);
-        response = await fetchStoresByVendorId(vendor.id); // 呼叫特定供應商的 API
+        response1 = await fetchStoresByVendorId(vendor.id);
+        response2 = await fetchAllStores();
       } else {
         console.log('Fetching all stores');
         response = await fetchAllStores(); // 呼叫所有店家的 API
@@ -50,13 +51,29 @@ const StoreManagementScreen = () => {
 
       dispatch(hideLoading());
 
-      const { success, data, message } = response;
+      if (vendor) {
+        const { success: success1, data: data1 } = response1 || {};
+        const { success: success2, data: data2 } = response2 || {};
 
-      if (success) {
-        setStores(data);
-        console.log('Fetched stores:', data);
+        if (success1 && success2) {
+          // 找出 response1 和 response2 皆存在的店家
+          const commonStores = data2.filter(
+            (store1) => data1.some((store2) => store2.id === store1.id) // 以 id 為基準比較
+          );
+
+          setStores(commonStores);
+          console.log('Common stores:', commonStores);
+        } else {
+          Alert.alert('錯誤', '無法載入店家資訊');
+        }
       } else {
-        Alert.alert('錯誤', message || '無法載入店家資訊');
+        const { success, data, message } = response;
+        if (success) {
+          setStores(data);
+          console.log('Fetched stores:', data);
+        } else {
+          Alert.alert('錯誤', message || '無法載入店家資訊');
+        }
       }
     } catch (error) {
       dispatch(hideLoading());
@@ -64,6 +81,7 @@ const StoreManagementScreen = () => {
       Alert.alert('錯誤', '發生錯誤，請稍後再試');
     }
   };
+
   useEffect(() => {
     if (vendor) {
       console.log('Vendor updated:', vendor);

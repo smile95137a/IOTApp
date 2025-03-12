@@ -1,10 +1,17 @@
 import {
   createStoreEquipment,
-  deleteStoreEquipment,
+  fetchAllStoreEquipments,
+  fetchStoreEquipmentById,
   fetchStoreEquipmentsByStoreId,
   updateStoreEquipment,
   updateStoreEquipmentStatus,
 } from '@/api/admin/equipmentApi';
+import {
+  createMonitor,
+  deleteMonitor,
+  getMonitorsByStoreId,
+  updateMonitor,
+} from '@/api/admin/monitorApi';
 import { fetchAllVendors } from '@/api/admin/vendorApi';
 import Header from '@/component/Header';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
@@ -27,20 +34,17 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 
-const EnvironmentManagementScreen = ({ navigation }) => {
+const MonitorManagementScreen = ({ navigation }) => {
   const route = useRoute();
   const storeId = route.params?.storeId;
   const dispatch = useDispatch<AppDispatch>();
 
-  const [equipments, setEquipments] = useState([]);
+  const [monitors, setMonitors] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [equipmentId, setEquipmentId] = useState(null);
-  const [equipmentName, setEquipmentName] = useState('');
-  const [autoStartTime, setAutoStartTime] = useState('');
-  const [autoStopTime, setAutoStopTime] = useState('');
-  const [equipmentDescription, setEquipmentDescription] = useState('');
-  const [equipmentEnabled, setEquipmentEnabled] = useState(false);
-  const [editingEquipmentIndex, setEditingEquipmentIndex] = useState(null);
+  const [monitorId, setMonitorId] = useState(null);
+  const [monitorName, setMonitorName] = useState('');
+  const [monitorStatus, setMonitorStatus] = useState(false);
+  const [editingMonitorIndex, setEditingMonitorIndex] = useState(null);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const showModal = () => {
@@ -62,26 +66,23 @@ const EnvironmentManagementScreen = ({ navigation }) => {
     });
   };
 
-  const handleEditEquipment = (index) => {
-    const equipment = equipments[index];
-    setEquipmentId(equipment.id);
-    setEquipmentName(equipment.name);
-    setAutoStartTime(equipment.autoStartTime);
-    setAutoStopTime(equipment.autoStopTime);
-    setEquipmentDescription(equipment.description);
-    setEquipmentEnabled(equipment.enabled);
-    setEditingEquipmentIndex(index);
+  const handleEditMonitor = (index: any) => {
+    const monitor: any = monitors[index];
+    setMonitorId(monitor.uid);
+    setMonitorName(monitor.name);
+    setMonitorStatus(monitor.status);
+    setEditingMonitorIndex(index);
     showModal();
   };
 
-  const handleDeleteEquipment = (index) => {
+  const handleDeleteEquipment = (index: any) => {
     Alert.alert('確認刪除', '確定要刪除此設備嗎？', [
       { text: '取消', style: 'cancel' },
       {
         text: '刪除',
         onPress: () => {
-          const updatedEquipments = equipments.filter((_, i) => i !== index);
-          setEquipments(updatedEquipments);
+          const updatedMonitors = monitors.filter((_, i) => i !== index);
+          setMonitors(updatedMonitors);
         },
         style: 'destructive',
       },
@@ -89,11 +90,7 @@ const EnvironmentManagementScreen = ({ navigation }) => {
   };
 
   const handleAddOrUpdateEquipment = async () => {
-    if (
-      !equipmentName.trim() ||
-      !autoStartTime.trim() ||
-      !autoStopTime.trim()
-    ) {
+    if (!monitorName.trim()) {
       Alert.alert('錯誤', '請填寫完整設備資訊');
       return;
     }
@@ -101,40 +98,23 @@ const EnvironmentManagementScreen = ({ navigation }) => {
     try {
       dispatch(showLoading());
       let response;
-      if (equipmentId === null) {
-        const newEquipment = {
-          id: equipmentId,
-          name: equipmentName,
-          autoStartTime,
-          autoStopTime,
-          description: equipmentDescription || '',
-        };
-        response = await createStoreEquipment({
-          name: newEquipment.name,
-          autoStartTime: newEquipment.autoStartTime,
-          autoStopTime: newEquipment.autoStopTime,
-          description: newEquipment.description || '',
-          store: { id: storeId },
+      if (monitorId === null) {
+        response = await createMonitor({
+          name: monitorName,
+          storeId: storeId,
         });
       } else {
-        const editEquipment = {
-          name: equipmentName,
-          autoStartTime,
-          autoStopTime,
-          description: equipmentDescription || '',
-        };
-        response = await updateStoreEquipment(equipmentId, {
-          name: editEquipment.name,
-          autoStartTime: editEquipment.autoStartTime,
-          autoStopTime: editEquipment.autoStopTime,
-          description: editEquipment.description || '',
-          store: { id: storeId },
+        response = await updateMonitor({
+          name: monitorName,
+          uid: monitorId,
+          status: monitorStatus,
+          storeId: storeId,
         });
       }
 
       dispatch(hideLoading());
       if (response.success) {
-        loadVendors();
+        loadMonitors();
       } else {
         Alert.alert('錯誤', '無法獲取供應商列表');
       }
@@ -144,33 +124,61 @@ const EnvironmentManagementScreen = ({ navigation }) => {
     }
 
     // 清空欄位 & 關閉 Modal
-    setEquipmentId(null);
-    setEquipmentName('');
-    setAutoStartTime('');
-    setAutoStopTime('');
-    setEquipmentDescription('');
-    setEditingEquipmentIndex(null);
+    setMonitorId(null);
+    setMonitorName('');
+    setMonitorStatus(false);
+    setEditingMonitorIndex(null);
     setModalVisible(false);
   };
 
-  const loadVendors = async () => {
+  const handleDelMonitor = (index: number) => {
+    Alert.alert('確認刪除', '確定要刪除此監視器嗎？', [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '刪除',
+        onPress: async () => {
+          try {
+            dispatch(showLoading());
+            const monitorToDelete = monitors[index];
+
+            // 調用 API 刪除設備
+            const response = await deleteMonitor(monitorToDelete.id);
+            dispatch(hideLoading());
+
+            if (response.success) {
+              // 更新狀態，從列表中移除
+              const updatedMonitors = monitors.filter((_, i) => i !== index);
+              setMonitors(updatedMonitors);
+              Alert.alert('成功', '設備已刪除');
+            } else {
+              Alert.alert('錯誤', '刪除設備失敗，請稍後再試');
+            }
+          } catch (error) {
+            dispatch(hideLoading());
+            console.error('刪除監視器失敗:', error);
+            Alert.alert('錯誤', '發生錯誤，請稍後再試');
+          }
+        },
+        style: 'destructive',
+      },
+    ]);
+  };
+
+  const loadMonitors = async () => {
     try {
       dispatch(showLoading());
-      const response = await fetchStoreEquipmentsByStoreId(storeId);
+      const response = await getMonitorsByStoreId(storeId);
       dispatch(hideLoading());
 
       if (response.success) {
         const formattedData = response.data.map((item) => ({
+          ...item,
           id: item.id,
-          name: item.equipmentName,
-          autoStartTime: item.autoStartTime,
-          autoStopTime: item.autoStopTime,
-          description: item.description || '',
-          enabled: !!item.status,
+          name: item.name,
+          status: !!item.status,
         }));
-        console.log('OOOOOOOO', formattedData);
 
-        setEquipments(formattedData);
+        setMonitors(formattedData);
       } else {
         Alert.alert('錯誤', '無法獲取供應商列表');
       }
@@ -181,53 +189,33 @@ const EnvironmentManagementScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    loadVendors();
+    loadMonitors();
   }, []);
 
-  const toggleSwitch = async (index) => {
-    const selectedEquipment = equipments[index];
-    const equipmentId = selectedEquipment.id;
-    const newStatus = !selectedEquipment.enabled;
-    const updatedEquipments = [...equipments];
-    updatedEquipments[index].enabled = newStatus;
-    setEquipments(updatedEquipments);
+  const toggleSwitch = async (index: any) => {
+    const selectedMonitor: any = monitors[index];
+    const newStatus = !selectedMonitor.status;
+    const updatedMonitors = [...monitors];
+    updatedMonitors[index].status = newStatus;
+    setMonitors(updatedMonitors);
 
     try {
       dispatch(showLoading());
-      await updateStoreEquipmentStatus(equipmentId, newStatus);
+      await updateMonitor({
+        name: selectedMonitor.name,
+        uid: selectedMonitor.uid,
+        status: newStatus,
+        storeId: storeId,
+      });
       dispatch(hideLoading());
-      loadVendors();
+      loadMonitors();
       console.log('設備狀態更新成功！');
     } catch (error) {
       console.error('更新設備狀態失敗:', error);
-      updatedEquipments[index].enabled = !newStatus;
-      setEquipments([...updatedEquipments]);
+      updatedMonitors[index].status = !newStatus;
+      setMonitors([...updatedMonitors]);
       Alert.alert('錯誤', '無法更新設備狀態，請稍後再試');
     }
-  };
-  const handleDelEquipment = async (index) => {
-    const equipment = equipments[index];
-
-    Alert.alert('確認刪除', `確定要刪除設備「${equipment.name}」嗎？`, [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '刪除',
-        onPress: async () => {
-          try {
-            dispatch(showLoading());
-            await deleteStoreEquipment(equipment.id); // 可能需要 API 來刪除設備
-            dispatch(hideLoading());
-
-            loadVendors();
-            Alert.alert('成功', '設備已刪除');
-          } catch (error) {
-            dispatch(hideLoading());
-            Alert.alert('錯誤', '刪除設備失敗，請稍後再試');
-          }
-        },
-        style: 'destructive',
-      },
-    ]);
   };
 
   return (
@@ -244,13 +232,13 @@ const EnvironmentManagementScreen = ({ navigation }) => {
           <Header title="環境管理" onBackPress={() => navigation.goBack()} />
         </View>
         <View style={styles.mainContainer}>
-          {equipments.map((light, index) => (
+          {monitors.map((monitor, index) => (
             <View key={index} style={styles.item}>
               {/* 名稱與開關 */}
               <View style={styles.row}>
                 <View style={styles.nameRow}>
-                  <Text style={styles.label}>{light.name}</Text>
-                  <TouchableOpacity onPress={() => handleEditEquipment(index)}>
+                  <Text style={styles.label}>{monitor.name}</Text>
+                  <TouchableOpacity onPress={() => handleEditMonitor(index)}>
                     <Icon
                       name="edit"
                       size={16}
@@ -258,7 +246,7 @@ const EnvironmentManagementScreen = ({ navigation }) => {
                       style={styles.editIcon}
                     />
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDelEquipment(index)}>
+                  <TouchableOpacity onPress={() => handleDelMonitor(index)}>
                     <Icon
                       name="delete"
                       size={16}
@@ -268,31 +256,9 @@ const EnvironmentManagementScreen = ({ navigation }) => {
                   </TouchableOpacity>
                 </View>
                 <Switch
-                  value={light.enabled}
+                  value={monitor.status}
                   onValueChange={() => toggleSwitch(index)}
                 />
-              </View>
-              {/* 時間設置 */}
-              <View style={styles.timeRow}>
-                <Text style={styles.timeLabel}>自動啟閉：</Text>
-                <TouchableOpacity
-                  style={styles.timeEdit}
-                  onPress={() => handleEditEquipment(index)}
-                >
-                  <Text style={styles.timeText}>{light.autoStartTime}</Text>
-                  <Icon name="edit" size={14} color="#4285F4" />
-                </TouchableOpacity>
-                <Text style={styles.timeLabel}>開啟</Text>
-                <TouchableOpacity
-                  style={styles.timeEdit}
-                  onPress={() => handleEditEquipment(index)}
-                >
-                  <Text style={styles.timeText}>{light.autoStopTime}</Text>
-                  <Icon name="edit" size={14} color="#4285F4" />
-                </TouchableOpacity>
-                <Text style={styles.timeLabel}>
-                  {light.enabled ? '開啟' : '關閉'}
-                </Text>
               </View>
             </View>
           ))}
@@ -310,32 +276,8 @@ const EnvironmentManagementScreen = ({ navigation }) => {
               <TextInput
                 style={styles.modalInput}
                 placeholder="輸入設備名稱"
-                value={equipmentName}
-                onChangeText={setEquipmentName}
-              />
-
-              <Text style={styles.modalLabel}>自動開始時間</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder="HH:mm"
-                value={autoStartTime}
-                onChangeText={setAutoStartTime}
-              />
-
-              <Text style={styles.modalLabel}>自動結束時間</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder="HH:mm"
-                value={autoStopTime}
-                onChangeText={setAutoStopTime}
-              />
-
-              <Text style={styles.modalLabel}>設備描述</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder="設備描述（可選）"
-                value={equipmentDescription}
-                onChangeText={setEquipmentDescription}
+                value={monitorName}
+                onChangeText={setMonitorName}
               />
 
               <View style={styles.modalButtonContainer}>
@@ -524,4 +466,4 @@ const styles = StyleSheet.create({
   confirmButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
 });
 
-export default EnvironmentManagementScreen;
+export default MonitorManagementScreen;

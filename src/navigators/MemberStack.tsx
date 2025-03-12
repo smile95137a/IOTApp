@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   menuContainer: {
-    padding: 40,
+    padding: 10,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     backgroundColor: '#FAFAFA',

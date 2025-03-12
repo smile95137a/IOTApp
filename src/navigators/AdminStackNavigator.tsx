@@ -102,6 +102,12 @@ const menuItems = {
     icon: 'chart-bar',
     label: '報表管理',
   },
+  monitor: {
+    stack: 'MonitorStack',
+    screen: 'MonitorManagement',
+    icon: 'cctv',
+    label: '攝影機',
+  },
 };
 
 const CustomDrawerContent = (props: any) => {
@@ -226,6 +232,11 @@ const AdminDrawerNavigator = () => {
         component={ReportStack}
         options={{ headerShown: false, title: '設備管理' }}
       />
+      <Drawer.Screen
+        name="MonitorStack"
+        component={MonitorStack}
+        options={{ headerShown: false, title: '攝影機管理' }}
+      />
     </Drawer.Navigator>
   );
 };
@@ -245,7 +256,22 @@ const VendorStack = () => {
     </Stack.Navigator>
   );
 };
-
+const MonitorStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="MonitorView"
+        component={MonitorViewScreen}
+        options={{ title: '攝影機管理', headerShown: false }}
+      />
+      <Stack.Screen
+        name="MonitorViewDetail"
+        component={MonitorViewDetailScreen}
+        options={{ title: '攝影機管理', headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
 const DashboardStack = () => {
   return (
     <Stack.Navigator>
@@ -374,6 +400,11 @@ const EquipmentStack = () => {
         options={{ title: '店家設備管理', headerShown: false }}
       />
       <Stack.Screen
+        name="MonitorManagement"
+        component={MonitorManagementScreen}
+        options={{ title: '店家設備管理', headerShown: false }}
+      />
+      <Stack.Screen
         name="DeviceTableManagement"
         component={DeviceTableManagementScreen}
         options={{ title: '店家設備管理', headerShown: false }}
@@ -389,6 +420,9 @@ const EquipmentStack = () => {
 
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
+import MonitorManagementScreen from '@/screens/admin/MonitorManagementScreen';
+import MonitorViewScreen from '@/screens/admin/MonitorViewScreen';
+import MonitorViewDetailScreen from '@/screens/admin/MonitorViewDetailScreen';
 
 const ReportStack = () => {
   const user = useSelector((state: RootState) => state.user);

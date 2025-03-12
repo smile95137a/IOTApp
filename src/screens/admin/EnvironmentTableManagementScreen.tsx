@@ -1,6 +1,7 @@
 import {
   createStoreEquipment,
   createTableEquipment,
+  deleteTableEquipment,
   fetchAllStoreEquipments,
   fetchStoreEquipmentById,
   fetchStoreEquipmentsByStoreId,
@@ -210,6 +211,30 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
       Alert.alert('錯誤', '無法更新設備狀態，請稍後再試');
     }
   };
+  const handleDelEquipment = async (index) => {
+    const equipment = equipments[index];
+
+    Alert.alert('確認刪除', `確定要刪除設備「${equipment.name}」嗎？`, [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '刪除',
+        onPress: async () => {
+          try {
+            dispatch(showLoading());
+            await deleteTableEquipment(equipment.id); // 可能需要 API 來刪除設備
+            dispatch(hideLoading());
+
+            loadVendors();
+            Alert.alert('成功', '設備已刪除');
+          } catch (error) {
+            dispatch(hideLoading());
+            Alert.alert('錯誤', '刪除設備失敗，請稍後再試');
+          }
+        },
+        style: 'destructive',
+      },
+    ]);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -234,6 +259,14 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
                   <TouchableOpacity onPress={() => handleEditEquipment(index)}>
                     <Icon
                       name="edit"
+                      size={16}
+                      color="#4285F4"
+                      style={styles.editIcon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDelEquipment(index)}>
+                    <Icon
+                      name="delete"
                       size={16}
                       color="#4285F4"
                       style={styles.editIcon}

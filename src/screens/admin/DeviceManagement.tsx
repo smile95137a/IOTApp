@@ -71,6 +71,27 @@ const DeviceManagementScreen = ({ navigation }) => {
               style={styles.cardArrow}
             />
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() =>
+              navigation.navigate('MonitorManagement', { storeId })
+            }
+          >
+            <View style={styles.cardContent}>
+              <Image
+                source={require('@/assets/iot-d1.png')}
+                style={styles.cardIcon}
+              />
+              <Text style={styles.cardText}>攝影機管理</Text>
+            </View>
+            <Icon
+              name="chevron-right"
+              size={24}
+              color="#333"
+              style={styles.cardArrow}
+            />
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

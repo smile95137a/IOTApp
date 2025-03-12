@@ -72,19 +72,10 @@ const EditMemberScreen = ({ route, navigation }) => {
       const { success, message } = await updateUser({
         id: member.id,
         name,
-        phoneNumber: phone,
+        phone: phone,
         email,
-        roles: selectedRoles, // 這裡傳入選中的角色
+        roleNames: selectedRoles, // 這裡傳入選中的角色
       });
-
-      console.log('@@@@@4444', {
-        id: member.id,
-        name,
-        phoneNumber: phone,
-        email,
-        roles: selectedRoles, // 這裡傳入選中的角色
-      });
-
       dispatch(hideLoading());
 
       if (success) {
