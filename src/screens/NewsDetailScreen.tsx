@@ -43,7 +43,7 @@ const NewsDetailScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#0c0c3d',
   },
   detail: {
     flex: 1,

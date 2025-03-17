@@ -129,22 +129,24 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
           ]}
         >
           <View style={styles.tableTextContainerRow}>
-            <Text style={styles.tableTextContainerId}>
+            <Text
+              style={[
+                styles.tableTextContainerId,
+                status !== 'available' && { color: 'white' }, // 讓 available 時文字變白色
+              ]}
+            >
               {item.tableNumber.toString()}
             </Text>
 
-            <Text style={styles.tableTextContainerText}>
-              {status === 'available' ? label : label}
+            <Text
+              style={[
+                styles.tableTextContainerText,
+                status !== 'available' && { color: 'white' }, // 讓 available 時文字變白色
+              ]}
+            >
+              {label}
             </Text>
           </View>
-          {status === 'available' && (
-            <Icon
-              name="chevron-right"
-              size={16}
-              color="#fff"
-              style={styles.tableTextContainerIcon}
-            />
-          )}
         </View>
       </TouchableOpacity>
     );
@@ -168,7 +170,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
           <Text style={styles.storeAddress}>{store.address}</Text>
         </View>
         <TouchableOpacity style={styles.storeShare} onPress={handleShare}>
-          <Icon name="share" size={24} color="#fff" />
+          <Icon name="share" size={24} color="#00BFFF" />
         </TouchableOpacity>
       </View>
 
@@ -203,9 +205,9 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
       {/* Tables */}
       <View style={styles.tablesSection}>
         <View style={styles.tablesHeader}>
-          <Text style={styles.tablesTitle}>台桌數：{tables.length} 台</Text>
+          <Text style={styles.tablesTitle}>桌數：{tables.length}桌</Text>
           <Text style={styles.tablesAvailable}>
-            目前可用：{tables.filter((table) => !table.isUse).length} 台
+            可用：{tables.filter((table) => !table.isUse).length}桌
           </Text>
         </View>
         <FlatList
@@ -224,13 +226,13 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0A0A30',
   },
 
   storeDetails: {
     flexDirection: 'row',
     marginHorizontal: 20,
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0A0A30',
     alignItems: 'center',
   },
   storeImage: {
@@ -246,11 +248,11 @@ const styles = StyleSheet.create({
   storeName: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#00BFFF',
   },
   storeAddress: {
     fontSize: 14,
-    color: '#fff',
+    color: '#00BFFF',
     marginTop: 5,
   },
   tablesSection: {
@@ -262,7 +264,7 @@ const styles = StyleSheet.create({
   },
   tablesHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginBottom: 15,
   },
   tablesTitle: {
@@ -273,7 +275,8 @@ const styles = StyleSheet.create({
   tablesAvailable: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#F67943',
+    color: '#007bff',
+    marginLeft: 12,
   },
   tableRow: {
     justifyContent: 'space-between',
@@ -296,7 +299,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // 横向布局
     alignItems: 'center', // 垂直居中
     justifyContent: 'space-between', // 左右两边均匀分布
-    backgroundColor: '#F67943', // 背景颜色
+    backgroundColor: '#FFD700', // 背景颜色
     paddingVertical: 8, // 垂直内边距
     paddingHorizontal: 12, // 水平内边距
     borderRadius: 9, // 圆角
@@ -312,12 +315,10 @@ const styles = StyleSheet.create({
   tableTextContainerId: {
     fontSize: 14, // 字体大小
     fontWeight: 'bold', // 加粗字体
-    color: '#fff', // 字体颜色
     marginRight: 5, // ID 和文字之间的间距
   },
   tableTextContainerText: {
     fontSize: 14, // 字体大小
-    color: '#fff', // 字体颜色
   },
   tableTextContainerIcon: {
     marginLeft: 8, // 图标和文字之间的间距
@@ -329,15 +330,18 @@ const styles = StyleSheet.create({
     margin: 16,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 10,
+    paddingVertical: 10,
   },
   pricingCard: {
     flex: 1,
     padding: 12,
+    paddingVertical: 4,
     alignItems: 'center',
+    borderLeftWidth: 1,
+    borderLeftColor: '#FFF',
   },
   pricingTitleContainer: {
     width: 70,
-    backgroundColor: '#FFFFFF',
     padding: 12,
     borderRadius: 10,
     alignItems: 'center',
@@ -345,7 +349,7 @@ const styles = StyleSheet.create({
   },
   pricingTitle: {
     fontSize: 14,
-    color: '#555',
+    color: '#fff',
   },
   pricingAmount: {
     fontSize: 16,

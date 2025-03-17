@@ -211,11 +211,11 @@ const MemberStack = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0A0A30',
   },
   userInfoContainer: {
     flexDirection: 'row',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0A0A30',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 40,

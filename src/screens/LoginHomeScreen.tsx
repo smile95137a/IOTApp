@@ -202,12 +202,12 @@ const LoginHomeScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#0c0c3d',
   },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#F7F7F7',
+    backgroundColor: '#0c0c3d',
     alignItems: 'center',
   },
   logo: {

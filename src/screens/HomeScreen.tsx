@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
-  TouchableOpacity,
-  Image,
   ScrollView,
   SafeAreaView,
   Alert,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 import ImageCarousel from '@/component/ImageCarousel';
 import Header from '@/component/Header';
 import * as Location from 'expo-location';
@@ -18,8 +14,7 @@ import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { fetchAllStores } from '@/api/storeApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
-import { decryptData, encryptData } from '@/utils/cryptoUtils';
-import { openCamera } from '@/store/cameraSlice';
+import HomeOptionButton from '@/component/home/HomeOptionButton';
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -87,98 +82,37 @@ const HomeScreen = ({ navigation }) => {
 
         {/* Cards Section */}
         <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.row}>
-            {/* Store Exploration Section */}
-            <TouchableOpacity style={[styles.card, styles.greenCard]}>
-              <View style={styles.cardRow}>
-                {/* 左側圖像 */}
-                <Image
-                  source={require('@/assets/iot-home-3.png')}
-                  style={styles.leftImage}
-                />
-
-                {/* 右側文字與按鈕 */}
-                <View style={styles.rightContent}>
-                  <View style={styles.textContent}>
-                    <Text style={styles.cardSubtitle}>最近分店：</Text>
-                    {nearStores.length > 0 ? (
-                      nearStores.map((store, index) => (
-                        <Text key={index} style={styles.cardText}>
-                          {store.name} {store.distance.toFixed(1)} km
-                        </Text>
-                      ))
-                    ) : (
-                      <Text style={styles.cardText}>無法獲取最近的店家</Text>
-                    )}
-                  </View>
-                  <TouchableOpacity
-                    style={styles.cardButton}
-                    onPress={() => {
-                      navigation.reset({
-                        index: 0,
-                        routes: [{ name: 'Explore' }],
-                      });
-                    }}
-                  >
-                    <Text style={styles.cardButtonText}>門店探索</Text>
-                    <MaterialIcons
-                      name="chevron-right"
-                      size={20}
-                      color="#000"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          <View style={[styles.row, styles.rowGap]}>
-            {/* QR Scanner Section */}
-            <TouchableOpacity
-              style={[styles.card, styles.orangeCard]}
-              onPress={() => navigation.navigate('QRScannerScreen')}
-            >
-              <View style={[styles.cardContentCentered]}>
-                <Image
-                  source={require('@/assets/iot-home-2.png')}
-                  style={styles.cardImage}
-                />
-                <Text style={[styles.cardSubtitle, styles.centerClass]}>
-                  掃描球桌上的QRcode開台/關台
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={styles.cardButton}
-                onPress={() => dispatch(openCamera())}
-              >
-                <Text style={styles.cardButtonText}>掃碼開台</Text>
-                <MaterialIcons name="chevron-right" size={20} color="#000" />
-              </TouchableOpacity>
-            </TouchableOpacity>
-
-            {/* Reservation Section */}
-            <TouchableOpacity style={[styles.card, styles.blueCard]}>
-              <View style={[styles.cardContentCentered]}>
-                <Image
-                  source={require('@/assets/iot-home-1.png')}
-                  style={styles.cardImage}
-                />
-                <Text style={styles.cardSubtitle}>選擇門店預訂開台</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.cardButton}
-                onPress={() => {
-                  navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Explore' }],
-                  });
-                }}
-              >
-                <Text style={styles.cardButtonText}>預定開台</Text>
-                <MaterialIcons name="chevron-right" size={20} color="#000" />
-              </TouchableOpacity>
-            </TouchableOpacity>
-          </View>
+          <HomeOptionButton
+            icon="store"
+            title="門市探索"
+            description={
+              nearStores.length > 0
+                ? `最近據點:${nearStores
+                    .map(
+                      (store) => `${store.name} ${store.distance.toFixed(1)} km`
+                    )
+                    .join('、')}`
+                : '無法獲取最近的店家'
+            }
+            onPress={() => console.log('Navigating to Store Search')}
+          />
+          <HomeOptionButton
+            icon="qrcode"
+            title="掃碼開台"
+            description="掃描球桌上的 QRcode 開台／關台"
+            onPress={() => navigation.navigate('QRScannerScreen')}
+          />
+          <HomeOptionButton
+            icon="clock-o"
+            title="預約開台"
+            description="選擇門市預約開台"
+            onPress={() => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Explore' }],
+              });
+            }}
+          />
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -188,16 +122,14 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#0c0c3d',
   },
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#0c0c3d',
   },
-  content: {
-    paddingBottom: 20,
-  },
+  content: {},
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',

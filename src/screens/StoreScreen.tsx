@@ -87,7 +87,10 @@ const StoreScreen = ({ navigation }: any) => {
         onPress={() => navigation.navigate('StoreDetail', { store: item })}
       >
         <View style={styles.storeImageContainer}>
+        <View style={styles.storeImageMain}>
+          View
           <Image src={getImageUrl(item?.imgUrl)} style={styles.storeImage} />
+        </View>
         </View>
         <View style={styles.storeDetails}>
           <Text style={styles.storeName}>{item.name}</Text>
@@ -98,7 +101,7 @@ const StoreScreen = ({ navigation }: any) => {
             </Text>
           )}
         </View>
-        <View style={styles.storeVisit}>
+        <View  style={[styles.storeVisit, item.availablesCount === 0 ? styles.tableGray : styles.tableYellow]}>>
           <Text style={[styles.storeVisitText, styles.storeVisitText1]}>
             剩餘桌數
           </Text>
@@ -110,7 +113,7 @@ const StoreScreen = ({ navigation }: any) => {
               查看
             </Text>
             <Text style={[styles.storeVisitText, styles.storeVisitText4]}>
-              <Icon name="chevron-right" size={18} color="#fff" />
+              <Icon name="chevron-right" size={18} />
             </Text>
           </View>
         </View>
@@ -138,12 +141,12 @@ const StoreScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#0c0c3d',
   },
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#0c0c3d',
   },
 
   carouselContainer: {
@@ -158,7 +161,7 @@ const styles = StyleSheet.create({
   storeList: {},
   storeItem: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: '#00BFFF',
     borderRadius: 10,
     marginBottom: 10,
     shadowOpacity: 0.1,
@@ -171,10 +174,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  storeImage: {
-    width: 74,
-    height: 74,
+  storeImageMain: {
+    flexDirection:'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 70,
+    height: 70,
     borderRadius: 200,
+    backgroundColor: '#000A30',
+    overflow:'hidden'
+  },
+  storeImage: {
+    width: '100%',
+    height: '100%',
   },
   storeDetails: {
     flex: 1,
@@ -188,21 +200,23 @@ const styles = StyleSheet.create({
   },
   storeAddress: {
     fontSize: 14,
-    color: '#666',
   },
   storeDistance: {
     fontSize: 12,
-    color: '#F67943',
     marginTop: 5,
   },
   storeVisit: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F67943',
     minWidth: 78,
   },
+  tableYellow: {
+    backgroundColor: '#FFD700',
+  },
+  tableGray: {
+    backgroundColor: '#808080',
+  },
   storeVisitText: {
-    color: '#ffffff',
     marginTop: 6,
   },
   storeVisitText1: {

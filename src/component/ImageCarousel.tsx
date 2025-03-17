@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0A0A30',
   },
 });
 

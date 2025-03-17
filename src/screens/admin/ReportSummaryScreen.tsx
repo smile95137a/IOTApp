@@ -34,7 +34,7 @@ const ReportSummaryScreen = ({ navigation }: any) => {
     {
       name: 'LINE PAY',
       population: 30000,
-      color: '#4CAF50',
+      color: '#0A0A30',
       legendFontColor: '#333',
       legendFontSize: 14,
     },

@@ -90,12 +90,12 @@ const NewsScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#0c0c3d',
   },
   container: {
     flex: 1,
     padding: 16, // Padding for the entire container
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#0c0c3d',
   },
   newsItem: {
     flexDirection: 'row',

@@ -163,10 +163,10 @@ const MemberCenterScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0A0A30',
   },
   userInfo: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0A0A30',
     alignItems: 'center',
     paddingVertical: 20,
     borderBottomLeftRadius: 30,

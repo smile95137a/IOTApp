@@ -151,7 +151,7 @@ const ResetPasswordScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F7F7F7',
+    backgroundColor: '#0c0c3d',
   },
   container: {
     flex: 1,
