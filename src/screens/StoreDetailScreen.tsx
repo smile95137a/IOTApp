@@ -17,6 +17,7 @@ import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import NumberFormatter from '@/component/NumberFormatter';
 import { getImageUrl } from '@/utils/ImageUtils';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const StoreDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -112,7 +113,11 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         }}
       >
         <Image
-          source={require('@/assets/iot-table.png')}
+          source={
+            status === 'available'
+              ? require('@/assets/iot-table-enable.png')
+              : require('@/assets/iot-table-disable.png')
+          }
           style={[
             styles.tableImage,
             status === 'available'
@@ -210,14 +215,77 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
             可用：{tables.filter((table) => !table.isUse).length}桌
           </Text>
         </View>
-        <FlatList
-          windowSize={10}
-          data={tables}
-          renderItem={renderTableItem}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
-          columnWrapperStyle={styles.tableRow}
-        />
+
+        {/* 使用 map 直接渲染桌台列表 */}
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.tableGrid}>
+            {tables.map((item) => {
+              const status = item.isUse ? 'reserved' : 'available';
+              const label = item.isUse ? '已預訂' : '立即開台';
+
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  style={styles.tableItem}
+                  disabled={status === 'reserved'}
+                  onPress={() => {
+                    if (status === 'available') {
+                      navigation.navigate('Member', {
+                        screen: 'Reservation',
+                        params: { tableUid: item.uid },
+                      });
+                    }
+                  }}
+                >
+                  <Image
+                    source={
+                      status === 'available'
+                        ? require('@/assets/iot-table-enable.png')
+                        : require('@/assets/iot-table-disable.png')
+                    }
+                    style={[
+                      styles.tableImage,
+                      status === 'available'
+                        ? styles.tableImageAvailable
+                        : styles.tableImageReserved,
+                    ]}
+                  />
+                  <View
+                    style={[
+                      styles.tableTextContainer,
+                      status === 'available'
+                        ? styles.tableTextContainerAvailable
+                        : styles.tableTextContainerReserved,
+                    ]}
+                  >
+                    <View style={styles.tableTextContainerRow}>
+                      <Text
+                        style={[
+                          styles.tableTextContainerId,
+                          status !== 'available' && { color: 'white' },
+                        ]}
+                      >
+                        {item.tableNumber.toString()}
+                      </Text>
+
+                      <Text
+                        style={[
+                          styles.tableTextContainerText,
+                          status !== 'available' && { color: 'white' },
+                        ]}
+                      >
+                        {label}
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
@@ -255,6 +323,9 @@ const styles = StyleSheet.create({
     color: '#00BFFF',
     marginTop: 5,
   },
+  scrollContainer: {
+    flexGrow: 1, // 讓內容可以滾動
+  },
   tablesSection: {
     padding: 30,
     borderTopLeftRadius: 30,
@@ -278,11 +349,13 @@ const styles = StyleSheet.create({
     color: '#007bff',
     marginLeft: 12,
   },
-  tableRow: {
+  tableGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
   tableItem: {
-    flex: 1,
+    width: '48%', // 讓兩個 item 並排
     padding: 15,
     alignItems: 'center',
   },
