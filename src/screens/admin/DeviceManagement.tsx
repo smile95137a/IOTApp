@@ -37,17 +37,14 @@ const DeviceManagementScreen = ({ navigation }) => {
           >
             <View style={styles.cardContent}>
               <Image
-                source={require('@/assets/iot-d1.png')}
+                source={require('@/assets/iot-switch.png')}
                 style={styles.cardIcon}
               />
               <Text style={styles.cardText}>環境管理</Text>
             </View>
-            <Icon
-              name="chevron-right"
-              size={24}
-              color="#333"
-              style={styles.cardArrow}
-            />
+            <View style={styles.cardBtn}>
+              <Icon name="chevron-right" size={20} color="#fff" />
+            </View>
           </TouchableOpacity>
 
           {/* 桌檯管理卡片 */}
@@ -59,17 +56,14 @@ const DeviceManagementScreen = ({ navigation }) => {
           >
             <View style={styles.cardContent}>
               <Image
-                source={require('@/assets/iot-home1.png')}
+                source={require('@/assets/iot-table-enable.png')}
                 style={styles.cardIcon}
               />
               <Text style={styles.cardText}>桌檯管理</Text>
             </View>
-            <Icon
-              name="chevron-right"
-              size={24}
-              color="#333"
-              style={styles.cardArrow}
-            />
+            <View style={styles.cardBtn}>
+              <Icon name="chevron-right" size={20} color="#fff" />
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -80,17 +74,14 @@ const DeviceManagementScreen = ({ navigation }) => {
           >
             <View style={styles.cardContent}>
               <Image
-                source={require('@/assets/iot-d1.png')}
+                source={require('@/assets/iot-switch.png')}
                 style={styles.cardIcon}
               />
               <Text style={styles.cardText}>攝影機管理</Text>
             </View>
-            <Icon
-              name="chevron-right"
-              size={24}
-              color="#333"
-              style={styles.cardArrow}
-            />
+            <View style={styles.cardBtn}>
+              <Icon name="chevron-right" size={20} color="#fff" />
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -145,18 +136,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardIcon: {
-    width: 50, // 圖標大小
-    height: 50,
+    width: 130,
+    height: 100,
     marginRight: 15,
+    objectFit: 'contain',
   },
   cardText: {
     fontSize: 18,
     fontWeight: '500',
     color: '#333',
   },
-  cardArrow: {
-    marginLeft: 10,
+  cardBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#595858',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  cardArrow: {},
 });
 
 export default DeviceManagementScreen;

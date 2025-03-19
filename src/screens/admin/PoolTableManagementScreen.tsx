@@ -123,13 +123,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   fixedImageContainer: {
-    position: 'absolute', // Fix it to the block
+    position: 'absolute',
     right: -200,
     bottom: 0,
-    zIndex: 2, // Push it behind other content
-    alignItems: 'center', // Center horizontally
-    justifyContent: 'center', // Center vertically
-    opacity: 0.1, // Make it subtle as a background
+    zIndex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.1,
   },
 
   header: {
