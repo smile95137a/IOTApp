@@ -19,6 +19,7 @@ import {
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
+import Header from '@/component/Header';
 
 const PoolTableManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -54,53 +55,61 @@ const PoolTableManagementScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.header}>桌檯管理</Text>
+        <View style={styles.fixedImageContainer}>
+          <Image
+            source={require('@/assets/iot-threeBall.png')}
+            resizeMode="contain"
+          />
         </View>
 
-        <ScrollView contentContainerStyle={styles.listContainer}>
-          <View style={styles.tableGrid}>
-            {poolTables.map((item) => (
+        <View style={styles.header}>
+          <Header title="桌檯管理" onBackPress={() => navigation.goBack()} />
+        </View>
+        <View style={styles.mainContainer}>
+          <ScrollView contentContainerStyle={styles.listContainer}>
+            <View style={styles.tableGrid}>
+              {poolTables.map((item) => (
+                <TouchableOpacity
+                  key={item.uid}
+                  style={styles.card}
+                  onPress={() =>
+                    navigation.navigate('AddPoolTable', { poolTable: item })
+                  }
+                >
+                  <Image
+                    source={require('@/assets/iot-table-enable.png')}
+                    style={styles.cardImg}
+                  />
+                  <View style={styles.cardFooter}>
+                    <Text style={styles.cardText}>{item.tableNumber}</Text>
+                    <View style={styles.cardInfoRight}>
+                      <Text style={styles.cardInfoRightText}>設定</Text>
+                      <View style={styles.cardInfoRightIcon}>
+                        <Icon name="chevron-right" size={20} color="#FFF" />
+                      </View>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+
               <TouchableOpacity
-                key={item.uid}
-                style={styles.card}
-                onPress={() =>
-                  navigation.navigate('AddPoolTable', { poolTable: item })
-                }
+                style={styles.addTableButton}
+                onPress={() => navigation.navigate('AddPoolTable')}
               >
                 <Image
                   source={require('@/assets/iot-table-enable.png')}
-                  style={styles.cardImg}
+                  style={styles.addTableButtonImg}
                 />
-                <View style={styles.cardFooter}>
-                  <Text style={styles.cardText}>{item.tableNumber}</Text>
-                  <View style={styles.cardInfoRight}>
-                    <Text style={styles.cardInfoRightText}>設定</Text>
-                    <View style={styles.cardInfoRightIcon}>
-                      <Icon name="chevron-right" size={20} color="#FFF" />
-                    </View>
+                <View style={styles.addTableButtonFooter}>
+                  <Text style={styles.addTableButtonLeftText}>新增桌台</Text>
+                  <View style={styles.addTableButtonRightIcon}>
+                    <Icon name="plus" size={20} color="#FFF" />
                   </View>
                 </View>
               </TouchableOpacity>
-            ))}
-
-            <TouchableOpacity
-              style={styles.addTableButton}
-              onPress={() => navigation.navigate('AddPoolTable')}
-            >
-              <Image
-                source={require('@/assets/iot-table-enable.png')}
-                style={styles.addTableButtonImg}
-              />
-              <View style={styles.addTableButtonFooter}>
-                <Text style={styles.addTableButtonLeftText}>新增桌台</Text>
-                <View style={styles.addTableButtonRightIcon}>
-                  <Icon name="plus" size={20} color="#FFF" />
-                </View>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+            </View>
+          </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -112,19 +121,24 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
   },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+  fixedImageContainer: {
+    position: 'absolute', // Fix it to the block
+    right: -200,
+    bottom: 0,
+    zIndex: 2, // Push it behind other content
+    alignItems: 'center', // Center horizontally
+    justifyContent: 'center', // Center vertically
+    opacity: 0.1, // Make it subtle as a background
   },
+
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    backgroundColor: '#FFFFFF',
+  },
+  mainContainer: {
+    flex: 1,
+    padding: 20,
+    zIndex: 3,
   },
   listContainer: {
     paddingBottom: 20,
