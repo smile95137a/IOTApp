@@ -67,14 +67,14 @@ const NewsScreen = ({ navigation }: any) => {
           <DateFormatter date={item.createdDate} format="YYYY.MM.DD" />
         </Text>
       </View>
-      <Icon name="chevron-right" size={24} color="#A6A6A6" />
+      <Icon name="chevron-right" size={24} color="#000" />
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Header title="最新消息" />
+        <Header title="最新消息" isDarkMode />
         <ImageCarousel />
         <FlatList
           data={newsData}
@@ -94,12 +94,11 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 16, // Padding for the entire container
-    backgroundColor: '#0c0c3d',
+    padding: 16,
   },
   newsItem: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: '#00BFFF',
     borderRadius: 10,
     marginBottom: 10,
     padding: 10,
@@ -121,12 +120,10 @@ const styles = StyleSheet.create({
   },
   newsDescription: {
     fontSize: 12,
-    color: '#666',
     marginBottom: 5,
   },
   newsDate: {
     fontSize: 12,
-    color: '#F67943',
   },
 });
 

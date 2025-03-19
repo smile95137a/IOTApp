@@ -155,7 +155,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <Header
-        title={store.name}
+        title={'門市探索'}
         onBackPress={() => navigation.goBack()}
         rightIcon="more-vert"
         onRightPress={() => console.log('More options pressed')}

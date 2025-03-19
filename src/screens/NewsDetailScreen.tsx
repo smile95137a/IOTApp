@@ -21,6 +21,7 @@ const NewsDetailScreen = ({ route, navigation }: any) => {
         onBackPress={() => navigation.goBack()}
         rightIcon="more-vert"
         onRightPress={() => console.log('More options pressed')}
+        isDarkMode
       />
       <ScrollView style={styles.detail}>
         <Text style={styles.newsTitle}>{news.title}</Text>
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#333',
+    color: '#00BFFF',
   },
   newsDate: {
     fontSize: 14,
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   },
   newsContent: {
     fontSize: 16,
-    color: '#333',
+    color: '#00BFFF',
     lineHeight: 22,
   },
 });

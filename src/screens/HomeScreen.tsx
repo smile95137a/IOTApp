@@ -76,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Header />
+        <Header isDarkMode />
         {/* Banner Section */}
         <ImageCarousel />
 

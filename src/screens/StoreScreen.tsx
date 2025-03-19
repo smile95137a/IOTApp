@@ -3,7 +3,6 @@ import Header from '@/component/Header';
 import ImageCarousel from '@/component/ImageCarousel';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
-import { genRandom, genRandomNumbers } from '@/utils/RandomUtils';
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -11,8 +10,6 @@ import {
   StyleSheet,
   FlatList,
   Image,
-  Dimensions,
-  ScrollView,
   TouchableOpacity,
   Alert,
   SafeAreaView,
@@ -87,10 +84,9 @@ const StoreScreen = ({ navigation }: any) => {
         onPress={() => navigation.navigate('StoreDetail', { store: item })}
       >
         <View style={styles.storeImageContainer}>
-        <View style={styles.storeImageMain}>
-          View
-          <Image src={getImageUrl(item?.imgUrl)} style={styles.storeImage} />
-        </View>
+          <View style={styles.storeImageMain}>
+            <Image src={getImageUrl(item?.imgUrl)} style={styles.storeImage} />
+          </View>
         </View>
         <View style={styles.storeDetails}>
           <Text style={styles.storeName}>{item.name}</Text>
@@ -101,7 +97,12 @@ const StoreScreen = ({ navigation }: any) => {
             </Text>
           )}
         </View>
-        <View  style={[styles.storeVisit, item.availablesCount === 0 ? styles.tableGray : styles.tableYellow]}>>
+        <View
+          style={[
+            styles.storeVisit,
+            item.availablesCount === 0 ? styles.tableGray : styles.tableYellow,
+          ]}
+        >
           <Text style={[styles.storeVisitText, styles.storeVisitText1]}>
             剩餘桌數
           </Text>
@@ -124,7 +125,7 @@ const StoreScreen = ({ navigation }: any) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Header title="門市探索" />
+        <Header title="門市探索" isDarkMode />
         <ImageCarousel />
         <FlatList
           windowSize={1}
@@ -175,14 +176,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   storeImageMain: {
-    flexDirection:'column',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     width: 70,
     height: 70,
     borderRadius: 200,
     backgroundColor: '#000A30',
-    overflow:'hidden'
+    overflow: 'hidden',
   },
   storeImage: {
     width: '100%',

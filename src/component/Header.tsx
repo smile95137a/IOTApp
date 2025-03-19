@@ -4,10 +4,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface HeaderProps {
   title?: string;
-  onBackPress?: () => void; // 可选的返回按钮点击事件
-  rightIcon?: string; // 可选的右侧图标名称
-  onRightPress?: () => void; // 可选的右侧按钮点击事件
-  isDarkMode?: boolean; // 切換黑白模式
+  onBackPress?: () => void;
+  rightIcon?: string;
+  onRightPress?: () => void;
+  isDarkMode?: boolean;
 }
 
 const Header = ({
@@ -15,23 +15,23 @@ const Header = ({
   onBackPress,
   rightIcon,
   onRightPress,
-  isDarkMode = false, // 默認為黑色模式
+  isDarkMode = false,
 }: HeaderProps) => {
-  const iconColor = isDarkMode ? '#FFF' : '#000'; // 根据模式设置图标颜色
-  const titleColor = isDarkMode ? '#FFF' : '#000'; // 根据模式设置标题颜色
+  const iconColor = isDarkMode ? '#FFD700' : '#000';
+  const titleColor = isDarkMode ? '#00BFFF' : '#000';
 
   return (
     <View style={styles.header}>
       {onBackPress ? (
         <TouchableOpacity onPress={onBackPress}>
-          <Icon name="arrow-back" size={24} color={iconColor} />
+          <Icon name="chevron-left" size={24} color={iconColor} />
         </TouchableOpacity>
       ) : (
         <View style={{ width: 24 }} />
       )}
       <View style={styles.centerContent}>
         {title ? (
-          <>
+          <View style={styles.logoContainer}>
             <Image
               source={
                 isDarkMode
@@ -43,7 +43,7 @@ const Header = ({
             <Text style={[styles.headerTitle, { color: titleColor }]}>
               {title}
             </Text>
-          </>
+          </View>
         ) : (
           <Image
             source={
@@ -79,20 +79,25 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 10,
+    marginTop: 10,
   },
   centerContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+  logoContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   logo: {
-    width: 78,
-    height: 42,
+    width: 63,
+    height: 72,
     resizeMode: 'contain',
   },
   largeLogo: {
-    width: 83,
-    height: 52,
+    width: 63,
+    height: 72,
     resizeMode: 'contain',
   },
 });
