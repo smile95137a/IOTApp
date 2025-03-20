@@ -2,20 +2,30 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   Alert,
   Image,
+  ScrollView,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { fetchAllStores, deleteStore, Store } from '@/api/admin/storeApi'; // 引入刪除 API
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
-import { getImageUrl } from '@/utils/ImageUtils';
+import { Menu, Provider } from 'react-native-paper';
+import Header from '@/component/Header';
+import {
+  deleteStore,
+  fetchAllStores,
+  fetchStoresByVendorId,
+  Store,
+} from '@/api/admin/storeApi';
 
 const MonitorViewScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -49,197 +59,120 @@ const MonitorViewScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.headerContainer}>
-          <Text style={styles.header}>攝影店家</Text>
-        </View>
+    <Provider>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.backgroundImageWrapper}>
+            <Image
+              source={require('@/assets/iot-threeBall.png')}
+              resizeMode="contain"
+            />
+          </View>
 
-        {/* 店家列表 */}
-        <FlatList
-          data={[...stores]}
-          keyExtractor={(item) => item.uid}
-          contentContainerStyle={styles.listContainer}
-          windowSize={1}
-          numColumns={2}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              key={item.uid}
-              style={styles.card}
-              onPress={() =>
-                navigation.navigate('MonitorViewDetail', { storeId: item.id })
-              }
-            >
-              <View style={styles.row}>
-                {/* 左側圖標 */}
+          <View style={styles.headerWrapper}>
+            <Header title="攝影店家" onBackPress={() => navigation.goBack()} />
+          </View>
 
-                <Image
-                  source={
-                    item?.imgUrl
-                      ? { uri: getImageUrl(item.imgUrl) }
-                      : require('@/assets/iot-user-logo.jpg')
-                  }
-                  style={styles.cardIcon}
-                />
-                {/* 右側信息 */}
-
-                <View style={{ flex: 1, flexDirection: 'column' }}>
-                  <Text style={styles.cardTitle}>{item.name}</Text>
-                  <Text style={styles.cardSubtitle}>{item.address}</Text>
-                </View>
+          <View style={styles.contentWrapper}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+              <View style={styles.gridWrapper}>
+                {stores.map((item) => (
+                  <TouchableOpacity
+                    key={item.uid}
+                    style={styles.cardWrapper}
+                    onPress={() =>
+                      navigation.navigate('MonitorViewDetail', {
+                        storeId: item.id,
+                      })
+                    }
+                  >
+                    <Image
+                      source={require('@/assets/iot-logo-black.png')}
+                      style={styles.cardImage}
+                    />
+                    <View style={styles.cardFooter}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
               </View>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-    </SafeAreaView>
+            </ScrollView>
+          </View>
+        </View>
+      </SafeAreaView>
+    </Provider>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F4F8FB',
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
+    position: 'absolute',
+    right: -200,
+    bottom: 0,
+    opacity: 0.1,
   },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  headerContainer: {
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
+  scrollContent: { paddingBottom: 20 },
+  gridWrapper: {
     flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 20,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  addButton: {
-    backgroundColor: '#007bff',
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  storeItem: {
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  storeInfoContainer: {
-    flex: 1,
-  },
-  storeInfo: {
-    flex: 1,
-  },
-  storeName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-  },
-  storeAddress: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconButton: {
-    padding: 8,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  cardIcon: {
-    width: 40,
-    height: 40,
-    marginRight: 10, // 圖標和桌台名稱間距
-    borderRadius: '50%',
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFF',
-  },
-  settingsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end', // 將按鈕內容靠右
-  },
-  settingsButtonText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#FFF',
-  },
-  arrowIcon: {
-    marginLeft: 5, // 與文字保持距離
-  },
-  addTableButton: {
-    backgroundColor: '#c7dbee',
-    width: '49%',
-    height: 128,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-  },
-  tableIcon: {
-    width: 50,
-    height: 50,
-    marginBottom: 10,
-  },
-  addTableText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  card: {
-    backgroundColor: '#4787C7',
+  cardWrapper: {
+    backgroundColor: '#fff',
     width: '48%',
     height: 128,
-    aspectRatio: 1.5,
     borderRadius: 20,
-    padding: 10,
-    justifyContent: 'space-between',
-    marginBottom: 4,
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    padding: 14,
+    marginBottom: 8,
     marginHorizontal: '1%',
   },
-  cardSubtitle: {
-    fontSize: 14,
-    color: '#DDD',
-    marginTop: 4,
-  },
-  deleteButton: {
+  cardImage: { width: '100%', height: '100%', flex: 1, resizeMode: 'contain' },
+  cardFooter: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'flex-end', // 將按鈕內容靠右
+    marginTop: 12,
   },
+  cardTitle: { fontSize: 16, fontWeight: 'bold' },
+  cardActions: { flexDirection: 'row', alignItems: 'center' },
+  iconButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#595858',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addCardWrapper: {
+    backgroundColor: '#FFD700',
+    width: '48%',
+    height: 128,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+  },
+  addCardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 12,
+  },
+  addCardText: { fontSize: 16, fontWeight: 'bold' },
+  addIconWrapper: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#595858',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuStyle: { backgroundColor: '#FFF', borderRadius: 10 },
 });
 
 export default MonitorViewScreen;
