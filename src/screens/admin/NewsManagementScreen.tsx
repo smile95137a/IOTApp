@@ -2,22 +2,30 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   Alert,
   Image,
+  ScrollView,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
-import { deleteNewsById, fetchAllNews } from '@/api/admin/newsApi';
+import { Menu, Provider } from 'react-native-paper';
+import Header from '@/component/Header';
+import { deleteBanner, fetchAllBanners } from '@/api/admin/BannerApi';
 import { getImageUrl } from '@/utils/ImageUtils';
+import { deleteNewsById, fetchAllNews } from '@/api/admin/newsApi';
 
 const NewsManagementScreen = () => {
+  const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const [newsList, setNewsList] = useState([]);
@@ -70,134 +78,173 @@ const NewsManagementScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.headerContainer}>
-          <Text style={styles.header}>最新消息管理</Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('AddNews')}
-            style={styles.addButton}
-          >
-            <Icon name="plus" size={28} color="#fff" />
-          </TouchableOpacity>
-        </View>
+    <Provider>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.backgroundImageWrapper}>
+            <Image
+              source={require('@/assets/iot-threeBall.png')}
+              resizeMode="contain"
+            />
+          </View>
 
-        <FlatList
-          data={newsList}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) => (
-            <View style={styles.newsItem}>
-              <View style={styles.newsInfo}>
-                <Image
-                  src={getImageUrl(item.imageUrl)}
-                  style={styles.newsImage}
-                  resizeMode="cover"
-                />
-                <Text style={styles.newsTitle}>{item.title}</Text>
-                <Text numberOfLines={2} style={styles.newsContent}>
-                  {item.content}
-                </Text>
-              </View>
-              <View style={styles.actions}>
+          <View style={styles.headerWrapper}>
+            <Header
+              title="最新消息管理"
+              onBackPress={() => navigation.goBack()}
+            />
+          </View>
+
+          <View style={styles.contentWrapper}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+              <View style={styles.gridWrapper}>
+                {newsList.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={styles.cardWrapper}
+                    onPress={() =>
+                      navigation.navigate('AddNews', { news: item })
+                    }
+                  >
+                    <Image
+                      src={getImageUrl(item.imageUrl)}
+                      style={styles.cardImage}
+                    />
+                    <View style={styles.cardFooter}>
+                      <Text style={styles.cardTitle}>{item.title}</Text>
+                      <View style={styles.cardActions}>
+                        <Menu
+                          visible={visibleMenuId === item.uid}
+                          onDismiss={() => setVisibleMenuId(null)}
+                          anchor={
+                            <TouchableOpacity
+                              style={styles.iconButton}
+                              onPress={() =>
+                                setVisibleMenuId(
+                                  visibleMenuId === item.uid ? null : item.uid
+                                )
+                              }
+                            >
+                              <Icon
+                                name="dots-vertical"
+                                size={20}
+                                color="#FFF"
+                              />
+                            </TouchableOpacity>
+                          }
+                          contentStyle={styles.menuStyle}
+                        >
+                          <Menu.Item
+                            onPress={() =>
+                              navigation.navigate('AddNews', { news: item })
+                            }
+                            title="編輯"
+                            leadingIcon="pencil-outline"
+                          />
+                          <Menu.Item
+                            onPress={() => handleDelete(item.newsUid)}
+                            title="刪除"
+                            leadingIcon="trash-can-outline"
+                            titleStyle={{ color: 'red' }}
+                          />
+                        </Menu>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ))}
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('AddNews', { news: item })}
-                  style={styles.actionButton}
+                  style={styles.addCardWrapper}
+                  onPress={() => navigation.navigate('AddNews')}
                 >
-                  <Icon name="pencil" size={20} color="#007bff" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => handleDelete(item.newsUid)}
-                  style={styles.actionButton}
-                >
-                  <Icon name="delete" size={20} color="#FF4D4D" />
+                  <Image
+                    source={require('@/assets/iot-logo-white.png')}
+                    style={styles.cardImage}
+                  />
+                  <View style={styles.addCardFooter}>
+                    <Text style={styles.addCardText}>新增最新消息</Text>
+                    <View style={styles.addIconWrapper}>
+                      <Icon name="plus" size={20} color="#FFF" />
+                    </View>
+                  </View>
                 </TouchableOpacity>
               </View>
-            </View>
-          )}
-        />
-      </View>
-    </SafeAreaView>
+            </ScrollView>
+          </View>
+        </View>
+      </SafeAreaView>
+    </Provider>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F4F8FB',
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
+    position: 'absolute',
+    right: -200,
+    bottom: 0,
+    opacity: 0.1,
   },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  headerContainer: {
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
+  scrollContent: { paddingBottom: 20 },
+  gridWrapper: {
     flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 20,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+  cardWrapper: {
+    backgroundColor: '#fff',
+    width: '48%',
+    height: 128,
+    borderRadius: 20,
+    padding: 14,
+    marginBottom: 8,
+    marginHorizontal: '1%',
   },
-  addButton: {
-    backgroundColor: '#007bff',
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  cardImage: { width: '100%', height: '100%', flex: 1, resizeMode: 'contain' },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  cardTitle: { fontSize: 16, fontWeight: 'bold' },
+  cardActions: { flexDirection: 'row', alignItems: 'center' },
+  iconButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#595858',
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
   },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  newsImage: {
-    width: '100%',
-    height: 230,
-    borderRadius: 10,
-    marginBottom: 15,
-  },
-  newsItem: {
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    flexDirection: 'row',
+  addCardWrapper: {
+    backgroundColor: '#FFD700',
+    width: '48%',
+    height: 128,
+    borderRadius: 20,
     alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+  },
+  addCardFooter: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  newsInfo: {
-    flex: 1,
-  },
-  newsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-  },
-  newsContent: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
-  },
-  actions: {
-    flexDirection: 'row',
     alignItems: 'center',
+    width: '100%',
+    marginTop: 12,
   },
-  actionButton: {
-    padding: 8,
-    marginLeft: 10,
+  addCardText: { fontSize: 16, fontWeight: 'bold' },
+  addIconWrapper: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#595858',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  menuStyle: { backgroundColor: '#FFF', borderRadius: 10 },
 });
 
 export default NewsManagementScreen;
