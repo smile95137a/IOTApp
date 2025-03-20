@@ -6,20 +6,11 @@ import {
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AdminDashboardScreen from '@/screens/admin/AdminDashboardScreen';
-import ReportSummaryScreen from '@/screens/admin/ReportSummaryScreen';
-import AccountSettingsScreen from '@/screens/admin/AccountSettingsScreen';
-import AddPromotionScreen from '@/screens/admin/AddPromotionScreen';
 import DeviceManagementScreen from '@/screens/admin/DeviceManagement';
 import EditMemberScreen from '@/screens/admin/EditMemberScreen';
 import EnvironmentManagementScreen from '@/screens/admin/EnvironmentManagementScreen';
 import MemberDetailsScreen from '@/screens/admin/MemberDetailsScreen';
 import MemberManagementScreen from '@/screens/admin/MemberManagementScreen';
-import MyStoreHomeScreen from '@/screens/admin/MyStoreHomeScreen';
-import PermissionSettingsScreen from '@/screens/admin/PermissionSettingsScreen';
-import PromotionSettingsScreen from '@/screens/admin/PromotionSettingsScreen';
-import StoreSettingsScreen from '@/screens/admin/StoreSettingsScreen';
-import TableDetailsScreen from '@/screens/admin/TableDetailsScreen';
-import TableManagementScreen from '@/screens/admin/TableManagementScreen';
 import VendorManagementScreen from '@/screens/admin/VendorManagementScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import AddVendorScreen from '@/screens/admin/AddVendorScreen';
@@ -31,7 +22,6 @@ import AddBannerScreen from '@/screens/admin/AddBannerScreen';
 import AddNewsScreen from '@/screens/admin/AddNewsScreen';
 import BannerManagementScreen from '@/screens/admin/BannerManagementScreen';
 import NewsManagementScreen from '@/screens/admin/NewsManagementScreen';
-import { fetchAllBanners } from '@/api/bannerApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useNavigation } from '@react-navigation/native';
@@ -51,25 +41,25 @@ const menuItems = {
   dashboard: {
     stack: 'DashboardStack',
     screen: 'Dashboard',
-    icon: 'view-dashboard',
+    icon: 'view-dashboard-outline',
     label: '管理首頁',
   },
   member: {
     stack: 'MemberManagementStack',
     screen: 'MemberManagement',
-    icon: 'account-group',
+    icon: 'account-multiple-outline',
     label: '會員管理',
   },
   vendor: {
     stack: 'VendorManagementStack',
     screen: 'VendorManagement',
-    icon: 'account-group',
+    icon: 'truck-outline',
     label: '廠商管理',
   },
   store: {
     stack: 'StoreManagementStack',
     screen: 'StoreManagement',
-    icon: 'storefront',
+    icon: 'store-outline',
     label: '店家管理',
   },
   poolTable: {
@@ -81,31 +71,31 @@ const menuItems = {
   banner: {
     stack: 'BannerManagementStack',
     screen: 'BannerManagement',
-    icon: 'image',
+    icon: 'image-multiple-outline',
     label: 'Banner 管理',
   },
   news: {
     stack: 'NewsManagementStack',
     screen: 'NewsManagement',
-    icon: 'newspaper',
+    icon: 'newspaper-variant-outline',
     label: '最新消息管理',
   },
   equipment: {
     stack: 'EquipmentStack',
     screen: 'EquipmentManagement',
-    icon: 'wrench',
+    icon: 'cog-outline',
     label: '設備管理',
   },
   report: {
     stack: 'ReportStack',
     screen: '',
-    icon: 'chart-bar',
+    icon: 'file-chart-outline',
     label: '報表管理',
   },
   monitor: {
     stack: 'MonitorStack',
     screen: 'MonitorManagement',
-    icon: 'cctv',
+    icon: 'video-outline',
     label: '攝影機',
   },
 };
@@ -156,7 +146,7 @@ const CustomDrawerContent = (props: any) => {
                 })
               }
             >
-              <Icon name={menuItem.icon} size={24} color="#333" />
+              <Icon name={menuItem.icon} size={38} color="#333" />
               <Text style={styles.drawerItemText}>{menuItem.label}</Text>
             </TouchableOpacity>
           );
@@ -183,8 +173,12 @@ const AdminDrawerNavigator = () => {
       screenOptions={{
         drawerStyle: {
           width: 200,
+          backgroundColor: '#FFF',
+          borderTopRightRadius: 20,
+          borderBottomRightRadius: 20,
         },
-        headerShown: false, // Disable default header globally
+        overlayColor: 'transparent',
+        headerShown: false,
       }}
     >
       <Drawer.Screen
