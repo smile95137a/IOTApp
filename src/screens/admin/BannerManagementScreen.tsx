@@ -81,7 +81,8 @@ const BannerManagementScreen = () => {
         <View style={styles.container}>
           <View style={styles.backgroundImageWrapper}>
             <Image
-              source={require('@/assets/iot-threeBall.png')}
+              source={require('@/assets/iot-admin-bg.png')}
+              style={{ width: '100%' }}
               resizeMode="contain"
             />
           </View>
@@ -179,10 +180,13 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   backgroundImageWrapper: {
     position: 'absolute',
-    right: -200,
+    width: '100%',
+    height: '100%',
+    right: 0,
     bottom: 0,
-    opacity: 0.1,
+    zIndex: 2,
   },
+
   headerWrapper: { backgroundColor: '#FFFFFF' },
   contentWrapper: { flex: 1, padding: 20 },
   scrollContent: { paddingBottom: 20 },

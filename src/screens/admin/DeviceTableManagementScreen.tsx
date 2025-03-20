@@ -64,7 +64,7 @@ const DeviceTableManagementScreen = () => {
       <View style={styles.container}>
         <View style={styles.fixedImageContainer}>
           <Image
-            source={require('@/assets/iot-threeBall.png')}
+            source={require('@/assets/iot-admin-bg.png')}
             resizeMode="contain" // Adjust to fit properly
           />
         </View>

@@ -57,7 +57,7 @@ const PoolTableManagementScreen = () => {
       <View style={styles.container}>
         <View style={styles.fixedImageContainer}>
           <Image
-            source={require('@/assets/iot-threeBall.png')}
+            source={require('@/assets/iot-admin-bg.png')}
             resizeMode="contain"
           />
         </View>
@@ -124,12 +124,14 @@ const styles = StyleSheet.create({
   },
   fixedImageContainer: {
     position: 'absolute',
-    right: -200,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    right: 0,
     bottom: 0,
     zIndex: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    opacity: 0.1,
   },
 
   header: {
