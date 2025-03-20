@@ -9,14 +9,23 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Vendor, fetchAllVendors, deleteVendor } from '@/api/admin/vendorApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { Menu, Provider } from 'react-native-paper';
 import Header from '@/component/Header';
+import {
+  deleteStore,
+  fetchAllStores,
+  fetchStoresByVendorId,
+} from '@/api/admin/storeApi';
+import { Vendor, fetchAllVendors, deleteVendor } from '@/api/admin/vendorApi';
 
 const VendorManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -84,24 +93,24 @@ const VendorManagementScreen = () => {
     <Provider>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          <View style={styles.backgroundImageContainer}>
+          <View style={styles.backgroundImageWrapper}>
             <Image
               source={require('@/assets/iot-threeBall.png')}
               resizeMode="contain"
             />
           </View>
 
-          <View style={styles.headerContainer}>
+          <View style={styles.headerWrapper}>
             <Header title="廠商管理" onBackPress={() => navigation.goBack()} />
           </View>
 
-          <View style={styles.contentContainer}>
-            <ScrollView contentContainerStyle={styles.scrollViewContent}>
-              <View style={styles.vendorGrid}>
+          <View style={styles.contentWrapper}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+              <View style={styles.gridWrapper}>
                 {vendors.map((item) => (
                   <TouchableOpacity
                     key={item.uid}
-                    style={styles.vendorCard}
+                    style={styles.cardWrapper}
                     onPress={() =>
                       navigation.navigate('StoreManagementStack', {
                         screen: 'StoreManagement',
@@ -111,17 +120,17 @@ const VendorManagementScreen = () => {
                   >
                     <Image
                       source={require('@/assets/iot-logo-black.png')}
-                      style={styles.vendorImage}
+                      style={styles.cardImage}
                     />
-                    <View style={styles.vendorFooter}>
-                      <Text style={styles.vendorName}>{item.name}</Text>
-                      <View style={styles.vendorActions}>
+                    <View style={styles.cardFooter}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
+                      <View style={styles.cardActions}>
                         <Menu
                           visible={visibleMenuId === item.uid}
                           onDismiss={() => setVisibleMenuId(null)}
                           anchor={
                             <TouchableOpacity
-                              style={styles.actionIconButton}
+                              style={styles.iconButton}
                               onPress={() =>
                                 setVisibleMenuId(
                                   visibleMenuId === item.uid ? null : item.uid
@@ -158,18 +167,17 @@ const VendorManagementScreen = () => {
                     </View>
                   </TouchableOpacity>
                 ))}
-
                 <TouchableOpacity
-                  style={styles.addVendorButton}
+                  style={styles.addCardWrapper}
                   onPress={() => navigation.navigate('AddVendor')}
                 >
                   <Image
                     source={require('@/assets/iot-logo-white.png')}
-                    style={styles.addVendorImage}
+                    style={styles.cardImage}
                   />
-                  <View style={styles.addVendorFooter}>
-                    <Text style={styles.addVendorText}>新增廠商</Text>
-                    <View style={styles.addVendorIcon}>
+                  <View style={styles.addCardFooter}>
+                    <Text style={styles.addCardText}>新增店家</Text>
+                    <View style={styles.addIconWrapper}>
                       <Icon name="plus" size={20} color="#FFF" />
                     </View>
                   </View>
@@ -184,79 +192,49 @@ const VendorManagementScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  backgroundImageContainer: {
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
     position: 'absolute',
     right: -200,
     bottom: 0,
-    zIndex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
     opacity: 0.1,
   },
-  headerContainer: {
-    backgroundColor: '#FFFFFF',
-  },
-  contentContainer: {
-    flex: 1,
-    padding: 20,
-    zIndex: 3,
-  },
-  scrollViewContent: {
-    paddingBottom: 20,
-  },
-  vendorGrid: {
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
+  scrollContent: { paddingBottom: 20 },
+  gridWrapper: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
-  vendorCard: {
+  cardWrapper: {
     backgroundColor: '#fff',
     width: '48%',
     height: 128,
     borderRadius: 20,
     padding: 14,
-    justifyContent: 'space-between',
     marginBottom: 8,
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
     marginHorizontal: '1%',
   },
-  vendorImage: {
-    width: '100%',
-    height: '100%',
-    flex: 1,
-    objectFit: 'contain',
-  },
-  vendorFooter: {
+  cardImage: { width: '100%', height: '100%', flex: 1, resizeMode: 'contain' },
+  cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 12,
   },
-  vendorName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  vendorActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  actionIconButton: {
+  cardTitle: { fontSize: 16, fontWeight: 'bold' },
+  cardActions: { flexDirection: 'row', alignItems: 'center' },
+  iconButton: {
     width: 30,
     height: 30,
     borderRadius: 15,
     backgroundColor: '#595858',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 8,
   },
-  addVendorButton: {
+  addCardWrapper: {
     backgroundColor: '#FFD700',
     width: '48%',
     height: 128,
@@ -264,27 +242,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 14,
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
   },
-  addVendorImage: {
-    width: '100%',
-    height: '100%',
-    flex: 1,
-    objectFit: 'contain',
-  },
-  addVendorFooter: {
+  addCardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     marginTop: 12,
   },
-  addVendorText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  addVendorIcon: {
+  addCardText: { fontSize: 16, fontWeight: 'bold' },
+  addIconWrapper: {
     width: 30,
     height: 30,
     borderRadius: 15,
@@ -292,11 +259,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  menuStyle: {
-    backgroundColor: '#FFF',
-    borderRadius: 10,
-    elevation: 4,
-  },
+  menuStyle: { backgroundColor: '#FFF', borderRadius: 10 },
 });
 
 export default VendorManagementScreen;

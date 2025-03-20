@@ -1,97 +1,58 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   Alert,
   Image,
+  ScrollView,
 } from 'react-native';
-import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {
-  fetchAllStores,
-  deleteStore,
-  Store,
-  fetchStoresByVendorId,
-} from '@/api/admin/storeApi'; // 引入刪除 API
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
-import { getImageUrl } from '@/utils/ImageUtils';
+import { Menu, Provider } from 'react-native-paper';
+import Header from '@/component/Header';
+import {
+  deleteStore,
+  fetchAllStores,
+  fetchStoresByVendorId,
+} from '@/api/admin/storeApi';
 
 const StoreManagementScreen = () => {
   const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
-  const [stores, setStores] = useState<Store[]>([]);
-
+  const [stores, setStores] = useState([]);
+  const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
   const vendor = route.params?.vendor;
 
   const loadStores = async () => {
     try {
       dispatch(showLoading());
-
-      let response1, response2, response;
-
-      if (vendor) {
-        console.log('Fetching stores for vendor:', vendor.id);
-        response1 = await fetchStoresByVendorId(vendor.id);
-        response2 = await fetchAllStores();
-      } else {
-        console.log('Fetching all stores');
-        response = await fetchAllStores(); // 呼叫所有店家的 API
-      }
-
+      const response = vendor
+        ? await fetchStoresByVendorId(vendor.id)
+        : await fetchAllStores();
       dispatch(hideLoading());
 
-      if (vendor) {
-        const { success: success1, data: data1 } = response1 || {};
-        const { success: success2, data: data2 } = response2 || {};
-
-        if (success1 && success2) {
-          // 找出 response1 和 response2 皆存在的店家
-          const commonStores = data2.filter(
-            (store1) => data1.some((store2) => store2.id === store1.id) // 以 id 為基準比較
-          );
-
-          setStores(commonStores);
-          console.log('Common stores:', commonStores);
-        } else {
-          Alert.alert('錯誤', '無法載入店家資訊');
-        }
+      if (response.success) {
+        setStores(response.data);
       } else {
-        const { success, data, message } = response;
-        if (success) {
-          setStores(data);
-          console.log('Fetched stores:', data);
-        } else {
-          Alert.alert('錯誤', message || '無法載入店家資訊');
-        }
+        Alert.alert('錯誤', response.message || '無法載入店家資訊');
       }
     } catch (error) {
       dispatch(hideLoading());
-      console.error('Error loading stores:', error);
       Alert.alert('錯誤', '發生錯誤，請稍後再試');
     }
   };
 
   useEffect(() => {
-    if (vendor) {
-      console.log('Vendor updated:', vendor);
-      loadStores();
-    } else {
-      loadStores();
-    }
+    loadStores();
   }, [vendor]);
 
-  // 刪除店家
   const handleDelete = (storeUid, storeName) => {
     Alert.alert('確認刪除', `確定要刪除店家「${storeName}」嗎？`, [
       { text: '取消', style: 'cancel' },
@@ -106,7 +67,7 @@ const StoreManagementScreen = () => {
 
             if (response.success) {
               Alert.alert('成功', '店家已刪除');
-              loadStores(); // 重新載入列表
+              loadStores();
             } else {
               Alert.alert('錯誤', response.message || '刪除失敗');
             }
@@ -120,225 +81,170 @@ const StoreManagementScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.headerContainer}>
-          <Text style={styles.header}>店家管理</Text>
-        </View>
+    <Provider>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.backgroundImageWrapper}>
+            <Image
+              source={require('@/assets/iot-threeBall.png')}
+              resizeMode="contain"
+            />
+          </View>
 
-        {/* 店家列表 */}
-        <FlatList
-          data={[...stores, { uid: 'addButton', isAddButton: true }]}
-          keyExtractor={(item) => item.uid}
-          contentContainerStyle={styles.listContainer}
-          windowSize={1}
-          numColumns={2}
-          renderItem={({ item }) =>
-            item.isAddButton ? (
-              <TouchableOpacity
-                style={styles.addTableButton}
-                onPress={() => navigation.navigate('AddStore')}
-              >
-                <Image
-                  source={require('@/assets/iot-login-logo.png')}
-                  style={styles.tableIcon}
-                />
-                <Text style={styles.addTableText}>新增店家 +</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity key={item.uid} style={styles.card}>
-                <View style={styles.row}>
-                  {/* 左側圖標 */}
+          <View style={styles.headerWrapper}>
+            <Header title="店家管理" onBackPress={() => navigation.goBack()} />
+          </View>
 
-                  <Image
-                    source={
-                      item?.imgUrl
-                        ? { uri: getImageUrl(item.imgUrl) }
-                        : require('@/assets/iot-user-logo.jpg')
+          <View style={styles.contentWrapper}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+              <View style={styles.gridWrapper}>
+                {stores.map((item) => (
+                  <TouchableOpacity
+                    key={item.uid}
+                    style={styles.cardWrapper}
+                    onPress={() =>
+                      navigation.navigate('AddStore', { store: item })
                     }
-                    style={styles.cardIcon}
+                  >
+                    <Image
+                      source={require('@/assets/iot-logo-black.png')}
+                      style={styles.cardImage}
+                    />
+                    <View style={styles.cardFooter}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
+                      <View style={styles.cardActions}>
+                        <Menu
+                          visible={visibleMenuId === item.uid}
+                          onDismiss={() => setVisibleMenuId(null)}
+                          anchor={
+                            <TouchableOpacity
+                              style={styles.iconButton}
+                              onPress={() =>
+                                setVisibleMenuId(
+                                  visibleMenuId === item.uid ? null : item.uid
+                                )
+                              }
+                            >
+                              <Icon
+                                name="dots-vertical"
+                                size={20}
+                                color="#FFF"
+                              />
+                            </TouchableOpacity>
+                          }
+                          contentStyle={styles.menuStyle}
+                        >
+                          <Menu.Item
+                            onPress={() =>
+                              navigation.navigate('AddStore', { store: item })
+                            }
+                            title="編輯"
+                            leadingIcon="pencil-outline"
+                          />
+                          <Menu.Item
+                            onPress={() => handleDelete(item.uid, item.name)}
+                            title="刪除"
+                            leadingIcon="trash-can-outline"
+                            titleStyle={{ color: 'red' }}
+                          />
+                        </Menu>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+                <TouchableOpacity
+                  style={styles.addCardWrapper}
+                  onPress={() => navigation.navigate('AddVendor')}
+                >
+                  <Image
+                    source={require('@/assets/iot-logo-white.png')}
+                    style={styles.cardImage}
                   />
-                  {/* 右側信息 */}
-
-                  <View style={{ flex: 1, flexDirection: 'column' }}>
-                    <Text style={styles.cardTitle}>{item.name}</Text>
-                    <Text style={styles.cardSubtitle}>{item.address}</Text>
+                  <View style={styles.addCardFooter}>
+                    <Text style={styles.addCardText}>新增店家</Text>
+                    <View style={styles.addIconWrapper}>
+                      <Icon name="plus" size={20} color="#FFF" />
+                    </View>
                   </View>
-                </View>
-                {/* 設定按鈕 */}
-                <TouchableOpacity
-                  style={styles.settingsButton}
-                  onPress={() =>
-                    navigation.navigate('AddStore', { store: item })
-                  }
-                >
-                  <Text style={styles.settingsButtonText}>編輯</Text>
-                  <Icon
-                    name="chevron-right"
-                    size={20}
-                    color="#FFF"
-                    style={styles.arrowIcon}
-                  />
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleDelete(item.uid, item.name)}
-                >
-                  <Icon name="delete" size={20} color="#dc3545" />
-                </TouchableOpacity>
-              </TouchableOpacity>
-            )
-          }
-        />
-      </View>
-    </SafeAreaView>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </SafeAreaView>
+    </Provider>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F4F8FB',
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
+    position: 'absolute',
+    right: -200,
+    bottom: 0,
+    opacity: 0.1,
   },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  headerContainer: {
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
+  scrollContent: { paddingBottom: 20 },
+  gridWrapper: {
     flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 20,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  addButton: {
-    backgroundColor: '#007bff',
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  storeItem: {
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  storeInfoContainer: {
-    flex: 1,
-  },
-  storeInfo: {
-    flex: 1,
-  },
-  storeName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-  },
-  storeAddress: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconButton: {
-    padding: 8,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  cardIcon: {
-    width: 40,
-    height: 40,
-    marginRight: 10, // 圖標和桌台名稱間距
-    borderRadius: '50%',
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFF',
-  },
-  settingsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end', // 將按鈕內容靠右
-  },
-  settingsButtonText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#FFF',
-  },
-  arrowIcon: {
-    marginLeft: 5, // 與文字保持距離
-  },
-  addTableButton: {
-    backgroundColor: '#c7dbee',
-    width: '49%',
-    height: 128,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-  },
-  tableIcon: {
-    width: 50,
-    height: 50,
-    marginBottom: 10,
-  },
-  addTableText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  card: {
-    backgroundColor: '#4787C7',
+  cardWrapper: {
+    backgroundColor: '#fff',
     width: '48%',
     height: 128,
-    aspectRatio: 1.5,
     borderRadius: 20,
-    padding: 10,
-    justifyContent: 'space-between',
-    marginBottom: 4,
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    padding: 14,
+    marginBottom: 8,
     marginHorizontal: '1%',
   },
-  cardSubtitle: {
-    fontSize: 14,
-    color: '#DDD',
-    marginTop: 4,
-  },
-  deleteButton: {
+  cardImage: { width: '100%', height: '100%', flex: 1, resizeMode: 'contain' },
+  cardFooter: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'flex-end', // 將按鈕內容靠右
+    marginTop: 12,
   },
+  cardTitle: { fontSize: 16, fontWeight: 'bold' },
+  cardActions: { flexDirection: 'row', alignItems: 'center' },
+  iconButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#595858',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addCardWrapper: {
+    backgroundColor: '#FFD700',
+    width: '48%',
+    height: 128,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+  },
+  addCardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 12,
+  },
+  addCardText: { fontSize: 16, fontWeight: 'bold' },
+  addIconWrapper: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#595858',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuStyle: { backgroundColor: '#FFF', borderRadius: 10 },
 });
 
 export default StoreManagementScreen;
