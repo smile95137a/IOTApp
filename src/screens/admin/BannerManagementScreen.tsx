@@ -9,21 +9,22 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
-  fetchAllPoolTables,
-  deletePoolTable,
-  PoolTable,
-} from '@/api/admin/poolTableApi';
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
+import { Menu, Provider } from 'react-native-paper';
 import Header from '@/component/Header';
-import { getImageUrl } from '@/utils/ImageUtils';
 import { deleteBanner, fetchAllBanners } from '@/api/admin/BannerApi';
+import { getImageUrl } from '@/utils/ImageUtils';
 
 const BannerManagementScreen = () => {
+  const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const [banners, setBanners] = useState([]);
@@ -75,147 +76,148 @@ const BannerManagementScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.fixedImageContainer}>
-          <Image
-            source={require('@/assets/iot-threeBall.png')}
-            resizeMode="contain"
-          />
-        </View>
+    <Provider>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.backgroundImageWrapper}>
+            <Image
+              source={require('@/assets/iot-threeBall.png')}
+              resizeMode="contain"
+            />
+          </View>
 
-        <View style={styles.header}>
-          <Header title="Banner 管理" onBackPress={() => navigation.goBack()} />
-        </View>
-        <View style={styles.mainContainer}>
-          <ScrollView contentContainerStyle={styles.listContainer}>
-            <View style={styles.tableGrid}>
-              {banners.map((item) => (
+          <View style={styles.headerWrapper}>
+            <Header
+              title="Banner 管理"
+              onBackPress={() => navigation.goBack()}
+            />
+          </View>
+
+          <View style={styles.contentWrapper}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+              <View style={styles.gridWrapper}>
+                {banners.map((item) => (
+                  <TouchableOpacity
+                    key={item.uid}
+                    style={styles.cardWrapper}
+                    onPress={() =>
+                      navigation.navigate('AddBanner', { banner: item })
+                    }
+                  >
+                    <Image
+                      src={getImageUrl(item.imageUrl)}
+                      style={styles.cardImage}
+                    />
+                    <View style={styles.cardFooter}>
+                      <Text style={styles.cardTitle}>ID: {item.bannerId}</Text>
+                      <View style={styles.cardActions}>
+                        <Menu
+                          visible={visibleMenuId === item.uid}
+                          onDismiss={() => setVisibleMenuId(null)}
+                          anchor={
+                            <TouchableOpacity
+                              style={styles.iconButton}
+                              onPress={() =>
+                                setVisibleMenuId(
+                                  visibleMenuId === item.uid ? null : item.uid
+                                )
+                              }
+                            >
+                              <Icon
+                                name="dots-vertical"
+                                size={20}
+                                color="#FFF"
+                              />
+                            </TouchableOpacity>
+                          }
+                          contentStyle={styles.menuStyle}
+                        >
+                          <Menu.Item
+                            onPress={() =>
+                              navigation.navigate('AddBanner', { banner: item })
+                            }
+                            title="編輯"
+                            leadingIcon="pencil-outline"
+                          />
+                          <Menu.Item
+                            onPress={() => handleDelete(item.bannerId)}
+                            title="刪除"
+                            leadingIcon="trash-can-outline"
+                            titleStyle={{ color: 'red' }}
+                          />
+                        </Menu>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ))}
                 <TouchableOpacity
-                  key={item.bannerId}
-                  style={styles.card}
-                  onPress={() =>
-                    navigation.navigate('AddBanner', { banner: item })
-                  }
+                  style={styles.addCardWrapper}
+                  onPress={() => navigation.navigate('AddBanner')}
                 >
                   <Image
-                    src={getImageUrl(item.imageUrl)}
-                    style={styles.cardImg}
+                    source={require('@/assets/iot-logo-white.png')}
+                    style={styles.cardImage}
                   />
-                  <View style={styles.cardFooter}>
-                    <Text style={styles.cardText}>ID: {item.bannerId}</Text>
-                    <View style={styles.cardInfoRight}>
-                      <Text style={styles.cardInfoRightText}>設定</Text>
-                      <View style={styles.cardInfoRightIcon}>
-                        <Icon name="chevron-right" size={20} color="#FFF" />
-                      </View>
+                  <View style={styles.addCardFooter}>
+                    <Text style={styles.addCardText}>新增Banner</Text>
+                    <View style={styles.addIconWrapper}>
+                      <Icon name="plus" size={20} color="#FFF" />
                     </View>
                   </View>
                 </TouchableOpacity>
-              ))}
-
-              <TouchableOpacity
-                style={styles.addTableButton}
-                onPress={() => navigation.navigate('AddBanner')}
-              >
-                <Image
-                  source={require('@/assets/iot-table-enable.png')}
-                  style={styles.addTableButtonImg}
-                />
-                <View style={styles.addTableButtonFooter}>
-                  <Text style={styles.addTableButtonLeftText}>新增桌台</Text>
-                  <View style={styles.addTableButtonRightIcon}>
-                    <Icon name="plus" size={20} color="#FFF" />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
+              </View>
+            </ScrollView>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </Provider>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  fixedImageContainer: {
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
     position: 'absolute',
     right: -200,
     bottom: 0,
-    zIndex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
     opacity: 0.1,
   },
-
-  header: {
-    backgroundColor: '#FFFFFF',
-  },
-  mainContainer: {
-    flex: 1,
-    padding: 20,
-    zIndex: 3,
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  tableGrid: {
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
+  scrollContent: { paddingBottom: 20 },
+  gridWrapper: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
-  card: {
+  cardWrapper: {
     backgroundColor: '#fff',
     width: '48%',
     height: 128,
     borderRadius: 20,
     padding: 14,
-    justifyContent: 'space-between',
     marginBottom: 8,
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
     marginHorizontal: '1%',
   },
-  cardImg: {
-    width: '100%',
-    height: '100%',
-    flex: 1,
-    objectFit: 'contain',
-  },
+  cardImage: { width: '100%', height: '100%', flex: 1, resizeMode: 'contain' },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 12,
   },
-  cardText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  cardInfoRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  cardInfoRightText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  cardInfoRightIcon: {
+  cardTitle: { fontSize: 16, fontWeight: 'bold' },
+  cardActions: { flexDirection: 'row', alignItems: 'center' },
+  iconButton: {
     width: 30,
     height: 30,
     borderRadius: 15,
     backgroundColor: '#595858',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 8,
   },
-  addTableButton: {
+  addCardWrapper: {
     backgroundColor: '#FFD700',
     width: '48%',
     height: 128,
@@ -223,27 +225,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 14,
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
   },
-  addTableButtonImg: {
-    width: '100%',
-    height: '100%',
-    flex: 1,
-    objectFit: 'contain',
-  },
-  addTableButtonFooter: {
+  addCardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     marginTop: 12,
   },
-  addTableButtonLeftText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  addTableButtonRightIcon: {
+  addCardText: { fontSize: 16, fontWeight: 'bold' },
+  addIconWrapper: {
     width: 30,
     height: 30,
     borderRadius: 15,
@@ -251,6 +242,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  menuStyle: { backgroundColor: '#FFF', borderRadius: 10 },
 });
 
 export default BannerManagementScreen;
