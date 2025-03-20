@@ -16,14 +16,16 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.jim081728.iiot",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.jim081728.iiot"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "buildProperties": {
+        "androidManifest": {
+          "usesCleartextTraffic": true
+        }
+      }
     },
     "extra": {
       "eas": {
@@ -33,6 +35,7 @@
         "API_BASE_URL": "http://3.34.210.106:8081",
         "projectId": "a9f981a8-30e0-4d5e-ba21-25e6e6512792"
       }
-    }
+    },
+    "plugins": ["expo-build-properties"]
   }
 }

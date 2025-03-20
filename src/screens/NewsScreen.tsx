@@ -1,9 +1,4 @@
-import {
-  News,
-  fetchAllNews,
-  fetchNewsByStatus,
-  fetchNewsByStatusNoUser,
-} from '@/api/newsApi';
+import { News, fetchNewsByStatusNoUser } from '@/api/newsApi';
 import DateFormatter from '@/component/DateFormatter';
 import Header from '@/component/Header';
 import ImageCarousel from '@/component/ImageCarousel';
@@ -15,10 +10,10 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   Image,
   TouchableOpacity,
   SafeAreaView,
+  ScrollView,
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -52,36 +47,37 @@ const NewsScreen = ({ navigation }: any) => {
     loadNews();
   }, []);
 
-  const renderItem = ({ item }: { item: News }) => (
-    <TouchableOpacity
-      style={styles.newsItem}
-      onPress={() => navigation.navigate('NewsDetailScreen', { news: item })}
-    >
-      <Image src={getImageUrl(item.imageUrl)} style={styles.newsImage} />
-      <View style={styles.newsContent}>
-        <Text style={styles.newsTitle}>{item.title}</Text>
-        <Text style={styles.newsDescription} numberOfLines={2}>
-          {item.content}
-        </Text>
-        <Text style={styles.newsDate}>
-          <DateFormatter date={item.createdDate} format="YYYY.MM.DD" />
-        </Text>
-      </View>
-      <Icon name="chevron-right" size={24} color="#000" />
-    </TouchableOpacity>
-  );
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Header title="最新消息" isDarkMode />
         <ImageCarousel />
-        <FlatList
-          data={newsData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          windowSize={1}
-        />
+        <ScrollView>
+          {newsData.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.newsItem}
+              onPress={() =>
+                navigation.navigate('NewsDetailScreen', { news: item })
+              }
+            >
+              <Image
+                source={{ uri: getImageUrl(item.imageUrl) }}
+                style={styles.newsImage}
+              />
+              <View style={styles.newsContent}>
+                <Text style={styles.newsTitle}>{item.title}</Text>
+                <Text style={styles.newsDescription} numberOfLines={2}>
+                  {item.content}
+                </Text>
+                <Text style={styles.newsDate}>
+                  <DateFormatter date={item.createdDate} format="YYYY.MM.DD" />
+                </Text>
+              </View>
+              <Icon name="chevron-right" size={24} color="#000" />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

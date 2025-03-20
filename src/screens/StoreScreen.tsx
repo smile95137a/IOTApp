@@ -8,11 +8,11 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   Image,
   TouchableOpacity,
   Alert,
   SafeAreaView,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
@@ -62,9 +62,10 @@ const StoreScreen = ({ navigation }: any) => {
       }
     } catch (error) {
       dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      Alert.alert('錯誤', errorMessage);
+      Alert.alert(
+        '錯誤',
+        error instanceof Error ? error.message : String(error)
+      );
     }
   };
 
@@ -72,68 +73,67 @@ const StoreScreen = ({ navigation }: any) => {
     if (stores.length > 0) {
       const latitude = locationData.latitude || 0;
       const longitude = locationData.longitude || 0;
-      const nearest = findNearestStores(latitude, longitude, stores);
-      setNearStores(nearest);
+      setNearStores(findNearestStores(latitude, longitude, stores));
     }
   }, [locationData, stores]);
-
-  const renderStoreItem = ({ item }: any) => {
-    return (
-      <TouchableOpacity
-        style={styles.storeItem}
-        onPress={() => navigation.navigate('StoreDetail', { store: item })}
-      >
-        <View style={styles.storeImageContainer}>
-          <View style={styles.storeImageMain}>
-            <Image src={getImageUrl(item?.imgUrl)} style={styles.storeImage} />
-          </View>
-        </View>
-        <View style={styles.storeDetails}>
-          <Text style={styles.storeName}>{item.name}</Text>
-          <Text style={styles.storeAddress}>{item.address}</Text>
-          {isLoadGps && (
-            <Text style={styles.storeDistance}>
-              {item.distance.toFixed(1)} km
-            </Text>
-          )}
-        </View>
-        <View
-          style={[
-            styles.storeVisit,
-            item.availablesCount === 0 ? styles.tableGray : styles.tableYellow,
-          ]}
-        >
-          <Text style={[styles.storeVisitText, styles.storeVisitText1]}>
-            剩餘桌數
-          </Text>
-          <Text style={[styles.storeVisitText, styles.storeVisitText2]}>
-            {item.availablesCount}
-          </Text>
-          <View style={styles.storeVisitContainer}>
-            <Text style={[styles.storeVisitText, styles.storeVisitText3]}>
-              查看
-            </Text>
-            <Text style={[styles.storeVisitText, styles.storeVisitText4]}>
-              <Icon name="chevron-right" size={18} />
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Header title="門市探索" isDarkMode />
         <ImageCarousel />
-        <FlatList
-          windowSize={1}
-          data={nearStores}
-          renderItem={renderStoreItem}
-          keyExtractor={(item) => item.storeId}
-          contentContainerStyle={styles.storeList}
-        />
+        <ScrollView contentContainerStyle={styles.storeList}>
+          {nearStores.map((item) => (
+            <TouchableOpacity
+              key={item.storeId}
+              style={styles.storeItem}
+              onPress={() =>
+                navigation.navigate('StoreDetail', { store: item })
+              }
+            >
+              <View style={styles.storeImageContainer}>
+                <View style={styles.storeImageMain}>
+                  <Image
+                    src={getImageUrl(item?.imgUrl)}
+                    style={styles.storeImage}
+                  />
+                </View>
+              </View>
+              <View style={styles.storeDetails}>
+                <Text style={styles.storeName}>{item.name}</Text>
+                <Text style={styles.storeAddress}>{item.address}</Text>
+                {isLoadGps && (
+                  <Text style={styles.storeDistance}>
+                    {item.distance.toFixed(1)} km
+                  </Text>
+                )}
+              </View>
+              <View
+                style={[
+                  styles.storeVisit,
+                  item.availablesCount === 0
+                    ? styles.tableGray
+                    : styles.tableYellow,
+                ]}
+              >
+                <Text style={[styles.storeVisitText, styles.storeVisitText1]}>
+                  剩餘桌數
+                </Text>
+                <Text style={[styles.storeVisitText, styles.storeVisitText2]}>
+                  {item.availablesCount}
+                </Text>
+                <View style={styles.storeVisitContainer}>
+                  <Text style={[styles.storeVisitText, styles.storeVisitText3]}>
+                    查看
+                  </Text>
+                  <Text style={[styles.storeVisitText, styles.storeVisitText4]}>
+                    <Icon name="chevron-right" size={18} />
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
@@ -149,24 +149,12 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#0c0c3d',
   },
-
-  carouselContainer: {
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  bannerImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 10,
-  },
   storeList: {},
   storeItem: {
     flexDirection: 'row',
     backgroundColor: '#00BFFF',
     borderRadius: 10,
     marginBottom: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
     height: 106,
     overflow: 'hidden',
   },
@@ -176,9 +164,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   storeImageMain: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
     width: 70,
     height: 70,
     borderRadius: 200,
@@ -197,7 +182,6 @@ const styles = StyleSheet.create({
   storeName: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
   },
   storeAddress: {
     fontSize: 14,
@@ -233,16 +217,6 @@ const styles = StyleSheet.create({
   },
   storeVisitText3: {
     fontSize: 12,
-  },
-  storeVisitText4: {},
-  visitCount: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ff5722',
-  },
-  visitText: {
-    fontSize: 14,
-    color: '#ff5722',
   },
 });
 
