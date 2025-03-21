@@ -8,6 +8,8 @@ import {
   SafeAreaView,
   Alert,
   Image,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {
   useFocusEffect,
@@ -21,6 +23,7 @@ import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { getMonitorsByStoreId } from '@/api/admin/monitorApi';
+import HeaderBar from '@/component/admin/HeaderBar';
 
 const MonitorViewDetailScreen = () => {
   const route = useRoute();
@@ -63,57 +66,77 @@ const MonitorViewDetailScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.headerContainer}>
-          <Text style={styles.header}>攝影店家</Text>
-        </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.backgroundImageWrapper}>
+            <Image
+              source={require('@/assets/iot-admin-bg.png')}
+              style={{ width: '100%' }}
+              resizeMode="contain"
+            />
+          </View>
 
-        {/* 店家列表 */}
-        <FlatList
-          data={[...monitors]}
-          keyExtractor={(item) => item.uid}
-          contentContainerStyle={styles.listContainer}
-          windowSize={1}
-          numColumns={2}
-          renderItem={({ item }) => (
-            <TouchableOpacity key={item.uid} style={styles.card}>
-              <View style={styles.row}>
-                {/* 左側圖標 */}
-
-                <Image
-                  source={require('@/assets/iot-camera-logo.png')}
-                  style={styles.cardIcon}
-                />
-                {/* 右側信息 */}
-
-                <View style={{ flex: 1, flexDirection: 'column' }}>
-                  <Text style={styles.cardTitle}>{item.name}</Text>
-                </View>
+          <View style={styles.headerWrapper}>
+            <HeaderBar title="攝影機管理" />
+          </View>
+          <View style={styles.contentWrapper}>
+            <View style={styles.container}>
+              {/* Header */}
+              <View style={styles.headerContainer}>
+                <Text style={styles.header}>攝影店家</Text>
               </View>
-              <Image
-                source={require('@/assets/iot-m.jpg')}
-                style={styles.cameraImage}
+
+              {/* 店家列表 */}
+              <FlatList
+                data={[...monitors]}
+                keyExtractor={(item) => item.uid}
+                contentContainerStyle={styles.listContainer}
+                windowSize={1}
+                numColumns={2}
+                renderItem={({ item }) => (
+                  <TouchableOpacity key={item.uid} style={styles.card}>
+                    <View style={styles.row}>
+                      {/* 左側圖標 */}
+
+                      <Image
+                        source={require('@/assets/iot-camera-logo.png')}
+                        style={styles.cardIcon}
+                      />
+                      {/* 右側信息 */}
+
+                      <View style={{ flex: 1, flexDirection: 'column' }}>
+                        <Text style={styles.cardTitle}>{item.name}</Text>
+                      </View>
+                    </View>
+                    <Image
+                      source={require('@/assets/iot-m.jpg')}
+                      style={styles.cameraImage}
+                    />
+                  </TouchableOpacity>
+                )}
               />
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-    </SafeAreaView>
+            </View>
+          </View>
+        </View>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F4F8FB',
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    right: 0,
+    bottom: 0,
   },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
+
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',

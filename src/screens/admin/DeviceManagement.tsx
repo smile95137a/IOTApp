@@ -1,3 +1,4 @@
+import HeaderBar from '@/component/admin/HeaderBar';
 import Header from '@/component/Header';
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
@@ -26,7 +27,7 @@ const DeviceManagementScreen = ({ navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <Header title="設備管理" onBackPress={() => navigation.goBack()} />
+          <HeaderBar title="設備管理" />
         </View>
         <View style={styles.mainContainer}>
           <TouchableOpacity
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
     position: 'absolute', // Fix it to the block
     right: -200,
     bottom: 0,
-    zIndex: 2, // Push it behind other content
+    // Push it behind other content
     alignItems: 'center', // Center horizontally
     justifyContent: 'center', // Center vertically
     opacity: 0.1, // Make it subtle as a background

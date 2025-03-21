@@ -1,3 +1,4 @@
+import HeaderBar from '@/component/admin/HeaderBar';
 import Header from '@/component/Header';
 import NumberFormatter from '@/component/NumberFormatter';
 import { getImageUrl } from '@/utils/ImageUtils';
@@ -28,7 +29,7 @@ const MemberDetailsScreen = ({ route, navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <Header title="會員管理" onBackPress={() => navigation.goBack()} />
+          <HeaderBar title="會員管理" />
         </View>
         <View style={styles.mainContainer}>
           <View style={styles.profileContainer}>
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
     position: 'absolute', // Fix it to the block
     right: -200,
     bottom: 0,
-    zIndex: 2, // Push it behind other content
+    // Push it behind other content
     alignItems: 'center', // Center horizontally
     justifyContent: 'center', // Center vertically
     opacity: 0.1, // Make it subtle as a background

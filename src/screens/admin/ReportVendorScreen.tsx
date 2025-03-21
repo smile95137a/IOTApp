@@ -27,6 +27,7 @@ import {
   Store,
 } from '@/api/admin/storeApi';
 import { Vendor, fetchAllVendors, deleteVendor } from '@/api/admin/vendorApi';
+import HeaderBar from '@/component/admin/HeaderBar';
 
 const ReportVendorScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -105,7 +106,7 @@ const ReportVendorScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <Header title="廠商管理" onBackPress={() => navigation.goBack()} />
+            <HeaderBar title="廠商管理" />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -146,7 +147,6 @@ const styles = StyleSheet.create({
     height: '100%',
     right: 0,
     bottom: 0,
-    zIndex: 2,
   },
   headerWrapper: { backgroundColor: '#FFFFFF' },
   contentWrapper: { flex: 1, padding: 20 },

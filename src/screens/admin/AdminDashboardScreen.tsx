@@ -26,7 +26,7 @@ const AdminDashboardScreen = ({ navigation }) => {
           {/* Header */}
           <View style={styles.header}>
             <Image
-              source={require('@/assets/iot-threeBall.png')}
+              source={require('@/assets/iot-logo-no-text.png')}
               style={styles.headerIcon}
             />
             <Text style={styles.headerTitle}>無人撞球管理系統</Text>
@@ -71,20 +71,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#595858',
   },
   header: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 20,
   },
   headerIcon: {
-    width: 77,
-    height: 77,
-    marginRight: 20,
+    width: 80,
+    height: 80,
+    objectFit: 'contain',
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    marginTop: 20,
+    color: '#00D4FD',
   },
   mainContainer: {
     backgroundColor: '#FFFFFF',

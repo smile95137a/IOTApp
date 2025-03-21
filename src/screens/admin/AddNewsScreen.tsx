@@ -18,6 +18,8 @@ import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { createNews, updateNews, uploadNewsImages } from '@/api/admin/newsApi';
 import { Picker } from '@react-native-picker/picker';
 import { getImageUrl } from '@/utils/ImageUtils';
+import HeaderBar from '@/component/admin/HeaderBar';
+import { ScrollView } from 'react-native-gesture-handler';
 const AddNewsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -74,61 +76,86 @@ const AddNewsScreen = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <Text style={styles.header}>
-            {news.id ? '編輯最新消息' : '新增最新消息'}
-          </Text>
-          <TextInput
-            placeholder="標題"
-            value={title}
-            onChangeText={setTitle}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="內容"
-            value={content}
-            onChangeText={setContent}
-            style={styles.input}
-            multiline
-          />
-          <Picker
-            selectedValue={status}
-            onValueChange={(itemValue) => setStatus(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="可用" value="AVAILABLE" />
-            <Picker.Item label="不可用" value="UNAVAILABLE" />
-          </Picker>
-          {news.id ? (
-            <>
-              {image ? (
-                <>
-                  <Image source={{ uri: image }} style={styles.image} />
-                </>
-              ) : (
-                <>
-                  <Image
-                    src={getImageUrl(news.imageUrl)}
-                    style={styles.image}
-                    resizeMode="cover"
-                  />
-                </>
-              )}
-            </>
-          ) : (
-            <>
-              {image && <Image source={{ uri: image }} style={styles.image} />}
-            </>
-          )}
-          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-            <Text style={styles.uploadButtonText}>上傳圖片</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>保存</Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView style={styles.container}>
+          <View style={styles.backgroundImageWrapper}>
+            <Image
+              source={require('@/assets/iot-admin-bg.png')}
+              style={{ width: '100%' }}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.headerWrapper}>
+            <HeaderBar title={news.id ? '編輯最新消息' : '新增最新消息'} />
+          </View>
+          <View style={styles.contentWrapper}>
+            <SafeAreaView style={styles.safeArea}>
+              <View style={styles.container}>
+                <Text style={styles.header}>
+                  {news.id ? '編輯最新消息' : '新增最新消息'}
+                </Text>
+                <TextInput
+                  placeholder="標題"
+                  value={title}
+                  onChangeText={setTitle}
+                  style={styles.input}
+                />
+                <TextInput
+                  placeholder="內容"
+                  value={content}
+                  onChangeText={setContent}
+                  style={styles.input}
+                  multiline
+                />
+                <Picker
+                  selectedValue={status}
+                  onValueChange={(itemValue) => setStatus(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="可用" value="AVAILABLE" />
+                  <Picker.Item label="不可用" value="UNAVAILABLE" />
+                </Picker>
+                {news.id ? (
+                  <>
+                    {image ? (
+                      <>
+                        <Image source={{ uri: image }} style={styles.image} />
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          src={getImageUrl(news.imageUrl)}
+                          style={styles.image}
+                          resizeMode="cover"
+                        />
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {image && (
+                      <Image source={{ uri: image }} style={styles.image} />
+                    )}
+                  </>
+                )}
+                <TouchableOpacity
+                  style={styles.uploadButton}
+                  onPress={pickImage}
+                >
+                  <Text style={styles.uploadButtonText}>上傳圖片</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={handleSave}
+                >
+                  <Text style={styles.saveButtonText}>保存</Text>
+                </TouchableOpacity>
+              </View>
+            </SafeAreaView>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -136,7 +163,17 @@ const AddNewsScreen = () => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
-  container: { flex: 1, padding: 20, backgroundColor: '#E3F2FD' },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    right: 0,
+    bottom: 0,
+  },
+
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
   input: {
     backgroundColor: '#fff',

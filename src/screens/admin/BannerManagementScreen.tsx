@@ -22,6 +22,7 @@ import { Menu, Provider } from 'react-native-paper';
 import Header from '@/component/Header';
 import { deleteBanner, fetchAllBanners } from '@/api/admin/BannerApi';
 import { getImageUrl } from '@/utils/ImageUtils';
+import HeaderBar from '@/component/admin/HeaderBar';
 
 const BannerManagementScreen = () => {
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
@@ -88,10 +89,7 @@ const BannerManagementScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <Header
-              title="Banner 管理"
-              onBackPress={() => navigation.goBack()}
-            />
+            <HeaderBar title="Banner 管理" />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -99,7 +97,7 @@ const BannerManagementScreen = () => {
               <View style={styles.gridWrapper}>
                 {banners.map((item) => (
                   <TouchableOpacity
-                    key={item.uid}
+                    key={item.bannerId}
                     style={styles.cardWrapper}
                     onPress={() =>
                       navigation.navigate('AddBanner', { banner: item })
@@ -184,7 +182,6 @@ const styles = StyleSheet.create({
     height: '100%',
     right: 0,
     bottom: 0,
-    zIndex: 2,
   },
 
   headerWrapper: { backgroundColor: '#FFFFFF' },

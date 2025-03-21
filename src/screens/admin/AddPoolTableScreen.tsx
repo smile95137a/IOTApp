@@ -10,6 +10,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Modal,
+  Image,
+  Keyboard,
+  SafeAreaView,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
@@ -20,8 +24,8 @@ import QRCode from 'react-native-qrcode-svg';
 import { encryptData } from '@/utils/cryptoUtils';
 import { fetchAllStores } from '@/api/admin/storeApi';
 import { Picker } from '@react-native-picker/picker';
+import HeaderBar from '@/component/admin/HeaderBar';
 
-// 定義 `route.params` 可能的類型
 type PoolTableParams = {
   poolTable?: {
     uid: string;
@@ -38,9 +42,7 @@ const AddPoolTableScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const poolTable = route.params?.poolTable;
-  console.log('________', poolTable);
-
-  const isEditMode = !!poolTable; // 只有有傳入 poolTable 時才是編輯模式
+  const isEditMode = !!poolTable;
 
   const [tableNumber, setTableNumber] = useState(poolTable?.tableNumber || '');
   const [status, setStatus] = useState(poolTable?.status || 'active');
@@ -130,95 +132,128 @@ const AddPoolTableScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.header}>
-          {isEditMode ? '編輯桌檯' : '新增桌檯'}
-        </Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="桌檯號碼"
-          value={tableNumber}
-          onChangeText={setTableNumber}
-        />
-        <Picker
-          selectedValue={status}
-          onValueChange={(itemValue) => setStatus(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="可用" value="AVAILABLE" />
-          <Picker.Item label="不可用" value="UNAVAILABLE" />
-        </Picker>
-        {/* 店家選擇 Picker */}
-        <Text style={styles.label}>選擇店家</Text>
-        <Picker
-          selectedValue={storeId}
-          onValueChange={(itemValue) => setStoreId(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="請選擇店家" value="" />
-          {stores.map((store) => (
-            <Picker.Item
-              key={store.id}
-              label={store.name}
-              value={String(store.id)}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.backgroundImageWrapper}>
+            <Image
+              source={require('@/assets/iot-admin-bg.png')}
+              style={{ width: '100%' }}
+              resizeMode="contain"
             />
-          ))}
-        </Picker>
-
-        <TouchableOpacity
-          style={[
-            styles.toggleButton,
-            isUse ? styles.toggleOn : styles.toggleOff,
-          ]}
-          onPress={() => setIsUse(!isUse)}
-        >
-          <Text style={styles.toggleButtonText}>
-            {isUse ? '已使用' : '未使用'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>
-            {isEditMode ? '更新' : '提交'}
-          </Text>
-        </TouchableOpacity>
-
-        {/* 只有在編輯模式下才顯示 QR Code 按鈕 */}
-        {isEditMode && (
-          <TouchableOpacity style={styles.qrButton} onPress={genQrcode}>
-            <Text style={styles.qrButtonText}>產生 QR Code</Text>
-          </TouchableOpacity>
-        )}
-      </ScrollView>
-
-      {/* QR Code Modal */}
-      {isEditMode && (
-        <Modal visible={showQRCode} transparent animationType="slide">
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>桌檯 QR Code</Text>
-              <QRCode value={qrCodeVal} size={200} />
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setShowQRCode(false)}
-              >
-                <Text style={styles.closeButtonText}>關閉</Text>
-              </TouchableOpacity>
-            </View>
           </View>
-        </Modal>
-      )}
-    </KeyboardAvoidingView>
+
+          <View style={styles.headerWrapper}>
+            <HeaderBar title={isEditMode ? '編輯桌檯' : '新增桌檯'} />
+          </View>
+          <View style={styles.contentWrapper}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.container}
+            >
+              <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <Text style={styles.header}>
+                  {isEditMode ? '編輯桌檯' : '新增桌檯'}
+                </Text>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="桌檯號碼"
+                  value={tableNumber}
+                  onChangeText={setTableNumber}
+                />
+                <Picker
+                  selectedValue={status}
+                  onValueChange={(itemValue) => setStatus(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="可用" value="AVAILABLE" />
+                  <Picker.Item label="不可用" value="UNAVAILABLE" />
+                </Picker>
+                {/* 店家選擇 Picker */}
+                <Text style={styles.label}>選擇店家</Text>
+                <Picker
+                  selectedValue={storeId}
+                  onValueChange={(itemValue) => setStoreId(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="請選擇店家" value="" />
+                  {stores.map((store) => (
+                    <Picker.Item
+                      key={store.id}
+                      label={store.name}
+                      value={String(store.id)}
+                    />
+                  ))}
+                </Picker>
+
+                <TouchableOpacity
+                  style={[
+                    styles.toggleButton,
+                    isUse ? styles.toggleOn : styles.toggleOff,
+                  ]}
+                  onPress={() => setIsUse(!isUse)}
+                >
+                  <Text style={styles.toggleButtonText}>
+                    {isUse ? '已使用' : '未使用'}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={handleSubmit}
+                >
+                  <Text style={styles.submitButtonText}>
+                    {isEditMode ? '更新' : '提交'}
+                  </Text>
+                </TouchableOpacity>
+
+                {/* 只有在編輯模式下才顯示 QR Code 按鈕 */}
+                {isEditMode && (
+                  <TouchableOpacity style={styles.qrButton} onPress={genQrcode}>
+                    <Text style={styles.qrButtonText}>產生 QR Code</Text>
+                  </TouchableOpacity>
+                )}
+              </ScrollView>
+
+              {/* QR Code Modal */}
+              {isEditMode && (
+                <Modal visible={showQRCode} transparent animationType="slide">
+                  <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                      <Text style={styles.modalTitle}>桌檯 QR Code</Text>
+                      <QRCode value={qrCodeVal} size={200} />
+                      <TouchableOpacity
+                        style={styles.closeButton}
+                        onPress={() => setShowQRCode(false)}
+                      >
+                        <Text style={styles.closeButtonText}>關閉</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </Modal>
+              )}
+            </KeyboardAvoidingView>
+          </View>
+        </View>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    right: 0,
+    bottom: 0,
+  },
+
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
   scrollContainer: { padding: 20 },
   header: {
     fontSize: 22,

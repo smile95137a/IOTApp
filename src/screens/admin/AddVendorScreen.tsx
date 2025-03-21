@@ -9,6 +9,8 @@ import {
   ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
+  SafeAreaView,
+  Image,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
@@ -18,6 +20,7 @@ import { createVendor, updateVendor } from '@/api/admin/vendorApi';
 import { fetchAllStores } from '@/api/admin/storeApi';
 import { fetchAllUsers } from '@/api/admin/adminUserApi';
 import { Picker } from '@react-native-picker/picker';
+import HeaderBar from '@/component/admin/HeaderBar';
 
 const AddVendorScreen = () => {
   const navigation = useNavigation();
@@ -124,63 +127,90 @@ const AddVendorScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.header}>
-          {vendor?.id ? '編輯廠商' : '新增廠商'}
-        </Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="廠商名稱"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="words"
-          returnKeyType="next"
-          maxLength={50}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="聯絡資訊 (電子郵件或電話)"
-          value={contactInfo}
-          onChangeText={setContactInfo}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          returnKeyType="done"
-          maxLength={100}
-        />
-
-        <Picker
-          selectedValue={selectedUser}
-          onValueChange={setSelectedUser}
-          style={styles.picker}
-        >
-          <Picker.Item label="請選擇使用者" value="" />
-          {users.map((user) => (
-            <Picker.Item
-              key={user.id}
-              label={user.name}
-              value={String(user.id)}
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.backgroundImageWrapper}>
+            <Image
+              source={require('@/assets/iot-admin-bg.png')}
+              style={{ width: '100%' }}
+              resizeMode="contain"
             />
-          ))}
-        </Picker>
+          </View>
 
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>
-            {vendor?.id ? '更新' : '提交'}
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+          <View style={styles.headerWrapper}>
+            <HeaderBar title={vendor?.id ? '編輯廠商' : '新增廠商'} />
+          </View>
+          <View style={styles.contentWrapper}>
+            <ScrollView contentContainerStyle={styles.container}>
+              <Text style={styles.header}>
+                {vendor?.id ? '編輯廠商' : '新增廠商'}
+              </Text>
+
+              <TextInput
+                style={styles.input}
+                placeholder="廠商名稱"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+                returnKeyType="next"
+                maxLength={50}
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="聯絡資訊 (電子郵件或電話)"
+                value={contactInfo}
+                onChangeText={setContactInfo}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                returnKeyType="done"
+                maxLength={100}
+              />
+
+              <Picker
+                selectedValue={selectedUser}
+                onValueChange={setSelectedUser}
+                style={styles.picker}
+              >
+                <Picker.Item label="請選擇使用者" value="" />
+                {users.map((user) => (
+                  <Picker.Item
+                    key={user.id}
+                    label={user.name}
+                    value={String(user.id)}
+                  />
+                ))}
+              </Picker>
+
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleSubmit}
+              >
+                <Text style={styles.submitButtonText}>
+                  {vendor?.id ? '更新' : '提交'}
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    right: 0,
+    bottom: 0,
   },
+
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
   header: {
     fontSize: 22,
     fontWeight: 'bold',

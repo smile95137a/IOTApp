@@ -25,6 +25,7 @@ import { useDispatch } from 'react-redux';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { fetchAllRoles } from '@/api/admin/roleApi';
 import CheckBox from 'expo-checkbox';
+import HeaderBar from '@/component/admin/HeaderBar';
 
 const EditMemberScreen = ({ route, navigation }) => {
   const { member } = route.params;
@@ -216,7 +217,7 @@ const EditMemberScreen = ({ route, navigation }) => {
           </View>
           {/* Header */}
           <View style={styles.header}>
-            <Header title="會員管理" onBackPress={() => navigation.goBack()} />
+            <HeaderBar title="會員管理" />
           </View>
           <View style={styles.mainContainer}>
             {/* 頭像組件 */}
@@ -314,7 +315,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: -200,
     bottom: 0,
-    zIndex: 2,
+
     alignItems: 'center',
     justifyContent: 'center',
     opacity: 0.1,

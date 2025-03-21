@@ -245,7 +245,7 @@ const VendorStack = () => {
       <Stack.Screen
         name="AddVendor"
         component={AddVendorScreen}
-        options={{ title: '新增廠商' }} // 讓返回按鈕可用
+        options={{ title: '新增廠商', headerShown: false }} // 讓返回按鈕可用
       />
     </Stack.Navigator>
   );
@@ -289,7 +289,7 @@ const StoreStack = () => {
       <Stack.Screen
         name="AddStore"
         component={AddStoreScreen}
-        options={{ title: '新增店家' }} // 讓返回按鈕可用
+        options={{ title: '新增店家', headerShown: false }} // 讓返回按鈕可用
       />
     </Stack.Navigator>
   );
@@ -306,7 +306,7 @@ const PoolTableStack = () => {
       <Stack.Screen
         name="AddPoolTable"
         component={AddPoolTableScreen}
-        options={{ title: '新增/編輯桌檯' }}
+        options={{ title: '新增/編輯桌檯', headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -346,7 +346,7 @@ const BannerStack = () => {
       <Stack.Screen
         name="AddBanner"
         component={AddBannerScreen}
-        options={{ title: '新增 Banner' }}
+        options={{ title: '新增 Banner', headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -364,7 +364,7 @@ const NewsStack = () => {
       <Stack.Screen
         name="AddNews"
         component={AddNewsScreen}
-        options={{ title: '新增消息' }}
+        options={{ title: '新增消息', headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -380,7 +380,7 @@ const EquipmentStack = () => {
       <Stack.Screen
         name="StoreEquipmentEdit"
         component={StoreEquipmentEdit}
-        options={{ title: '店家設備管理' }}
+        options={{ title: '店家設備管理', headerShown: false }}
       />
       <Stack.Screen
         name="DeviceManagement"

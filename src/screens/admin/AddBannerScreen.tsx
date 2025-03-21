@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   Alert,
   Image,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -21,6 +23,7 @@ import {
 } from '@/api/admin/BannerApi';
 import { ScrollView } from 'react-native-gesture-handler';
 import { getImageUrl } from '@/utils/ImageUtils';
+import HeaderBar from '@/component/admin/HeaderBar';
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -93,68 +96,99 @@ const AddBannerScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.container}>
-        <Text style={styles.header}>
-          {banner.bannerId ? '編輯Banner' : '新增Banner'}
-        </Text>
-        <Picker
-          selectedValue={String(newsId)}
-          onValueChange={(itemValue) => setNewsId(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="選擇連結最新消息" value="" />
-          {newsList.map((news) => (
-            <Picker.Item
-              key={news.id}
-              label={news.title}
-              value={String(news.id)}
-            /> // 轉成字串
-          ))}
-        </Picker>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView style={styles.container}>
+          <View style={styles.backgroundImageWrapper}>
+            <Image
+              source={require('@/assets/iot-admin-bg.png')}
+              style={{ width: '100%' }}
+              resizeMode="contain"
+            />
+          </View>
 
-        <Picker
-          selectedValue={status}
-          onValueChange={(itemValue) => setStatus(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="啟用" value="AVAILABLE" />
-          <Picker.Item label="停用" value="UNAVAILABLE" />
-        </Picker>
-        {banner.bannerId ? (
-          <>
-            {image ? (
-              <>
-                <Image source={{ uri: image }} style={styles.image} />
-              </>
-            ) : (
-              <>
-                <Image
-                  src={getImageUrl(banner.imageUrl)}
-                  style={styles.newsImage}
-                  resizeMode="cover"
-                />
-              </>
-            )}
-          </>
-        ) : (
-          <>{image && <Image source={{ uri: image }} style={styles.image} />}</>
-        )}
+          <View style={styles.headerWrapper}>
+            <HeaderBar title={banner.bannerId ? '編輯Banner' : '新增Banner'} />
+          </View>
+          <View style={styles.contentWrapper}>
+            <ScrollView style={styles.container}>
+              <Text style={styles.header}>
+                {banner.bannerId ? '編輯Banner' : '新增Banner'}
+              </Text>
+              <Picker
+                selectedValue={String(newsId)}
+                onValueChange={(itemValue) => setNewsId(itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item label="選擇連結最新消息" value="" />
+                {newsList.map((news) => (
+                  <Picker.Item
+                    key={news.id}
+                    label={news.title}
+                    value={String(news.id)}
+                  /> // 轉成字串
+                ))}
+              </Picker>
 
-        <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-          <Text style={styles.uploadButtonText}>上傳圖片</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>保存</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
+              <Picker
+                selectedValue={status}
+                onValueChange={(itemValue) => setStatus(itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item label="啟用" value="AVAILABLE" />
+                <Picker.Item label="停用" value="UNAVAILABLE" />
+              </Picker>
+              {banner.bannerId ? (
+                <>
+                  {image ? (
+                    <>
+                      <Image source={{ uri: image }} style={styles.image} />
+                    </>
+                  ) : (
+                    <>
+                      <Image
+                        src={getImageUrl(banner.imageUrl)}
+                        style={styles.newsImage}
+                        resizeMode="cover"
+                      />
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  {image && (
+                    <Image source={{ uri: image }} style={styles.image} />
+                  )}
+                </>
+              )}
+
+              <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+                <Text style={styles.uploadButtonText}>上傳圖片</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                <Text style={styles.saveButtonText}>保存</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
-  container: { flex: 1, padding: 20, backgroundColor: '#E3F2FD' },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    right: 0,
+    bottom: 0,
+  },
+
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
   picker: {
     backgroundColor: '#fff',

@@ -6,6 +6,7 @@ import {
   updateStoreEquipmentStatus,
 } from '@/api/admin/equipmentApi';
 import { fetchAllVendors } from '@/api/admin/vendorApi';
+import HeaderBar from '@/component/admin/HeaderBar';
 import Header from '@/component/Header';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
@@ -241,7 +242,7 @@ const EnvironmentManagementScreen = ({ navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <Header title="環境管理" onBackPress={() => navigation.goBack()} />
+          <HeaderBar title="環境管理" />
         </View>
         <View style={styles.mainContainer}>
           {equipments.map((light, index) => (
@@ -373,7 +374,7 @@ const styles = StyleSheet.create({
     position: 'absolute', // Fix it to the block
     right: -200,
     bottom: 0,
-    zIndex: 2, // Push it behind other content
+    // Push it behind other content
     alignItems: 'center', // Center horizontally
     justifyContent: 'center', // Center vertically
     opacity: 0.1, // Make it subtle as a background

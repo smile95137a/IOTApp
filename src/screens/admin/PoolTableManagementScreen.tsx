@@ -20,6 +20,7 @@ import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import Header from '@/component/Header';
+import HeaderBar from '@/component/admin/HeaderBar';
 
 const PoolTableManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -63,7 +64,7 @@ const PoolTableManagementScreen = () => {
         </View>
 
         <View style={styles.header}>
-          <Header title="桌檯管理" onBackPress={() => navigation.goBack()} />
+          <HeaderBar title="桌檯管理" />
         </View>
         <View style={styles.mainContainer}>
           <ScrollView contentContainerStyle={styles.listContainer}>
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
     objectFit: 'cover',
     right: 0,
     bottom: 0,
-    zIndex: 2,
+
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -158,8 +159,6 @@ const styles = StyleSheet.create({
     padding: 14,
     justifyContent: 'space-between',
     marginBottom: 8,
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
     marginHorizontal: '1%',
   },
   cardImg: {

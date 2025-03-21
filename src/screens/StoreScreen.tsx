@@ -38,7 +38,7 @@ const StoreScreen = ({ navigation }: any) => {
   const getUserLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('錯誤', '未授予 GPS 權限');
+      console.log('錯誤', '未授予 GPS 權限');
       return;
     }
 
@@ -58,11 +58,11 @@ const StoreScreen = ({ navigation }: any) => {
       if (success) {
         setStores(data);
       } else {
-        Alert.alert('錯誤', message || '無法載入店家資訊');
+        console.log('錯誤', message || '無法載入店家資訊');
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert(
+      console.log(
         '錯誤',
         error instanceof Error ? error.message : String(error)
       );
@@ -85,7 +85,7 @@ const StoreScreen = ({ navigation }: any) => {
         <ScrollView contentContainerStyle={styles.storeList}>
           {nearStores.map((item) => (
             <TouchableOpacity
-              key={item.storeId}
+              key={item.id}
               style={styles.storeItem}
               onPress={() =>
                 navigation.navigate('StoreDetail', { store: item })

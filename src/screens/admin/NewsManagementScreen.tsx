@@ -23,6 +23,7 @@ import Header from '@/component/Header';
 import { deleteBanner, fetchAllBanners } from '@/api/admin/BannerApi';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { deleteNewsById, fetchAllNews } from '@/api/admin/newsApi';
+import HeaderBar from '@/component/admin/HeaderBar';
 
 const NewsManagementScreen = () => {
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
@@ -90,10 +91,7 @@ const NewsManagementScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <Header
-              title="最新消息管理"
-              onBackPress={() => navigation.goBack()}
-            />
+            <HeaderBar title="最新消息管理" />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -186,7 +184,6 @@ const styles = StyleSheet.create({
     height: '100%',
     right: 0,
     bottom: 0,
-    zIndex: 2,
   },
   headerWrapper: { backgroundColor: '#FFFFFF' },
   contentWrapper: { flex: 1, padding: 20 },

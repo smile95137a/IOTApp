@@ -8,6 +8,9 @@ import {
   Alert,
   ScrollView,
   Image,
+  Keyboard,
+  SafeAreaView,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
@@ -22,7 +25,7 @@ import { fetchAllVendors } from '@/api/admin/vendorApi';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import MapView from 'react-native-maps';
-
+import HeaderBar from '@/component/admin/HeaderBar';
 const weekDays = [
   'monday',
   'tuesday',
@@ -207,161 +210,192 @@ const AddStoreScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>{isEditMode ? '編輯店家' : '新增店家'}</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.backgroundImageWrapper}>
+            <Image
+              source={require('@/assets/iot-admin-bg.png')}
+              style={{ width: '100%' }}
+              resizeMode="contain"
+            />
+          </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="店家名稱"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="地址"
-        value={address}
-        onChangeText={setAddress}
-      />
+          <View style={styles.headerWrapper}>
+            <HeaderBar title={isEditMode ? '編輯店家' : '新增店家'} />
+          </View>
+          <ScrollView style={styles.contentWrapper}>
+            <ScrollView contentContainerStyle={styles.container}>
+              <Text style={styles.header}>
+                {isEditMode ? '編輯店家' : '新增店家'}
+              </Text>
 
-      <Picker
-        selectedValue={vendorId}
-        onValueChange={setVendorId}
-        style={styles.picker}
-      >
-        <Picker.Item label="請選擇供應商" value="" />
-        {vendors.map((vendor) => (
-          <Picker.Item
-            key={vendor.id}
-            label={vendor.name}
-            value={String(vendor.id)}
-          />
-        ))}
-      </Picker>
-      <View style={styles.mapContainer}>
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: selectedLocation?.latitude || 25.033964, // 台北101為預設
-            longitude: selectedLocation?.longitude || 121.564468,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }}
-          onPress={handleMapPress}
-        ></MapView>
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder="緯度 (Lat)"
-        keyboardType="numeric"
-        value={lat}
-        onChangeText={setLat}
-        readOnly={true}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="經度 (Lon)"
-        keyboardType="numeric"
-        value={lon}
-        onChangeText={setLon}
-        readOnly={true}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="保證金 (可選)"
-        keyboardType="numeric"
-        value={deposit}
-        onChangeText={setDeposit}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="折扣費率 (可選)"
-        keyboardType="numeric"
-        value={discountRate}
-        onChangeText={setDiscountRate}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="一般費率 (可選)"
-        keyboardType="numeric"
-        value={regularRate}
-        onChangeText={setRegularRate}
-      />
-      {pricingSchedules.map((schedule, index) => (
-        <View key={schedule.dayOfWeek} style={styles.scheduleContainer}>
-          <Text style={styles.dayLabel}>
-            {schedule.dayOfWeek.toUpperCase()}
-          </Text>
-          <TextInput
-            style={styles.input}
-            placeholder="一般開始時間"
-            value={schedule.regularStartTime}
-            onChangeText={(value) =>
-              updateSchedule(index, 'regularStartTime', value)
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="一般結束時間"
-            value={schedule.regularEndTime}
-            onChangeText={(value) =>
-              updateSchedule(index, 'regularEndTime', value)
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="一般價格"
-            keyboardType="numeric"
-            value={schedule.regularRate}
-            onChangeText={(value) =>
-              updateSchedule(index, 'regularRate', value)
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="折扣開始時間"
-            value={schedule.discountStartTime}
-            onChangeText={(value) =>
-              updateSchedule(index, 'discountStartTime', value)
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="折扣結束時間"
-            value={schedule.discountEndTime}
-            onChangeText={(value) =>
-              updateSchedule(index, 'discountEndTime', value)
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="折扣價格"
-            keyboardType="numeric"
-            value={schedule.discountRate}
-            onChangeText={(value) =>
-              updateSchedule(index, 'discountRate', value)
-            }
-          />
+              <TextInput
+                style={styles.input}
+                placeholder="店家名稱"
+                value={name}
+                onChangeText={setName}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="地址"
+                value={address}
+                onChangeText={setAddress}
+              />
+
+              <Picker
+                selectedValue={vendorId}
+                onValueChange={setVendorId}
+                style={styles.picker}
+              >
+                <Picker.Item label="請選擇供應商" value="" />
+                {vendors.map((vendor) => (
+                  <Picker.Item
+                    key={vendor.id}
+                    label={vendor.name}
+                    value={String(vendor.id)}
+                  />
+                ))}
+              </Picker>
+              <View style={styles.mapContainer}>
+                <MapView
+                  style={styles.map}
+                  initialRegion={{
+                    latitude: selectedLocation?.latitude || 25.033964, // 台北101為預設
+                    longitude: selectedLocation?.longitude || 121.564468,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                  }}
+                  onPress={handleMapPress}
+                ></MapView>
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="緯度 (Lat)"
+                keyboardType="numeric"
+                value={lat}
+                onChangeText={setLat}
+                readOnly={true}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="經度 (Lon)"
+                keyboardType="numeric"
+                value={lon}
+                onChangeText={setLon}
+                readOnly={true}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="保證金 (可選)"
+                keyboardType="numeric"
+                value={deposit}
+                onChangeText={setDeposit}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="折扣費率 (可選)"
+                keyboardType="numeric"
+                value={discountRate}
+                onChangeText={setDiscountRate}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="一般費率 (可選)"
+                keyboardType="numeric"
+                value={regularRate}
+                onChangeText={setRegularRate}
+              />
+              {pricingSchedules.map((schedule, index) => (
+                <View key={schedule.dayOfWeek} style={styles.scheduleContainer}>
+                  <Text style={styles.dayLabel}>
+                    {schedule.dayOfWeek.toUpperCase()}
+                  </Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="一般開始時間"
+                    value={schedule.regularStartTime}
+                    onChangeText={(value) =>
+                      updateSchedule(index, 'regularStartTime', value)
+                    }
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="一般結束時間"
+                    value={schedule.regularEndTime}
+                    onChangeText={(value) =>
+                      updateSchedule(index, 'regularEndTime', value)
+                    }
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="一般價格"
+                    keyboardType="numeric"
+                    value={schedule.regularRate}
+                    onChangeText={(value) =>
+                      updateSchedule(index, 'regularRate', value)
+                    }
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="折扣開始時間"
+                    value={schedule.discountStartTime}
+                    onChangeText={(value) =>
+                      updateSchedule(index, 'discountStartTime', value)
+                    }
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="折扣結束時間"
+                    value={schedule.discountEndTime}
+                    onChangeText={(value) =>
+                      updateSchedule(index, 'discountEndTime', value)
+                    }
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="折扣價格"
+                    keyboardType="numeric"
+                    value={schedule.discountRate}
+                    onChangeText={(value) =>
+                      updateSchedule(index, 'discountRate', value)
+                    }
+                  />
+                </View>
+              ))}
+              <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+                <Text style={styles.uploadButtonText}>上傳圖片</Text>
+              </TouchableOpacity>
+              {image && <Image source={{ uri: image }} style={styles.image} />}
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleSubmit}
+              >
+                <Text style={styles.submitButtonText}>
+                  {isEditMode ? '更新' : '提交'}
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </ScrollView>
         </View>
-      ))}
-      <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-        <Text style={styles.uploadButtonText}>上傳圖片</Text>
-      </TouchableOpacity>
-      {image && <Image source={{ uri: image }} style={styles.image} />}
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>
-          {isEditMode ? '更新' : '提交'}
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: '#fff',
-    padding: 20,
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
+  backgroundImageWrapper: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    right: 0,
+    bottom: 0,
   },
+
+  headerWrapper: { backgroundColor: '#FFFFFF' },
+  contentWrapper: { flex: 1, padding: 20 },
 
   header: {
     fontSize: 22,

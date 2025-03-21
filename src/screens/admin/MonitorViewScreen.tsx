@@ -26,6 +26,7 @@ import {
   fetchStoresByVendorId,
   Store,
 } from '@/api/admin/storeApi';
+import HeaderBar from '@/component/admin/HeaderBar';
 
 const MonitorViewScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -71,7 +72,7 @@ const MonitorViewScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <Header title="攝影店家" onBackPress={() => navigation.goBack()} />
+            <HeaderBar title="攝影店家" />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -114,7 +115,6 @@ const styles = StyleSheet.create({
     height: '100%',
     right: 0,
     bottom: 0,
-    zIndex: 2,
   },
   headerWrapper: { backgroundColor: '#FFFFFF' },
   contentWrapper: { flex: 1, padding: 20 },

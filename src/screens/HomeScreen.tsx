@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux';
 import { fetchAllStores } from '@/api/storeApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import HomeOptionButton from '@/component/home/HomeOptionButton';
+import { openCamera } from '@/store/cameraSlice';
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -33,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
   const getUserLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('錯誤', '未授予 GPS 權限');
+      console.log('錯誤', '未授予 GPS 權限');
       return;
     }
 
@@ -52,13 +53,13 @@ const HomeScreen = ({ navigation }) => {
       if (success) {
         setStores(data);
       } else {
-        Alert.alert('錯誤', message || '無法載入店家資訊');
+        console.log('錯誤', message || '無法載入店家資訊');
       }
     } catch (error) {
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      Alert.alert('錯誤', errorMessage);
+      console.log('錯誤', errorMessage);
     }
   };
 
@@ -100,7 +101,12 @@ const HomeScreen = ({ navigation }) => {
             icon="qrcode"
             title="掃碼開台"
             description="掃描球桌上的 QRcode 開台／關台"
-            onPress={() => navigation.navigate('QRScannerScreen')}
+            onPress={() => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Camera' }],
+              });
+            }}
           />
           <HomeOptionButton
             icon="clock-o"

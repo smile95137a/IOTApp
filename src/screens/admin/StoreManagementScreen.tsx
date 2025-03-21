@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,11 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
@@ -21,6 +25,7 @@ import {
   fetchAllStores,
   fetchStoresByVendorId,
 } from '@/api/admin/storeApi';
+import HeaderBar from '@/component/admin/HeaderBar';
 
 const StoreManagementScreen = () => {
   const route = useRoute();
@@ -52,6 +57,12 @@ const StoreManagementScreen = () => {
   useEffect(() => {
     loadStores();
   }, [vendor]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadStores();
+    }, [])
+  );
 
   const handleDelete = (storeUid, storeName) => {
     Alert.alert('確認刪除', `確定要刪除店家「${storeName}」嗎？`, [
@@ -93,7 +104,7 @@ const StoreManagementScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <Header title="店家管理" onBackPress={() => navigation.goBack()} />
+            <HeaderBar title="店家管理" />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -155,7 +166,7 @@ const StoreManagementScreen = () => {
                 ))}
                 <TouchableOpacity
                   style={styles.addCardWrapper}
-                  onPress={() => navigation.navigate('AddVendor')}
+                  onPress={() => navigation.navigate('AddStore')}
                 >
                   <Image
                     source={require('@/assets/iot-logo-white.png')}
@@ -186,7 +197,6 @@ const styles = StyleSheet.create({
     height: '100%',
     right: 0,
     bottom: 0,
-    zIndex: 2,
   },
   headerWrapper: { backgroundColor: '#FFFFFF' },
   contentWrapper: { flex: 1, padding: 20 },
