@@ -103,34 +103,26 @@ const RegisterScreen = ({ route, navigation }: any) => {
             <Text style={styles.inputLabel}>手機</Text>
             <View style={styles.inputWrapper}>
               <>
-                <TouchableOpacity
-                  style={styles.pickerContainer}
-                  activeOpacity={1}
-                  onPress={() => pickerRef.current?.togglePicker()}
-                >
-                  <Text style={styles.pickerText}>
-                    {countryCode || '請選擇'}
-                  </Text>
-                  <MaterialIcons
-                    name="arrow-drop-down"
-                    size={24}
-                    color="#888"
-                  />
-                </TouchableOpacity>
-
                 <RNPickerSelect
-                  ref={pickerRef}
-                  value={countryCode || countryCodes[0].value}
+                  value={countryCode}
                   onValueChange={(value) => {
                     if (value) setCountryCode(value);
                   }}
                   items={countryCodes}
-                  style={{
-                    inputIOS: { display: 'none' },
-                    inputAndroid: { display: 'none' },
-                  }} // 隱藏原本的輸入框
-                  useNativeAndroidPickerStyle={false}
                   placeholder={{ label: '請選擇', value: '' }}
+                  useNativeAndroidPickerStyle={false}
+                  style={{
+                    inputIOS: styles.dropdownInput,
+                    inputAndroid: styles.dropdownInput,
+                    iconContainer: styles.iconContainer,
+                  }}
+                  Icon={() => (
+                    <MaterialIcons
+                      name="arrow-drop-down"
+                      size={24}
+                      color="#888"
+                    />
+                  )}
                 />
 
                 <TextInput
@@ -284,8 +276,18 @@ const styles = StyleSheet.create({
   dropdownInput: {
     fontSize: 14,
     color: '#000',
-    width: 100, // Dropdown width
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    width: 100,
+    alignItems: 'center',
   },
+  iconContainer: {
+    top: '50%',
+    right: 10,
+    marginTop: -12,
+    position: 'absolute',
+  },
+
   input: {
     flex: 1,
     height: 40,

@@ -210,28 +210,22 @@ const PersonalInfoScreen = ({ route, navigation }: any) => {
             <Text style={styles.inputLabel}>性別 *</Text>
             <View style={styles.pickerWrapper}>
               <>
-                <TouchableOpacity
-                  style={styles.pickerContainer}
-                  activeOpacity={1}
-                  onPress={() => pickerRef.current?.togglePicker()}
-                >
-                  <Text style={styles.pickerText}>{selectedGenderLabel}</Text>
-                  <MaterialIcons
-                    name="arrow-drop-down"
-                    size={24}
-                    color="#888"
-                  />
-                </TouchableOpacity>
-
                 <RNPickerSelect
-                  ref={pickerRef}
                   value={gender}
                   onValueChange={(value) => setGender(value)}
                   items={genderOptions}
                   style={{
-                    inputIOS: { display: 'none' },
-                    inputAndroid: { display: 'none' },
+                    inputIOS: styles.dropdownInput,
+                    inputAndroid: styles.dropdownInput,
+                    iconContainer: styles.iconContainer,
                   }}
+                  Icon={() => (
+                    <MaterialIcons
+                      name="arrow-drop-down"
+                      size={24}
+                      color="#888"
+                    />
+                  )}
                   useNativeAndroidPickerStyle={false}
                   placeholder={{ label: '請選擇', value: '' }}
                 />
@@ -417,6 +411,20 @@ const styles = StyleSheet.create({
   },
   disabledInputWrapper: {
     backgroundColor: '#f0f0f0', // 淺灰背景
+  },
+  dropdownInput: {
+    fontSize: 14,
+    color: '#000',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    width: 100,
+    alignItems: 'center',
+  },
+  iconContainer: {
+    top: '50%',
+    right: 10,
+    marginTop: -12,
+    position: 'absolute',
   },
 });
 
