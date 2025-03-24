@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux';
 import { fetchAllStores } from '@/api/storeApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import HomeOptionButton from '@/component/home/HomeOptionButton';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -74,65 +75,71 @@ const HomeScreen = ({ navigation }) => {
   }, [locationData, stores]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Header isDarkMode />
-        {/* Banner Section */}
-        <ImageCarousel />
+    <LinearGradient
+      colors={['#1D1640', '#4067A4']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={StyleSheet.absoluteFill}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <Header isDarkMode />
+          {/* Banner Section */}
+          <ImageCarousel />
 
-        {/* Cards Section */}
-        <ScrollView contentContainerStyle={styles.content}>
-          <HomeOptionButton
-            icon="store"
-            title="門市探索"
-            description={
-              nearStores.length > 0
-                ? `最近據點:${nearStores
-                    .map(
-                      (store) => `${store.name} ${store.distance.toFixed(1)} km`
-                    )
-                    .join('、')}`
-                : '無法獲取最近的店家'
-            }
-            onPress={() => console.log('Navigating to Store Search')}
-          />
-          <HomeOptionButton
-            icon="qrcode"
-            title="掃碼開台"
-            description="掃描球桌上的 QRcode 開台／關台"
-            onPress={() => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Camera' }],
-              });
-            }}
-          />
-          <HomeOptionButton
-            icon="clock-o"
-            title="預約開台"
-            description="選擇門市預約開台"
-            onPress={() => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Explore' }],
-              });
-            }}
-          />
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+          {/* Cards Section */}
+          <ScrollView contentContainerStyle={styles.content}>
+            <HomeOptionButton
+              icon="store"
+              title="門市探索"
+              description={
+                nearStores.length > 0
+                  ? `最近據點:${nearStores
+                      .map(
+                        (store) =>
+                          `${store.name} ${store.distance.toFixed(1)} km`
+                      )
+                      .join('、')}`
+                  : '無法獲取最近的店家'
+              }
+              onPress={() => console.log('Navigating to Store Search')}
+            />
+            <HomeOptionButton
+              icon="qrcode"
+              title="掃碼開台"
+              description="掃描球桌上的 QRcode 開台／關台"
+              onPress={() => {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Camera' }],
+                });
+              }}
+            />
+            <HomeOptionButton
+              icon="clock-o"
+              title="預約開台"
+              description="選擇門市預約開台"
+              onPress={() => {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Explore' }],
+                });
+              }}
+            />
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0c0c3d',
   },
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#0c0c3d',
   },
   content: {},
   row: {
