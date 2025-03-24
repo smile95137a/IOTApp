@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './authSlice';
 import loadingReducer from './loadingSlice';
-import cameraReducer from './cameraSlice';
 import registerReducer from './registerSlice';
 import userReducer from './userSlice';
 
@@ -9,7 +8,6 @@ const store = configureStore({
   reducer: {
     auth: authReducer,
     loading: loadingReducer,
-    camera: cameraReducer,
     register: registerReducer,
     user: userReducer,
   },

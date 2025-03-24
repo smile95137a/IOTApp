@@ -1,59 +1,91 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Alert, Modal, TouchableOpacity, StyleSheet } from 'react-native';
-import { Camera, CameraView } from 'expo-camera';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useDispatch, useSelector } from 'react-redux';
-import { closeCamera } from '@/store/cameraSlice';
-import { RootState } from '@/store/store';
-import { decryptData } from '@/utils/cryptoUtils';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  View,
+  Alert,
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  Dimensions,
+  Animated,
+} from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { fetchPoolTableByUid } from '@/api/poolTableAPI';
+import { decryptData } from '@/utils/cryptoUtils';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+
+const { width, height } = Dimensions.get('window');
+const SCAN_BOX_SIZE = 250;
 
 const CameraScreen = () => {
-  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const isCameraOpen = useSelector(
-    (state: RootState) => state.camera.isCameraOpen
-  );
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const scannedRef = useRef(false);
+  const [permission, requestPermission] = useCameraPermissions();
+  const [scanned, setScanned] = useState(false);
+  const scanAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
+    if (permission === null || permission?.granted) return;
+    requestPermission();
+  }, [permission]);
+
+  useEffect(() => {
+    animateScanLine();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      setScanned(false);
+    }, [])
+  );
+
+  const animateScanLine = () => {
+    scanAnim.setValue(0);
+    Animated.loop(
+      Animated.timing(scanAnim, {
+        toValue: 1,
+        duration: 2000,
+        useNativeDriver: true,
+      })
+    ).start();
+  };
 
   const handleBarCodeScanned = async ({
     type,
     data,
+    bounds,
   }: {
     type: string;
     data: string;
+    bounds?: { origin: { x: number; y: number } };
   }) => {
-    if (scannedRef.current) return; // 已掃描過則直接返回，避免重複觸發
-    scannedRef.current = true;
+    if (scanned) return;
 
+    const scanBoxX = (width - SCAN_BOX_SIZE) / 2;
+    const scanBoxY = (height - SCAN_BOX_SIZE) / 2;
+
+    if (bounds?.origin) {
+      const { x, y } = bounds.origin;
+      const isInScanBox =
+        x >= scanBoxX &&
+        x <= scanBoxX + SCAN_BOX_SIZE &&
+        y >= scanBoxY &&
+        y <= scanBoxY + SCAN_BOX_SIZE;
+
+      if (!isInScanBox) return;
+    }
+
+    setScanned(true);
     try {
       const tableUid = decryptData(data);
       const response = await fetchPoolTableByUid(tableUid);
-
       if (response.success) {
         Alert.alert('已掃描到', '前往開台', [
           {
             text: '確定',
             onPress: () => {
-              dispatch(closeCamera());
-              setTimeout(() => {
-                navigation.navigate('Member', {
-                  screen: 'Reservation',
-                  params: { tableUid }, // 傳遞桌檯 UID
-                });
-                setTimeout(() => {
-                  scannedRef.current = false; // 重設 `scanned` 狀態
-                }, 500);
-              }, 300);
+              (navigation as any).navigate('Member', {
+                screen: 'Reservation',
+                params: { tableUid },
+              });
             },
           },
         ]);
@@ -62,7 +94,7 @@ const CameraScreen = () => {
           {
             text: '確定',
             onPress: () => {
-              handleClose();
+              setScanned(false);
             },
           },
         ]);
@@ -72,51 +104,167 @@ const CameraScreen = () => {
         {
           text: '確定',
           onPress: () => {
-            handleClose();
+            setScanned(false);
           },
         },
       ]);
     }
   };
 
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    Alert.alert('錯誤', '未授予相機權限');
-    return <View />;
+  if (!permission) {
+    return <Text>正在請求相機權限...</Text>;
   }
 
-  const handleClose = () => {
-    dispatch(closeCamera());
-    navigation.goBack();
-    setTimeout(() => {
-      scannedRef.current = false; // 重設 `scanned` 狀態
-    }, 300);
-  };
+  if (!permission.granted) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.permissionText}>需要相機權限才能掃描 QR 碼</Text>
+        <TouchableOpacity onPress={requestPermission} style={styles.button}>
+          <Text style={styles.buttonText}>允許相機權限</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const scanLineTranslateY = scanAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, SCAN_BOX_SIZE - 2],
+  });
 
   return (
-    <Modal visible={isCameraOpen} animationType="slide" transparent={false}>
+    <View style={styles.container}>
       <CameraView
-        style={{ flex: 1 }}
-        barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-        onBarcodeScanned={handleBarCodeScanned} // 直接使用函數，避免 undefined 導致不觸發掃描
+        style={StyleSheet.absoluteFillObject}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        barcodeScannerSettings={{
+          barcodeTypes: ['qr'],
+        }}
       />
-      <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-        <Icon name="close" size={30} color="#fff" />
-      </TouchableOpacity>
-    </Modal>
+
+      <View style={styles.overlay}>
+        <View
+          style={{
+            height: (height - SCAN_BOX_SIZE) / 2,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }}
+        />
+        <View style={styles.middleRow}>
+          <View style={styles.sideOverlay} />
+          <View style={styles.scanBox}>
+            <View style={[styles.corner, styles.topLeft]} />
+            <View style={[styles.corner, styles.topRight]} />
+            <View style={[styles.corner, styles.bottomLeft]} />
+            <View style={[styles.corner, styles.bottomRight]} />
+
+            <Animated.View
+              style={[
+                styles.scanLine,
+                {
+                  transform: [{ translateY: scanLineTranslateY }],
+                },
+              ]}
+            />
+          </View>
+          <View style={styles.sideOverlay} />
+        </View>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            paddingTop: 20,
+          }}
+        >
+          <Text style={styles.tipText}>請將 QR 碼置於框內自動掃描</Text>
+        </View>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  closeButton: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+  container: {
+    flex: 1,
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  permissionText: {
+    fontSize: 16,
+    marginBottom: 12,
+  },
+  button: {
     padding: 10,
-    borderRadius: 50,
+    backgroundColor: '#007AFF',
+    borderRadius: 6,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
+  },
+  middleRow: {
+    flexDirection: 'row',
+    height: SCAN_BOX_SIZE,
+  },
+  sideOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  scanBox: {
+    width: SCAN_BOX_SIZE,
+    height: SCAN_BOX_SIZE,
+    position: 'relative',
+    borderColor: 'rgba(255,255,255,0.4)',
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  corner: {
+    width: 20,
+    height: 20,
+    borderColor: '#00FFAA',
+    position: 'absolute',
+  },
+  topLeft: {
+    borderTopWidth: 4,
+    borderLeftWidth: 4,
+    top: 0,
+    left: 0,
+  },
+  topRight: {
+    borderTopWidth: 4,
+    borderRightWidth: 4,
+    top: 0,
+    right: 0,
+  },
+  bottomLeft: {
+    borderBottomWidth: 4,
+    borderLeftWidth: 4,
+    bottom: 0,
+    left: 0,
+  },
+  bottomRight: {
+    borderBottomWidth: 4,
+    borderRightWidth: 4,
+    bottom: 0,
+    right: 0,
+  },
+  scanLine: {
+    width: '100%',
+    height: 2,
+    backgroundColor: '#00FFAA',
+    position: 'absolute',
+    top: 0,
+  },
+  tipText: {
+    color: '#fff',
+    fontSize: 16,
+    marginTop: 8,
   },
 });
 

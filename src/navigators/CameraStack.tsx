@@ -7,7 +7,11 @@ const Stack = createStackNavigator();
 const CameraStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="CameraScreen" component={CameraScreen} />
+      <Stack.Screen
+        name="CameraScreen"
+        component={CameraScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };

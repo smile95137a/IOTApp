@@ -1,35 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Alert,
-  Modal,
-  Text,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import HomeScreen from '@/screens/HomeScreen';
 import NewsStack from '@/navigators/NewsStack';
 import MemberStack from '@/navigators/MemberStack';
 import StoreStack from './StoreStack';
-import { Camera, CameraView } from 'expo-camera';
-import CameraScreen from '@/screens/CameraScreen';
-import { RootState } from '@/store/store';
-import { useSelector, useDispatch } from 'react-redux';
-import { openCamera } from '@/store/cameraSlice';
 import CameraStack from './CameraStack';
 import { useNavigation } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 const MainStackNavigator = () => {
-  const isCameraOpen = useSelector(
-    (state: RootState) => state.camera.isCameraOpen
-  );
-  const dispatch = useDispatch();
-
   return (
     <>
       <Tab.Navigator
@@ -92,7 +74,6 @@ const MainStackNavigator = () => {
                   <TouchableOpacity
                     style={styles.cameraButton}
                     onPress={() => {
-                      dispatch(openCamera());
                       navigation.navigate('Camera');
                     }}
                   >

@@ -15,7 +15,6 @@ import { useDispatch } from 'react-redux';
 import { fetchAllStores } from '@/api/storeApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import HomeOptionButton from '@/component/home/HomeOptionButton';
-import { openCamera } from '@/store/cameraSlice';
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -102,7 +101,6 @@ const HomeScreen = ({ navigation }) => {
             title="掃碼開台"
             description="掃描球桌上的 QRcode 開台／關台"
             onPress={() => {
-              dispatch(openCamera());
               navigation.reset({
                 index: 0,
                 routes: [{ name: 'Camera' }],
