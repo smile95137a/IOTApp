@@ -102,6 +102,7 @@ const HomeScreen = ({ navigation }) => {
             title="掃碼開台"
             description="掃描球桌上的 QRcode 開台／關台"
             onPress={() => {
+              dispatch(openCamera());
               navigation.reset({
                 index: 0,
                 routes: [{ name: 'Camera' }],

@@ -439,7 +439,7 @@ const ReportStack = () => {
       <Stack.Screen
         name="ReportDetail"
         component={ReportDetailScreen}
-        options={{ title: '報表詳情' }} // 讓返回按鈕可用
+        options={{ title: '報表詳情', headerShown: false }} // 讓返回按鈕可用
       />
     </Stack.Navigator>
   );
