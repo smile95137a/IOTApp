@@ -3,7 +3,7 @@ import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Image,
@@ -12,18 +12,16 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import Carousel from 'react-native-snap-carousel';
+import Carousel from 'react-native-reanimated-carousel';
 import { useDispatch } from 'react-redux';
 
 const ImageCarousel = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
-  const carouselRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [containerWidth, setContainerWidth] = useState(
-    Dimensions.get('window').width
-  );
   const [banners, setBanners] = useState<Banner[]>([]);
+
+  const screenWidth = Dimensions.get('window').width;
 
   useEffect(() => {
     const loadBanners = async () => {
@@ -43,43 +41,35 @@ const ImageCarousel = () => {
     loadBanners();
   }, []);
 
-  const renderBannerItem = ({ item }) => {
-    return (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() =>
-          navigation.navigate('News', {
-            screen: 'NewsDetailScreen',
-            params: { news: item.news },
-          })
-        }
-        style={styles.bannerItem}
-      >
-        <Image src={getImageUrl(item.imageUrl)} style={styles.bannerImage} />
-      </TouchableOpacity>
-    );
-  };
+  const renderBannerItem = ({ item }) => (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() =>
+        navigation.navigate('News', {
+          screen: 'NewsDetailScreen',
+          params: { news: item.news },
+        })
+      }
+      style={styles.bannerItem}
+    >
+      <Image src={getImageUrl(item.imageUrl)} style={styles.bannerImage} />
+    </TouchableOpacity>
+  );
 
   return (
-    <View
-      style={styles.carouselContainer}
-      onLayout={(event) => {
-        const { width } = event.nativeEvent.layout;
-        setContainerWidth(width);
-      }}
-    >
+    <View style={styles.carouselContainer}>
       <Carousel
-        ref={carouselRef}
+        width={screenWidth}
+        height={180}
         data={banners}
-        renderItem={renderBannerItem}
-        sliderWidth={containerWidth} // Use the dynamically measured width
-        itemWidth={containerWidth} // Adjust for horizontal padding
-        onSnapToItem={(index) => setActiveIndex(index)}
-        autoplay
         loop
-        autoplayDelay={3000}
-        vertical={false}
+        autoPlay
+        autoPlayInterval={3000}
+        scrollAnimationDuration={800}
+        onSnapToItem={(index) => setActiveIndex(index)}
+        renderItem={renderBannerItem}
       />
+
       {/* Pagination */}
       <View style={styles.pagination}>
         {banners.map((_, index) => (
@@ -103,7 +93,7 @@ const styles = StyleSheet.create({
   },
   bannerImage: {
     width: '100%',
-    height: 180, // Fixed height for banners
+    height: 180,
     borderRadius: 10,
   },
   pagination: {
@@ -115,11 +105,11 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#ccc',
+    backgroundColor: '#4067A4',
     marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: '#0A0A30',
+    backgroundColor: '#FFC702',
   },
 });
 
