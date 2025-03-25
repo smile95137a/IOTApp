@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     minWidth: 169,
-    backgroundColor: '#FF914D',
+    backgroundColor: '#FFC702',
     padding: 16,
     borderRadius: 30,
     alignItems: 'center',
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#000',
   },
 });
 

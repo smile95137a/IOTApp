@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     fontWeight: 'normal', // 總金額標籤使用一般字體
   },
   startGameButton: {
-    backgroundColor: '#FF914D',
+    backgroundColor: '#FFC702',
     borderRadius: 30,
     paddingHorizontal: 40,
     paddingVertical: 12,
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   startGameText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#000',
   },
 });
 

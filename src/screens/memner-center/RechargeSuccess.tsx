@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   startGameButton: {
     marginTop: 30,
-    backgroundColor: '#FF914D',
+    backgroundColor: '#FFC702',
     borderRadius: 30,
     paddingHorizontal: 40,
     paddingVertical: 12,
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   startGameText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#000',
   },
 });
 
