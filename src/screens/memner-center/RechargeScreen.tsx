@@ -4,8 +4,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  FlatList,
-  Image,
+  ScrollView,
   SafeAreaView,
   Alert,
 } from 'react-native';
@@ -14,7 +13,6 @@ import { topUp } from '@/api/paymentApi';
 import NumberFormatter from '@/component/NumberFormatter';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
-import { fetchAllStores } from '@/api/storeApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { addAmount } from '@/store/userSlice';
 
@@ -74,49 +72,47 @@ const RechargeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Recharge Options */}
-      <FlatList
-        windowSize={1}
-        contentContainerStyle={styles.listContainer}
-        data={rechargeOptions}
-        numColumns={2}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[
-              styles.optionBox,
-              selectedOption === item.id && styles.selectedOption,
-            ]}
-            onPress={() => handleSelect(item.id)}
-          >
-            <Text
+      <ScrollView contentContainerStyle={styles.optionContainer}>
+        <View style={styles.optionGrid}>
+          {rechargeOptions.map((item) => (
+            <TouchableOpacity
+              key={item.id}
               style={[
-                styles.amountText,
-                selectedOption === item.id && styles.selectedText,
+                styles.optionBox,
+                selectedOption === item.id && styles.selectedOption,
               ]}
+              onPress={() => handleSelect(item.id)}
             >
-              儲值
-              <NumberFormatter number={~~item.amount} />元
-            </Text>
-            <Text
-              style={[
-                styles.bonusText,
-                selectedOption === item.id && styles.selectedText,
-              ]}
-            >
-              送
-              <NumberFormatter number={~~item.bonus} />元
-            </Text>
-            {selectedOption === item.id && (
-              <MaterialIcons
-                name="check"
-                size={24}
-                color="#FFFFFF"
-                style={styles.checkmark}
-              />
-            )}
-          </TouchableOpacity>
-        )}
-      />
+              <Text
+                style={[
+                  styles.amountText,
+                  selectedOption === item.id && styles.selectedText,
+                ]}
+              >
+                儲值
+                <NumberFormatter number={~~item.amount} />元
+              </Text>
+              <Text
+                style={[
+                  styles.bonusText,
+                  selectedOption === item.id && styles.selectedText,
+                ]}
+              >
+                送
+                <NumberFormatter number={~~item.bonus} />元
+              </Text>
+              {selectedOption === item.id && (
+                <MaterialIcons
+                  name="check"
+                  size={24}
+                  color="#FFFFFF"
+                  style={styles.checkmark}
+                />
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
 
       {/* Recharge Button */}
       <TouchableOpacity style={styles.rechargeButton} onPress={handleRecharge}>
@@ -131,7 +127,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  listContainer: {},
+  optionContainer: {
+    padding: 16,
+  },
+  optionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
   optionBox: {
     width: '48%',
     minHeight: 108,
@@ -142,7 +145,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: '1%',
   },
   selectedOption: {
     backgroundColor: '#F67943',
