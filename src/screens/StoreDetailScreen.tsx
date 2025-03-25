@@ -97,20 +97,22 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
     }
   };
 
-  const handleCallPhone = () => {
-    if (store?.phone) {
-      const phoneNumber = `tel:${store.phone}`;
-      Linking.canOpenURL(phoneNumber)
-        .then((supported) => {
-          if (supported) {
-            Linking.openURL(phoneNumber);
-          } else {
-            console.error('不支援撥打此電話:', store.phone);
-          }
-        })
-        .catch((err) => console.error('發生錯誤:', err));
-    } else {
-      console.warn('店家沒有提供電話號碼');
+  const handleCallPhone = async () => {
+    const phoneNumber = `tel:0912123123`;
+
+    try {
+      dispatch(showLoading());
+
+      const supported = await Linking.canOpenURL(phoneNumber);
+      if (supported) {
+        await Linking.openURL(phoneNumber);
+      } else {
+        console.error('不支援撥打此電話:', phoneNumber);
+      }
+    } catch (err) {
+      console.error('發生錯誤:', err);
+    } finally {
+      dispatch(hideLoading());
     }
   };
 
