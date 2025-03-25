@@ -4,9 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   Modal,
-  SafeAreaView,
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -37,55 +35,53 @@ const NotificationsScreen = ({ navigation }: any) => {
     setModalVisible(true);
   };
 
-  const renderNotification = ({ item }: { item: any }) => (
-    <View style={styles.notificationItem}>
-      <View>
-        <Text style={styles.notificationDate}>
-          <DateFormatter date={item.createdDate} format="YYYY.MM.DD" />
-        </Text>
-        <Text style={styles.notificationTitle}>{item.title}</Text>
-      </View>
-      <TouchableOpacity
-        style={[
-          styles.notificationButton,
-          item.isRead === '未讀' ? styles.unreadButton : styles.readButton,
-        ]}
-        onPress={() => openNotification(item)}
-      >
-        <View style={styles.notificationButtonContent}>
-          <Icon
-            name="add" // 使用 MaterialIcons 的 `add` 图标
-            style={[
-              styles.notificationButtonIcon,
-              item.isRead === '未讀'
-                ? styles.unreadButtonText
-                : styles.readButtonText,
-            ]}
-          />
-          <Text
-            style={[
-              styles.notificationButtonText,
-              item.isRead === '未讀'
-                ? styles.unreadButtonText
-                : styles.readButtonText,
-            ]}
-          >
-            {item.isRead === '未讀' ? '閱讀' : '已讀'}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <>
-      <FlatList
-        windowSize={1}
-        data={notifications}
-        renderItem={renderNotification}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      <ScrollView>
+        {notifications.map((item) => (
+          <View key={item.id} style={styles.notificationItem}>
+            <View>
+              <Text style={styles.notificationDate}>
+                <DateFormatter date={item.createdDate} format="YYYY.MM.DD" />
+              </Text>
+              <Text style={styles.notificationTitle}>{item.title}</Text>
+            </View>
+            <TouchableOpacity
+              style={[
+                styles.notificationButton,
+                item.isRead === '未讀'
+                  ? styles.unreadButton
+                  : styles.readButton,
+              ]}
+              onPress={() => openNotification(item)}
+            >
+              <View style={styles.notificationButtonContent}>
+                <Icon
+                  name="add"
+                  style={[
+                    styles.notificationButtonIcon,
+                    item.isRead === '未讀'
+                      ? styles.unreadButtonText
+                      : styles.readButtonText,
+                  ]}
+                />
+                <Text
+                  style={[
+                    styles.notificationButtonText,
+                    item.isRead === '未讀'
+                      ? styles.unreadButtonText
+                      : styles.readButtonText,
+                  ]}
+                >
+                  {item.isRead === '未讀' ? '閱讀' : '已讀'}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
 
+      {/* Modal for Notification Detail */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -98,14 +94,12 @@ const NotificationsScreen = ({ navigation }: any) => {
               {selectedNotification?.date} {selectedNotification?.title}
             </Text>
 
-            {/* 滾動內容 */}
             <ScrollView style={styles.modalContentScroll}>
               <Text style={styles.modalContent}>
                 {selectedNotification?.content}
               </Text>
             </ScrollView>
 
-            {/* 關閉按鈕 */}
             <TouchableOpacity
               style={styles.modalCloseButton}
               onPress={() => setModalVisible(false)}
@@ -151,8 +145,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   notificationButtonIcon: {
-    fontSize: 16, // 图标大小
-    marginRight: 5, // 图标与文字间距
+    fontSize: 16,
+    marginRight: 5,
   },
   unreadButton: {
     backgroundColor: '#F67943',
@@ -192,8 +186,8 @@ const styles = StyleSheet.create({
   },
   modalContentScroll: {
     flexGrow: 0,
-    maxHeight: 480, // 限制滾動內容的最大高度
-    marginBottom: 20, // 與按鈕保持間距
+    maxHeight: 480,
+    marginBottom: 20,
   },
   modalContent: {
     fontSize: 14,
