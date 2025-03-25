@@ -101,7 +101,12 @@ const HomeScreen = ({ navigation }) => {
                       .join('、')}`
                   : '無法獲取最近的店家'
               }
-              onPress={() => console.log('Navigating to Store Search')}
+              onPress={() => {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Explore' }],
+                });
+              }}
             />
             <HomeOptionButton
               icon={<AntDesign name="scan1" size={36} color="black" />}
