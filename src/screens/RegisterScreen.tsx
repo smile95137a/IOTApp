@@ -206,7 +206,7 @@ const RegisterScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F7F7F7',
+    paddingBottom: 16,
   },
   container: {
     flex: 1,

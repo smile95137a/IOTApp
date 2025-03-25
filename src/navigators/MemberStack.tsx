@@ -219,6 +219,7 @@ const MemberStack = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: 16,
   },
   userInfoContainer: {
     flexDirection: 'row',

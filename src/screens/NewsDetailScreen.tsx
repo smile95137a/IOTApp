@@ -52,6 +52,7 @@ const NewsDetailScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: 16,
   },
   detail: {
     flex: 1,

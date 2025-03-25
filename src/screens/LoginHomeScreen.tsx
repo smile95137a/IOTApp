@@ -214,6 +214,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    paddingBottom: 16,
   },
   container: {
     flex: 1,

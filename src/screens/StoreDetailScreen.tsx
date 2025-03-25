@@ -263,6 +263,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: 16,
   },
 
   storeDetails: {
