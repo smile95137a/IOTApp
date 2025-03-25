@@ -29,6 +29,7 @@ import DepositHistoryScreen from '@/screens/memner-center/DepositHistoryScreen';
 import GameHistoryScreen from '@/screens/memner-center/GameHistoryScreen';
 import { getImageUrl } from '@/utils/ImageUtils';
 import EditPersonalInfoScreen from '@/screens/memner-center/EditPersonalInfoScreen';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Stack = createStackNavigator();
 
@@ -72,32 +73,39 @@ const MainLayout = ({ children }) => {
   }, [user]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header
-        title="會員中心"
-        onBackPress={() => navigation.goBack()}
-        rightIcon="settings"
-        onRightPress={() => console.log('More options pressed')}
-        isDarkMode
-      />
+    <LinearGradient
+      colors={['#1D1640', '#4067A4']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={StyleSheet.absoluteFill}
+    >
+      <SafeAreaView style={styles.container}>
+        <Header
+          title="會員中心"
+          onBackPress={() => navigation.goBack()}
+          rightIcon="settings"
+          onRightPress={() => console.log('More options pressed')}
+          isDarkMode
+        />
 
-      {/* User Info */}
-      <View style={styles.userInfoContainer}>
-        <View style={styles.userInfoLeft}>
-          <Image src={getImageUrl(localUser?.imgUrl)} style={styles.avatar} />
+        {/* User Info */}
+        <View style={styles.userInfoContainer}>
+          <View style={styles.userInfoLeft}>
+            <Image src={getImageUrl(localUser?.imgUrl)} style={styles.avatar} />
+          </View>
+          <View style={styles.userInfoRight}>
+            <Text style={styles.userName}>{localUser?.name || ''}</Text>
+            <Text style={styles.userBalance}>
+              餘額：
+              <NumberFormatter number={localUser?.amount ?? 0} />元
+            </Text>
+          </View>
         </View>
-        <View style={styles.userInfoRight}>
-          <Text style={styles.userName}>{localUser?.name || ''}</Text>
-          <Text style={styles.userBalance}>
-            餘額：
-            <NumberFormatter number={localUser?.amount ?? 0} />元
-          </Text>
-        </View>
-      </View>
 
-      {/* Menu List */}
-      <View style={styles.menuContainer}>{children}</View>
-    </SafeAreaView>
+        {/* Menu List */}
+        <View style={styles.menuContainer}>{children}</View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -211,11 +219,9 @@ const MemberStack = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A30',
   },
   userInfoContainer: {
     flexDirection: 'row',
-    backgroundColor: '#0A0A30',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 40,
@@ -232,11 +238,11 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#F2BF04',
   },
   userBalance: {
-    fontSize: 16,
-    color: '#fff',
+    fontSize: 12,
+    color: '#F2BF04',
     marginTop: 5,
   },
   menuContainer: {

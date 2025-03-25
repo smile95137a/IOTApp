@@ -1,6 +1,7 @@
 import DateFormatter from '@/component/DateFormatter';
 import Header from '@/component/Header';
 import { getImageUrl } from '@/utils/ImageUtils';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
   View,
@@ -15,36 +16,42 @@ const NewsDetailScreen = ({ route, navigation }: any) => {
   const { news } = route.params;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header
-        title="最新消息"
-        onBackPress={() => navigation.goBack()}
-        rightIcon="more-vert"
-        onRightPress={() => console.log('More options pressed')}
-        isDarkMode
-      />
-      <ScrollView style={styles.detail}>
-        <Text style={styles.newsTitle}>{news.title}</Text>
-        <Text style={styles.newsDate}>
-          <DateFormatter date={news.createdDate} format="YYYY.MM.DD" />
-        </Text>
-
-        <Image
-          src={getImageUrl(news.imageUrl)}
-          style={styles.newsImage}
-          resizeMode="cover"
+    <LinearGradient
+      colors={['#1D1640', '#4067A4']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={StyleSheet.absoluteFill}
+    >
+      <SafeAreaView style={styles.container}>
+        <Header
+          title="最新消息"
+          onBackPress={() => navigation.goBack()}
+          rightIcon="more-vert"
+          onRightPress={() => console.log('More options pressed')}
+          isDarkMode
         />
+        <ScrollView style={styles.detail}>
+          <Text style={styles.newsTitle}>{news.title}</Text>
+          <Text style={styles.newsDate}>
+            <DateFormatter date={news.createdDate} format="YYYY.MM.DD" />
+          </Text>
 
-        <Text style={styles.newsContent}>{news.content}</Text>
-      </ScrollView>
-    </SafeAreaView>
+          <Image
+            src={getImageUrl(news.imageUrl)}
+            style={styles.newsImage}
+            resizeMode="cover"
+          />
+
+          <Text style={styles.newsContent}>{news.content}</Text>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0c0c3d',
   },
   detail: {
     flex: 1,

@@ -92,7 +92,7 @@ const MonitorViewDetailScreen = () => {
                 data={[...monitors]}
                 keyExtractor={(item) => item.uid}
                 contentContainerStyle={styles.listContainer}
-                windowSize={1}
+                windowSize={10}
                 numColumns={2}
                 renderItem={({ item }) => (
                   <TouchableOpacity key={item.uid} style={styles.card}>

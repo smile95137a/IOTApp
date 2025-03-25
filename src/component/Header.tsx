@@ -17,49 +17,40 @@ const Header = ({
   onRightPress,
   isDarkMode = false,
 }: HeaderProps) => {
-  const iconColor = isDarkMode ? '#FFD700' : '#000';
+  const iconColor = isDarkMode ? '#FFC702' : '#000';
   const titleColor = isDarkMode ? '#00BFFF' : '#000';
 
   return (
     <View style={styles.header}>
       {onBackPress ? (
         <TouchableOpacity onPress={onBackPress}>
-          <Icon name="chevron-left" size={24} color={iconColor} />
+          <Icon name="chevron-left" size={48} color={iconColor} />
         </TouchableOpacity>
       ) : (
         <View style={{ width: 24 }} />
       )}
       <View style={styles.centerContent}>
-        {title ? (
-          <View style={styles.logoContainer}>
-            <Image
-              source={
-                isDarkMode
-                  ? require('@/assets/iot-logo-white.png') // 白色模式 Logo
-                  : require('@/assets/iot-logo-black.png') // 黑色模式 Logo
-              }
-              style={styles.logo}
-            />
-            <Text style={[styles.headerTitle, { color: titleColor }]}>
-              {title}
-            </Text>
-          </View>
-        ) : (
+        <View style={styles.logoContainer}>
           <Image
             source={
               isDarkMode
-                ? require('@/assets/iot-logo-white.png') // 白色模式大 Logo
-                : require('@/assets/iot-logo-black.png') // 黑色模式大 Logo
+                ? require('@/assets/iot-logo-no-text.png') // 白色模式 Logo
+                : require('@/assets/iot-logo-black.png') // 黑色模式 Logo
             }
-            style={styles.largeLogo}
+            style={styles.logo}
           />
-        )}
+          {title && (
+            <Text style={[styles.headerTitle, { color: titleColor }]}>
+              {title}
+            </Text>
+          )}
+        </View>
       </View>
 
       {/* 右侧按钮 */}
       {onRightPress && rightIcon ? (
         <TouchableOpacity onPress={onRightPress}>
-          <Icon name={rightIcon} size={24} color={iconColor} />
+          <Icon name={rightIcon} size={48} color={iconColor} />
         </TouchableOpacity>
       ) : (
         <View style={{ width: 24 }} /> // 占位符，确保标题居中
@@ -91,8 +82,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: 63,
-    height: 72,
+    width: 99,
+    height: 74,
     resizeMode: 'contain',
   },
   largeLogo: {

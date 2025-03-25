@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   addTableButton: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#FFC702',
     width: '48%',
     height: 128,
     borderRadius: 20,

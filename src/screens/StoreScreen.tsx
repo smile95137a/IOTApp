@@ -19,6 +19,7 @@ import { useDispatch } from 'react-redux';
 import * as Location from 'expo-location';
 import { findNearestStores } from '@/utils/LocationUtils';
 import { getImageUrl } from '@/utils/ImageUtils';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const StoreScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -78,76 +79,85 @@ const StoreScreen = ({ navigation }: any) => {
   }, [locationData, stores]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Header title="門市探索" isDarkMode />
-        <ImageCarousel />
-        <ScrollView contentContainerStyle={styles.storeList}>
-          {nearStores.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.storeItem}
-              onPress={() =>
-                navigation.navigate('StoreDetail', { store: item })
-              }
-            >
-              <View style={styles.storeImageContainer}>
-                <View style={styles.storeImageMain}>
-                  <Image
-                    src={getImageUrl(item?.imgUrl)}
-                    style={styles.storeImage}
-                  />
-                </View>
-              </View>
-              <View style={styles.storeDetails}>
-                <Text style={styles.storeName}>{item.name}</Text>
-                <Text style={styles.storeAddress}>{item.address}</Text>
-                {isLoadGps && (
-                  <Text style={styles.storeDistance}>
-                    {item.distance.toFixed(1)} km
-                  </Text>
-                )}
-              </View>
-              <View
-                style={[
-                  styles.storeVisit,
-                  item.availablesCount === 0
-                    ? styles.tableGray
-                    : styles.tableYellow,
-                ]}
+    <LinearGradient
+      colors={['#1D1640', '#4067A4']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={StyleSheet.absoluteFill}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <Header title="門市探索" isDarkMode />
+          <ImageCarousel />
+          <ScrollView contentContainerStyle={styles.storeList}>
+            {nearStores.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.storeItem}
+                onPress={() =>
+                  navigation.navigate('StoreDetail', { store: item })
+                }
               >
-                <Text style={[styles.storeVisitText, styles.storeVisitText1]}>
-                  剩餘桌數
-                </Text>
-                <Text style={[styles.storeVisitText, styles.storeVisitText2]}>
-                  {item.availablesCount}
-                </Text>
-                <View style={styles.storeVisitContainer}>
-                  <Text style={[styles.storeVisitText, styles.storeVisitText3]}>
-                    查看
-                  </Text>
-                  <Text style={[styles.storeVisitText, styles.storeVisitText4]}>
-                    <Icon name="chevron-right" size={18} />
-                  </Text>
+                <View style={styles.storeImageContainer}>
+                  <View style={styles.storeImageMain}>
+                    <Image
+                      src={getImageUrl(item?.imgUrl)}
+                      style={styles.storeImage}
+                    />
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+                <View style={styles.storeDetails}>
+                  <Text style={styles.storeName}>{item.name}</Text>
+                  <Text style={styles.storeAddress}>{item.address}</Text>
+                  {isLoadGps && (
+                    <Text style={styles.storeDistance}>
+                      {item.distance.toFixed(1)} km
+                    </Text>
+                  )}
+                </View>
+                <View
+                  style={[
+                    styles.storeVisit,
+                    item.availablesCount === 0
+                      ? styles.tableGray
+                      : styles.tableYellow,
+                  ]}
+                >
+                  <Text style={[styles.storeVisitText, styles.storeVisitText1]}>
+                    剩餘桌數
+                  </Text>
+                  <Text style={[styles.storeVisitText, styles.storeVisitText2]}>
+                    {item.availablesCount}
+                  </Text>
+                  <View style={styles.storeVisitContainer}>
+                    <Text
+                      style={[styles.storeVisitText, styles.storeVisitText3]}
+                    >
+                      查看
+                    </Text>
+                    <Text
+                      style={[styles.storeVisitText, styles.storeVisitText4]}
+                    >
+                      <Icon name="chevron-right" size={18} />
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0c0c3d',
   },
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#0c0c3d',
   },
   storeList: {},
   storeItem: {
@@ -196,7 +206,7 @@ const styles = StyleSheet.create({
     minWidth: 78,
   },
   tableYellow: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#FFC702',
   },
   tableGray: {
     backgroundColor: '#808080',

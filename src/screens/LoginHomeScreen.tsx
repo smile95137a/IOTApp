@@ -14,6 +14,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Facebook from 'expo-auth-session/providers/facebook';
 import { useAuthRequest } from 'expo-auth-session';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const LoginHomeScreen = ({ navigation }: any) => {
   const resetAndNavigateToMain = () => {
@@ -92,122 +93,131 @@ const LoginHomeScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Logo */}
-        <Image
-          source={require('@/assets/iot-login-logo.png')}
-          style={styles.logo}
-        />
+    <LinearGradient
+      colors={['#1D1640', '#4067A4']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={StyleSheet.absoluteFill}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          {/* Logo */}
+          <Image
+            source={require('@/assets/iot-logo-no-text.png')}
+            style={styles.logo}
+          />
 
-        {/* Primary Buttons */}
-        <View style={styles.buttonGroup}>
+          {/* Primary Buttons */}
+          <View style={styles.buttonGroup}>
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={() =>
+                navigation.navigate('Login', { loginType: 'phone' })
+              }
+            >
+              <MaterialIcons
+                name={'phone-iphone'}
+                size={20}
+                color="#E55D87"
+                style={styles.icon}
+              />
+              <View style={styles.primaryButtonTextContainer}>
+                <Text style={styles.primaryButtonText}>使用手機登入</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={() =>
+                navigation.navigate('Login', { loginType: 'email' })
+              }
+            >
+              <MaterialIcons
+                name={'mail-outline'}
+                size={20}
+                color="#E55D87"
+                style={styles.icon}
+              />
+              <View style={styles.primaryButtonTextContainer}>
+                <Text style={styles.primaryButtonText}>使用Email登入</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Divider */}
+          <View style={styles.dividerContainer}>
+            <View style={styles.line} />
+            <Text style={styles.dividerText}>快速登入</Text>
+            <View style={styles.line} />
+          </View>
+
+          {/* Social Login Buttons */}
+          <View style={styles.socialButtonGroup}>
+            <TouchableOpacity
+              style={styles.socialButton}
+              onPress={handleGoogleLogin}
+            >
+              <Image
+                source={require('@/assets/iot-google.png')}
+                style={styles.socialIcon}
+              />
+              <View style={styles.socialButtonTextContainer}>
+                <Text style={styles.socialButtonText}>使用 Google 登入</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.socialButton}
+              onPress={handleAppleLogin}
+            >
+              <Image
+                source={require('@/assets/iot-apple.png')}
+                style={styles.socialIcon}
+              />
+              <View style={styles.socialButtonTextContainer}>
+                <Text style={styles.socialButtonText}>使用 Apple ID 登入</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.socialButton}
+              onPress={handleFacebookLogin}
+            >
+              <Image
+                source={require('@/assets/iot-fb.png')}
+                style={styles.socialIcon}
+              />
+              <View style={styles.socialButtonTextContainer}>
+                <Text style={styles.socialButtonText}>使用 Facebook 登入</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Register Link */}
           <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={() => navigation.navigate('Login', { loginType: 'phone' })}
+            style={styles.registerLink}
+            onPress={() => navigation.navigate('Register')}
           >
-            <MaterialIcons
-              name={'phone-iphone'}
-              size={20}
-              color="#E55D87"
-              style={styles.icon}
-            />
-            <View style={styles.primaryButtonTextContainer}>
-              <Text style={styles.primaryButtonText}>使用手機登入</Text>
-            </View>
+            <Text style={styles.registerText}>註冊</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={() => navigation.navigate('Login', { loginType: 'email' })}
+            style={styles.homeButton}
+            onPress={resetAndNavigateToMain}
           >
-            <MaterialIcons
-              name={'mail-outline'}
-              size={20}
-              color="#E55D87"
-              style={styles.icon}
-            />
-            <View style={styles.primaryButtonTextContainer}>
-              <Text style={styles.primaryButtonText}>使用Email登入</Text>
-            </View>
+            <MaterialIcons name="home" size={24} color="#000" />
+            <Text style={styles.homeButtonText}>回首頁</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Divider */}
-        <View style={styles.dividerContainer}>
-          <View style={styles.line} />
-          <Text style={styles.dividerText}>快速登入</Text>
-          <View style={styles.line} />
-        </View>
-
-        {/* Social Login Buttons */}
-        <View style={styles.socialButtonGroup}>
-          <TouchableOpacity
-            style={styles.socialButton}
-            onPress={handleGoogleLogin}
-          >
-            <Image
-              source={require('@/assets/iot-google.png')}
-              style={styles.socialIcon}
-            />
-            <View style={styles.socialButtonTextContainer}>
-              <Text style={styles.socialButtonText}>使用 Google 登入</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.socialButton}
-            onPress={handleAppleLogin}
-          >
-            <Image
-              source={require('@/assets/iot-apple.png')}
-              style={styles.socialIcon}
-            />
-            <View style={styles.socialButtonTextContainer}>
-              <Text style={styles.socialButtonText}>使用 Apple ID 登入</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.socialButton}
-            onPress={handleFacebookLogin}
-          >
-            <Image
-              source={require('@/assets/iot-fb.png')}
-              style={styles.socialIcon}
-            />
-            <View style={styles.socialButtonTextContainer}>
-              <Text style={styles.socialButtonText}>使用 Facebook 登入</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* Register Link */}
-        <TouchableOpacity
-          style={styles.registerLink}
-          onPress={() => navigation.navigate('Register')}
-        >
-          <Text style={styles.registerText}>註冊</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.homeButton}
-          onPress={resetAndNavigateToMain}
-        >
-          <MaterialIcons name="home" size={24} color="#000" />
-          <Text style={styles.homeButtonText}>回首頁</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0c0c3d',
   },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#0c0c3d',
     alignItems: 'center',
   },
   logo: {

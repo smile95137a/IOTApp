@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addCardWrapper: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#FFC702',
     width: '48%',
     height: 128,
     borderRadius: 20,

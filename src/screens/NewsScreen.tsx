@@ -5,6 +5,7 @@ import ImageCarousel from '@/component/ImageCarousel';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { getImageUrl } from '@/utils/ImageUtils';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -48,45 +49,54 @@ const NewsScreen = ({ navigation }: any) => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Header title="最新消息" isDarkMode />
-        <ImageCarousel />
-        <ScrollView>
-          {newsData.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.newsItem}
-              onPress={() =>
-                navigation.navigate('NewsDetailScreen', { news: item })
-              }
-            >
-              <Image
-                source={{ uri: getImageUrl(item.imageUrl) }}
-                style={styles.newsImage}
-              />
-              <View style={styles.newsContent}>
-                <Text style={styles.newsTitle}>{item.title}</Text>
-                <Text style={styles.newsDescription} numberOfLines={2}>
-                  {item.content}
-                </Text>
-                <Text style={styles.newsDate}>
-                  <DateFormatter date={item.createdDate} format="YYYY.MM.DD" />
-                </Text>
-              </View>
-              <Icon name="chevron-right" size={24} color="#000" />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+    <LinearGradient
+      colors={['#1D1640', '#4067A4']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={StyleSheet.absoluteFill}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <Header title="最新消息" isDarkMode />
+          <ImageCarousel />
+          <ScrollView>
+            {newsData.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.newsItem}
+                onPress={() =>
+                  navigation.navigate('NewsDetailScreen', { news: item })
+                }
+              >
+                <Image
+                  source={{ uri: getImageUrl(item.imageUrl) }}
+                  style={styles.newsImage}
+                />
+                <View style={styles.newsContent}>
+                  <Text style={styles.newsTitle}>{item.title}</Text>
+                  <Text style={styles.newsDescription} numberOfLines={2}>
+                    {item.content}
+                  </Text>
+                  <Text style={styles.newsDate}>
+                    <DateFormatter
+                      date={item.createdDate}
+                      format="YYYY.MM.DD"
+                    />
+                  </Text>
+                </View>
+                <Icon name="chevron-right" size={24} color="#000" />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0c0c3d',
   },
   container: {
     flex: 1,
