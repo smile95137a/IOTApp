@@ -1,4 +1,10 @@
-import { GameTransactionRecord } from '@/api/transactionApi';
+import {
+  fetchUserTransactions,
+  GameTransactionRecord,
+} from '@/api/transactionApi';
+import { fetchGameRecords } from '@/api/gameRecordApi';
+import DateFormatter from '@/component/DateFormatter';
+import Header from '@/component/Header';
 import NumberFormatter from '@/component/NumberFormatter';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
@@ -12,9 +18,8 @@ import {
   Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { fetchGameOrders } from '@/api/gameOrderApi';
 
-const GameHistoryScreen = ({ navigation }: any) => {
+const GameOngoingScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const [transactions, setTransactions] = useState<GameTransactionRecord[]>([]);
 
@@ -22,7 +27,7 @@ const GameHistoryScreen = ({ navigation }: any) => {
     const loadTransactions = async () => {
       try {
         dispatch(showLoading());
-        const { success, data, message } = await fetchGameOrders();
+        const { success, data, message } = await fetchGameRecords();
         dispatch(hideLoading());
         if (success) {
           setTransactions(data);
@@ -105,4 +110,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GameHistoryScreen;
+export default GameOngoingScreen;

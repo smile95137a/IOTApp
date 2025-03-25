@@ -37,19 +37,25 @@ const menuItems = [
   },
   {
     id: 4,
-    title: '儲值記錄',
-    icon: 'history',
+    title: '儲值紀錄',
+    icon: 'wallet',
     screen: 'DepositHistory',
   },
   {
     id: 5,
+    title: '開局進行中',
+    icon: 'play-circle',
+    screen: 'GameOngoing',
+  },
+  {
+    id: 6,
     title: '開局記錄',
     icon: 'history',
     screen: 'GameHistory',
   },
-  { id: 6, title: '儲值', icon: 'attach-money', screen: 'Recharge' },
+  { id: 7, title: '儲值', icon: 'attach-money', screen: 'Recharge' },
   {
-    id: 7,
+    id: 8,
     title: '前往後台',
     icon: 'admin-panel-settings',
     color: '#3F51B5',
@@ -57,7 +63,7 @@ const menuItems = [
     authRoleId: [1, 2],
   },
   {
-    id: 8,
+    id: 9,
     title: '登出',
     icon: 'logout',
     color: '#F44336',

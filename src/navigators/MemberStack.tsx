@@ -30,6 +30,7 @@ import GameHistoryScreen from '@/screens/memner-center/GameHistoryScreen';
 import { getImageUrl } from '@/utils/ImageUtils';
 import EditPersonalInfoScreen from '@/screens/memner-center/EditPersonalInfoScreen';
 import { LinearGradient } from 'expo-linear-gradient';
+import GameOngoingScreen from '@/screens/memner-center/GameOngoingScreen';
 
 const Stack = createStackNavigator();
 
@@ -162,6 +163,13 @@ const MemberStack = () => {
           </MainLayout>
         )}
       </Stack.Screen>
+      <Stack.Screen name="GameOngoing">
+        {(props) => (
+          <MainLayout>
+            <GameOngoingScreen {...props} />
+          </MainLayout>
+        )}
+      </Stack.Screen>
       <Stack.Screen name="GameHistory">
         {(props) => (
           <MainLayout>
@@ -219,7 +227,6 @@ const MemberStack = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 16,
   },
   userInfoContainer: {
     flexDirection: 'row',
