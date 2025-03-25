@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 interface OptionButtonProps {
-  icon: string;
+  icon: React.ReactNode; // 改為 component
   title: string;
   description?: string;
   onPress: () => void;
@@ -17,14 +17,24 @@ const HomeOptionButton: React.FC<OptionButtonProps> = ({
   return (
     <View style={styles.optionContainer}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Icon name={icon} size={20} color="#000" />
-        <Text style={styles.buttonText}>{title}</Text>
-        <Icon
-          name="chevron-right"
-          size={18}
-          color="#000"
-          style={styles.arrowIcon}
-        />
+        {icon}
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            marginRight: 5,
+          }}
+        >
+          <Text style={styles.buttonText}>{title}</Text>
+          <MaterialIcons
+            name="chevron-right"
+            size={40}
+            color="#000"
+            style={styles.arrowIcon}
+          />
+        </View>
       </TouchableOpacity>
       {description && <Text style={styles.description}>{description}</Text>}
     </View>
@@ -33,38 +43,39 @@ const HomeOptionButton: React.FC<OptionButtonProps> = ({
 
 const styles = StyleSheet.create({
   optionContainer: {
-    backgroundColor: '#0A0A30',
+    backgroundColor: '#01003C',
     borderRadius: 10,
-    padding: 32,
+    paddingVertical: 18,
+    paddingHorizontal: 40,
     marginBottom: 15,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },
   button: {
+    marginVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',
     width: '80%',
     backgroundColor: '#FFC702',
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
     borderRadius: 40,
     justifyContent: 'space-between',
-    marginBottom: 20,
   },
   buttonText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#000',
-    flex: 1,
     marginLeft: 10,
   },
   arrowIcon: {
     marginLeft: 10,
   },
   description: {
-    color: '#00BFFF',
-    fontSize: 14,
-    marginTop: 8,
+    color: '#02C3ED',
+    fontSize: 16,
+    marginTop: 6,
     textAlign: 'center',
   },
 });

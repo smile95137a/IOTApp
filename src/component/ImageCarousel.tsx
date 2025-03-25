@@ -15,18 +15,6 @@ import {
 import Carousel from 'react-native-snap-carousel';
 import { useDispatch } from 'react-redux';
 
-const bannerData = [
-  {
-    image: require('@/assets/iot-banner-1.png'),
-  },
-  {
-    image: require('@/assets/iot-banner-2.jpg'),
-  },
-  {
-    image: require('@/assets/iot-banner-3.png'),
-  },
-];
-
 const ImageCarousel = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
@@ -107,7 +95,7 @@ const ImageCarousel = () => {
 
 const styles = StyleSheet.create({
   carouselContainer: {
-    marginBottom: 20,
+    marginVertical: 40,
   },
   bannerItem: {
     borderRadius: 10,

@@ -16,7 +16,8 @@ import { fetchAllStores } from '@/api/storeApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import HomeOptionButton from '@/component/home/HomeOptionButton';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [stores, setStores] = useState<any[]>([]);
@@ -84,13 +85,11 @@ const HomeScreen = ({ navigation }) => {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
           <Header isDarkMode />
-          {/* Banner Section */}
           <ImageCarousel />
 
-          {/* Cards Section */}
           <ScrollView contentContainerStyle={styles.content}>
             <HomeOptionButton
-              icon="store"
+              icon={<MaterialIcons name="storefront" size={36} color="black" />}
               title="門市探索"
               description={
                 nearStores.length > 0
@@ -105,7 +104,7 @@ const HomeScreen = ({ navigation }) => {
               onPress={() => console.log('Navigating to Store Search')}
             />
             <HomeOptionButton
-              icon="qrcode"
+              icon={<AntDesign name="scan1" size={36} color="black" />}
               title="掃碼開台"
               description="掃描球桌上的 QRcode 開台／關台"
               onPress={() => {
@@ -116,7 +115,9 @@ const HomeScreen = ({ navigation }) => {
               }}
             />
             <HomeOptionButton
-              icon="clock-o"
+              icon={
+                <MaterialIcons name="access-time" size={36} color="black" />
+              }
               title="預約開台"
               description="選擇門市預約開台"
               onPress={() => {

@@ -20,6 +20,7 @@ const MainStackNavigator = () => {
           headerShown: false,
           tabBarStyle: styles.tabBar,
           tabBarLabelStyle: styles.tabLabel,
+          tabBarIconStyle: styles.tabIcon,
           tabBarActiveTintColor: '#151D3D',
           tabBarInactiveTintColor: '#8A9493',
         }}
@@ -139,9 +140,17 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     backgroundColor: '#fff',
+    height: 80,
+    paddingBottom: 5,
   },
+  tabIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+
   tabLabel: {
-    fontSize: 12,
+    fontSize: 10,
     marginTop: 8,
   },
   cameraButtonWrapper: {

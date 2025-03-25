@@ -7,6 +7,7 @@ import {
   Image,
   SafeAreaView,
   Share,
+  Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { fetchPoolTablesByStoreUid, PoolTable } from '@/api/poolTableAPI';
@@ -18,6 +19,7 @@ import NumberFormatter from '@/component/NumberFormatter';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { ScrollView } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
+import Feather from '@expo/vector-icons/Feather';
 
 const StoreDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -95,66 +97,21 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
     }
   };
 
-  const renderTableItem = ({ item }: { item: PoolTable }) => {
-    const status = item.isUse ? 'reserved' : 'available';
-    const label = item.isUse ? '已預訂' : '立即開台';
-
-    return (
-      <TouchableOpacity
-        style={[styles.tableItem]}
-        disabled={status === 'reserved'}
-        onPress={() => {
-          if (status === 'available') {
-            navigation.navigate('Member', {
-              screen: 'Reservation',
-              params: { tableUid: item.uid }, // 傳遞桌檯 UID
-            });
+  const handleCallPhone = () => {
+    if (store?.phone) {
+      const phoneNumber = `tel:${store.phone}`;
+      Linking.canOpenURL(phoneNumber)
+        .then((supported) => {
+          if (supported) {
+            Linking.openURL(phoneNumber);
+          } else {
+            console.error('不支援撥打此電話:', store.phone);
           }
-        }}
-      >
-        <Image
-          source={
-            status === 'available'
-              ? require('@/assets/iot-table-enable.png')
-              : require('@/assets/iot-table-disable.png')
-          }
-          style={[
-            styles.tableImage,
-            status === 'available'
-              ? styles.tableImageAvailable
-              : styles.tableImageReserved,
-          ]}
-        />
-        <View
-          style={[
-            styles.tableTextContainer,
-            status === 'available'
-              ? styles.tableTextContainerAvailable
-              : styles.tableTextContainerReserved,
-          ]}
-        >
-          <View style={styles.tableTextContainerRow}>
-            <Text
-              style={[
-                styles.tableTextContainerId,
-                status !== 'available' && { color: 'white' }, // 讓 available 時文字變白色
-              ]}
-            >
-              {item.tableNumber.toString()}
-            </Text>
-
-            <Text
-              style={[
-                styles.tableTextContainerText,
-                status !== 'available' && { color: 'white' }, // 讓 available 時文字變白色
-              ]}
-            >
-              {label}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
+        })
+        .catch((err) => console.error('發生錯誤:', err));
+    } else {
+      console.warn('店家沒有提供電話號碼');
+    }
   };
 
   return (
@@ -166,7 +123,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
     >
       <SafeAreaView style={styles.container}>
         <Header
-          title={'門市探索'}
+          title={'門市資訊'}
           onBackPress={() => navigation.goBack()}
           rightIcon="more-vert"
           onRightPress={() => console.log('More options pressed')}
@@ -180,6 +137,9 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
             <Text style={styles.storeName}>{store.name}</Text>
             <Text style={styles.storeAddress}>{store.address}</Text>
           </View>
+          <TouchableOpacity style={styles.storePhone} onPress={handleCallPhone}>
+            <Feather name="volume-2" size={24} color="#00BFFF" />
+          </TouchableOpacity>
           <TouchableOpacity style={styles.storeShare} onPress={handleShare}>
             <Icon name="share" size={24} color="#00BFFF" />
           </TouchableOpacity>
@@ -319,6 +279,7 @@ const styles = StyleSheet.create({
   storeInfo: {
     flex: 1,
   },
+  storePhone: { marginRight: 12 },
   storeShare: {},
   storeName: {
     fontSize: 20,
@@ -326,7 +287,7 @@ const styles = StyleSheet.create({
     color: '#00BFFF',
   },
   storeAddress: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#00BFFF',
     marginTop: 5,
   },
@@ -347,13 +308,11 @@ const styles = StyleSheet.create({
   },
   tablesTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#333',
   },
   tablesAvailable: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#007bff',
+    color: '#3946FF',
     marginLeft: 12,
   },
   tableGrid: {
@@ -382,7 +341,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFC702', // 背景颜色
     paddingVertical: 8, // 垂直内边距
     paddingHorizontal: 12, // 水平内边距
-    borderRadius: 9, // 圆角
+    borderRadius: 20, // 圆角
   },
   tableTextContainerAvailable: {},
   tableTextContainerReserved: {
