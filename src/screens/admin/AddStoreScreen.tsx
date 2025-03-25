@@ -24,7 +24,7 @@ import {
 import { fetchAllVendors } from '@/api/admin/vendorApi';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
-import MapView from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
 import HeaderBar from '@/component/admin/HeaderBar';
 const weekDays = [
   'monday',
@@ -259,15 +259,18 @@ const AddStoreScreen = () => {
               </Picker>
               <View style={styles.mapContainer}>
                 <MapView
+                  provider={PROVIDER_DEFAULT}
                   style={styles.map}
                   initialRegion={{
-                    latitude: selectedLocation?.latitude || 25.033964, // 台北101為預設
+                    latitude: selectedLocation?.latitude || 25.033964,
                     longitude: selectedLocation?.longitude || 121.564468,
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
                   }}
                   onPress={handleMapPress}
-                ></MapView>
+                >
+                  {selectedLocation && <Marker coordinate={selectedLocation} />}
+                </MapView>
               </View>
               <TextInput
                 style={styles.input}

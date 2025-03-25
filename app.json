@@ -13,7 +13,20 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyB6izt_B0opjB59EFe9Nz-JgQTARI4W5GI"
+      },
+      "plugins": [
+        [
+          "expo-build-properties",
+          {
+            "ios": {
+              "useFrameworks": "static"
+            }
+          }
+        ]
+      ]
     },
     "android": {
       "package": "com.jim081728.iiot",
@@ -24,6 +37,11 @@
       "buildProperties": {
         "androidManifest": {
           "usesCleartextTraffic": true
+        }
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyB6izt_B0opjB59EFe9Nz-JgQTARI4W5GI"
         }
       }
     },
