@@ -318,7 +318,7 @@ const EnvironmentManagementScreen = ({ navigation }) => {
               <Text style={styles.modalLabel}>自動開始時間</Text>
               <TextInput
                 style={styles.modalInput}
-                placeholder="HH:mm"
+                placeholder="HH:mm(未開放)"
                 value={autoStartTime}
                 onChangeText={setAutoStartTime}
               />
@@ -326,7 +326,7 @@ const EnvironmentManagementScreen = ({ navigation }) => {
               <Text style={styles.modalLabel}>自動結束時間</Text>
               <TextInput
                 style={styles.modalInput}
-                placeholder="HH:mm"
+                placeholder="HH:mm(未開放)"
                 value={autoStopTime}
                 onChangeText={setAutoStopTime}
               />

@@ -42,12 +42,14 @@ const AddPoolTableScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const poolTable = route.params?.poolTable;
+  const choseStoreId = route.params?.storeId;
+
   const isEditMode = !!poolTable;
 
   const [tableNumber, setTableNumber] = useState(poolTable?.tableNumber || '');
   const [status, setStatus] = useState(poolTable?.status || 'active');
   const [storeId, setStoreId] = useState(
-    poolTable?.storeId ? String(poolTable.storeId) : ''
+    poolTable?.storeId ? String(poolTable.storeId) : `${choseStoreId}`
   );
   const [isUse, setIsUse] = useState(poolTable?.isUse ?? false);
   const [qrCodeVal, setQrCodeVal] = useState('');
@@ -169,22 +171,6 @@ const AddPoolTableScreen = () => {
                 >
                   <Picker.Item label="可用" value="AVAILABLE" />
                   <Picker.Item label="不可用" value="UNAVAILABLE" />
-                </Picker>
-                {/* 店家選擇 Picker */}
-                <Text style={styles.label}>選擇店家</Text>
-                <Picker
-                  selectedValue={storeId}
-                  onValueChange={(itemValue) => setStoreId(itemValue)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="請選擇店家" value="" />
-                  {stores.map((store) => (
-                    <Picker.Item
-                      key={store.id}
-                      label={store.name}
-                      value={String(store.id)}
-                    />
-                  ))}
                 </Picker>
 
                 <TouchableOpacity

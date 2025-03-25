@@ -9,12 +9,17 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   fetchAllPoolTables,
   deletePoolTable,
   PoolTable,
+  fetchPoolTablesByStoreId,
 } from '@/api/admin/poolTableApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
@@ -25,12 +30,16 @@ import HeaderBar from '@/component/admin/HeaderBar';
 const PoolTableManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
+  const route = useRoute();
+  const storeId = route.params?.storeId;
   const [poolTables, setPoolTables] = useState<PoolTable[]>([]);
 
   const loadPoolTables = async () => {
     try {
       dispatch(showLoading());
-      const { success, data, message } = await fetchAllPoolTables();
+      const { success, data, message } = await fetchPoolTablesByStoreId(
+        storeId
+      );
       dispatch(hideLoading());
       if (success) {
         setPoolTables(data);
@@ -74,7 +83,10 @@ const PoolTableManagementScreen = () => {
                   key={item.uid}
                   style={styles.card}
                   onPress={() =>
-                    navigation.navigate('AddPoolTable', { poolTable: item })
+                    navigation.navigate('AddPoolTable', {
+                      poolTable: item,
+                      storeId,
+                    })
                   }
                 >
                   <Image
@@ -95,7 +107,7 @@ const PoolTableManagementScreen = () => {
 
               <TouchableOpacity
                 style={styles.addTableButton}
-                onPress={() => navigation.navigate('AddPoolTable')}
+                onPress={() => navigation.navigate('AddPoolTable', { storeId })}
               >
                 <Image
                   source={require('@/assets/iot-table-enable.png')}

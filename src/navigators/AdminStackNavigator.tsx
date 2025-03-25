@@ -63,9 +63,9 @@ const menuItems = {
   },
   poolTable: {
     stack: 'PoolTableManagementStack',
-    screen: 'PoolTableManagement',
+    screen: 'PoolTableStoreManagement',
     icon: 'table-furniture',
-    label: '桌檯管理',
+    label: '桌台管理',
   },
   banner: {
     stack: 'BannerManagementStack',
@@ -298,6 +298,11 @@ const PoolTableStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
+        name="PoolTableStoreManagement"
+        component={PoolTableStoreManagementScreen}
+        options={{ title: '桌檯管理', headerShown: false }} // 隱藏 Header
+      />
+      <Stack.Screen
         name="PoolTableManagement"
         component={PoolTableManagementScreen}
         options={{ title: '桌檯管理', headerShown: false }} // 隱藏 Header
@@ -412,6 +417,7 @@ import { RootState } from '@/store/store';
 import MonitorManagementScreen from '@/screens/admin/MonitorManagementScreen';
 import MonitorViewScreen from '@/screens/admin/MonitorViewScreen';
 import MonitorViewDetailScreen from '@/screens/admin/MonitorViewDetailScreen';
+import PoolTableStoreManagementScreen from '@/screens/admin/PoolTableStoreManagementScreen';
 
 const ReportStack = () => {
   const user = useSelector((state: RootState) => state.user);
