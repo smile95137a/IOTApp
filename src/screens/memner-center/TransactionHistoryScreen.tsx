@@ -3,26 +3,17 @@ import {
   GameTransactionRecord,
 } from '@/api/transactionApi';
 import DateFormatter from '@/component/DateFormatter';
-import Header from '@/component/Header';
 import NumberFormatter from '@/component/NumberFormatter';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-  FlatList,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 const TransactionHistoryScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const [transactions, setTransactions] = useState<GameTransactionRecord[]>([]);
+
   useEffect(() => {
     const loadTransactions = async () => {
       try {
@@ -44,44 +35,39 @@ const TransactionHistoryScreen = ({ navigation }: any) => {
 
     loadTransactions();
   }, []);
-  const renderTransaction = ({ item }: { item: any }) => (
-    <View style={styles.transactionItem}>
-      <View style={styles.transactionDetails}>
-        <Text style={styles.transactionDate}>
-          <DateFormatter date={item.createdAt} format="YYYY.MM.DD HH:mm" />
-        </Text>
-        <Text style={styles.transactionLocation}>{item.storeName}</Text>
-        <Text style={styles.transactionInfo}>{item.tableNumber}</Text>
-      </View>
-      <Text style={styles.transactionAmount}>
-        NT
-        <NumberFormatter number={item.amount} />
-      </Text>
-    </View>
-  );
 
   return (
-    <>
-      {/* Transaction List */}
-      <FlatList
-        windowSize={1}
-        data={transactions}
-        renderItem={renderTransaction}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.transactionList}
-      />
-    </>
+    <ScrollView contentContainerStyle={styles.transactionList}>
+      {transactions.map((item) => (
+        <View key={item.id} style={styles.transactionItem}>
+          <View style={styles.transactionDetails}>
+            <Text style={styles.transactionDate}>
+              <DateFormatter date={item.createdAt} format="YYYY.MM.DD HH:mm" />
+            </Text>
+            <Text style={styles.transactionLocation}>{item.storeName}</Text>
+            <Text style={styles.transactionInfo}>{item.tableNumber}</Text>
+          </View>
+          <Text style={styles.transactionAmount}>
+            NT
+            <NumberFormatter number={item.amount} />
+          </Text>
+        </View>
+      ))}
+    </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
-  transactionList: {},
+  transactionList: {
+    paddingBottom: 32,
+  },
   transactionItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0', // 简洁的分割线颜色
+    borderBottomColor: '#E0E0E0',
   },
   transactionDetails: {
     flex: 1,
@@ -104,32 +90,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#E21A1C',
     textAlign: 'right',
-  },
-  bottomNavigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#DDD',
-    backgroundColor: '#FFF',
-  },
-  navItem: {
-    alignItems: 'center',
-  },
-  navText: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 5,
-  },
-  navCenter: {
-    backgroundColor: '#E8F5E9',
-    padding: 10,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: -30, // 提升到导航栏上方
   },
 });
 
