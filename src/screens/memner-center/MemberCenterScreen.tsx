@@ -4,17 +4,14 @@ import { logOut } from '@/store/authSlice';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { RootState } from '@/store/store';
 import { setUser } from '@/store/userSlice';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
-  Image,
-  FlatList,
-  Alert,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -110,52 +107,46 @@ const MemberCenterScreen = ({ navigation }: any) => {
     });
   };
 
-  const renderMenuItem = ({ item }: { item: any }) => {
-    // 取得當前選單項目的權限角色
-    const authRoleId = item.authRoleId;
-
-    // 取得使用者的角色 ID 陣列
-    const roleIds = localUser?.roles?.map((role) => role.id) || [];
-
-    // 若該選單項目需要特定權限，但當前使用者沒有，則不顯示
-    if (authRoleId && !authRoleId.some((id) => roleIds.includes(id))) {
-      return null;
-    }
-    return (
-      <TouchableOpacity
-        style={styles.menuItem}
-        onPress={() => {
-          if (item.screen === 'LoginScreen') {
-            handleLogOut();
-          } else {
-            navigation.navigate(item.screen);
-          }
-        }}
-      >
-        <View style={styles.menuItemLeft}>
-          <Icon name={item.icon} size={24} color={item.color || '#333'} />
-          <Text style={styles.menuItemText}>{item.title}</Text>
-        </View>
-        <View style={styles.menuItemRight}>
-          {item.badge && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{item.badge}</Text>
-            </View>
-          )}
-          <Icon name="chevron-right" size={24} color="#999" />
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <>
-      <FlatList
-        windowSize={1}
-        data={menuItems}
-        renderItem={renderMenuItem}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      <ScrollView>
+        {menuItems.map((item) => {
+          const authRoleId = item.authRoleId;
+          const roleIds = localUser?.roles?.map((role) => role.id) || [];
+
+          // 權限檢查
+          if (authRoleId && !authRoleId.some((id) => roleIds.includes(id))) {
+            return null;
+          }
+
+          return (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.menuItem}
+              onPress={() => {
+                if (item.screen === 'LoginScreen') {
+                  handleLogOut();
+                } else {
+                  navigation.navigate(item.screen);
+                }
+              }}
+            >
+              <View style={styles.menuItemLeft}>
+                <Icon name={item.icon} size={24} color={item.color || '#333'} />
+                <Text style={styles.menuItemText}>{item.title}</Text>
+              </View>
+              <View style={styles.menuItemRight}>
+                {item.badge && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{item.badge}</Text>
+                  </View>
+                )}
+                <Icon name="chevron-right" size={24} color="#999" />
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
     </>
   );
 };
