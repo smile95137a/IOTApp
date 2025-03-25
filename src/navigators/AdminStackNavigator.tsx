@@ -28,7 +28,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { fetchAllMenus } from '@/api/admin/menuApi';
 import EquipmentManagementScreen from '@/screens/admin/EquipmentManagementScreen';
-import StoreEquipmentEdit from '@/screens/admin/StoreEquipmentEdit';
 import DeviceTableManagementScreen from '@/screens/admin/DeviceTableManagementScreen';
 import EnvironmentTableManagementScreen from '@/screens/admin/EnvironmentTableManagementScreen';
 import ReportVendorScreen from '@/screens/admin/ReportVendorScreen';
@@ -377,11 +376,7 @@ const EquipmentStack = () => {
         component={EquipmentManagementScreen}
         options={{ title: '設備管理', headerShown: false }} // 隱藏 Header
       />
-      <Stack.Screen
-        name="StoreEquipmentEdit"
-        component={StoreEquipmentEdit}
-        options={{ title: '店家設備管理', headerShown: false }}
-      />
+
       <Stack.Screen
         name="DeviceManagement"
         component={DeviceManagementScreen}
