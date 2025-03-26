@@ -163,7 +163,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
     >
       <SafeAreaView style={styles.container}>
         <Header
-          title={'門市資訊'}
+          title={'預約開台'}
           onBackPress={() => navigation.goBack()}
           isDarkMode
         />

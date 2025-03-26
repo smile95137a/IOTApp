@@ -56,6 +56,18 @@ const menuItems = [
   { id: 7, title: '儲值', icon: 'attach-money', screen: 'Recharge' },
   {
     id: 8,
+    title: '預約開台',
+    icon: 'history',
+    screen: 'BookStoreScreen',
+  },
+  {
+    id: 88,
+    title: '我的預約',
+    icon: 'history',
+    screen: 'MyBookHistory',
+  },
+  {
+    id: 9,
     title: '前往後台',
     icon: 'admin-panel-settings',
     color: '#3F51B5',
@@ -63,18 +75,11 @@ const menuItems = [
     authRoleId: [1, 2],
   },
   {
-    id: 9,
+    id: 10,
     title: '登出',
     icon: 'logout',
     color: '#F44336',
     screen: 'LoginScreen',
-  },
-  {
-    id: 10,
-    title: '預約開台',
-    icon: 'logout',
-    color: '#F44336',
-    screen: 'BookStoreScreen',
   },
 ];
 
