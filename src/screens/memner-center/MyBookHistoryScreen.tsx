@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { fetchGameOrders } from '@/api/gameOrderApi';
+import { bookStart, cancelBook } from '@/api/gameApi';
 
 const MyBookHistoryScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -44,6 +45,48 @@ const MyBookHistoryScreen = ({ navigation }: any) => {
     navigation.navigate('Contact', { transaction });
   };
 
+  const handleCancel = (transaction: GameTransactionRecord) => {
+    Alert.alert('確認取消', '你確定要取消這筆預約嗎？', [
+      { text: '否', style: 'cancel' },
+      {
+        text: '是',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            dispatch(showLoading());
+            const { success, data } = await cancelBook({});
+            dispatch(hideLoading());
+            Alert.alert('已取消', '您的預約已取消');
+          } catch (error) {
+            dispatch(hideLoading());
+            Alert.alert('錯誤', '取消失敗，請稍後再試');
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleStart = (transaction: GameTransactionRecord) => {
+    Alert.alert('確認取消', '你確定要開始這筆預約嗎？', [
+      { text: '否', style: 'cancel' },
+      {
+        text: '是',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            dispatch(showLoading());
+            const { success, data } = await bookStart({});
+            dispatch(hideLoading());
+            Alert.alert('已取消', '您的預約已取消');
+          } catch (error) {
+            dispatch(hideLoading());
+            Alert.alert('錯誤', '取消失敗，請稍後再試');
+          }
+        },
+      },
+    ]);
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.transactionList}>
       {transactions.map((item) => (
@@ -60,6 +103,22 @@ const MyBookHistoryScreen = ({ navigation }: any) => {
               NT
               <NumberFormatter number={item.price} />
             </Text>
+          </View>
+
+          {/* 加入操作按鈕區塊 */}
+          <View style={styles.buttonGroup}>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.cancelButton]}
+              onPress={() => handleCancel(item)}
+            >
+              <Text style={styles.buttonText}>取消</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.startButton]}
+              onPress={() => handleStart(item)}
+            >
+              <Text style={styles.buttonText}>開始</Text>
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
       ))}
@@ -102,6 +161,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#E21A1C',
     textAlign: 'right',
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 12,
+    paddingBottom: 16,
+    paddingHorizontal: 6,
+  },
+
+  actionButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+
+  cancelButton: {
+    backgroundColor: '#ccc',
+  },
+
+  startButton: {
+    backgroundColor: '#00C851',
+  },
+
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 

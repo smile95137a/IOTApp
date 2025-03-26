@@ -24,6 +24,7 @@ import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import TimeSlotSelector from '@/component/book/TimeSlotSelector';
 import { Alert } from 'react-native';
+import { bookGame, getAvailableTimes } from '@/api/gameApi';
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -80,7 +81,10 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
     const loadTables = async () => {
       try {
         dispatch(showLoading());
-        const { success, data } = await fetchPoolTablesByStoreUid(store.uid);
+        const { success, data } = await getAvailableTimes(
+          store.id,
+          selectedDate
+        );
         dispatch(hideLoading());
 
         if (success) {
@@ -136,7 +140,6 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
       dispatch(hideLoading());
     }
   };
-  //
   const handleTimeSlotReservation = (start: string, end: string) => {
     Alert.alert(
       '預約桌台',
@@ -148,7 +151,44 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
         },
         {
           text: '確認預約',
-          onPress: () => {},
+          onPress: async () => {
+            try {
+              dispatch(showLoading());
+              const { success, data } = await bookGame({
+                poolTableUId: tableUid,
+                bookDate: moment(`${selectedDate}`, 'YYYY-MM-DD').format(
+                  'YYYY/MM/DD'
+                ),
+                startTime: moment(
+                  `${selectedDate} ${start}`,
+                  'YYYY-MM-DD HH:mm'
+                ).format('YYYY/MM/DD HH:mm'),
+                endTime: moment(
+                  `${selectedDate} ${end}`,
+                  'YYYY-MM-DD HH:mm'
+                ).format('YYYY/MM/DD HH:mm'),
+              });
+              dispatch(hideLoading());
+
+              if (success) {
+                Alert.alert('預約成功', '您已成功預約桌台！', [
+                  {
+                    text: '知道了',
+                    onPress: () => {
+                      navigation.navigate('Explore', {
+                        screen: 'BookStore',
+                      });
+                    },
+                  },
+                ]);
+              } else {
+                console.error(`API 回應失敗: 未能獲取桌台數據`);
+              }
+            } catch (error) {
+              dispatch(hideLoading());
+              console.error('Failed to fetch pool tables:', error);
+            }
+          },
         },
       ]
     );
