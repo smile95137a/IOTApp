@@ -28,7 +28,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const [selectedDate, setSelectedDate] = useState(
     moment().format('YYYY-MM-DD')
   );
-  const { store, tableUid } = route.params;
+  const { store, tableItem } = route.params;
   const [tables, setTables] = useState<any[]>([]);
 
   const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -204,7 +204,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
               current={selectedDate}
               onDayPress={(day) => {
                 navigation.navigate('BookStoreDetailSelectedTime', {
-                  tableUid,
+                  tableItem,
                   store,
                   selectedDate: day.dateString,
                 });

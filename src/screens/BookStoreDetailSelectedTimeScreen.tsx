@@ -25,24 +25,15 @@ import moment from 'moment';
 import TimeSlotSelector from '@/component/book/TimeSlotSelector';
 import { Alert } from 'react-native';
 import { bookGame, getAvailableTimes } from '@/api/gameApi';
+import { genRandom } from '@/utils/RandomUtils';
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { store, tableUid, selectedDate } = route.params;
+  const { store, tableItem, selectedDate } = route.params;
   const [tables, setTables] = useState<any[]>([]);
-  const timeSlots = [
-    { id: '16:00-18:00', start: '16:00', end: '18:00', rate: 100 },
-    { id: '18:00-20:00', start: '18:00', end: '20:00', rate: 100 },
-    {
-      id: '20:00-22:00',
-      start: '20:00',
-      end: '22:00',
-      rate: 100,
-      status: 'booked',
-    },
-    { id: '22:00-24:00', start: '22:00', end: '24:00', rate: 100 },
-  ];
+  const [timeSlots, setTimeSlots] = useState([]);
+
   const [activeTimeSlot, setActiveTimeSlot] = useState<string | null>(null);
 
   const handleSelectSlot = (id: string) => {
@@ -85,10 +76,17 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
           store.id,
           selectedDate
         );
+        console.log(tableItem);
+
         dispatch(hideLoading());
 
         if (success) {
-          setTables(data);
+          const slots =
+            data[tableItem.id]?.map((x) => ({
+              ...x,
+              id: genRandom(32),
+            })) || [];
+          setTimeSlots(slots);
         } else {
           console.error(`API 回應失敗: 未能獲取桌台數據`);
         }
@@ -143,7 +141,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const handleTimeSlotReservation = (start: string, end: string) => {
     Alert.alert(
       '預約桌台',
-      `確認預約 ${store.name}\n桌台 ${tableUid}\n${start}~${end}？`,
+      `確認預約 ${store.name}\n桌台 ${tableItem.uid}\n${start}~${end}？`,
       [
         {
           text: '取消',
@@ -154,9 +152,10 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
           onPress: async () => {
             try {
               dispatch(showLoading());
-              const { success, data } = await bookGame({
-                poolTableUId: tableUid,
-                bookDate: moment(`${selectedDate}`, 'YYYY-MM-DD').format(
+
+              const { success, data, message } = await bookGame({
+                poolTableUId: tableItem.uid,
+                bookDate: moment(selectedDate, 'YYYY-MM-DD').format(
                   'YYYY/MM/DD'
                 ),
                 startTime: moment(
@@ -168,6 +167,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
                   'YYYY-MM-DD HH:mm'
                 ).format('YYYY/MM/DD HH:mm'),
               });
+
               dispatch(hideLoading());
 
               if (success) {
@@ -182,11 +182,18 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
                   },
                 ]);
               } else {
-                console.error(`API 回應失敗: 未能獲取桌台數據`);
+                Alert.alert('預約失敗', message || '無法完成預約，請稍後再試');
               }
-            } catch (error) {
+            } catch (error: any) {
               dispatch(hideLoading());
-              console.error('Failed to fetch pool tables:', error);
+
+              const errMsg =
+                error?.response?.data?.message ||
+                error?.message ||
+                '發生未知錯誤，請稍後再試';
+
+              Alert.alert('錯誤', errMsg);
+              console.error('預約發生錯誤:', error);
             }
           },
         },

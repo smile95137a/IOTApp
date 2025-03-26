@@ -200,7 +200,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
                     style={styles.tableItem}
                     onPress={() => {
                       navigation.navigate('BookStoreDetailSelectedDate', {
-                        tableUid: item.uid,
+                        tableItem: item,
                         store,
                       });
                     }}
