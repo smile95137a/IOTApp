@@ -13,6 +13,7 @@ import {
   Keyboard,
 } from 'react-native';
 import Header from '@/component/Header'; // 假設你已有 Header component
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ForgotPasswordScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -33,48 +34,54 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <SafeAreaView style={styles.safeArea}>
-        <Header
-          onBackPress={() => navigation.goBack()}
-          title="忘記密碼"
-          isDarkMode
-        />
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.container}
-        >
-          <Text style={styles.title}>重設密碼</Text>
-          <Text style={styles.subtitle}>
-            請輸入您註冊時使用的 Email，我們將發送重設密碼連結到您的信箱。
-          </Text>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="請輸入 Email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={email}
-              onChangeText={setEmail}
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.resetButton}
-            onPress={() => navigation.navigate('ResetPassword')}
+    <LinearGradient
+      colors={['#1D1640', '#4067A4']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={StyleSheet.absoluteFill}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <SafeAreaView style={styles.safeArea}>
+          <Header
+            onBackPress={() => navigation.goBack()}
+            title="忘記密碼"
+            isDarkMode
+          />
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}
           >
-            <Text style={styles.resetButtonText}>發送重設密碼連結</Text>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+            <Text style={styles.title}>重設密碼</Text>
+            <Text style={styles.subtitle}>
+              請輸入您註冊時使用的 Email，我們將發送重設密碼連結到您的信箱。
+            </Text>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="請輸入 Email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
+            <TouchableOpacity
+              style={styles.resetButton}
+              onPress={() => navigation.navigate('ResetPassword')}
+            >
+              <Text style={styles.resetButtonText}>發送重設密碼連結</Text>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0c0c3d',
   },
   container: {
     flex: 1,
