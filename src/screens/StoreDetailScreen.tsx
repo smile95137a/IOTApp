@@ -127,8 +127,6 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         <Header
           title={'門市資訊'}
           onBackPress={() => navigation.goBack()}
-          rightIcon="more-vert"
-          onRightPress={() => console.log('More options pressed')}
           isDarkMode
         />
 

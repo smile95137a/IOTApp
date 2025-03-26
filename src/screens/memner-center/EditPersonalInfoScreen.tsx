@@ -239,6 +239,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -368,14 +369,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   completeButton: {
-    backgroundColor: '#F67943',
+    backgroundColor: '#FFC702',
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 8,
   },
   completeButtonText: {
     fontSize: 16,
-    color: '#FFF',
     fontWeight: 'bold',
   },
 });

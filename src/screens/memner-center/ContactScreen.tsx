@@ -131,11 +131,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    marginBottom: 20,
   },
   timerSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ff7043',
+    backgroundColor: '#00BFFF',
     paddingHorizontal: 6,
     paddingVertical: 12,
     borderRadius: 12,
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   endButton: {
-    backgroundColor: '#e53935',
+    backgroundColor: '#FFC702',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -235,7 +236,6 @@ const styles = StyleSheet.create({
   endButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff',
   },
 });
 

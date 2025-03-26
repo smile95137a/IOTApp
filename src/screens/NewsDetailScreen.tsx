@@ -26,8 +26,6 @@ const NewsDetailScreen = ({ route, navigation }: any) => {
         <Header
           title="最新消息"
           onBackPress={() => navigation.goBack()}
-          rightIcon="more-vert"
-          onRightPress={() => console.log('More options pressed')}
           isDarkMode
         />
         <ScrollView style={styles.detail}>

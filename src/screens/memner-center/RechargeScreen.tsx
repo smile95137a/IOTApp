@@ -140,24 +140,24 @@ const styles = StyleSheet.create({
     minHeight: 108,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#F67943',
+    borderColor: '#FFC702',
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   selectedOption: {
-    backgroundColor: '#F67943',
-    borderColor: '#F67943',
+    backgroundColor: '#FFC702',
+    borderColor: '#FFC702',
   },
   amountText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#F67943',
+    color: '#FFC702',
   },
   bonusText: {
     fontSize: 14,
-    color: '#F67943',
+    color: '#FFC702',
     marginTop: 8,
   },
   selectedText: {
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     right: 8,
   },
   rechargeButton: {
-    backgroundColor: '#F67943',
+    backgroundColor: '#FFC702',
     borderRadius: 25,
     paddingVertical: 12,
     alignItems: 'center',
@@ -178,7 +178,6 @@ const styles = StyleSheet.create({
     minWidth: 168,
   },
   rechargeButtonText: {
-    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
   },

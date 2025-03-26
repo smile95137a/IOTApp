@@ -83,12 +83,7 @@ const RegisterScreen = ({ route, navigation }: any) => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <SafeAreaView style={styles.safeArea}>
-          <Header
-            onBackPress={() => navigation.goBack()}
-            rightIcon="more-vert"
-            onRightPress={() => console.log('More options pressed')}
-            isDarkMode
-          />
+          <Header onBackPress={() => navigation.goBack()} isDarkMode />
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.container}

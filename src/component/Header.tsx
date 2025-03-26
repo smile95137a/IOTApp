@@ -53,7 +53,7 @@ const Header = ({
           <Icon name={rightIcon} size={48} color={iconColor} />
         </TouchableOpacity>
       ) : (
-        <View style={{ width: 24 }} /> // 占位符，确保标题居中
+        <View style={{ width: 48 }} /> // 占位符，确保标题居中
       )}
     </View>
   );

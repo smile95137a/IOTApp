@@ -84,8 +84,6 @@ const MainLayout = ({ children }) => {
         <Header
           title="會員中心"
           onBackPress={() => navigation.goBack()}
-          rightIcon="settings"
-          onRightPress={() => console.log('More options pressed')}
           isDarkMode
         />
 
