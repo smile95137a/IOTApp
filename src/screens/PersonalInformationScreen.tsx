@@ -23,6 +23,8 @@ import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { loginUser } from '@/api/authApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setAuth } from '@/store/authSlice';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const PersonalInfoScreen = ({ route, navigation }: any) => {
   const genderOptions = [
@@ -45,7 +47,6 @@ const PersonalInfoScreen = ({ route, navigation }: any) => {
   const selectedGenderLabel =
     genderOptions.find((option) => option.value === gender)?.label || '請選擇';
 
-  // 選擇相簿照片
   const handleUploadPhoto = async () => {
     let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
@@ -157,133 +158,152 @@ const PersonalInfoScreen = ({ route, navigation }: any) => {
     }
   };
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <Header
-            onBackPress={() => navigation.goBack()}
-            rightIcon="more-vert"
-          />
-          <Text style={styles.title}>個人資料</Text>
+    <LinearGradient
+      colors={['#1D1640', '#4067A4']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={StyleSheet.absoluteFill}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.container}>
+            <Header
+              onBackPress={() => navigation.goBack()}
+              rightIcon="more-vert"
+              onRightPress={() => console.log('More options pressed')}
+              isDarkMode
+            />
 
-          {/* 姓名 */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>姓名 *</Text>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                placeholder="請輸入真實姓名"
-                value={name}
-                onChangeText={setName}
-              />
-            </View>
-          </View>
-          {/* 密碼 */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>密碼 *</Text>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                placeholder="請輸入密碼"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={true}
-              />
-            </View>
-          </View>
+            <Text style={styles.title}>個人資料</Text>
+            <ScrollView>
+              {/* 姓名 */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>姓名 *</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="請輸入真實姓名"
+                    value={name}
+                    onChangeText={setName}
+                  />
+                </View>
+              </View>
+              {/* 密碼 */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>密碼 *</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="請輸入密碼"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={true}
+                  />
+                </View>
+              </View>
 
-          {/* 匿名 ID */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>匿名 ID *</Text>
-            <View style={[styles.inputWrapper, styles.disabledInputWrapper]}>
-              <TextInput
-                style={styles.input}
-                placeholder="請輸入真實姓名"
-                value={anonymousId}
-                editable={false}
-              />
-            </View>
-          </View>
+              {/* 匿名 ID */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>匿名 ID *</Text>
+                <View
+                  style={[styles.inputWrapper, styles.disabledInputWrapper]}
+                >
+                  <TextInput
+                    style={styles.input}
+                    placeholder="請輸入真實姓名"
+                    value={anonymousId}
+                    editable={false}
+                  />
+                </View>
+              </View>
 
-          {/* 性別選擇 */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>性別 *</Text>
-            <View style={styles.pickerWrapper}>
-              <>
-                <RNPickerSelect
-                  value={gender}
-                  onValueChange={(value) => setGender(value)}
-                  items={genderOptions}
-                  style={{
-                    inputIOS: styles.dropdownInput,
-                    inputAndroid: styles.dropdownInput,
-                    iconContainer: styles.iconContainer,
-                  }}
-                  Icon={() => (
-                    <MaterialIcons
-                      name="arrow-drop-down"
-                      size={24}
-                      color="#888"
+              {/* 性別選擇 */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>性別 *</Text>
+                <View style={styles.pickerWrapper}>
+                  <>
+                    <RNPickerSelect
+                      value={gender}
+                      onValueChange={(value) => setGender(value)}
+                      items={genderOptions}
+                      style={{
+                        inputIOS: styles.dropdownInput,
+                        inputAndroid: styles.dropdownInput,
+                        iconContainer: styles.iconContainer,
+                      }}
+                      Icon={() => (
+                        <MaterialIcons
+                          name="arrow-drop-down"
+                          size={24}
+                          color="#888"
+                        />
+                      )}
+                      useNativeAndroidPickerStyle={false}
+                      placeholder={{ label: '請選擇', value: '' }}
+                    />
+                  </>
+                </View>
+              </View>
+
+              {/* 上傳頭像照片 */}
+              <View style={styles.uploadContainer}>
+                <Text style={styles.inputLabel}>上傳頭像照片</Text>
+                <View style={styles.uploadWrapper}>
+                  {profileImage && (
+                    <Image
+                      source={{ uri: profileImage }}
+                      style={styles.profileImage}
                     />
                   )}
-                  useNativeAndroidPickerStyle={false}
-                  placeholder={{ label: '請選擇', value: '' }}
-                />
-              </>
-            </View>
-          </View>
-
-          {/* 上傳頭像照片 */}
-          <View style={styles.uploadContainer}>
-            <Text style={styles.inputLabel}>上傳頭像照片</Text>
-            <View style={styles.uploadWrapper}>
-              {profileImage && (
-                <Image
-                  source={{ uri: profileImage }}
-                  style={styles.profileImage}
-                />
-              )}
+                  <TouchableOpacity
+                    style={styles.uploadButton}
+                    onPress={handleUploadPhoto}
+                  >
+                    <MaterialIcons
+                      name="file-upload"
+                      size={30}
+                      color="#666666"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.uploadButton}
+                    onPress={handleTakePhoto}
+                  >
+                    <MaterialIcons
+                      name="camera-alt"
+                      size={30}
+                      color="#666666"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </ScrollView>
+            {/* 底部按鈕 */}
+            <View style={styles.bottomContainer}>
               <TouchableOpacity
-                style={styles.uploadButton}
-                onPress={handleUploadPhoto}
+                style={styles.homeButton}
+                onPress={resetAndNavigateToMain}
               >
-                <MaterialIcons name="file-upload" size={30} color="#666666" />
+                <MaterialIcons name="home" size={18} color="#000" />
+                <Text style={styles.homeButtonText}>回首頁</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.uploadButton}
-                onPress={handleTakePhoto}
+                style={styles.loginButton}
+                onPress={handleNextStep}
               >
-                <MaterialIcons name="camera-alt" size={30} color="#666666" />
+                <Text style={styles.loginButtonText}>下一步</Text>
               </TouchableOpacity>
             </View>
           </View>
-
-          {/* 底部按鈕 */}
-          <View style={styles.bottomContainer}>
-            <TouchableOpacity
-              style={styles.homeButton}
-              onPress={resetAndNavigateToMain}
-            >
-              <MaterialIcons name="home" size={18} color="#000" />
-              <Text style={styles.homeButtonText}>回首頁</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.loginButton}
-              onPress={handleNextStep}
-            >
-              <Text style={styles.loginButtonText}>下一步</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F7F7F7',
     paddingBottom: 16,
   },
   container: {
@@ -295,14 +315,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
+    color: '#00BFFF',
   },
   inputContainer: {
     marginBottom: 15,
   },
   inputLabel: {
     fontSize: 14,
-    color: '#333',
     marginBottom: 5,
+    color: '#00BFFF',
   },
   inputWrapper: {
     borderWidth: 1,
@@ -386,20 +407,20 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     borderRadius: 50,
     padding: 10,
+    backgroundColor: '#FFF',
   },
   homeButtonText: {
     fontSize: 14,
     marginLeft: 5,
   },
   loginButton: {
-    backgroundColor: '#F67943',
+    backgroundColor: '#FFC702',
     borderRadius: 50,
     paddingHorizontal: 30,
     paddingVertical: 10,
   },
   loginButtonText: {
     fontSize: 16,
-    color: '#FFF',
   },
   pickerContainer: {
     flexDirection: 'row',

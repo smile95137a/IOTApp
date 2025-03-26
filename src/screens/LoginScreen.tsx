@@ -226,10 +226,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 8,
+    color: '#00BFFF',
   },
   subtitle: {
     fontSize: 14,
-    color: '#888',
+    color: '#FFC702',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -263,7 +264,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     marginBottom: 8,
-    color: '#555',
+    color: '#00BFFF',
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -317,20 +318,20 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     borderRadius: 50,
     padding: 10,
+    backgroundColor: '#FFF',
   },
   homeButtonText: {
     fontSize: 14,
     marginLeft: 5,
   },
   loginButton: {
-    backgroundColor: '#F67943',
+    backgroundColor: '#FFC702',
     borderRadius: 50,
     paddingHorizontal: 30,
     paddingVertical: 10,
   },
   loginButtonText: {
     fontSize: 16,
-    color: '#FFF',
   },
   pickerContainer: {
     flexDirection: 'row',
