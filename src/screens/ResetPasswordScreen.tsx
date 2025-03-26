@@ -57,7 +57,7 @@ const ResetPasswordScreen = ({ navigation }: any) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView style={styles.safeArea}>
-        <Header onBackPress={() => navigation.goBack()} />
+        <Header onBackPress={() => navigation.goBack()} isDarkMode />
 
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
+    color: '#00BFFF',
   },
   inputContainer: {
     marginBottom: 20,
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     marginBottom: 8,
-    color: '#555',
+    color: '#00BFFF',
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -178,6 +179,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 5,
     paddingHorizontal: 10,
+    backgroundColor: '#F7F7F7',
   },
   input: {
     flex: 1,
@@ -186,14 +188,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    backgroundColor: '#F67943',
+    backgroundColor: '#FFC702',
     borderRadius: 50,
     paddingVertical: 12,
     alignItems: 'center',
   },
   buttonText: {
     fontSize: 16,
-    color: '#FFF',
   },
 });
 

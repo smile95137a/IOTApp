@@ -35,7 +35,11 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView style={styles.safeArea}>
-        <Header onBackPress={() => navigation.goBack()} title="忘記密碼" />
+        <Header
+          onBackPress={() => navigation.goBack()}
+          title="忘記密碼"
+          isDarkMode
+        />
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.container}
@@ -82,10 +86,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 16,
+    color: '#00BFFF',
   },
   subtitle: {
     fontSize: 14,
-    color: '#888',
+    color: '#FFC702',
     textAlign: 'center',
     marginBottom: 24,
     paddingHorizontal: 10,
@@ -96,7 +101,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     marginBottom: 8,
-    color: '#555',
+    color: '#00BFFF',
   },
   input: {
     height: 40,
@@ -107,14 +112,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
   resetButton: {
-    backgroundColor: '#F67943',
+    backgroundColor: '#FFC702',
     borderRadius: 50,
     paddingVertical: 12,
     alignItems: 'center',
   },
   resetButtonText: {
     fontSize: 16,
-    color: '#FFF',
   },
 });
 
