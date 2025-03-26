@@ -43,6 +43,7 @@ const AddStoreScreen = () => {
 
   const store = route.params?.store || null;
   const isEditMode = !!store;
+  console.log(JSON.stringify(store, null, 2));
 
   const [name, setName] = useState(store?.name || '');
   const [address, setAddress] = useState(store?.address || '');
@@ -51,6 +52,11 @@ const AddStoreScreen = () => {
   );
   const [lat, setLat] = useState(store?.lat ? String(store.lat) : '');
   const [lon, setLon] = useState(store?.lon ? String(store.lon) : '');
+  const [bookTime, setBookTime] = useState(store?.bookTime || '');
+  const [cancelBookTime, setCancelBookTime] = useState(
+    store?.cancelBookTime || ''
+  );
+
   const [deposit, setDeposit] = useState(
     store?.deposit ? String(store.deposit) : ''
   );
@@ -76,21 +82,19 @@ const AddStoreScreen = () => {
   // 初始化價格排程（確保所有天都有完整數據）
   const [pricingSchedules, setPricingSchedules] = useState(
     weekDays.map((day) => {
-      const existingSchedule = store?.pricingSchedules?.find(
-        (schedule) => schedule.dayOfWeek === day
+      const existing = store?.pricingSchedules?.find(
+        (s) => s.dayOfWeek.toLowerCase() === day
       );
       return {
-        dayOfWeek: day,
-        regularStartTime: existingSchedule?.regularStartTime || '10:00',
-        regularEndTime: existingSchedule?.regularEndTime || '18:00',
-        regularRate: existingSchedule?.regularRate
-          ? String(existingSchedule.regularRate)
-          : '100',
-        discountStartTime: existingSchedule?.discountStartTime || '18:00',
-        discountEndTime: existingSchedule?.discountEndTime || '23:00',
-        discountRate: existingSchedule?.discountRate
-          ? String(existingSchedule.discountRate)
-          : '80',
+        dayOfWeek: day.toUpperCase(),
+        regularRate: existing?.regularRate?.toString() || '100',
+        discountRate: existing?.discountRate?.toString() || '80',
+        regularTimeSlots: existing?.regularTimeSlots || [
+          { startTime: '10:00', endTime: '23:00', isDiscount: false },
+        ],
+        discountTimeSlots: existing?.discountTimeSlots || [
+          { startTime: '18:00', endTime: '21:00', isDiscount: true },
+        ],
       };
     })
   );
@@ -140,6 +144,8 @@ const AddStoreScreen = () => {
       address,
       hint,
       contactPhone,
+      bookTime,
+      cancelBookTime,
       vendor: { id: parseInt(vendorId) },
       lat: parseFloat(lat),
       lon: parseFloat(lon),
@@ -147,11 +153,20 @@ const AddStoreScreen = () => {
       discountRate: parseFloat(discountRate) || 0,
       regularRate: parseFloat(regularRate) || 0,
       pricingSchedules: pricingSchedules.map((schedule) => ({
-        ...schedule,
-        regularRate: parseFloat(schedule.regularRate) || 0,
-        discountRate: parseFloat(schedule.discountRate) || 0,
+        dayOfWeek: schedule.dayOfWeek,
+        regularRate: parseFloat(schedule.regularRate),
+        discountRate: parseFloat(schedule.discountRate),
+        regularTimeSlots: schedule.regularTimeSlots.map((slot) => ({
+          ...slot,
+          isDiscount: false,
+        })),
+        discountTimeSlots: schedule.discountTimeSlots.map((slot) => ({
+          ...slot,
+          isDiscount: true,
+        })),
       })),
     };
+    console.log(JSON.stringify(storeData, null, 2));
 
     try {
       dispatch(showLoading());
@@ -215,6 +230,21 @@ const AddStoreScreen = () => {
         },
       ]
     );
+  };
+  const updateTimeSlot = (dayIndex, type, slotIndex, key, value) => {
+    const updated = [...pricingSchedules];
+    updated[dayIndex][type][slotIndex][key] = value;
+    setPricingSchedules(updated);
+  };
+
+  const addTimeSlot = (dayIndex, type) => {
+    const updated = [...pricingSchedules];
+    updated[dayIndex][type].push({
+      startTime: '',
+      endTime: '',
+      isDiscount: type === 'discountTimeSlots',
+    });
+    setPricingSchedules(updated);
   };
 
   return (
@@ -330,63 +360,122 @@ const AddStoreScreen = () => {
                 value={contactPhone}
                 onChangeText={setContactPhone}
               />
+              <TextInput
+                style={styles.input}
+                placeholder="預約時間說明 (bookTime)"
+                value={bookTime}
+                onChangeText={setBookTime}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="取消預約時間說明 (cancelBookTime)"
+                value={cancelBookTime}
+                onChangeText={setCancelBookTime}
+              />
+
               {pricingSchedules.map((schedule, index) => (
                 <View key={schedule.dayOfWeek} style={styles.scheduleContainer}>
-                  <Text style={styles.dayLabel}>
-                    {schedule.dayOfWeek.toUpperCase()}
-                  </Text>
+                  <Text style={styles.dayLabel}>{schedule.dayOfWeek}</Text>
+
+                  <Text style={styles.label}>一般價格</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="一般開始時間"
-                    value={schedule.regularStartTime}
-                    onChangeText={(value) =>
-                      updateSchedule(index, 'regularStartTime', value)
-                    }
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="一般結束時間"
-                    value={schedule.regularEndTime}
-                    onChangeText={(value) =>
-                      updateSchedule(index, 'regularEndTime', value)
-                    }
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="一般價格"
-                    keyboardType="numeric"
                     value={schedule.regularRate}
+                    keyboardType="numeric"
                     onChangeText={(value) =>
                       updateSchedule(index, 'regularRate', value)
                     }
                   />
+
+                  {schedule.regularTimeSlots.map((slot, slotIdx) => (
+                    <View key={slotIdx}>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="一般開始時間"
+                        value={slot.startTime}
+                        onChangeText={(value) =>
+                          updateTimeSlot(
+                            index,
+                            'regularTimeSlots',
+                            slotIdx,
+                            'startTime',
+                            value
+                          )
+                        }
+                      />
+                      <TextInput
+                        style={styles.input}
+                        placeholder="一般結束時間"
+                        value={slot.endTime}
+                        onChangeText={(value) =>
+                          updateTimeSlot(
+                            index,
+                            'regularTimeSlots',
+                            slotIdx,
+                            'endTime',
+                            value
+                          )
+                        }
+                      />
+                    </View>
+                  ))}
+                  <TouchableOpacity
+                    style={styles.uploadButton}
+                    onPress={() => addTimeSlot(index, 'regularTimeSlots')}
+                  >
+                    <Text style={styles.uploadButtonText}>新增一般時段</Text>
+                  </TouchableOpacity>
+
+                  <Text style={styles.label}>折扣價格</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="折扣開始時間"
-                    value={schedule.discountStartTime}
-                    onChangeText={(value) =>
-                      updateSchedule(index, 'discountStartTime', value)
-                    }
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="折扣結束時間"
-                    value={schedule.discountEndTime}
-                    onChangeText={(value) =>
-                      updateSchedule(index, 'discountEndTime', value)
-                    }
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="折扣價格"
-                    keyboardType="numeric"
                     value={schedule.discountRate}
+                    keyboardType="numeric"
                     onChangeText={(value) =>
                       updateSchedule(index, 'discountRate', value)
                     }
                   />
+                  {schedule.discountTimeSlots.map((slot, slotIdx) => (
+                    <View key={slotIdx}>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="折扣開始時間"
+                        value={slot.startTime}
+                        onChangeText={(value) =>
+                          updateTimeSlot(
+                            index,
+                            'discountTimeSlots',
+                            slotIdx,
+                            'startTime',
+                            value
+                          )
+                        }
+                      />
+                      <TextInput
+                        style={styles.input}
+                        placeholder="折扣結束時間"
+                        value={slot.endTime}
+                        onChangeText={(value) =>
+                          updateTimeSlot(
+                            index,
+                            'discountTimeSlots',
+                            slotIdx,
+                            'endTime',
+                            value
+                          )
+                        }
+                      />
+                    </View>
+                  ))}
+                  <TouchableOpacity
+                    style={styles.uploadButton}
+                    onPress={() => addTimeSlot(index, 'discountTimeSlots')}
+                  >
+                    <Text style={styles.uploadButtonText}>新增折扣時段</Text>
+                  </TouchableOpacity>
                 </View>
               ))}
+
               <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
                 <Text style={styles.uploadButtonText}>上傳圖片</Text>
               </TouchableOpacity>

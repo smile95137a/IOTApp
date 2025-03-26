@@ -55,12 +55,6 @@ const menuItems = [
   },
   { id: 7, title: '儲值', icon: 'attach-money', screen: 'Recharge' },
   {
-    id: 8,
-    title: '預約開台',
-    icon: 'history',
-    screen: 'BookStoreScreen',
-  },
-  {
     id: 88,
     title: '我的預約',
     icon: 'history',

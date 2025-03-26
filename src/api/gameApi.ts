@@ -64,3 +64,84 @@ export const checkoutGame = async (
     throw error;
   }
 };
+
+/**
+ * 查詢可預約的時段
+ * @param storeId 店家 ID
+ * @param bookingDate 預約日期（yyyy-MM-dd）
+ * @param timeSlotHours 每個時段的時間（小時）
+ * @returns 時段清單（字串陣列）
+ */
+export const getAvailableTimes = async (
+  storeId: number,
+  bookingDate: string,
+  timeSlotHours = 1
+): Promise<string[]> => {
+  const url = `${API_BASE_URL}${basePath}/available-times?storeId=${storeId}&bookingDate=${bookingDate}&timeSlotHours=${timeSlotHours}`;
+  console.log(
+    `[Game API] Getting available times for store ${storeId} on ${bookingDate}`
+  );
+
+  try {
+    const response = await api.get(url);
+    return response.data;
+  } catch (error) {
+    console.error(`[Game API] Error fetching available times:`, error);
+    throw error;
+  }
+};
+
+/**
+ * 預約遊戲
+ * @param gameReq 預約請求資料
+ * @returns 預約成功後的 GameRecord
+ */
+export const bookGame = async (gameReq: any): Promise<any> => {
+  const url = `${API_BASE_URL}${basePath}/book`;
+  console.log(`[Game API] Booking game:`, gameReq);
+
+  try {
+    const response = await api.post(url, gameReq);
+    console.log(`[Game API] Game booked successfully`);
+    return response.data;
+  } catch (error) {
+    console.error(`[Game API] Error booking game:`, error);
+    throw error;
+  }
+};
+
+/**
+ * 取消預約
+ * @param gameReq 取消預約請求資料
+ * @returns 成功訊息
+ */
+export const cancelBook = async (gameReq: any): Promise<string> => {
+  const url = `${API_BASE_URL}${basePath}/cancel`;
+  console.log(`[Game API] Canceling booking:`, gameReq);
+
+  try {
+    const response = await api.post(url, gameReq);
+    return response.data;
+  } catch (error) {
+    console.error(`[Game API] Error canceling booking:`, error);
+    throw error;
+  }
+};
+
+/**
+ * 預約後啟動遊戲
+ * @param gameReq 啟動請求資料
+ * @returns GameRecord
+ */
+export const bookStartGame = async (gameReq: any): Promise<any> => {
+  const url = `${API_BASE_URL}${basePath}/bookStart`;
+  console.log(`[Game API] Starting booked game:`, gameReq);
+
+  try {
+    const response = await api.post(url, gameReq);
+    return response.data;
+  } catch (error) {
+    console.error(`[Game API] Error starting booked game:`, error);
+    throw error;
+  }
+};

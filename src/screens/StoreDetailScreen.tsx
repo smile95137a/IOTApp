@@ -38,20 +38,20 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
       .padStart(4, '0')
       .slice(2, 4)}`;
 
-  const minRegularTime = Math.min(
+  const minRegularTime = ~~Math.min(
     ...weekdayTimes.map((day) =>
       parseInt(day.regularStartTime.replace(':', ''))
     )
   );
-  const maxRegularTime = Math.max(
+  const maxRegularTime = ~~Math.max(
     ...weekdayTimes.map((day) => parseInt(day.regularEndTime.replace(':', '')))
   );
-  const minDiscountTime = Math.min(
+  const minDiscountTime = ~~Math.min(
     ...weekdayTimes.map((day) =>
       parseInt(day.discountStartTime.replace(':', ''))
     )
   );
-  const maxDiscountTime = Math.max(
+  const maxDiscountTime = ~~Math.max(
     ...weekdayTimes.map((day) => parseInt(day.discountEndTime.replace(':', '')))
   );
 
