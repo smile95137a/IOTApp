@@ -69,6 +69,13 @@ const menuItems = [
     color: '#F44336',
     screen: 'LoginScreen',
   },
+  {
+    id: 10,
+    title: '預約開台',
+    icon: 'logout',
+    color: '#F44336',
+    screen: 'BookStoreScreen',
+  },
 ];
 
 const MemberCenterScreen = ({ navigation }: any) => {
@@ -132,6 +139,10 @@ const MemberCenterScreen = ({ navigation }: any) => {
               onPress={() => {
                 if (item.screen === 'LoginScreen') {
                   handleLogOut();
+                } else if (item.screen === 'BookStoreScreen') {
+                  navigation.navigate('Explore', {
+                    screen: 'BookStore',
+                  });
                 } else {
                   navigation.navigate(item.screen);
                 }

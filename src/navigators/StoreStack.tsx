@@ -3,6 +3,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import StoreScreen from '@/screens/StoreScreen';
 import StoreDetailScreen from '@/screens/StoreDetailScreen';
 import { useNavigation } from '@react-navigation/native';
+import BookStoreScreen from '@/screens/BookStoreScreen';
+import BookStoreDetailScreen from '@/screens/BookStoreDetailScreen';
+import BookStoreDetailSelectedDateScreen from '@/screens/BookStoreDetailSelectedDateScreen';
+import BookStoreDetailSelectedTimeScreen from '@/screens/BookStoreDetailSelectedTimeScreen';
 
 const Stack = createStackNavigator();
 
@@ -29,7 +33,27 @@ const StoreStack = () => {
       <Stack.Screen
         name="StoreDetail"
         component={StoreDetailScreen}
-        options={{ headerShown: false, headerTitle: '門市資訊' }}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="BookStore"
+        component={BookStoreScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="BookStoreDetail"
+        component={BookStoreDetailScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="BookStoreDetailSelectedDate"
+        component={BookStoreDetailSelectedDateScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="BookStoreDetailSelectedTime"
+        component={BookStoreDetailSelectedTimeScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
