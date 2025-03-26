@@ -98,7 +98,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
   };
 
   const handleCallPhone = async () => {
-    const phoneNumber = `tel:0912123123`;
+    const phoneNumber = `tel:${store?.contactPhone}`;
 
     try {
       dispatch(showLoading());

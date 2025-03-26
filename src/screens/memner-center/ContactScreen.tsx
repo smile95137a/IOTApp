@@ -22,7 +22,8 @@ const ContactScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     if (transaction?.startTime) {
-      const startTime = moment(transaction.startTime);
+      const startTime = moment(transaction.startTime, 'YYYY/MM/DD HH:mm:ss');
+
       const updateTimer = () => {
         const now = moment();
         setElapsedTime(now.diff(startTime, 'seconds'));
@@ -109,11 +110,7 @@ const ContactScreen = ({ navigation, route }) => {
         {/* Warm Tips Section */}
         <View style={styles.warmTipsSection}>
           <Text style={styles.warmTipsHeader}>溫馨提示：</Text>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Text key={index} style={styles.warmTip}>
-              {index + 1}. 溫馨提示溫馨提示溫馨提示溫馨提示溫馨提示
-            </Text>
-          ))}
+          <Text style={styles.warmTip}>{transaction?.hint}</Text>
         </View>
 
         {/* End Button */}

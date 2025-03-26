@@ -60,6 +60,12 @@ const AddStoreScreen = () => {
   const [regularRate, setRegularRate] = useState(
     store?.regularRate ? String(store.regularRate) : ''
   );
+
+  const [hint, setHint] = useState(store?.hint ? String(store.hint) : '');
+  const [contactPhone, setContactPhone] = useState(
+    store?.contactPhone ? String(store.contactPhone) : ''
+  );
+
   const [vendors, setVendors] = useState([]);
   const [image, setImage] = useState<any>(null);
   const [selectedLocation, setSelectedLocation] = useState<{
@@ -132,6 +138,8 @@ const AddStoreScreen = () => {
     const storeData = {
       name,
       address,
+      hint,
+      contactPhone,
       vendor: { id: parseInt(vendorId) },
       lat: parseFloat(lat),
       lon: parseFloat(lon),
@@ -308,6 +316,19 @@ const AddStoreScreen = () => {
                 keyboardType="numeric"
                 value={regularRate}
                 onChangeText={setRegularRate}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="溫馨提示"
+                value={hint}
+                onChangeText={setHint}
+                multiline
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="電話"
+                value={contactPhone}
+                onChangeText={setContactPhone}
               />
               {pricingSchedules.map((schedule, index) => (
                 <View key={schedule.dayOfWeek} style={styles.scheduleContainer}>
