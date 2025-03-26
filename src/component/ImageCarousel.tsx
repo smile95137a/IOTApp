@@ -22,6 +22,8 @@ const ImageCarousel = () => {
   const [banners, setBanners] = useState<Banner[]>([]);
 
   const screenWidth = Dimensions.get('window').width;
+  const horizontalPadding = 16;
+  const carouselWidth = screenWidth - horizontalPadding * 2;
 
   useEffect(() => {
     const loadBanners = async () => {
@@ -50,16 +52,24 @@ const ImageCarousel = () => {
           params: { news: item.news },
         })
       }
-      style={styles.bannerItem}
+      style={[styles.bannerItem, { width: carouselWidth }]}
     >
-      <Image src={getImageUrl(item.imageUrl)} style={styles.bannerImage} />
+      <Image
+        src={getImageUrl(item.imageUrl)}
+        style={[styles.bannerImage, { width: carouselWidth }]}
+      />
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.carouselContainer}>
+    <View
+      style={[
+        styles.carouselContainer,
+        { paddingHorizontal: horizontalPadding },
+      ]}
+    >
       <Carousel
-        width={screenWidth}
+        width={carouselWidth}
         height={180}
         data={banners}
         loop
@@ -70,7 +80,6 @@ const ImageCarousel = () => {
         renderItem={renderBannerItem}
       />
 
-      {/* Pagination */}
       <View style={styles.pagination}>
         {banners.map((_, index) => (
           <View
@@ -86,15 +95,16 @@ const ImageCarousel = () => {
 const styles = StyleSheet.create({
   carouselContainer: {
     marginVertical: 40,
+    alignItems: 'center',
   },
   bannerItem: {
     borderRadius: 10,
     overflow: 'hidden',
   },
   bannerImage: {
-    width: '100%',
     height: 180,
     borderRadius: 10,
+    resizeMode: 'cover',
   },
   pagination: {
     flexDirection: 'row',
