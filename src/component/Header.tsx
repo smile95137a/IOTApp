@@ -27,7 +27,7 @@ const Header = ({
           <Icon name="chevron-left" size={48} color={iconColor} />
         </TouchableOpacity>
       ) : (
-        <View style={{ width: 24 }} />
+        <View style={{ width: 48 }} />
       )}
       <View style={styles.centerContent}>
         <View style={styles.logoContainer}>
