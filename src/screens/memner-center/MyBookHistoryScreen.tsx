@@ -1,7 +1,5 @@
 import { GameTransactionRecord } from '@/api/transactionApi';
 import NumberFormatter from '@/component/NumberFormatter';
-import { showLoading, hideLoading } from '@/store/loadingSlice';
-import { AppDispatch } from '@/store/store';
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -9,57 +7,73 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { fetchGameOrders } from '@/api/gameOrderApi';
+
+type ExtendedTransaction = GameTransactionRecord & {
+  start: string;
+  end: string;
+  status: 'completed' | 'canceled';
+};
 
 const MyBookHistoryScreen = ({ navigation }: any) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const [transactions, setTransactions] = useState<GameTransactionRecord[]>([]);
+  const [transactions, setTransactions] = useState<ExtendedTransaction[]>([]);
 
   useEffect(() => {
-    const loadTransactions = async () => {
-      try {
-        dispatch(showLoading());
-        const { success, data, message } = await fetchGameOrders();
-        dispatch(hideLoading());
-        if (success) {
-          setTransactions(data);
-        } else {
-          Alert.alert('錯誤', message || '無法載入資訊');
-        }
-      } catch (error) {
-        dispatch(hideLoading());
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        Alert.alert('錯誤', errorMessage);
-      }
-    };
+    const mockData: ExtendedTransaction[] = [
+      {
+        id: '1',
+        storeName: '星辰撞球館',
+        poolTableName: 'A 桌',
+        price: 240,
+        start: '2025/03/25 14:00',
+        end: '2025/03/25 15:00',
+        status: 'completed',
+      },
+      {
+        id: '2',
+        storeName: '快打球房',
+        poolTableName: 'VIP 房',
+        price: 400,
+        start: '2025/03/20 19:00',
+        end: '2025/03/20 21:00',
+        status: 'canceled',
+      },
+      {
+        id: '3',
+        storeName: '三重撞球會館',
+        poolTableName: '2 號桌',
+        price: 320,
+        start: '2025/03/18 13:30',
+        end: '2025/03/18 14:30',
+        status: 'completed',
+      },
+    ];
 
-    loadTransactions();
+    setTransactions(mockData);
   }, []);
 
-  const handleTransactionPress = (transaction: GameTransactionRecord) => {
-    navigation.navigate('Contact', { transaction });
+  const renderStatus = (status: 'completed' | 'canceled') => {
+    switch (status) {
+      case 'completed':
+        return <Text style={styles.statusCompleted}>已結束</Text>;
+      case 'canceled':
+        return <Text style={styles.statusCanceled}>已取消</Text>;
+    }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.transactionList}>
       {transactions.map((item) => (
-        <TouchableOpacity
-          key={item.id}
-          onPress={() => handleTransactionPress(item)}
-        >
+        <TouchableOpacity key={item.id}>
           <View style={styles.transactionItem}>
             <View style={styles.transactionDetails}>
               <Text style={styles.transactionLocation}>{item.storeName}</Text>
               <Text style={styles.transactionInfo}>{item.poolTableName}</Text>
+              <Text style={styles.transactionInfo}>
+                {item.start} - {item.end}
+              </Text>
             </View>
-            <Text style={styles.transactionAmount}>
-              NT
-              <NumberFormatter number={item.price} />
-            </Text>
+            {renderStatus(item.status)}
           </View>
         </TouchableOpacity>
       ))}
@@ -85,11 +99,6 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 4,
   },
-  transactionDate: {
-    fontSize: 12,
-    color: '#9E9E9E',
-    marginBottom: 5,
-  },
   transactionLocation: {
     fontSize: 16,
     color: '#9E9E9E',
@@ -98,7 +107,12 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 16,
   },
-  transactionAmount: {
+  statusCompleted: {
+    fontSize: 16,
+    color: '#757575',
+    textAlign: 'right',
+  },
+  statusCanceled: {
     fontSize: 16,
     color: '#E21A1C',
     textAlign: 'right',
