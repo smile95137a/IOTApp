@@ -181,7 +181,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
         </View>
 
         {/* Tables */}
-        <View style={styles.tablesSection}>
+        <ScrollView style={styles.tablesSection}>
           <View
             style={{
               paddingHorizontal: 16,
@@ -226,7 +226,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
               }}
             />
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );

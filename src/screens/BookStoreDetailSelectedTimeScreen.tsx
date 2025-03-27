@@ -213,7 +213,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.tablesSection}>
+        <ScrollView style={styles.tablesSection}>
           {timeSlots.map((slot, index) => (
             <TimeSlotSelector
               key={index}
@@ -232,7 +232,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
               onPress={() => handleSelectSlot(slot.id)}
             />
           ))}
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );

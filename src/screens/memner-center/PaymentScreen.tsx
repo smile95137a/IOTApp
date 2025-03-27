@@ -31,7 +31,7 @@ const PaymentScreen = ({ navigation }: any) => {
           ? await checkoutGame({ payType: 1, gameId: payData.uid })
           : await startGame({ poolTableUId: payData.uid });
       dispatch(hideLoading());
-      if (success) {
+      if (success && data) {
         navigation.navigate('PaymentSuccess', {
           showStartGame: type === 'game',
           totalAmount,
