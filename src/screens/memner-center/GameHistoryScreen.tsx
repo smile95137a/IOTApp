@@ -40,25 +40,36 @@ const GameHistoryScreen = ({ navigation }: any) => {
     loadTransactions();
   }, []);
 
-  const handleTransactionPress = (transaction: GameTransactionRecord) => {
-    navigation.navigate('Contact', { transaction });
+  const getStatusName = (status: string): string => {
+    switch (status) {
+      case 'NO_PAY':
+        return '未付款';
+      case 'IS_PAY':
+        return '已付款';
+      case 'CANCEL':
+        return '已取消';
+      default:
+        return '未知狀態';
+    }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.transactionList}>
       {transactions.map((item) => (
-        <TouchableOpacity
-          key={item.id}
-          onPress={() => handleTransactionPress(item)}
-        >
+        <TouchableOpacity key={item.id}>
           <View style={styles.transactionItem}>
             <View style={styles.transactionDetails}>
-              <Text style={styles.transactionLocation}>{item.storeName}</Text>
-              <Text style={styles.transactionInfo}>{item.poolTableName}</Text>
+              <Text style={styles.transactionLocation}>{item.gameId}</Text>
+              <Text style={styles.transactionInfo}>
+                {item.startTime} -{item.endTime}
+              </Text>
+              <Text style={styles.transactionInfo}>
+                {getStatusName(item.status)}
+              </Text>
             </View>
             <Text style={styles.transactionAmount}>
               NT
-              <NumberFormatter number={item.price} />
+              <NumberFormatter number={item.totalPrice} />
             </Text>
           </View>
         </TouchableOpacity>
