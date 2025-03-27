@@ -128,7 +128,15 @@ const HomeScreen = ({ navigation }) => {
               onPress={() => {
                 navigation.reset({
                   index: 0,
-                  routes: [{ name: 'Explore' }],
+                  routes: [
+                    {
+                      name: 'Explore',
+                      state: {
+                        index: 0,
+                        routes: [{ name: 'BookStore' }],
+                      },
+                    },
+                  ],
                 });
               }}
             />
