@@ -57,7 +57,19 @@ const StoreScreen = ({ navigation }: any) => {
       const { success, data, message } = await fetchAllStores();
       dispatch(hideLoading());
       if (success) {
-        setStores(data);
+        // 對每間店加上 availablesCount
+        const storesWithAvailableCount = data.map((store: any) => {
+          const availableTables = store.poolTables?.filter(
+            (table: any) => table.isUse === false
+          );
+          return {
+            ...store,
+            availablesCount: availableTables.length,
+          };
+        });
+
+        setStores(storesWithAvailableCount);
+        console.log(JSON.stringify(storesWithAvailableCount, null, 2));
       } else {
         console.log('錯誤', message || '無法載入店家資訊');
       }
@@ -87,7 +99,7 @@ const StoreScreen = ({ navigation }: any) => {
         style={styles.gradient}
       >
         <View style={styles.container}>
-          <Header title="預約開台" isDarkMode />
+          <Header title="門市探索" isDarkMode />
           <ImageCarousel />
           <ScrollView contentContainerStyle={styles.storeList}>
             {nearStores.map((item) => (
@@ -120,7 +132,7 @@ const StoreScreen = ({ navigation }: any) => {
                     桌數
                   </Text>
                   <Text style={[styles.storeVisitText, styles.storeVisitText2]}>
-                    {item.availablesCount + item.inusesCount}
+                    {item.poolTables.length}
                   </Text>
                   <View style={styles.storeVisitContainer}>
                     <Text

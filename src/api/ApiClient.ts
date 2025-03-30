@@ -30,7 +30,7 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error(
+    console.log(
       `[API Error] ${error.config?.url}:`,
       error.response?.data || error.message
     );

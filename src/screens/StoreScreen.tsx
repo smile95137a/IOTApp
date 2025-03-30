@@ -57,7 +57,19 @@ const StoreScreen = ({ navigation }: any) => {
       const { success, data, message } = await fetchAllStores();
       dispatch(hideLoading());
       if (success) {
-        setStores(data);
+        // 對每間店加上 availablesCount
+        const storesWithAvailableCount = data.map((store: any) => {
+          const availableTables = store.poolTables?.filter(
+            (table: any) => table.isUse === false
+          );
+          return {
+            ...store,
+            availablesCount: availableTables.length,
+          };
+        });
+
+        setStores(storesWithAvailableCount);
+        console.log(JSON.stringify(storesWithAvailableCount, null, 2));
       } else {
         console.log('錯誤', message || '無法載入店家資訊');
       }

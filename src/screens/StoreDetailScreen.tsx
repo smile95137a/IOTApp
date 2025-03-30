@@ -157,9 +157,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
             </View>
             <TouchableOpacity style={styles.pricingCard}>
               <Text style={styles.pricingAmount}>
-                <NumberFormatter
-                  number={store.pricingSchedules[0].regularRate}
-                />
+                <NumberFormatter number={0} />
                 元/小時
               </Text>
               <Text style={styles.pricingDetails}>一般時段</Text>
@@ -169,9 +167,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
             </TouchableOpacity>
             <TouchableOpacity style={styles.pricingCard}>
               <Text style={styles.pricingAmount}>
-                <NumberFormatter
-                  number={store.pricingSchedules[0].discountRate}
-                />
+                <NumberFormatter number={0} />
                 元/小時
               </Text>
               <Text style={styles.pricingDetails}>優惠時段</Text>
@@ -273,11 +269,9 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
-    paddingBottom: 16,
   },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
   },
   storeDetails: {
     flexDirection: 'row',

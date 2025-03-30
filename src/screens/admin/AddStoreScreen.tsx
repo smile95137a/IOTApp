@@ -11,6 +11,7 @@ import {
   Keyboard,
   SafeAreaView,
   TouchableWithoutFeedback,
+  Switch,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
@@ -73,24 +74,29 @@ const AddStoreScreen = () => {
     longitude: number;
   } | null>(store ? { latitude: store.lat, longitude: store.lon } : null);
 
-  // 初始化價格排程（確保所有天都有完整數據）
   const [pricingSchedules, setPricingSchedules] = useState(
     weekDays.map((day) => {
       const existingSchedule = store?.pricingSchedules?.find(
-        (schedule) => schedule.dayOfWeek === day
+        (schedule) => schedule.dayOfWeek.toLowerCase() === day
       );
+
       return {
-        dayOfWeek: day,
-        regularStartTime: existingSchedule?.regularStartTime || '10:00',
-        regularEndTime: existingSchedule?.regularEndTime || '18:00',
+        dayOfWeek: day.toUpperCase(),
+        openTime: existingSchedule?.openTime || '10:00',
+        closeTime: existingSchedule?.closeTime || '23:00',
         regularRate: existingSchedule?.regularRate
           ? String(existingSchedule.regularRate)
           : '100',
-        discountStartTime: existingSchedule?.discountStartTime || '18:00',
-        discountEndTime: existingSchedule?.discountEndTime || '23:00',
         discountRate: existingSchedule?.discountRate
           ? String(existingSchedule.discountRate)
-          : '80',
+          : '100',
+        timeSlots: existingSchedule?.timeSlots || [
+          {
+            startTime: '18:00',
+            endTime: '21:00',
+            isDiscount: true,
+          },
+        ],
       };
     })
   );
@@ -116,10 +122,15 @@ const AddStoreScreen = () => {
     loadVendors();
   }, []);
 
-  // 更新價格排程
   const updateSchedule = (dayIndex, key, value) => {
     const updatedSchedules = [...pricingSchedules];
     updatedSchedules[dayIndex][key] = value;
+    setPricingSchedules(updatedSchedules);
+  };
+
+  const updateTimeSlot = (dayIndex, slotIndex, key, value) => {
+    const updatedSchedules = [...pricingSchedules];
+    updatedSchedules[dayIndex].timeSlots[slotIndex][key] = value;
     setPricingSchedules(updatedSchedules);
   };
 
@@ -150,8 +161,13 @@ const AddStoreScreen = () => {
         ...schedule,
         regularRate: parseFloat(schedule.regularRate) || 0,
         discountRate: parseFloat(schedule.discountRate) || 0,
+        timeSlots: schedule.timeSlots.map((slot) => ({
+          ...slot,
+        })),
       })),
     };
+    console.log('--- 提交 Store 資料 ---');
+    console.log(JSON.stringify(storeData, null, 2));
 
     try {
       dispatch(showLoading());
@@ -331,60 +347,119 @@ const AddStoreScreen = () => {
                 onChangeText={setContactPhone}
               />
               {pricingSchedules.map((schedule, index) => (
-                <View key={schedule.dayOfWeek} style={styles.scheduleContainer}>
-                  <Text style={styles.dayLabel}>
-                    {schedule.dayOfWeek.toUpperCase()}
+                <View key={index} style={{ marginBottom: 20 }}>
+                  <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>
+                    {schedule.dayOfWeek}
                   </Text>
+
+                  <Text>營業開始時間</Text>
                   <TextInput
-                    style={styles.input}
-                    placeholder="一般開始時間"
-                    value={schedule.regularStartTime}
-                    onChangeText={(value) =>
-                      updateSchedule(index, 'regularStartTime', value)
+                    value={schedule.openTime}
+                    onChangeText={(text) =>
+                      updateSchedule(index, 'openTime', text)
                     }
-                  />
-                  <TextInput
+                    placeholder="開放時間"
                     style={styles.input}
-                    placeholder="一般結束時間"
-                    value={schedule.regularEndTime}
-                    onChangeText={(value) =>
-                      updateSchedule(index, 'regularEndTime', value)
+                  />
+
+                  <Text>營業結束時間</Text>
+                  <TextInput
+                    value={schedule.closeTime}
+                    onChangeText={(text) =>
+                      updateSchedule(index, 'closeTime', text)
                     }
-                  />
-                  <TextInput
+                    placeholder="結束時間"
                     style={styles.input}
-                    placeholder="一般價格"
-                    keyboardType="numeric"
+                  />
+
+                  <Text>一般費率</Text>
+                  <TextInput
                     value={schedule.regularRate}
-                    onChangeText={(value) =>
-                      updateSchedule(index, 'regularRate', value)
+                    onChangeText={(text) =>
+                      updateSchedule(index, 'regularRate', text)
                     }
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="折扣開始時間"
-                    value={schedule.discountStartTime}
-                    onChangeText={(value) =>
-                      updateSchedule(index, 'discountStartTime', value)
-                    }
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="折扣結束時間"
-                    value={schedule.discountEndTime}
-                    onChangeText={(value) =>
-                      updateSchedule(index, 'discountEndTime', value)
-                    }
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="折扣價格"
+                    placeholder="一般費率"
                     keyboardType="numeric"
-                    value={schedule.discountRate}
-                    onChangeText={(value) =>
-                      updateSchedule(index, 'discountRate', value)
-                    }
+                    style={styles.input}
                   />
+
+                  <Text>折扣費率</Text>
+                  <TextInput
+                    value={schedule.discountRate}
+                    onChangeText={(text) =>
+                      updateSchedule(index, 'discountRate', text)
+                    }
+                    placeholder="折扣費率"
+                    keyboardType="numeric"
+                    style={styles.input}
+                  />
+
+                  <Text style={{ marginTop: 8 }}>折扣時段</Text>
+                  {schedule.timeSlots.map((slot, slotIndex) => (
+                    <View key={slotIndex} style={{ marginTop: 8 }}>
+                      <Text>折扣開始</Text>
+                      <TextInput
+                        value={slot.startTime}
+                        onChangeText={(text) =>
+                          updateTimeSlot(index, slotIndex, 'startTime', text)
+                        }
+                        placeholder="折扣開始"
+                        style={styles.input}
+                      />
+
+                      <Text>折扣結束</Text>
+                      <TextInput
+                        value={slot.endTime}
+                        onChangeText={(text) =>
+                          updateTimeSlot(index, slotIndex, 'endTime', text)
+                        }
+                        placeholder="折扣結束"
+                        style={styles.input}
+                      />
+
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginTop: 8,
+                        }}
+                      >
+                        <Text style={{ marginRight: 10 }}>是否為折扣時段</Text>
+                        <Switch
+                          value={slot.isDiscount}
+                          onValueChange={(value) =>
+                            updateTimeSlot(
+                              index,
+                              slotIndex,
+                              'isDiscount',
+                              value
+                            )
+                          }
+                        />
+                      </View>
+                    </View>
+                  ))}
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      const updatedSchedules = [...pricingSchedules];
+                      updatedSchedules[index].timeSlots.push({
+                        startTime: '',
+                        endTime: '',
+                        isDiscount: false,
+                      });
+                      setPricingSchedules(updatedSchedules);
+                    }}
+                    style={{
+                      marginTop: 10,
+                      backgroundColor: '#eee',
+                      padding: 10,
+                      borderRadius: 6,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Text>新增折扣時段</Text>
+                  </TouchableOpacity>
                 </View>
               ))}
               <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>

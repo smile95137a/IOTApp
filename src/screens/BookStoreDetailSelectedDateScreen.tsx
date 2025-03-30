@@ -28,7 +28,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const [selectedDate, setSelectedDate] = useState(
     moment().format('YYYY-MM-DD')
   );
-  const { store, tableUid } = route.params;
+  const { store, tableItem } = route.params;
   const [tables, setTables] = useState<any[]>([]);
 
   const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -162,9 +162,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
             </View>
             <TouchableOpacity style={styles.pricingCard}>
               <Text style={styles.pricingAmount}>
-                <NumberFormatter
-                  number={store.pricingSchedules[0].regularRate}
-                />
+                <NumberFormatter number={0} />
                 元/小時
               </Text>
               <Text style={styles.pricingDetails}>一般時段</Text>
@@ -174,9 +172,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
             </TouchableOpacity>
             <TouchableOpacity style={styles.pricingCard}>
               <Text style={styles.pricingAmount}>
-                <NumberFormatter
-                  number={store.pricingSchedules[0].discountRate}
-                />
+                <NumberFormatter number={0} />
                 元/小時
               </Text>
               <Text style={styles.pricingDetails}>優惠時段</Text>
@@ -210,7 +206,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
                 current={selectedDate}
                 onDayPress={(day) => {
                   navigation.navigate('BookStoreDetailSelectedTime', {
-                    tableUid,
+                    tableItem,
                     store,
                     selectedDate: day.dateString,
                   });
@@ -245,11 +241,9 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
-    paddingBottom: 16,
   },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
   },
 
   storeDetails: {

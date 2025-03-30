@@ -24,24 +24,15 @@ import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import TimeSlotSelector from '@/component/book/TimeSlotSelector';
 import { Alert } from 'react-native';
+import { bookGame, getAvailableTimes } from '@/api/gameApi';
+import { genRandom } from '@/utils/RandomUtils';
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { store, tableUid, selectedDate } = route.params;
+  const { store, tableItem, selectedDate } = route.params;
   const [tables, setTables] = useState<any[]>([]);
-  const timeSlots = [
-    { id: '16:00-18:00', start: '16:00', end: '18:00', rate: 100 },
-    { id: '18:00-20:00', start: '18:00', end: '20:00', rate: 100 },
-    {
-      id: '20:00-22:00',
-      start: '20:00',
-      end: '22:00',
-      rate: 100,
-      status: 'booked',
-    },
-    { id: '22:00-24:00', start: '22:00', end: '24:00', rate: 100 },
-  ];
+  const [timeSlots, setTimeSlots] = useState([]);
   const [activeTimeSlot, setActiveTimeSlot] = useState<string | null>(null);
 
   const handleSelectSlot = (id: string) => {
@@ -80,11 +71,20 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
     const loadTables = async () => {
       try {
         dispatch(showLoading());
-        const { success, data } = await fetchPoolTablesByStoreUid(store.uid);
+        const { success, data } = await getAvailableTimes(
+          store.id,
+          selectedDate,
+          tableItem.id
+        );
         dispatch(hideLoading());
 
         if (success) {
-          setTables(data);
+          const slots =
+            data[tableItem.id]?.map((x) => ({
+              ...x,
+              id: genRandom(32),
+            })) || [];
+          setTimeSlots(slots);
         } else {
           console.error(`API 回應失敗: 未能獲取桌台數據`);
         }
@@ -140,7 +140,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const handleTimeSlotReservation = (start: string, end: string) => {
     Alert.alert(
       '預約桌台',
-      `確認預約 ${store.name}\n桌台 ${tableUid}\n${start}~${end}？`,
+      `確認預約 ${store.name}\n桌台 ${tableItem.uid}\n${start}~${end}？`,
       [
         {
           text: '取消',
@@ -148,7 +148,51 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
         },
         {
           text: '確認預約',
-          onPress: () => {},
+          onPress: async () => {
+            try {
+              dispatch(showLoading());
+
+              const { success, data, message } = await bookGame({
+                poolTableUId: tableItem.uid,
+                bookDate: selectedDate,
+                startTime: moment(
+                  `${selectedDate} ${start}`,
+                  'YYYY-MM-DD HH:mm'
+                ).format('YYYY/MM/DD HH:mm'),
+                endTime: moment(
+                  `${selectedDate} ${end}`,
+                  'YYYY-MM-DD HH:mm'
+                ).format('YYYY/MM/DD HH:mm'),
+              });
+
+              dispatch(hideLoading());
+
+              if (success) {
+                Alert.alert('預約成功', '您已成功預約桌台！', [
+                  {
+                    text: '知道了',
+                    onPress: () => {
+                      navigation.navigate('Explore', {
+                        screen: 'BookStore',
+                      });
+                    },
+                  },
+                ]);
+              } else {
+                Alert.alert('預約失敗', message || '無法完成預約，請稍後再試');
+              }
+            } catch (error: any) {
+              dispatch(hideLoading());
+
+              const errMsg =
+                error?.response?.data?.message ||
+                error?.message ||
+                '發生未知錯誤，請稍後再試';
+
+              Alert.alert('錯誤', errMsg);
+              console.error('預約發生錯誤:', error);
+            }
+          },
         },
       ]
     );
@@ -195,9 +239,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
             </View>
             <TouchableOpacity style={styles.pricingCard}>
               <Text style={styles.pricingAmount}>
-                <NumberFormatter
-                  number={store.pricingSchedules[0].regularRate}
-                />
+                <NumberFormatter number={0} />
                 元/小時
               </Text>
               <Text style={styles.pricingDetails}>一般時段</Text>
@@ -207,9 +249,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
             </TouchableOpacity>
             <TouchableOpacity style={styles.pricingCard}>
               <Text style={styles.pricingAmount}>
-                <NumberFormatter
-                  number={store.pricingSchedules[0].discountRate}
-                />
+                <NumberFormatter number={0} />
                 元/小時
               </Text>
               <Text style={styles.pricingDetails}>優惠時段</Text>
@@ -251,11 +291,9 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
-    paddingBottom: 16,
   },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
   },
   storeDetails: {
     flexDirection: 'row',
