@@ -93,13 +93,13 @@ const LoginHomeScreen = ({ navigation }: any) => {
   };
 
   return (
-    <LinearGradient
-      colors={['#1D1640', '#4067A4']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={StyleSheet.absoluteFill}
-    >
-      <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        colors={['#1D1640', '#4067A4']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
+      >
         <View style={styles.container}>
           {/* Logo */}
           <Image
@@ -206,13 +206,16 @@ const LoginHomeScreen = ({ navigation }: any) => {
             <Text style={styles.homeButtonText}>回首頁</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
-    </LinearGradient>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
+    flex: 1,
+  },
+  gradient: {
     flex: 1,
     paddingBottom: 16,
   },

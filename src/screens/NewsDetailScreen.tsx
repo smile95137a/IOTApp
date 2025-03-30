@@ -16,19 +16,19 @@ const NewsDetailScreen = ({ route, navigation }: any) => {
   const { news } = route.params;
 
   return (
-    <LinearGradient
-      colors={['#1D1640', '#4067A4']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={StyleSheet.absoluteFill}
-    >
-      <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={['#1D1640', '#4067A4']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
+      >
         <Header
           title="最新消息"
           onBackPress={() => navigation.goBack()}
           isDarkMode
         />
-        <ScrollView style={styles.detail}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.newsTitle}>{news.title}</Text>
           <Text style={styles.newsDate}>
             <DateFormatter date={news.createdDate} format="YYYY.MM.DD" />
@@ -42,23 +42,22 @@ const NewsDetailScreen = ({ route, navigation }: any) => {
 
           <Text style={styles.newsContent}>{news.content}</Text>
         </ScrollView>
-      </SafeAreaView>
-    </LinearGradient>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  gradient: {
+    flex: 1,
     paddingBottom: 16,
   },
-  detail: {
-    flex: 1,
+  scrollContent: {
     padding: 15,
-    borderRadius: 10,
-    margin: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    paddingBottom: 30,
   },
   newsTitle: {
     fontSize: 20,

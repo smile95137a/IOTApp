@@ -76,18 +76,18 @@ const HomeScreen = ({ navigation }) => {
   }, [locationData, stores]);
 
   return (
-    <LinearGradient
-      colors={['#1D1640', '#4067A4']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={StyleSheet.absoluteFill}
-    >
-      <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        colors={['#1D1640', '#4067A4']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
+      >
         <View style={styles.container}>
           <Header isDarkMode />
-          <ImageCarousel />
 
           <ScrollView contentContainerStyle={styles.content}>
+            <ImageCarousel />
             <HomeOptionButton
               icon={<MaterialIcons name="storefront" size={36} color="black" />}
               title="門市探索"
@@ -142,8 +142,8 @@ const HomeScreen = ({ navigation }) => {
             />
           </ScrollView>
         </View>
-      </SafeAreaView>
-    </LinearGradient>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -151,9 +151,13 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+  gradient: {
+    flex: 1,
+    paddingBottom: 16,
+  },
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
   },
   content: {},
   row: {

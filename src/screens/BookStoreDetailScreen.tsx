@@ -117,149 +117,164 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
   };
 
   return (
-    <LinearGradient
-      colors={['#1D1640', '#4067A4']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={StyleSheet.absoluteFill}
-    >
-      <SafeAreaView style={styles.container}>
-        <Header
-          title={'預約開台'}
-          onBackPress={() => navigation.goBack()}
-          isDarkMode
-        />
+    <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        colors={['#1D1640', '#4067A4']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
+      >
+        <View style={styles.container}>
+          <Header
+            title={'預約開台'}
+            onBackPress={() => navigation.goBack()}
+            isDarkMode
+          />
 
-        {/* Store Details */}
-        <View style={styles.storeDetails}>
-          <Image src={getImageUrl(store?.imgUrl)} style={styles.storeImage} />
-          <View style={styles.storeInfo}>
-            <Text style={styles.storeName}>{store.name}</Text>
-            <Text style={styles.storeAddress}>{store.address}</Text>
-          </View>
-          <TouchableOpacity style={styles.storePhone} onPress={handleCallPhone}>
-            <Feather name="volume-2" size={24} color="#00BFFF" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.storeShare} onPress={handleShare}>
-            <Icon name="share" size={24} color="#00BFFF" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Pricing Section */}
-        <View style={styles.pricingContainer}>
-          <View style={styles.pricingTitleContainer}>
-            <Text style={styles.pricingTitle}>時段</Text>
-            <Text style={styles.pricingTitle}>計費</Text>
-          </View>
-          <TouchableOpacity style={styles.pricingCard}>
-            <Text style={styles.pricingAmount}>
-              <NumberFormatter number={store.pricingSchedules[0].regularRate} />
-              元/小時
-            </Text>
-            <Text style={styles.pricingDetails}>一般時段</Text>
-            <Text style={styles.pricingDetails}>
-              {formatTime(minRegularTime)}~{formatTime(maxRegularTime)}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.pricingCard}>
-            <Text style={styles.pricingAmount}>
-              <NumberFormatter
-                number={store.pricingSchedules[0].discountRate}
-              />
-              元/小時
-            </Text>
-            <Text style={styles.pricingDetails}>優惠時段</Text>
-            <Text style={styles.pricingDetails}>
-              {formatTime(minDiscountTime)}~{formatTime(maxDiscountTime)}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Tables */}
-        <View style={styles.tablesSection}>
-          <View style={styles.tablesHeader}>
-            <Text style={styles.tablesTitle}>桌數：{tables.length}桌</Text>
-            <Text style={styles.tablesAvailable}>
-              可用：{tables.filter((table) => !table.isUse).length}桌
-            </Text>
-          </View>
-
-          {/* 使用 map 直接渲染桌台列表 */}
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.tableGrid}>
-              {tables.map((item) => {
-                const status = item.isUse ? 'reserved' : 'available';
-                const label = item.isUse ? '已預訂' : '立即開台';
-
-                return (
-                  <TouchableOpacity
-                    key={item.id}
-                    style={styles.tableItem}
-                    onPress={() => {
-                      navigation.navigate('BookStoreDetailSelectedDate', {
-                        tableUid: item.uid,
-                        store,
-                      });
-                    }}
-                  >
-                    <Image
-                      source={
-                        status === 'available'
-                          ? require('@/assets/iot-table-enable.png')
-                          : require('@/assets/iot-table-disable.png')
-                      }
-                      style={[
-                        styles.tableImage,
-                        status === 'available'
-                          ? styles.tableImageAvailable
-                          : styles.tableImageReserved,
-                      ]}
-                    />
-                    <View
-                      style={[
-                        styles.tableTextContainer,
-                        status === 'available'
-                          ? styles.tableTextContainerAvailable
-                          : styles.tableTextContainerReserved,
-                      ]}
-                    >
-                      <View style={styles.tableTextContainerRow}>
-                        <Text
-                          style={[
-                            styles.tableTextContainerId,
-                            status !== 'available' && { color: 'white' },
-                          ]}
-                        >
-                          {item.tableNumber.toString()}
-                        </Text>
-
-                        <Text
-                          style={[
-                            styles.tableTextContainerText,
-                            status !== 'available' && { color: 'white' },
-                          ]}
-                        >
-                          {label}
-                        </Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
+          {/* Store Details */}
+          <View style={styles.storeDetails}>
+            <Image src={getImageUrl(store?.imgUrl)} style={styles.storeImage} />
+            <View style={styles.storeInfo}>
+              <Text style={styles.storeName}>{store.name}</Text>
+              <Text style={styles.storeAddress}>{store.address}</Text>
             </View>
-          </ScrollView>
+            <TouchableOpacity
+              style={styles.storePhone}
+              onPress={handleCallPhone}
+            >
+              <Feather name="volume-2" size={24} color="#00BFFF" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.storeShare} onPress={handleShare}>
+              <Icon name="share" size={24} color="#00BFFF" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Pricing Section */}
+          <View style={styles.pricingContainer}>
+            <View style={styles.pricingTitleContainer}>
+              <Text style={styles.pricingTitle}>時段</Text>
+              <Text style={styles.pricingTitle}>計費</Text>
+            </View>
+            <TouchableOpacity style={styles.pricingCard}>
+              <Text style={styles.pricingAmount}>
+                <NumberFormatter
+                  number={store.pricingSchedules[0].regularRate}
+                />
+                元/小時
+              </Text>
+              <Text style={styles.pricingDetails}>一般時段</Text>
+              <Text style={styles.pricingDetails}>
+                {formatTime(minRegularTime)}~{formatTime(maxRegularTime)}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.pricingCard}>
+              <Text style={styles.pricingAmount}>
+                <NumberFormatter
+                  number={store.pricingSchedules[0].discountRate}
+                />
+                元/小時
+              </Text>
+              <Text style={styles.pricingDetails}>優惠時段</Text>
+              <Text style={styles.pricingDetails}>
+                {formatTime(minDiscountTime)}~{formatTime(maxDiscountTime)}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Tables */}
+          <View style={styles.tablesSection}>
+            <View style={styles.tablesHeader}>
+              <Text style={styles.tablesTitle}>桌數：{tables.length}桌</Text>
+              <Text style={styles.tablesAvailable}>
+                可用：{tables.filter((table) => !table.isUse).length}桌
+              </Text>
+            </View>
+
+            {/* 使用 map 直接渲染桌台列表 */}
+            <ScrollView
+              contentContainerStyle={styles.scrollContainer}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.tableGrid}>
+                {tables.map((item) => {
+                  const status = item.isUse ? 'reserved' : 'available';
+                  const label = item.isUse ? '已預訂' : '立即開台';
+
+                  return (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={styles.tableItem}
+                      onPress={() => {
+                        navigation.navigate('BookStoreDetailSelectedDate', {
+                          tableUid: item.uid,
+                          store,
+                        });
+                      }}
+                    >
+                      <Image
+                        source={
+                          status === 'available'
+                            ? require('@/assets/iot-table-enable.png')
+                            : require('@/assets/iot-table-disable.png')
+                        }
+                        style={[
+                          styles.tableImage,
+                          status === 'available'
+                            ? styles.tableImageAvailable
+                            : styles.tableImageReserved,
+                        ]}
+                      />
+                      <View
+                        style={[
+                          styles.tableTextContainer,
+                          status === 'available'
+                            ? styles.tableTextContainerAvailable
+                            : styles.tableTextContainerReserved,
+                        ]}
+                      >
+                        <View style={styles.tableTextContainerRow}>
+                          <Text
+                            style={[
+                              styles.tableTextContainerId,
+                              status !== 'available' && { color: 'white' },
+                            ]}
+                          >
+                            {item.tableNumber.toString()}
+                          </Text>
+
+                          <Text
+                            style={[
+                              styles.tableTextContainerText,
+                              status !== 'available' && { color: 'white' },
+                            ]}
+                          >
+                            {label}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </View>
         </View>
-      </SafeAreaView>
-    </LinearGradient>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+    paddingBottom: 16,
+  },
   container: {
     flex: 1,
+    paddingHorizontal: 16,
   },
 
   storeDetails: {

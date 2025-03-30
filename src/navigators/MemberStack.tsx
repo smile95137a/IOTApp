@@ -75,37 +75,42 @@ const MainLayout = ({ children }) => {
   }, [user]);
 
   return (
-    <LinearGradient
-      colors={['#1D1640', '#4067A4']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={StyleSheet.absoluteFill}
-    >
-      <SafeAreaView style={styles.container}>
-        <Header
-          title="會員中心"
-          onBackPress={() => navigation.goBack()}
-          isDarkMode
-        />
+    <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        colors={['#1D1640', '#4067A4']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
+      >
+        <View style={styles.container}>
+          <Header
+            title="會員中心"
+            onBackPress={() => navigation.goBack()}
+            isDarkMode
+          />
 
-        {/* User Info */}
-        <View style={styles.userInfoContainer}>
-          <View style={styles.userInfoLeft}>
-            <Image src={getImageUrl(localUser?.imgUrl)} style={styles.avatar} />
+          {/* User Info */}
+          <View style={styles.userInfoContainer}>
+            <View style={styles.userInfoLeft}>
+              <Image
+                src={getImageUrl(localUser?.imgUrl)}
+                style={styles.avatar}
+              />
+            </View>
+            <View style={styles.userInfoRight}>
+              <Text style={styles.userName}>{localUser?.name || ''}</Text>
+              <Text style={styles.userBalance}>
+                餘額：
+                <NumberFormatter number={localUser?.amount ?? 0} />元
+              </Text>
+            </View>
           </View>
-          <View style={styles.userInfoRight}>
-            <Text style={styles.userName}>{localUser?.name || ''}</Text>
-            <Text style={styles.userBalance}>
-              餘額：
-              <NumberFormatter number={localUser?.amount ?? 0} />元
-            </Text>
-          </View>
+
+          {/* Menu List */}
+          <View style={styles.menuContainer}>{children}</View>
         </View>
-
-        {/* Menu List */}
-        <View style={styles.menuContainer}>{children}</View>
-      </SafeAreaView>
-    </LinearGradient>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -232,8 +237,15 @@ const MemberStack = () => {
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+  },
   container: {
     flex: 1,
+    paddingHorizontal: 16,
   },
   userInfoContainer: {
     flexDirection: 'row',

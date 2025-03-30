@@ -77,135 +77,143 @@ const LoginScreen = ({ route, navigation }: any) => {
   };
 
   return (
-    <LinearGradient
-      colors={['#1D1640', '#4067A4']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={StyleSheet.absoluteFill}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <SafeAreaView style={styles.safeArea}>
-          <Header onBackPress={() => navigation.goBack()} isDarkMode />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.safeArea}>
+        <LinearGradient
+          colors={['#1D1640', '#4067A4']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          <View style={styles.container}>
+            <Header onBackPress={() => navigation.goBack()} isDarkMode />
 
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
-          >
-            <Text style={styles.title}>登入</Text>
-            <Text style={styles.subtitle}>
-              {loginType === 'phone'
-                ? '請輸入您的手機號碼'
-                : '請輸入您的 Email'}
-            </Text>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>
-                {loginType === 'phone' ? '手機' : 'Email'}
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.containerOS}
+            >
+              <Text style={styles.title}>登入</Text>
+              <Text style={styles.subtitle}>
+                {loginType === 'phone'
+                  ? '請輸入您的手機號碼'
+                  : '請輸入您的 Email'}
               </Text>
-              <View style={styles.inputWrapper}>
-                {loginType === 'phone' ? (
-                  <>
-                    <RNPickerSelect
-                      value={countryCode || countryCodes[0].value}
-                      onValueChange={(value) => {
-                        if (value) setCountryCode(value);
-                      }}
-                      items={countryCodes}
-                      style={{
-                        inputIOS: styles.dropdownInput,
-                        inputAndroid: styles.dropdownInput,
-                        iconContainer: styles.iconContainer,
-                      }} // 隱藏原本的輸入框
-                      useNativeAndroidPickerStyle={false}
-                      placeholder={{ label: '請選擇', value: '' }}
-                      Icon={() => (
-                        <MaterialIcons
-                          name="arrow-drop-down"
-                          size={24}
-                          color="#888"
-                        />
-                      )}
-                    />
 
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>
+                  {loginType === 'phone' ? '手機' : 'Email'}
+                </Text>
+                <View style={styles.inputWrapper}>
+                  {loginType === 'phone' ? (
+                    <>
+                      <RNPickerSelect
+                        value={countryCode || countryCodes[0].value}
+                        onValueChange={(value) => {
+                          if (value) setCountryCode(value);
+                        }}
+                        items={countryCodes}
+                        style={{
+                          inputIOS: styles.dropdownInput,
+                          inputAndroid: styles.dropdownInput,
+                          iconContainer: styles.iconContainer,
+                        }} // 隱藏原本的輸入框
+                        useNativeAndroidPickerStyle={false}
+                        placeholder={{ label: '請選擇', value: '' }}
+                        Icon={() => (
+                          <MaterialIcons
+                            name="arrow-drop-down"
+                            size={24}
+                            color="#888"
+                          />
+                        )}
+                      />
+
+                      <TextInput
+                        style={styles.input}
+                        placeholder="請輸入手機號碼"
+                        keyboardType="phone-pad"
+                        value={inputValue}
+                        onChangeText={setInputValue}
+                      />
+                    </>
+                  ) : (
                     <TextInput
                       style={styles.input}
-                      placeholder="請輸入手機號碼"
-                      keyboardType="phone-pad"
+                      placeholder="請輸入 Email"
+                      keyboardType="email-address"
                       value={inputValue}
                       onChangeText={setInputValue}
                     />
-                  </>
-                ) : (
+                  )}
+                </View>
+              </View>
+
+              {/* Password Field */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>密碼</Text>
+                <View style={styles.inputWrapper}>
                   <TextInput
                     style={styles.input}
-                    placeholder="請輸入 Email"
-                    keyboardType="email-address"
-                    value={inputValue}
-                    onChangeText={setInputValue}
+                    placeholder="請輸入密碼"
+                    secureTextEntry={!isPasswordVisible}
+                    value={password}
+                    onChangeText={setPassword}
                   />
-                )}
+                  <TouchableOpacity
+                    onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                  >
+                    <MaterialIcons
+                      name={isPasswordVisible ? 'visibility' : 'visibility-off'}
+                      size={24}
+                      color="#ccc"
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ForgotPassword')}
+              >
+                <Text style={styles.forgotPasswordText}>忘記密碼?</Text>
+              </TouchableOpacity>
 
-            {/* Password Field */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>密碼</Text>
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="請輸入密碼"
-                  secureTextEntry={!isPasswordVisible}
-                  value={password}
-                  onChangeText={setPassword}
-                />
+              {/* Login Button */}
+              <View style={styles.bottomContainer}>
                 <TouchableOpacity
-                  onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                  style={styles.homeButton}
+                  onPress={resetAndNavigateToMain}
                 >
-                  <MaterialIcons
-                    name={isPasswordVisible ? 'visibility' : 'visibility-off'}
-                    size={24}
-                    color="#ccc"
-                  />
+                  <MaterialIcons name="home" size={18} color="#000" />
+                  <Text style={styles.homeButtonText}>回首頁</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.loginButton}
+                  onPress={handleLogin}
+                >
+                  <Text style={styles.loginButtonText}>登入</Text>
                 </TouchableOpacity>
               </View>
-            </View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ForgotPassword')}
-            >
-              <Text style={styles.forgotPasswordText}>忘記密碼?</Text>
-            </TouchableOpacity>
-
-            {/* Login Button */}
-            <View style={styles.bottomContainer}>
-              <TouchableOpacity
-                style={styles.homeButton}
-                onPress={resetAndNavigateToMain}
-              >
-                <MaterialIcons name="home" size={18} color="#000" />
-                <Text style={styles.homeButtonText}>回首頁</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.loginButton}
-                onPress={handleLogin}
-              >
-                <Text style={styles.loginButtonText}>登入</Text>
-              </TouchableOpacity>
-            </View>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
-    </LinearGradient>
+            </KeyboardAvoidingView>
+          </View>
+        </LinearGradient>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+  },
+  gradient: {
+    flex: 1,
     paddingBottom: 16,
   },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
+  },
+  containerOS: {
+    flex: 1,
   },
   logoContainer: {
     alignItems: 'center',

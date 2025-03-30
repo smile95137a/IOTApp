@@ -3,7 +3,14 @@ import {
   createDrawerNavigator,
   DrawerContentScrollView,
 } from '@react-navigation/drawer';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  SafeAreaView,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AdminDashboardScreen from '@/screens/admin/AdminDashboardScreen';
 import DeviceManagementScreen from '@/screens/admin/DeviceManagement';
@@ -127,32 +134,34 @@ const CustomDrawerContent = (props: any) => {
   }, []);
 
   return (
-    <DrawerContentScrollView {...props}>
-      <View style={styles.drawerItemsContainer}>
-        {menus.map((menu) => {
-          const key = menu.url;
-          const menuItem = menuItems[key]; // 取得 menuItems 內的物件
+    <SafeAreaView style={{ flex: 1 }}>
+      <DrawerContentScrollView {...props}>
+        <View style={styles.drawerItemsContainer}>
+          {menus.map((menu) => {
+            const key = menu.url;
+            const menuItem = menuItems[key]; // 取得 menuItems 內的物件
 
-          if (!menuItem) return null; // 若沒有找到對應的 key，就不顯示這個項目
+            if (!menuItem) return null; // 若沒有找到對應的 key，就不顯示這個項目
 
-          return (
-            <TouchableOpacity
-              key={menu.id}
-              style={styles.drawerItemColumn}
-              onPress={() =>
-                props.navigation.navigate(menuItem.stack, {
-                  screen: menuItem.screen,
-                })
-              }
-            >
-              <Icon name={menuItem.icon} size={38} color="#333" />
-              <Text style={styles.drawerItemText}>{menuItem.label}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+            return (
+              <TouchableOpacity
+                key={menu.id}
+                style={styles.drawerItemColumn}
+                onPress={() =>
+                  props.navigation.navigate(menuItem.stack, {
+                    screen: menuItem.screen,
+                  })
+                }
+              >
+                <Icon name={menuItem.icon} size={38} color="#333" />
+                <Text style={styles.drawerItemText}>{menuItem.label}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
 
-      {/* Logout Button */}
+        {/* Logout Button */}
+      </DrawerContentScrollView>
       <TouchableOpacity
         style={[styles.drawerItemColumn, styles.logoutButton]}
         onPress={() => props.navigation.navigate('Main')}
@@ -160,7 +169,7 @@ const CustomDrawerContent = (props: any) => {
         <Icon name="logout" size={24} color="#F44336" />
         <Text style={[styles.drawerItemText, styles.logoutText]}>回首頁</Text>
       </TouchableOpacity>
-    </DrawerContentScrollView>
+    </SafeAreaView>
   );
 };
 

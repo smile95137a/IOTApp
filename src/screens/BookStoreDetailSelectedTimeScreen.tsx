@@ -155,94 +155,108 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   };
 
   return (
-    <LinearGradient
-      colors={['#1D1640', '#4067A4']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={StyleSheet.absoluteFill}
-    >
-      <SafeAreaView style={styles.container}>
-        <Header
-          title={'預約開台'}
-          onBackPress={() => navigation.goBack()}
-          isDarkMode
-        />
+    <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        colors={['#1D1640', '#4067A4']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
+      >
+        <View style={styles.container}>
+          <Header
+            title={'預約開台'}
+            onBackPress={() => navigation.goBack()}
+            isDarkMode
+          />
 
-        {/* Store Details */}
-        <View style={styles.storeDetails}>
-          <Image src={getImageUrl(store?.imgUrl)} style={styles.storeImage} />
-          <View style={styles.storeInfo}>
-            <Text style={styles.storeName}>{store.name}</Text>
-            <Text style={styles.storeAddress}>{store.address}</Text>
+          {/* Store Details */}
+          <View style={styles.storeDetails}>
+            <Image src={getImageUrl(store?.imgUrl)} style={styles.storeImage} />
+            <View style={styles.storeInfo}>
+              <Text style={styles.storeName}>{store.name}</Text>
+              <Text style={styles.storeAddress}>{store.address}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.storePhone}
+              onPress={handleCallPhone}
+            >
+              <Feather name="volume-2" size={24} color="#00BFFF" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.storeShare} onPress={handleShare}>
+              <Icon name="share" size={24} color="#00BFFF" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.storePhone} onPress={handleCallPhone}>
-            <Feather name="volume-2" size={24} color="#00BFFF" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.storeShare} onPress={handleShare}>
-            <Icon name="share" size={24} color="#00BFFF" />
-          </TouchableOpacity>
-        </View>
 
-        {/* Pricing Section */}
-        <View style={styles.pricingContainer}>
-          <View style={styles.pricingTitleContainer}>
-            <Text style={styles.pricingTitle}>時段</Text>
-            <Text style={styles.pricingTitle}>計費</Text>
+          {/* Pricing Section */}
+          <View style={styles.pricingContainer}>
+            <View style={styles.pricingTitleContainer}>
+              <Text style={styles.pricingTitle}>時段</Text>
+              <Text style={styles.pricingTitle}>計費</Text>
+            </View>
+            <TouchableOpacity style={styles.pricingCard}>
+              <Text style={styles.pricingAmount}>
+                <NumberFormatter
+                  number={store.pricingSchedules[0].regularRate}
+                />
+                元/小時
+              </Text>
+              <Text style={styles.pricingDetails}>一般時段</Text>
+              <Text style={styles.pricingDetails}>
+                {formatTime(minRegularTime)}~{formatTime(maxRegularTime)}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.pricingCard}>
+              <Text style={styles.pricingAmount}>
+                <NumberFormatter
+                  number={store.pricingSchedules[0].discountRate}
+                />
+                元/小時
+              </Text>
+              <Text style={styles.pricingDetails}>優惠時段</Text>
+              <Text style={styles.pricingDetails}>
+                {formatTime(minDiscountTime)}~{formatTime(maxDiscountTime)}
+              </Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.pricingCard}>
-            <Text style={styles.pricingAmount}>
-              <NumberFormatter number={store.pricingSchedules[0].regularRate} />
-              元/小時
-            </Text>
-            <Text style={styles.pricingDetails}>一般時段</Text>
-            <Text style={styles.pricingDetails}>
-              {formatTime(minRegularTime)}~{formatTime(maxRegularTime)}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.pricingCard}>
-            <Text style={styles.pricingAmount}>
-              <NumberFormatter
-                number={store.pricingSchedules[0].discountRate}
+
+          <ScrollView style={styles.tablesSection}>
+            {timeSlots.map((slot, index) => (
+              <TimeSlotSelector
+                key={index}
+                start={slot.start}
+                end={slot.end}
+                rate={slot.rate}
+                status={
+                  slot.status === 'booked'
+                    ? 'booked'
+                    : activeTimeSlot === slot.id
+                    ? 'selected'
+                    : 'available'
+                }
+                onSelect={() => handleTimeSlotReservation(slot.start, slot.end)}
+                onCancel={() => handleSelectSlot(slot.id)}
+                onPress={() => handleSelectSlot(slot.id)}
               />
-              元/小時
-            </Text>
-            <Text style={styles.pricingDetails}>優惠時段</Text>
-            <Text style={styles.pricingDetails}>
-              {formatTime(minDiscountTime)}~{formatTime(maxDiscountTime)}
-            </Text>
-          </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
-
-        <ScrollView style={styles.tablesSection}>
-          {timeSlots.map((slot, index) => (
-            <TimeSlotSelector
-              key={index}
-              start={slot.start}
-              end={slot.end}
-              rate={slot.rate}
-              status={
-                slot.status === 'booked'
-                  ? 'booked'
-                  : activeTimeSlot === slot.id
-                  ? 'selected'
-                  : 'available'
-              }
-              onSelect={() => handleTimeSlotReservation(slot.start, slot.end)}
-              onCancel={() => handleSelectSlot(slot.id)}
-              onPress={() => handleSelectSlot(slot.id)}
-            />
-          ))}
-        </ScrollView>
-      </SafeAreaView>
-    </LinearGradient>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
   },
-
+  gradient: {
+    flex: 1,
+    paddingBottom: 16,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
   storeDetails: {
     flexDirection: 'row',
     marginHorizontal: 20,

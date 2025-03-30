@@ -17,7 +17,7 @@ import { useDispatch } from 'react-redux';
 
 const ImageCarousel = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const [activeIndex, setActiveIndex] = useState(0);
   const [banners, setBanners] = useState<Banner[]>([]);
 
@@ -43,7 +43,7 @@ const ImageCarousel = () => {
     loadBanners();
   }, []);
 
-  const renderBannerItem = ({ item }) => (
+  const renderBannerItem = ({ item }: any) => (
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={() =>

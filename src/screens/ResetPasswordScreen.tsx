@@ -56,110 +56,118 @@ const ResetPasswordScreen = ({ navigation }: any) => {
   };
 
   return (
-    <LinearGradient
-      colors={['#1D1640', '#4067A4']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={StyleSheet.absoluteFill}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <SafeAreaView style={styles.safeArea}>
-          <Header onBackPress={() => navigation.goBack()} isDarkMode />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.safeArea}>
+        <LinearGradient
+          colors={['#1D1640', '#4067A4']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          <View style={styles.container}>
+            <Header onBackPress={() => navigation.goBack()} isDarkMode />
 
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
-          >
-            <Text style={styles.title}>重設密碼</Text>
-
-            {/* 舊密碼 */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>舊密碼</Text>
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="輸入舊密碼"
-                  secureTextEntry={!isOldPasswordVisible}
-                  value={oldPassword}
-                  onChangeText={setOldPassword}
-                />
-                <TouchableOpacity
-                  onPress={() => setIsOldPasswordVisible(!isOldPasswordVisible)}
-                >
-                  <MaterialIcons
-                    name={
-                      isOldPasswordVisible ? 'visibility' : 'visibility-off'
-                    }
-                    size={24}
-                    color="#ccc"
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* 新密碼 */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>新密碼</Text>
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="輸入新密碼"
-                  secureTextEntry={!isNewPasswordVisible}
-                  value={newPassword}
-                  onChangeText={setNewPassword}
-                />
-                <TouchableOpacity
-                  onPress={() => setIsNewPasswordVisible(!isNewPasswordVisible)}
-                >
-                  <MaterialIcons
-                    name={
-                      isNewPasswordVisible ? 'visibility' : 'visibility-off'
-                    }
-                    size={24}
-                    color="#ccc"
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* 確認新密碼 */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>確認新密碼</Text>
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="請再次輸入新密碼"
-                  secureTextEntry={!isConfirmPasswordVisible}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                />
-                <TouchableOpacity
-                  onPress={() =>
-                    setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
-                  }
-                >
-                  <MaterialIcons
-                    name={
-                      isConfirmPasswordVisible ? 'visibility' : 'visibility-off'
-                    }
-                    size={24}
-                    color="#ccc"
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* 提交按鈕 */}
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleResetPassword}
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.container}
             >
-              <Text style={styles.buttonText}>重設密碼</Text>
-            </TouchableOpacity>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
-    </LinearGradient>
+              <Text style={styles.title}>重設密碼</Text>
+
+              {/* 舊密碼 */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>舊密碼</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="輸入舊密碼"
+                    secureTextEntry={!isOldPasswordVisible}
+                    value={oldPassword}
+                    onChangeText={setOldPassword}
+                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      setIsOldPasswordVisible(!isOldPasswordVisible)
+                    }
+                  >
+                    <MaterialIcons
+                      name={
+                        isOldPasswordVisible ? 'visibility' : 'visibility-off'
+                      }
+                      size={24}
+                      color="#ccc"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* 新密碼 */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>新密碼</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="輸入新密碼"
+                    secureTextEntry={!isNewPasswordVisible}
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      setIsNewPasswordVisible(!isNewPasswordVisible)
+                    }
+                  >
+                    <MaterialIcons
+                      name={
+                        isNewPasswordVisible ? 'visibility' : 'visibility-off'
+                      }
+                      size={24}
+                      color="#ccc"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* 確認新密碼 */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>確認新密碼</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="請再次輸入新密碼"
+                    secureTextEntry={!isConfirmPasswordVisible}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
+                    }
+                  >
+                    <MaterialIcons
+                      name={
+                        isConfirmPasswordVisible
+                          ? 'visibility'
+                          : 'visibility-off'
+                      }
+                      size={24}
+                      color="#ccc"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* 提交按鈕 */}
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleResetPassword}
+              >
+                <Text style={styles.buttonText}>重設密碼</Text>
+              </TouchableOpacity>
+            </KeyboardAvoidingView>
+          </View>
+        </LinearGradient>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -167,9 +175,13 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+  gradient: {
+    flex: 1,
+    paddingBottom: 16,
+  },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
   },
   title: {
     fontSize: 24,

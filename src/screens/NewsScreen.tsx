@@ -41,7 +41,6 @@ const NewsScreen = ({ navigation }: any) => {
         dispatch(hideLoading());
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-
         Alert.alert('錯誤', errorMessage);
       }
     };
@@ -49,17 +48,17 @@ const NewsScreen = ({ navigation }: any) => {
   }, []);
 
   return (
-    <LinearGradient
-      colors={['#1D1640', '#4067A4']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={StyleSheet.absoluteFill}
-    >
-      <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        colors={['#1D1640', '#4067A4']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
+      >
         <View style={styles.container}>
           <Header title="最新消息" isDarkMode />
-          <ImageCarousel />
-          <ScrollView>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            <ImageCarousel />
             {newsData.map((item) => (
               <TouchableOpacity
                 key={item.id}
@@ -89,19 +88,26 @@ const NewsScreen = ({ navigation }: any) => {
             ))}
           </ScrollView>
         </View>
-      </SafeAreaView>
-    </LinearGradient>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+  },
+  gradient: {
+    flex: 1,
     paddingBottom: 16,
   },
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+  },
+  scrollContent: {
+    paddingVertical: 10,
+    paddingBottom: 30,
   },
   newsItem: {
     flexDirection: 'row',
