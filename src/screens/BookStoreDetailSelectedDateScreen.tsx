@@ -22,6 +22,51 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Feather from '@expo/vector-icons/Feather';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
+import { LocaleConfig } from 'react-native-calendars';
+
+LocaleConfig.locales['zh-tw'] = {
+  monthNames: [
+    '一月',
+    '二月',
+    '三月',
+    '四月',
+    '五月',
+    '六月',
+    '七月',
+    '八月',
+    '九月',
+    '十月',
+    '十一月',
+    '十二月',
+  ],
+  monthNamesShort: [
+    '1月',
+    '2月',
+    '3月',
+    '4月',
+    '5月',
+    '6月',
+    '7月',
+    '8月',
+    '9月',
+    '10月',
+    '11月',
+    '12月',
+  ],
+  dayNames: [
+    '星期日',
+    '星期一',
+    '星期二',
+    '星期三',
+    '星期四',
+    '星期五',
+    '星期六',
+  ],
+  dayNamesShort: ['日', '一', '二', '三', '四', '五', '六'],
+  today: '今天',
+};
+
+LocaleConfig.defaultLocale = 'zh-tw';
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -204,6 +249,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
               </Text>
               <Calendar
                 current={selectedDate}
+                minDate={moment().format('YYYY-MM-DD')}
                 onDayPress={(day) => {
                   navigation.navigate('BookStoreDetailSelectedTime', {
                     tableItem,
