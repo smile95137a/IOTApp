@@ -1,3 +1,4 @@
+import { logJson } from '@/utils/logJsonUtils';
 import { api } from './ApiClient';
 import Constants from 'expo-constants';
 
@@ -14,24 +15,24 @@ export const loginUser = async (loginData: {
   password: string;
 }): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/login`;
-  console.log(`[Login] Sending request to ${url}`);
-  console.log(`[Login] Login Type: ${loginData.type}`);
+  logJson(`[Login] Sending request to ${url}`);
+  logJson(`[Login] Login Type: ${loginData.type}`);
 
   if (loginData.type === 'email') {
-    console.log(`[Login] Email: ${loginData.email}`);
+    logJson(`[Login] Email: ${loginData.email}`);
   } else if (loginData.type === 'phone') {
-    console.log(`[Login] Phone: ${loginData.countryCode}${loginData.phone}`);
+    logJson(`[Login] Phone: ${loginData.countryCode}${loginData.phone}`);
   }
 
-  console.log(`[Login] Password: ${'*'.repeat(loginData.password.length)}`);
+  logJson(`[Login] Password: ${'*'.repeat(loginData.password.length)}`);
 
   try {
     const response = await api.post(url, loginData);
-    console.log(`[Login] API Response from ${url}:`, response.data);
+    logJson(`[Login] API Response from ${url}:`, response.data);
 
     return response.data;
   } catch (error) {
-    console.log(`[Login] Error during request to ${url}:`, error);
+    logJson(`[Login] Error during request to ${url}:`, error);
     throw error;
   }
 };

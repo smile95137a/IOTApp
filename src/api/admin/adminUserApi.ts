@@ -1,3 +1,4 @@
+import { logJson } from '@/utils/logJsonUtils';
 import { api } from '../ApiClient';
 import Constants from 'expo-constants';
 
@@ -5,11 +6,7 @@ const extra = Constants.expoConfig?.extra || {}; // 確保不會是 `null`
 const API_BASE_URL = extra.eas.API_BASE_URL || 'http://172.20.10.4:8081';
 
 export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  isBlacklisted: boolean;
+  [key: string]: any;
 }
 
 const basePath = `/api/b/users`;
@@ -19,14 +16,14 @@ const basePath = `/api/b/users`;
  */
 export const fetchAllUsers = async (): Promise<ApiResponse<User[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  console.log(`[User API] Fetching all users from: ${url}`);
+  logJson(`[User API] Fetching all users from: ${url}`);
 
   try {
     const response = await api.get(url);
-    console.log(`[User API] Response:`, response.data);
+    logJson(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error fetching all users:`, error);
+    logJson(`[User API] Error fetching all users:`, error);
     throw error;
   }
 };
@@ -36,14 +33,14 @@ export const fetchAllUsers = async (): Promise<ApiResponse<User[]>> => {
  */
 export const fetchUserById = async (id: string): Promise<ApiResponse<User>> => {
   const url = `${API_BASE_URL}${basePath}/${id}`;
-  console.log(`[User API] Fetching user by ID: ${url}`);
+  logJson(`[User API] Fetching user by ID: ${url}`);
 
   try {
     const response = await api.get(url);
-    console.log(`[User API] Response:`, response.data);
+    logJson(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error fetching user by ID:`, error);
+    logJson(`[User API] Error fetching user by ID:`, error);
     throw error;
   }
 };
@@ -53,14 +50,14 @@ export const fetchUserById = async (id: string): Promise<ApiResponse<User>> => {
  */
 export const queryUser = async (req: any): Promise<ApiResponse<User[]>> => {
   const url = `${API_BASE_URL}${basePath}/queryUser`;
-  console.log(`[User API] Querying user: ${url}`, req);
+  logJson(`[User API] Querying user: ${url}`, req);
 
   try {
     const response = await api.post(url, req);
-    console.log(`[User API] Response:`, response.data);
+    logJson(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error querying user:`, error);
+    logJson(`[User API] Error querying user:`, error);
     throw error;
   }
 };
@@ -70,14 +67,14 @@ export const queryUser = async (req: any): Promise<ApiResponse<User[]>> => {
  */
 export const createUser = async (req: any): Promise<ApiResponse<User>> => {
   const url = `${API_BASE_URL}${basePath}/createUser`;
-  console.log(`[User API] Creating user: ${url}`, req);
+  logJson(`[User API] Creating user: ${url}`, req);
 
   try {
     const response = await api.post(url, req);
-    console.log(`[User API] Response:`, response.data);
+    logJson(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error creating user:`, error);
+    logJson(`[User API] Error creating user:`, error);
     throw error;
   }
 };
@@ -87,14 +84,14 @@ export const createUser = async (req: any): Promise<ApiResponse<User>> => {
  */
 export const updateUser = async (req: any): Promise<ApiResponse<User>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  console.log(`[User API] Updating user: ${url}`, req);
+  logJson(`[User API] Updating user: ${url}`, req);
 
   try {
     const response = await api.put(url, req);
-    console.log(`[User API] Response:`, response.data);
+    logJson(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error updating user:`, error);
+    logJson(`[User API] Error updating user:`, error);
     throw error;
   }
 };
@@ -104,14 +101,14 @@ export const updateUser = async (req: any): Promise<ApiResponse<User>> => {
  */
 export const deleteUser = async (id: string): Promise<ApiResponse<boolean>> => {
   const url = `${API_BASE_URL}${basePath}/${id}`;
-  console.log(`[User API] Deleting user: ${url}`);
+  logJson(`[User API] Deleting user: ${url}`);
 
   try {
     const response = await api.delete(url);
-    console.log(`[User API] Response:`, response.data);
+    logJson(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error deleting user:`, error);
+    logJson(`[User API] Error deleting user:`, error);
     throw error;
   }
 };
@@ -123,14 +120,14 @@ export const addUsersToBlacklist = async (
   userIds: number[]
 ): Promise<ApiResponse<string>> => {
   const url = `${API_BASE_URL}${basePath}/addBlackList`;
-  console.log(`[User API] Adding users to blacklist: ${url}`, userIds);
+  logJson(`[User API] Adding users to blacklist: ${url}`, userIds);
 
   try {
     const response = await api.put(url, userIds);
-    console.log(`[User API] Response:`, response.data);
+    logJson(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error adding users to blacklist:`, error);
+    logJson(`[User API] Error adding users to blacklist:`, error);
     throw error;
   }
 };
@@ -142,14 +139,14 @@ export const removeUsersFromBlacklist = async (
   userIds: number[]
 ): Promise<ApiResponse<string>> => {
   const url = `${API_BASE_URL}${basePath}/removeBlackList`;
-  console.log(`[User API] Removing users from blacklist: ${url}`, userIds);
+  logJson(`[User API] Removing users from blacklist: ${url}`, userIds);
 
   try {
     const response = await api.put(url, userIds);
-    console.log(`[User API] Response:`, response.data);
+    logJson(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error removing users from blacklist:`, error);
+    logJson(`[User API] Error removing users from blacklist:`, error);
     throw error;
   }
 };

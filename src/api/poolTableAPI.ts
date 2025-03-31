@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import { api } from './ApiClient';
+import { logJson } from '@/utils/logJsonUtils';
 
 const extra = Constants.expoConfig?.extra || {}; // 確保不為 `null`
 const API_BASE_URL = extra.eas.API_BASE_URL || 'http://172.20.10.4:8081';
@@ -15,19 +16,19 @@ export const fetchPoolTablesByStoreUid = async (
   storeUid: string
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/store/${storeUid}`;
-  console.log(
+  logJson(
     `[PoolTable API] Fetching pool tables for storeUid: ${storeUid}, URL: ${url}`
   );
 
   try {
     const response = await api.get(url);
-    console.log(
+    logJson(
       `[PoolTable API] Response for storeUid ${storeUid}:`,
       response.data
     );
     return response.data;
   } catch (error) {
-    console.log(
+    logJson(
       `[PoolTable API] Error fetching pool tables for storeUid ${storeUid}:`,
       error
     );
@@ -44,16 +45,14 @@ export const fetchPoolTableByUid = async (
   uid: string
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  console.log(
-    `[PoolTable API] Fetching pool table with UID: ${uid}, URL: ${url}`
-  );
+  logJson(`[PoolTable API] Fetching pool table with UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.get(url);
-    console.log(`[PoolTable API] Response for UID ${uid}:`, response.data);
+    logJson(`[PoolTable API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(
+    logJson(
       `[PoolTable API] Error fetching pool table with UID ${uid}:`,
       error
     );

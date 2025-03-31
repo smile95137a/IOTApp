@@ -1,3 +1,4 @@
+import { logJson } from '@/utils/logJsonUtils';
 import { api } from '../ApiClient';
 import Constants from 'expo-constants';
 
@@ -5,20 +6,7 @@ const extra = Constants.expoConfig?.extra || {}; // 確保不會是 `null`
 const API_BASE_URL = extra.eas.API_BASE_URL || 'http://172.20.10.4:8081';
 
 export interface Store {
-  uid: string;
-  name: string;
-  address: string;
-  lat: number;
-  lon: number;
-  availablesCount: number;
-  inusesCount: number;
-  deposit: number;
-  discountDateRange: string;
-  discountRate: number;
-  discountTimeRange: string;
-  regularDateRange: string;
-  regularRate: number;
-  regularTimeRange: string;
+  [key: string]: any;
 }
 
 const basePath = `/api/b/stores`;
@@ -28,14 +16,14 @@ const basePath = `/api/b/stores`;
  */
 export const fetchAllStores = async (): Promise<ApiResponse<Store[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  console.log(`[Store API] Fetching all stores from: ${url}`);
+  logJson(`[Store API] Fetching all stores from: ${url}`);
 
   try {
     const response = await api.get(url);
-    console.log(`[Store API] Response:`, response.data);
+    logJson(`[Store API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Store API] Error fetching all stores:`, error);
+    logJson(`[Store API] Error fetching all stores:`, error);
     throw error;
   }
 };
@@ -48,14 +36,14 @@ export const fetchStoreByUid = async (
   uid: string
 ): Promise<ApiResponse<Store>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  console.log(`[Store API] Fetching store by UID: ${uid}, URL: ${url}`);
+  logJson(`[Store API] Fetching store by UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.get(url);
-    console.log(`[Store API] Response for UID ${uid}:`, response.data);
+    logJson(`[Store API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Store API] Error fetching store by UID ${uid}:`, error);
+    logJson(`[Store API] Error fetching store by UID ${uid}:`, error);
     throw error;
   }
 };
@@ -68,14 +56,14 @@ export const createStore = async (
   store: Partial<Store>
 ): Promise<ApiResponse<Store>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  console.log(`[Store API] Creating store at: ${url}`);
+  logJson(`[Store API] Creating store at: ${url}`);
 
   try {
     const response = await api.post(url, store);
-    console.log(`[Store API] Response:`, response.data);
+    logJson(`[Store API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Store API] Error creating store:`, error);
+    logJson(`[Store API] Error creating store:`, error);
     throw error;
   }
 };
@@ -90,14 +78,14 @@ export const updateStore = async (
   store: Partial<Store>
 ): Promise<ApiResponse<Store>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  console.log(`[Store API] Updating store with UID: ${uid}, URL: ${url}`);
+  logJson(`[Store API] Updating store with UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.put(url, store);
-    console.log(`[Store API] Response for UID ${uid}:`, response.data);
+    logJson(`[Store API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Store API] Error updating store with UID ${uid}:`, error);
+    logJson(`[Store API] Error updating store with UID ${uid}:`, error);
     throw error;
   }
 };
@@ -108,14 +96,14 @@ export const updateStore = async (
  */
 export const deleteStore = async (uid: string): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  console.log(`[Store API] Deleting store with UID: ${uid}, URL: ${url}`);
+  logJson(`[Store API] Deleting store with UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.delete(url);
-    console.log(`[Store API] Store with UID ${uid} deleted successfully.`);
+    logJson(`[Store API] Store with UID ${uid} deleted successfully.`);
     return response.data;
   } catch (error) {
-    console.log(`[Store API] Error deleting store with UID ${uid}:`, error);
+    logJson(`[Store API] Error deleting store with UID ${uid}:`, error);
     throw error;
   }
 };
@@ -128,9 +116,7 @@ export const uploadStoreImages = async (
   imageUri: string
 ): Promise<boolean> => {
   const url = `${API_BASE_URL}${basePath}/${userId}/upload-image`;
-  console.log(
-    `[Store API] Uploading profile image for user: ${userId} to ${url}`
-  );
+  logJson(`[Store API] Uploading profile image for user: ${userId} to ${url}`);
 
   try {
     const formData = new FormData();
@@ -140,16 +126,16 @@ export const uploadStoreImages = async (
       type: 'image/jpeg',
     });
 
-    console.log(`[Store API] FormData:`, formData);
+    logJson(`[Store API] FormData:`, formData);
 
     const response = await api.post(url, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    console.log(`[Store API] Profile Image Upload Success:`, response.data);
+    logJson(`[Store API] Profile Image Upload Success:`, response.data);
     return response.status === 200;
   } catch (error) {
-    console.log(`[Store API] Error uploading profile image:`, error);
+    logJson(`[Store API] Error uploading profile image:`, error);
     return false;
   }
 };
@@ -157,14 +143,14 @@ export const fetchStoresByVendorId = async (
   vendorId: number
 ): Promise<ApiResponse<Store[]>> => {
   const url = `${API_BASE_URL}${basePath}/${vendorId}/stores`;
-  console.log(`[Store API] Fetching stores by vendor ID: ${url}`);
+  logJson(`[Store API] Fetching stores by vendor ID: ${url}`);
 
   try {
     const response = await api.get(url);
-    console.log(`[Store API] Response:`, response.data);
+    logJson(`[Store API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Store API] Error fetching stores by vendor ID:`, error);
+    logJson(`[Store API] Error fetching stores by vendor ID:`, error);
     throw error;
   }
 };

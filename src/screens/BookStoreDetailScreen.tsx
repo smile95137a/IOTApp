@@ -182,7 +182,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
             <View style={styles.tablesHeader}>
               <Text style={styles.tablesTitle}>桌數：{tables.length}桌</Text>
               <Text style={styles.tablesAvailable}>
-                可用：{tables.filter((table) => !table.isUse).length}桌
+                可用：{tables.length}桌
               </Text>
             </View>
 
@@ -193,9 +193,6 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
             >
               <View style={styles.tableGrid}>
                 {tables.map((item) => {
-                  const status = item.isUse ? 'reserved' : 'available';
-                  const label = item.isUse ? '已預訂' : '立即開台';
-
                   return (
                     <TouchableOpacity
                       key={item.id}
@@ -208,43 +205,22 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
                       }}
                     >
                       <Image
-                        source={
-                          status === 'available'
-                            ? require('@/assets/iot-table-enable.png')
-                            : require('@/assets/iot-table-disable.png')
-                        }
-                        style={[
-                          styles.tableImage,
-                          status === 'available'
-                            ? styles.tableImageAvailable
-                            : styles.tableImageReserved,
-                        ]}
+                        source={require('@/assets/iot-table-enable.png')}
+                        style={[styles.tableImage, styles.tableImageAvailable]}
                       />
                       <View
                         style={[
                           styles.tableTextContainer,
-                          status === 'available'
-                            ? styles.tableTextContainerAvailable
-                            : styles.tableTextContainerReserved,
+                          styles.tableTextContainerAvailable,
                         ]}
                       >
                         <View style={styles.tableTextContainerRow}>
-                          <Text
-                            style={[
-                              styles.tableTextContainerId,
-                              status !== 'available' && { color: 'white' },
-                            ]}
-                          >
+                          <Text style={[styles.tableTextContainerId]}>
                             {item.tableNumber.toString()}
                           </Text>
 
-                          <Text
-                            style={[
-                              styles.tableTextContainerText,
-                              status !== 'available' && { color: 'white' },
-                            ]}
-                          >
-                            {label}
+                          <Text style={[styles.tableTextContainerText]}>
+                            立即預約
                           </Text>
                         </View>
                       </View>

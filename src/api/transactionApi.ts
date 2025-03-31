@@ -1,3 +1,4 @@
+import { logJson } from '@/utils/logJsonUtils';
 import { api } from './ApiClient';
 import Constants from 'expo-constants';
 
@@ -7,19 +8,7 @@ const API_BASE_URL = extra.eas.API_BASE_URL || 'http://172.20.10.4:8081';
 const basePath = `/transaction`;
 
 export interface GameTransactionRecord {
-  id: number;
-  userId: number;
-  amount: number;
-  transactionType: string;
-  createdAt: string;
-  transactionDate: string;
-  updatedAt?: string;
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
+  [key: string]: any;
 }
 
 // 取得使用者的交易紀錄
@@ -27,14 +16,14 @@ export const fetchUserTransactions = async (): Promise<
   ApiResponse<GameTransactionRecord[]>
 > => {
   const url = `${API_BASE_URL}${basePath}/user`;
-  console.log(`[Transaction API] Fetching user transactions from: ${url}`);
+  logJson(`[Transaction API] Fetching user transactions from: ${url}`);
 
   try {
     const response = await api.get<ApiResponse<GameTransactionRecord[]>>(url);
-    console.log(`[Transaction API] Response:`, response.data);
+    logJson(`[Transaction API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Transaction API] Error fetching user transactions:`, error);
+    logJson(`[Transaction API] Error fetching user transactions:`, error);
     throw error;
   }
 };
@@ -47,14 +36,14 @@ export const fetchTransactionsByDateRange = async (
   const url = `${API_BASE_URL}${basePath}/date-range?startDate=${encodeURIComponent(
     startDate
   )}&endDate=${encodeURIComponent(endDate)}`;
-  console.log(`[Transaction API] Fetching transactions by date range: ${url}`);
+  logJson(`[Transaction API] Fetching transactions by date range: ${url}`);
 
   try {
     const response = await api.get<ApiResponse<GameTransactionRecord[]>>(url);
-    console.log(`[Transaction API] Response:`, response.data);
+    logJson(`[Transaction API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(
+    logJson(
       `[Transaction API] Error fetching transactions by date range:`,
       error
     );
@@ -69,17 +58,14 @@ export const fetchTransactionsByType = async (
   const url = `${API_BASE_URL}${basePath}/type/${encodeURIComponent(
     transactionType
   )}`;
-  console.log(`[Transaction API] Fetching transactions by type: ${url}`);
+  logJson(`[Transaction API] Fetching transactions by type: ${url}`);
 
   try {
     const response = await api.get<ApiResponse<GameTransactionRecord[]>>(url);
-    console.log(`[Transaction API] Response:`, response.data);
+    logJson(`[Transaction API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(
-      `[Transaction API] Error fetching transactions by type:`,
-      error
-    );
+    logJson(`[Transaction API] Error fetching transactions by type:`, error);
     throw error;
   }
 };
@@ -89,17 +75,14 @@ export const fetchTransactionsByAmount = async (
   amount: number
 ): Promise<ApiResponse<GameTransactionRecord[]>> => {
   const url = `${API_BASE_URL}${basePath}/amount?amount=${amount}`;
-  console.log(`[Transaction API] Fetching transactions by amount: ${url}`);
+  logJson(`[Transaction API] Fetching transactions by amount: ${url}`);
 
   try {
     const response = await api.get<ApiResponse<GameTransactionRecord[]>>(url);
-    console.log(`[Transaction API] Response:`, response.data);
+    logJson(`[Transaction API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(
-      `[Transaction API] Error fetching transactions by amount:`,
-      error
-    );
+    logJson(`[Transaction API] Error fetching transactions by amount:`, error);
     throw error;
   }
 };

@@ -1,3 +1,4 @@
+import { logJson } from '@/utils/logJsonUtils';
 import { api } from './ApiClient';
 import Constants from 'expo-constants';
 
@@ -9,14 +10,14 @@ const basePath = `/game-records`;
 // 取得使用者的遊戲紀錄
 export const fetchGameRecords = async (): Promise<ApiResponse<any[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  console.log(`[GameRecord API] Fetching game records from: ${url}`);
+  logJson(`[GameRecord API] Fetching game records from: ${url}`);
 
   try {
     const response = await api.get<ApiResponse<any[]>>(url);
-    console.log(`[GameRecord API] Response:`, response.data);
+    logJson(`[GameRecord API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[GameRecord API] Error fetching game records:`, error);
+    logJson(`[GameRecord API] Error fetching game records:`, error);
     throw error;
   }
 };

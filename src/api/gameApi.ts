@@ -1,3 +1,4 @@
+import { logJson } from '@/utils/logJsonUtils';
 import { api } from './ApiClient';
 import Constants from 'expo-constants';
 
@@ -11,13 +12,13 @@ const basePath = `/game`;
  */
 export const startGame = async (gameReq: any): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/start`;
-  console.log(`[Game API]  startGame req:`, gameReq);
+  logJson(`[Game API]  startGame req:`, gameReq);
   try {
     const response = await api.post(url, gameReq);
-    console.log(`[Game API]  startGame res:`, response.data);
+    logJson(`[Game API]  startGame res:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Game API]  startGame error:`, error);
+    logJson(`[Game API]  startGame error:`, error);
     throw error;
   }
 };
@@ -29,13 +30,13 @@ export const checkoutGame = async (
   checkoutReq: any
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/checkout`;
-  console.log(`[Game API]  checkoutGame req:`, checkoutReq);
+  logJson(`[Game API]  checkoutGame req:`, checkoutReq);
   try {
     const response = await api.post(url, checkoutReq);
-    console.log(`[Game API]  checkoutGame res:`, response.data);
+    logJson(`[Game API]  checkoutGame res:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Game API]  checkoutGame error:`, error);
+    logJson(`[Game API]  checkoutGame error:`, error);
     throw error;
   }
 };
@@ -50,7 +51,7 @@ export const getAvailableTimes = async (
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/available-times`;
   const params = { storeId, bookingDate, poolTableId };
-  console.log(`[Game API]  getAvailableTimes params:`, params);
+  logJson(`[Game API]  getAvailableTimes params:`, params);
   try {
     const response = await api.get(url, {
       params: {
@@ -59,10 +60,10 @@ export const getAvailableTimes = async (
         poolTableId,
       },
     });
-    console.log(`[Game API]  getAvailableTimes res:`, response.data);
+    logJson(`[Game API]  getAvailableTimes res:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Game API]  getAvailableTimes error:`, error);
+    logJson(`[Game API]  getAvailableTimes error:`, error);
     throw error;
   }
 };
@@ -72,13 +73,13 @@ export const getAvailableTimes = async (
  */
 export const bookGame = async (bookReq: any): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/book`;
-  console.log(`[Game API]  bookGame req:`, bookReq);
+  logJson(`[Game API]  bookGame req:`, bookReq);
   try {
     const response = await api.post(url, bookReq);
-    console.log(`[Game API]  bookGame res:`, response.data);
+    logJson(`[Game API]  bookGame res:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Game API]  bookGame error:`, error);
+    logJson(`[Game API]  bookGame error:`, error);
     throw error;
   }
 };
@@ -88,13 +89,13 @@ export const bookGame = async (bookReq: any): Promise<ApiResponse<any>> => {
  */
 export const cancelBook = async (gameReq: any): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/cancel`;
-  console.log(`[Game API]  cancelBook req:`, gameReq);
+  logJson(`[Game API]  cancelBook req:`, gameReq);
   try {
     const response = await api.post(url, gameReq);
-    console.log(`[Game API]  cancelBook res:`, response.data);
+    logJson(`[Game API]  cancelBook res:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Game API]  cancelBook error:`, error);
+    logJson(`[Game API]  cancelBook error:`, error);
     throw error;
   }
 };
@@ -104,26 +105,26 @@ export const cancelBook = async (gameReq: any): Promise<ApiResponse<any>> => {
  */
 export const bookStart = async (gameReq: any): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/bookStart`;
-  console.log(`[Game API]  bookStart req:`, gameReq);
+  logJson(`[Game API]  bookStart req:`, gameReq);
   try {
     const response = await api.post(url, gameReq);
-    console.log(`[Game API]  bookStart res:`, response.data);
+    logJson(`[Game API]  bookStart res:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Game API]  bookStart error:`, error);
+    logJson(`[Game API]  bookStart error:`, error);
     throw error;
   }
 };
 
 export const getBookGameList = async (): Promise<ApiResponse<any[]>> => {
   const url = `${API_BASE_URL}${basePath}/getBookGame`;
-  console.log(`[Game API]  getBookGame`);
+  logJson(`[Game API]  getBookGame`);
   try {
     const response = await api.get(url);
-    console.log(`[Game API]  getBookGame res:`, response.data);
+    logJson(`[Game API]  getBookGame res:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Game API]  getBookGame error:`, error);
+    logJson(`[Game API]  getBookGame error:`, error);
     throw error;
   }
 };

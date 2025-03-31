@@ -1,3 +1,4 @@
+import { logJson } from '@/utils/logJsonUtils';
 import { api } from './ApiClient';
 import Constants from 'expo-constants';
 
@@ -24,14 +25,14 @@ export interface Banner {
  */
 export const fetchAllBanners = async (): Promise<ApiResponse<Banner[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  console.log(`[Banner API] Fetching all banners from: ${url}`);
+  logJson(`[Banner API] Fetching all banners from: ${url}`);
 
   try {
     const response = await api.get<ApiResponse<Banner[]>>(url);
-    console.log(`[Banner API] Response:`, response.data);
+    logJson(`[Banner API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[Banner API] Error fetching banners:`, error);
+    logJson(`[Banner API] Error fetching banners:`, error);
     throw error;
   }
 };

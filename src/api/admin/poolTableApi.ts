@@ -1,3 +1,4 @@
+import { logJson } from '@/utils/logJsonUtils';
 import { api } from '../ApiClient';
 import Constants from 'expo-constants';
 
@@ -5,12 +6,7 @@ const extra = Constants.expoConfig?.extra || {}; // 確保不會是 `null`
 const API_BASE_URL = extra.eas.API_BASE_URL || 'http://172.20.10.4:8081';
 
 export interface PoolTable {
-  uid: string;
-  tableNumber: string;
-  status: string;
-  storeId: number;
-  createTime?: string;
-  updateTime?: string;
+  [key: string]: any;
 }
 
 const basePath = `/api/b/poolTables`;
@@ -22,14 +18,14 @@ export const fetchAllPoolTables = async (): Promise<
   ApiResponse<PoolTable[]>
 > => {
   const url = `${API_BASE_URL}${basePath}`;
-  console.log(`[PoolTable API] Fetching all pool tables from: ${url}`);
+  logJson(`[PoolTable API] Fetching all pool tables from: ${url}`);
 
   try {
     const response = await api.get(url);
-    console.log(`[PoolTable API] Response:`, response.data);
+    logJson(`[PoolTable API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[PoolTable API] Error fetching all pool tables:`, error);
+    logJson(`[PoolTable API] Error fetching all pool tables:`, error);
     throw error;
   }
 };
@@ -37,16 +33,16 @@ export const fetchPoolTablesByStoreId = async (
   storeId: number
 ): Promise<ApiResponse<PoolTable[]>> => {
   const url = `${API_BASE_URL}${basePath}/store/${storeId}`;
-  console.log(
+  logJson(
     `[PoolTable API] Fetching pool tables for store ID ${storeId} from: ${url}`
   );
 
   try {
     const response = await api.get(url);
-    console.log(`[PoolTable API] Response:`, response.data);
+    logJson(`[PoolTable API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[PoolTable API] Error fetching pool tables for store:`, error);
+    logJson(`[PoolTable API] Error fetching pool tables for store:`, error);
     throw error;
   }
 };
@@ -58,19 +54,14 @@ export const fetchPoolTableByUid = async (
   uid: string
 ): Promise<ApiResponse<PoolTable>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  console.log(
-    `[PoolTable API] Fetching pool table by UID: ${uid}, URL: ${url}`
-  );
+  logJson(`[PoolTable API] Fetching pool table by UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.get(url);
-    console.log(`[PoolTable API] Response for UID ${uid}:`, response.data);
+    logJson(`[PoolTable API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(
-      `[PoolTable API] Error fetching pool table by UID ${uid}:`,
-      error
-    );
+    logJson(`[PoolTable API] Error fetching pool table by UID ${uid}:`, error);
     throw error;
   }
 };
@@ -86,14 +77,14 @@ export const createPoolTable = async (poolTable: {
   isUse: boolean;
 }): Promise<ApiResponse<PoolTable>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  console.log(`[PoolTable API] Creating pool table at: ${url}`);
+  logJson(`[PoolTable API] Creating pool table at: ${url}`);
 
   try {
     const response = await api.post(url, poolTable);
-    console.log(`[PoolTable API] Response:`, response.data);
+    logJson(`[PoolTable API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[PoolTable API] Error creating pool table:`, error);
+    logJson(`[PoolTable API] Error creating pool table:`, error);
     throw error;
   }
 };
@@ -113,16 +104,14 @@ export const updatePoolTable = async (
   }
 ): Promise<ApiResponse<PoolTable>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  console.log(
-    `[PoolTable API] Updating pool table with UID: ${uid}, URL: ${url}`
-  );
+  logJson(`[PoolTable API] Updating pool table with UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.put(url, poolTable);
-    console.log(`[PoolTable API] Response for UID ${uid}:`, response.data);
+    logJson(`[PoolTable API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(
+    logJson(
       `[PoolTable API] Error updating pool table with UID ${uid}:`,
       error
     );
@@ -138,18 +127,14 @@ export const deletePoolTable = async (
   uid: string
 ): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  console.log(
-    `[PoolTable API] Deleting pool table with UID: ${uid}, URL: ${url}`
-  );
+  logJson(`[PoolTable API] Deleting pool table with UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.delete(url);
-    console.log(
-      `[PoolTable API] Pool table with UID ${uid} deleted successfully.`
-    );
+    logJson(`[PoolTable API] Pool table with UID ${uid} deleted successfully.`);
     return response.data;
   } catch (error) {
-    console.log(
+    logJson(
       `[PoolTable API] Error deleting pool table with UID ${uid}:`,
       error
     );

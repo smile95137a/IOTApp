@@ -27,6 +27,7 @@ import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { logJson } from '@/utils/logJsonUtils';
 const weekDays = [
   'monday',
   'tuesday',
@@ -166,9 +167,7 @@ const AddStoreScreen = () => {
         })),
       })),
     };
-    console.log('--- 提交 Store 資料 ---');
-    console.log(JSON.stringify(storeData, null, 2));
-
+    logJson(storeData, 'Store Data');
     try {
       dispatch(showLoading());
 

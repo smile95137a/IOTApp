@@ -1,3 +1,4 @@
+import { logJson } from '@/utils/logJsonUtils';
 import { api } from './ApiClient';
 import Constants from 'expo-constants';
 
@@ -10,17 +11,7 @@ const basePath = `/user`;
  * 用戶接口 (User Interface)
  */
 export interface User {
-  uid: string;
-  name?: string;
-  email?: string;
-  countryCode?: string | null;
-  phoneNumber?: string | null;
-  amount: number;
-  totalAmount?: number;
-  roles?: string[];
-  createTime?: string | null;
-  lastActiveTime?: string | null;
-  updateTime?: string | null;
+  [key: string]: any;
 }
 
 /**
@@ -28,14 +19,14 @@ export interface User {
  */
 export const fetchUserInfo = async (): Promise<ApiResponse<User>> => {
   const url = `${API_BASE_URL}${basePath}/getUserInfo`;
-  console.log(`[User API] Fetching user info from: ${url}`);
+  logJson(`[User API] Fetching user info from: ${url}`);
 
   try {
     const response = await api.get(url);
-    console.log(`[User API] Response:`, response.data);
+    logJson(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error fetching user info:`, error);
+    logJson(`[User API] Error fetching user info:`, error);
     throw error;
   }
 };
@@ -48,14 +39,14 @@ export const registerUser = async (
   userReq: any
 ): Promise<ApiResponse<User>> => {
   const url = `${API_BASE_URL}${basePath}/register`;
-  console.log(`[User API] Registering user at ${url} with data:`, userReq);
+  logJson(`[User API] Registering user at ${url} with data:`, userReq);
 
   try {
     const response = await api.post(url, userReq);
-    console.log(`[User API] Registration Response:`, response.data);
+    logJson(`[User API] Registration Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error registering user:`, error);
+    logJson(`[User API] Error registering user:`, error);
     throw error;
   }
 };
@@ -68,14 +59,14 @@ export const updateUser = async (
   userReq: Partial<User>
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/updateUser`;
-  console.log(`[User API] Updating user at ${url} with data:`, userReq);
+  logJson(`[User API] Updating user at ${url} with data:`, userReq);
 
   try {
     const response = await api.put(url, userReq);
-    console.log(`[User API] Update Response:`, response.data);
+    logJson(`[User API] Update Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error updating user:`, error);
+    logJson(`[User API] Error updating user:`, error);
     throw error;
   }
 };
@@ -89,14 +80,14 @@ export const resetPassword = async (userReq: {
   newPassword: string;
 }): Promise<ApiResponse<boolean>> => {
   const url = `${API_BASE_URL}${basePath}/resetPwd`;
-  console.log(`[User API] Resetting password at ${url} with data:`, userReq);
+  logJson(`[User API] Resetting password at ${url} with data:`, userReq);
 
   try {
     const response = await api.put(url, userReq);
-    console.log(`[User API] Reset Password Response:`, response.data);
+    logJson(`[User API] Reset Password Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.log(`[User API] Error resetting password:`, error);
+    logJson(`[User API] Error resetting password:`, error);
     throw error;
   }
 };
@@ -111,9 +102,7 @@ export const uploadProfileImage = async (
   imageUri: string
 ): Promise<boolean> => {
   const url = `${API_BASE_URL}${basePath}/${userId}/upload-profile-image`;
-  console.log(
-    `[User API] Uploading profile image for user: ${userId} to ${url}`
-  );
+  logJson(`[User API] Uploading profile image for user: ${userId} to ${url}`);
 
   try {
     const formData = new FormData();
@@ -123,16 +112,16 @@ export const uploadProfileImage = async (
       type: 'image/jpeg',
     });
 
-    console.log(`[User API] FormData:`, formData);
+    logJson(`[User API] FormData:`, formData);
 
     const response = await api.post(url, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    console.log(`[User API] Profile Image Upload Success:`, response.data);
+    logJson(`[User API] Profile Image Upload Success:`, response.data);
     return response.status === 200;
   } catch (error) {
-    console.log(`[User API] Error uploading profile image:`, error);
+    logJson(`[User API] Error uploading profile image:`, error);
     return false;
   }
 };
