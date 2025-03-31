@@ -94,7 +94,7 @@ const ImageCarousel = () => {
 
 const styles = StyleSheet.create({
   carouselContainer: {
-    marginVertical: 40,
+    marginVertical: 16,
     alignItems: 'center',
   },
   bannerItem: {
@@ -102,14 +102,14 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   bannerImage: {
-    height: 180,
+    height: 165,
     borderRadius: 10,
     resizeMode: 'cover',
   },
   pagination: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: 4,
   },
   dot: {
     width: 8,

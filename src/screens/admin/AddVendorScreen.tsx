@@ -29,8 +29,6 @@ const AddVendorScreen = () => {
 
   const vendor = route.params?.vendor || null;
 
-  console.log('232323232@@@', vendor);
-
   const [name, setName] = useState(vendor?.name || '');
   const [contactInfo, setContactInfo] = useState(vendor?.contactInfo || '');
   const [stores, setStores] = useState([]);

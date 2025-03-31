@@ -1,7 +1,13 @@
+import { fetchAllUsers } from '@/api/admin/adminUserApi';
+import { fetchTurnover } from '@/api/admin/turnoverApi';
+import { fetchAllBanners } from '@/api/bannerApi';
 import NumberFormatter from '@/component/NumberFormatter';
 import SharedScreenLayout from '@/navigators/SharedScreenLayout';
+import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
 import { genRandomNumbers } from '@/utils/RandomUtils';
-import React from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,15 +15,38 @@ import {
   Image,
   TouchableOpacity,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useDispatch } from 'react-redux';
 
 const AdminDashboardScreen = ({ navigation }) => {
-  const handleFeaturePress = (feature) => {
-    if (feature.route) {
-      navigation.navigate(feature.route); // Navigate to the defined route
+  const dispatch = useDispatch<AppDispatch>();
+
+  const loadBanners = async () => {
+    try {
+      dispatch(showLoading());
+      const { success, data, message } = await fetchTurnover();
+      dispatch(hideLoading());
+      if (success) {
+      } else {
+        Alert.alert('錯誤', message || '無法載入 Banner');
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      Alert.alert('錯誤', '發生錯誤，請稍後再試');
     }
   };
+
+  useEffect(() => {
+    loadBanners();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadBanners();
+    }, [])
+  );
 
   return (
     <SharedScreenLayout navigation={navigation} title="管理首頁">
@@ -36,13 +65,8 @@ const AdminDashboardScreen = ({ navigation }) => {
             <View style={styles.reportSection}>
               <Text style={styles.sectionTitle}>今日收款：</Text>
               <Text style={styles.reportValue}>
-                <NumberFormatter number={~~genRandomNumbers(8)} />元 /
-                <NumberFormatter number={~~genRandomNumbers(5)} />筆
-              </Text>
-              <View style={styles.divider} />
-              <Text style={styles.sectionTitle}>可提現餘額：</Text>
-              <Text style={styles.reportValue}>
-                <NumberFormatter number={~~genRandomNumbers(9)} />元
+                <NumberFormatter number={0} />元 /
+                <NumberFormatter number={0} />筆
               </Text>
               <View style={styles.divider} />
             </View>

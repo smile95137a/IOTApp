@@ -10,7 +10,7 @@ import {
   Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { fetchPoolTablesByStoreUid, PoolTable } from '@/api/poolTableAPI';
+import { fetchPoolTablesByStoreUid } from '@/api/poolTableAPI';
 import Header from '@/component/Header';
 import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
@@ -75,34 +75,9 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   );
   const { store, tableItem } = route.params;
   const [tables, setTables] = useState<any[]>([]);
-
-  const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-
-  const weekdayTimes = store.pricingSchedules.filter((day) =>
-    weekdays.includes(day.dayOfWeek)
-  );
-
-  const formatTime = (time) =>
-    `${String(time).padStart(4, '0').slice(0, 2)}:${String(time)
-      .padStart(4, '0')
-      .slice(2, 4)}`;
-
-  const minRegularTime = Math.min(
-    ...weekdayTimes.map((day) =>
-      parseInt(day.regularStartTime.replace(':', ''))
-    )
-  );
-  const maxRegularTime = Math.max(
-    ...weekdayTimes.map((day) => parseInt(day.regularEndTime.replace(':', '')))
-  );
-  const minDiscountTime = Math.min(
-    ...weekdayTimes.map((day) =>
-      parseInt(day.discountStartTime.replace(':', ''))
-    )
-  );
-  const maxDiscountTime = Math.max(
-    ...weekdayTimes.map((day) => parseInt(day.discountEndTime.replace(':', '')))
-  );
+  const [todayPricing, setTodayPricing] = useState<any>(null);
+  const [currentRegularSlot, setCurrentRegularSlot] = useState<any>(null);
+  const [currentDiscountSlot, setCurrentDiscountSlot] = useState<any>(null);
 
   useEffect(() => {
     const loadTables = async () => {
@@ -121,8 +96,34 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
         console.log('Failed to fetch pool tables:', error);
       }
     };
+    const getTodayPricing = () => {
+      const today = moment().format('dddd').toUpperCase();
+      const todaySchedule = store.pricingSchedules.find(
+        (schedule: any) => schedule.dayOfWeek === today
+      );
+
+      if (!todaySchedule) return;
+      setTodayPricing(todaySchedule);
+
+      const now = moment();
+
+      const discountSlot = todaySchedule.discountTimeSlots.find((slot: any) => {
+        const start = moment(slot.startTime, 'HH:mm');
+        const end = moment(slot.endTime, 'HH:mm');
+        return now.isBetween(start, end);
+      });
+      const regularSlot = todaySchedule.regularTimeSlots.find((slot: any) => {
+        const start = moment(slot.startTime, 'HH:mm');
+        const end = moment(slot.endTime, 'HH:mm');
+        return now.isBetween(start, end);
+      });
+
+      setCurrentDiscountSlot(discountSlot || null);
+      setCurrentRegularSlot(regularSlot || null);
+    };
 
     loadTables();
+    getTodayPricing();
   }, [store.uid]);
 
   const handleShare = async () => {
@@ -200,32 +201,48 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
           </View>
 
           {/* Pricing Section */}
-          <View style={styles.pricingContainer}>
-            <View style={styles.pricingTitleContainer}>
-              <Text style={styles.pricingTitle}>時段</Text>
-              <Text style={styles.pricingTitle}>計費</Text>
+          {todayPricing && (
+            <View style={styles.pricingContainer}>
+              <View style={styles.pricingTitleContainer}>
+                <Text style={styles.pricingTitle}>時段</Text>
+                <Text style={styles.pricingTitle}>計費</Text>
+              </View>
+              <TouchableOpacity style={styles.pricingCard}>
+                <Text style={styles.pricingAmount}>
+                  <NumberFormatter number={~~todayPricing.regularRate} />
+                  元/小時
+                </Text>
+                <Text style={styles.pricingDetails}>一般時段</Text>
+                <Text style={styles.pricingDetails}>
+                  {currentRegularSlot ? (
+                    <Text style={styles.pricingDetails}>
+                      目前時段：{currentRegularSlot.startTime} -{' '}
+                      {currentRegularSlot.endTime}
+                    </Text>
+                  ) : (
+                    <Text style={styles.pricingDetails}>目前不在一般時段</Text>
+                  )}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.pricingCard}>
+                <Text style={styles.pricingAmount}>
+                  <NumberFormatter number={~~todayPricing.discountRate} />
+                  元/小時
+                </Text>
+                <Text style={styles.pricingDetails}>優惠時段</Text>
+                <Text style={styles.pricingDetails}>
+                  {currentDiscountSlot ? (
+                    <Text style={styles.pricingDetails}>
+                      目前時段：{currentDiscountSlot.startTime} -{' '}
+                      {currentDiscountSlot.endTime}
+                    </Text>
+                  ) : (
+                    <Text style={styles.pricingDetails}>目前不在優惠時段</Text>
+                  )}
+                </Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.pricingCard}>
-              <Text style={styles.pricingAmount}>
-                <NumberFormatter number={0} />
-                元/小時
-              </Text>
-              <Text style={styles.pricingDetails}>一般時段</Text>
-              <Text style={styles.pricingDetails}>
-                {formatTime(minRegularTime)}~{formatTime(maxRegularTime)}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.pricingCard}>
-              <Text style={styles.pricingAmount}>
-                <NumberFormatter number={0} />
-                元/小時
-              </Text>
-              <Text style={styles.pricingDetails}>優惠時段</Text>
-              <Text style={styles.pricingDetails}>
-                {formatTime(minDiscountTime)}~{formatTime(maxDiscountTime)}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          )}
 
           {/* Tables */}
           <ScrollView style={styles.tablesSection}>
