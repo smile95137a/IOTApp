@@ -79,7 +79,7 @@ const AddVendorScreen = () => {
         }
       } catch (error) {
         dispatch(hideLoading());
-        console.error('獲取使用者時發生錯誤:', error);
+        console.log('獲取使用者時發生錯誤:', error);
         Alert.alert('錯誤', '獲取使用者失敗，請稍後再試');
       }
     };

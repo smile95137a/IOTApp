@@ -16,7 +16,7 @@ export const fetchAllRoles = async (): Promise<any> => {
     console.log(`[Role API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Role API] Error fetching roles:`, error);
+    console.log(`[Role API] Error fetching roles:`, error);
     throw error;
   }
 };
@@ -30,7 +30,7 @@ export const fetchRoleById = async (roleId: number): Promise<any> => {
     const response = await api.get(url);
     return response.data;
   } catch (error) {
-    console.error(`[Role API] Error fetching role by ID:`, error);
+    console.log(`[Role API] Error fetching role by ID:`, error);
     throw error;
   }
 };
@@ -44,7 +44,7 @@ export const createRole = async (role: any): Promise<any> => {
     const response = await api.post(url, role);
     return response.data;
   } catch (error) {
-    console.error(`[Role API] Error creating role:`, error);
+    console.log(`[Role API] Error creating role:`, error);
     throw error;
   }
 };
@@ -58,7 +58,7 @@ export const updateRole = async (roleId: number, role: any): Promise<any> => {
     const response = await api.put(url, role);
     return response.data;
   } catch (error) {
-    console.error(`[Role API] Error updating role:`, error);
+    console.log(`[Role API] Error updating role:`, error);
     throw error;
   }
 };
@@ -72,7 +72,7 @@ export const deleteRole = async (roleId: number): Promise<any> => {
     const response = await api.delete(url);
     return response.data;
   } catch (error) {
-    console.error(`[Role API] Error deleting role:`, error);
+    console.log(`[Role API] Error deleting role:`, error);
     throw error;
   }
 };
@@ -89,7 +89,7 @@ export const assignMenusToRole = async (
     const response = await api.post(url, { menuIds });
     return response.data;
   } catch (error) {
-    console.error(`[Role API] Error assigning menus to role:`, error);
+    console.log(`[Role API] Error assigning menus to role:`, error);
     throw error;
   }
 };
@@ -103,7 +103,7 @@ export const fetchMenusByRole = async (roleId: number): Promise<any> => {
     const response = await api.get(url);
     return response.data;
   } catch (error) {
-    console.error(`[Role API] Error fetching menus by role:`, error);
+    console.log(`[Role API] Error fetching menus by role:`, error);
     throw error;
   }
 };

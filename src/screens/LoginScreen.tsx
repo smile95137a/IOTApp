@@ -71,7 +71,7 @@ const LoginScreen = ({ route, navigation }: any) => {
       }
     } catch (error) {
       dispatch(hideLoading());
-      console.error(`[Login] Error:`, error);
+      console.log(`[Login] Error:`, error);
       Alert.alert('錯誤', '無法連線到伺服器');
     }
   };

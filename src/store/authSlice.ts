@@ -63,7 +63,7 @@ export const loadAuthState = () => async (dispatch: AppDispatch) => {
       dispatch(setAuth({ token, user }));
     }
   } catch (error) {
-    console.error('[Auth] Failed to load auth state:', error);
+    console.log('[Auth] Failed to load auth state:', error);
   }
 };
 export default authSlice.reducer;

@@ -34,7 +34,7 @@ export const fetchUserTransactions = async (): Promise<
     console.log(`[Transaction API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Transaction API] Error fetching user transactions:`, error);
+    console.log(`[Transaction API] Error fetching user transactions:`, error);
     throw error;
   }
 };
@@ -54,7 +54,7 @@ export const fetchTransactionsByDateRange = async (
     console.log(`[Transaction API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(
+    console.log(
       `[Transaction API] Error fetching transactions by date range:`,
       error
     );
@@ -76,7 +76,7 @@ export const fetchTransactionsByType = async (
     console.log(`[Transaction API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(
+    console.log(
       `[Transaction API] Error fetching transactions by type:`,
       error
     );
@@ -96,7 +96,7 @@ export const fetchTransactionsByAmount = async (
     console.log(`[Transaction API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(
+    console.log(
       `[Transaction API] Error fetching transactions by amount:`,
       error
     );

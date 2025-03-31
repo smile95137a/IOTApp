@@ -65,11 +65,11 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         if (success) {
           setTables(data);
         } else {
-          console.error(`API 回應失敗: 未能獲取桌台數據`);
+          console.log(`API 回應失敗: 未能獲取桌台數據`);
         }
       } catch (error) {
         dispatch(hideLoading());
-        console.error('Failed to fetch pool tables:', error);
+        console.log('Failed to fetch pool tables:', error);
       }
     };
 
@@ -93,7 +93,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         console.log('Share dismissed');
       }
     } catch (error) {
-      console.error('Error sharing: ', error);
+      console.log('Error sharing: ', error);
     }
   };
 
@@ -107,10 +107,10 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
       if (supported) {
         await Linking.openURL(phoneNumber);
       } else {
-        console.error('不支援撥打此電話:', phoneNumber);
+        console.log('不支援撥打此電話:', phoneNumber);
       }
     } catch (err) {
-      console.error('發生錯誤:', err);
+      console.log('發生錯誤:', err);
     } finally {
       dispatch(hideLoading());
     }

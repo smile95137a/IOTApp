@@ -20,7 +20,7 @@ export const fetchAllTableEquipments = async (): Promise<
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error fetching table equipments:`, error);
+    console.log(`[Equipment API] Error fetching table equipments:`, error);
     throw error;
   }
 };
@@ -39,7 +39,7 @@ export const fetchAllStoreEquipments = async (): Promise<
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error fetching store equipments:`, error);
+    console.log(`[Equipment API] Error fetching store equipments:`, error);
     throw error;
   }
 };
@@ -66,7 +66,7 @@ export const fetchTableEquipmentById = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error fetching table equipment:`, error);
+    console.log(`[Equipment API] Error fetching table equipment:`, error);
     throw error;
   }
 };
@@ -85,7 +85,7 @@ export const fetchStoreEquipmentById = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error fetching store equipment:`, error);
+    console.log(`[Equipment API] Error fetching store equipment:`, error);
     throw error;
   }
 };
@@ -104,7 +104,7 @@ export const createTableEquipment = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error creating table equipment:`, error);
+    console.log(`[Equipment API] Error creating table equipment:`, error);
     throw error;
   }
 };
@@ -124,7 +124,7 @@ export const updateTableEquipment = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error updating table equipment:`, error);
+    console.log(`[Equipment API] Error updating table equipment:`, error);
     throw error;
   }
 };
@@ -143,7 +143,7 @@ export const createStoreEquipment = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error creating store equipment:`, error);
+    console.log(`[Equipment API] Error creating store equipment:`, error);
     throw error;
   }
 };
@@ -163,7 +163,7 @@ export const updateStoreEquipment = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error updating store equipment:`, error);
+    console.log(`[Equipment API] Error updating store equipment:`, error);
     throw error;
   }
 };
@@ -182,7 +182,7 @@ export const deleteTableEquipment = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error deleting table equipment:`, error);
+    console.log(`[Equipment API] Error deleting table equipment:`, error);
     throw error;
   }
 };
@@ -201,7 +201,7 @@ export const deleteStoreEquipment = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error deleting store equipment:`, error);
+    console.log(`[Equipment API] Error deleting store equipment:`, error);
     throw error;
   }
 };
@@ -221,7 +221,7 @@ export const updateTableEquipmentStatus = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(
+    console.log(
       `[Equipment API] Error updating table equipment status:`,
       error
     );
@@ -244,7 +244,7 @@ export const updateStoreEquipmentStatus = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(
+    console.log(
       `[Equipment API] Error updating store equipment status:`,
       error
     );
@@ -264,7 +264,7 @@ export const fetchTableEquipmentsByTableId = async (
     console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Equipment API] Error fetching table equipments:`, error);
+    console.log(`[Equipment API] Error fetching table equipments:`, error);
     throw error;
   }
 };

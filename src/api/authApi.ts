@@ -31,7 +31,7 @@ export const loginUser = async (loginData: {
 
     return response.data;
   } catch (error) {
-    console.error(`[Login] Error during request to ${url}:`, error);
+    console.log(`[Login] Error during request to ${url}:`, error);
     throw error;
   }
 };

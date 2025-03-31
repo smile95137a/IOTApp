@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '@/screens/LoginScreen';
 import RegisterScreen from '@/screens/RegisterScreen';
 import LoginHomeScreen from '@/screens/LoginHomeScreen';
-import PersonalInformationScreen from '@/screens/PersonalInformationScreen';
+import RegisterPersonalInformationScreen from '@/screens/RegisterPersonalInformationScreen';
 import ForgotPasswordScreen from '@/screens/ForgotPasswordScreen';
 import ResetPasswordScreen from '@/screens/ResetPasswordScreen';
 
@@ -17,7 +17,10 @@ const AuthStackNavigator = () => {
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
-      <Stack.Screen name="PersonalInfo" component={PersonalInformationScreen} />
+      <Stack.Screen
+        name="PersonalInfo"
+        component={RegisterPersonalInformationScreen}
+      />
     </Stack.Navigator>
   );
 };

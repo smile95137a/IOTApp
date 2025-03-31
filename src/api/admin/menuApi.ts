@@ -28,7 +28,7 @@ export const fetchAllMenus = async (): Promise<ApiResponse<Menu[]>> => {
     console.log(`[Menu API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Menu API] Error fetching all menus:`, error);
+    console.log(`[Menu API] Error fetching all menus:`, error);
     throw error;
   }
 };
@@ -47,7 +47,7 @@ export const fetchMenuById = async (
     console.log(`[Menu API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Menu API] Error fetching menu by ID:`, error);
+    console.log(`[Menu API] Error fetching menu by ID:`, error);
     throw error;
   }
 };
@@ -66,7 +66,7 @@ export const createMenus = async (
     console.log(`[Menu API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Menu API] Error creating menus:`, error);
+    console.log(`[Menu API] Error creating menus:`, error);
     throw error;
   }
 };
@@ -86,7 +86,7 @@ export const updateMenu = async (
     console.log(`[Menu API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Menu API] Error updating menu:`, error);
+    console.log(`[Menu API] Error updating menu:`, error);
     throw error;
   }
 };
@@ -105,7 +105,7 @@ export const deleteMenu = async (
     console.log(`[Menu API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Menu API] Error deleting menu:`, error);
+    console.log(`[Menu API] Error deleting menu:`, error);
     throw error;
   }
 };

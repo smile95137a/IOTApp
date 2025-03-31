@@ -16,7 +16,7 @@ export const fetchGameOrders = async (): Promise<ApiResponse<any[]>> => {
     console.log(`[GameOrder API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[GameOrder API] Error fetching game orders:`, error);
+    console.log(`[GameOrder API] Error fetching game orders:`, error);
     throw error;
   }
 };

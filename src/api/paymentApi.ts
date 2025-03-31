@@ -28,7 +28,7 @@ export const topUp = async (
     console.log(`[Payment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Payment API] Error processing top-up:`, error);
+    console.log(`[Payment API] Error processing top-up:`, error);
     throw error;
   }
 };

@@ -42,7 +42,7 @@ const AddBannerScreen = () => {
         const response = await fetchAllNews();
         setNewsList(response.data || []);
       } catch (error) {
-        console.error('Error fetching news:', error);
+        console.log('Error fetching news:', error);
       }
     };
     loadNews();

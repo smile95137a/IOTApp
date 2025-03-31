@@ -35,7 +35,7 @@ export const fetchUserTransactionRecord = async (): Promise<
     console.log(`[TransactionRecord API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(
+    console.log(
       `[TransactionRecord API] Error fetching user transactions:`,
       error
     );

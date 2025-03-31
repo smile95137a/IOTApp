@@ -156,7 +156,7 @@ const MonitorManagementScreen = ({ navigation }) => {
             }
           } catch (error) {
             dispatch(hideLoading());
-            console.error('刪除監視器失敗:', error);
+            console.log('刪除監視器失敗:', error);
             Alert.alert('錯誤', '發生錯誤，請稍後再試');
           }
         },
@@ -212,7 +212,7 @@ const MonitorManagementScreen = ({ navigation }) => {
       loadMonitors();
       console.log('設備狀態更新成功！');
     } catch (error) {
-      console.error('更新設備狀態失敗:', error);
+      console.log('更新設備狀態失敗:', error);
       updatedMonitors[index].status = !newStatus;
       setMonitors([...updatedMonitors]);
       Alert.alert('錯誤', '無法更新設備狀態，請稍後再試');

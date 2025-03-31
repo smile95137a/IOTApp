@@ -21,7 +21,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 const RegisterScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch();
 
-  const pickerRef = useRef<RNPickerSelect>(null);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [email, setEmail] = useState('');
   const [countryCode, setCountryCode] = useState('+886');

@@ -23,8 +23,8 @@ const AddPromotionScreen = ({ route, navigation }) => {
     launchImageLibrary({ mediaType: 'photo' }, (response) => {
       if (response.didCancel) {
         Alert.alert('取消', '您已取消選擇圖片');
-      } else if (response.errorMessage) {
-        Alert.alert('錯誤', response.errorMessage);
+      } else if (response.logMessage) {
+        Alert.alert('錯誤', response.logMessage);
       } else {
         const uri = response.assets[0]?.uri;
         setImageUri(uri);

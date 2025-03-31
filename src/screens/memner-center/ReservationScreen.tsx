@@ -46,7 +46,7 @@ const ReservationScreen = ({ navigation }) => {
       }
     } catch (error) {
       dispatch(hideLoading());
-      console.error('Error fetching pool table:', error);
+      console.log('Error fetching pool table:', error);
     }
   };
   const handleConfirmPayment = () => {

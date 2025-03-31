@@ -29,7 +29,7 @@ export const fetchAllNews = async (): Promise<ApiResponse<News[]>> => {
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error fetching all news:`, error);
+    console.log(`[News API] Error fetching all news:`, error);
     throw error;
   }
 };
@@ -46,7 +46,7 @@ export const fetchNewsById = async (
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error fetching news by ID:`, error);
+    console.log(`[News API] Error fetching news by ID:`, error);
     throw error;
   }
 };
@@ -63,7 +63,7 @@ export const fetchNewsByStatus = async (
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error fetching news by status:`, error);
+    console.log(`[News API] Error fetching news by status:`, error);
     throw error;
   }
 };
@@ -78,7 +78,7 @@ export const fetchAllNewsNoUser = async (): Promise<ApiResponse<News[]>> => {
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error fetching all news (no user):`, error);
+    console.log(`[News API] Error fetching all news (no user):`, error);
     throw error;
   }
 };
@@ -95,7 +95,7 @@ export const fetchNewsByIdNoUser = async (
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error fetching news by ID (no user):`, error);
+    console.log(`[News API] Error fetching news by ID (no user):`, error);
     throw error;
   }
 };
@@ -112,7 +112,7 @@ export const fetchNewsByStatusNoUser = async (
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error fetching news by status (no user):`, error);
+    console.log(`[News API] Error fetching news by status (no user):`, error);
     throw error;
   }
 };

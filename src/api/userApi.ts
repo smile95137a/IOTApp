@@ -35,7 +35,7 @@ export const fetchUserInfo = async (): Promise<ApiResponse<User>> => {
     console.log(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[User API] Error fetching user info:`, error);
+    console.log(`[User API] Error fetching user info:`, error);
     throw error;
   }
 };
@@ -55,7 +55,7 @@ export const registerUser = async (
     console.log(`[User API] Registration Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[User API] Error registering user:`, error);
+    console.log(`[User API] Error registering user:`, error);
     throw error;
   }
 };
@@ -75,7 +75,7 @@ export const updateUser = async (
     console.log(`[User API] Update Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[User API] Error updating user:`, error);
+    console.log(`[User API] Error updating user:`, error);
     throw error;
   }
 };
@@ -96,7 +96,7 @@ export const resetPassword = async (userReq: {
     console.log(`[User API] Reset Password Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[User API] Error resetting password:`, error);
+    console.log(`[User API] Error resetting password:`, error);
     throw error;
   }
 };
@@ -132,7 +132,7 @@ export const uploadProfileImage = async (
     console.log(`[User API] Profile Image Upload Success:`, response.data);
     return response.status === 200;
   } catch (error) {
-    console.error(`[User API] Error uploading profile image:`, error);
+    console.log(`[User API] Error uploading profile image:`, error);
     return false;
   }
 };

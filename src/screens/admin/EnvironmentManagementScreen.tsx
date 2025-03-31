@@ -200,7 +200,7 @@ const EnvironmentManagementScreen = ({ navigation }) => {
       loadVendors();
       console.log('設備狀態更新成功！');
     } catch (error) {
-      console.error('更新設備狀態失敗:', error);
+      console.log('更新設備狀態失敗:', error);
       updatedEquipments[index].enabled = !newStatus;
       setEquipments([...updatedEquipments]);
       Alert.alert('錯誤', '無法更新設備狀態，請稍後再試');

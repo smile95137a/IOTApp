@@ -16,7 +16,7 @@ export const fetchReportData = async (reportRequest: any): Promise<any> => {
     console.log(`[Report API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Report API] Error fetching report data:`, error);
+    console.log(`[Report API] Error fetching report data:`, error);
     throw error;
   }
 };

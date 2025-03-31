@@ -35,7 +35,7 @@ export const fetchAllNews = async (): Promise<ApiResponse<News[]>> => {
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error fetching all news:`, error);
+    console.log(`[News API] Error fetching all news:`, error);
     throw error;
   }
 };
@@ -54,7 +54,7 @@ export const fetchNewsById = async (
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error fetching news by ID:`, error);
+    console.log(`[News API] Error fetching news by ID:`, error);
     throw error;
   }
 };
@@ -73,7 +73,7 @@ export const fetchNewsByStatus = async (
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error fetching news by status:`, error);
+    console.log(`[News API] Error fetching news by status:`, error);
     throw error;
   }
 };
@@ -92,7 +92,7 @@ export const createNews = async (
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error creating news:`, error);
+    console.log(`[News API] Error creating news:`, error);
     throw error;
   }
 };
@@ -113,7 +113,7 @@ export const updateNews = async (
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error updating news:`, error);
+    console.log(`[News API] Error updating news:`, error);
     throw error;
   }
 };
@@ -132,7 +132,7 @@ export const deleteNewsById = async (
     console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[News API] Error deleting news:`, error);
+    console.log(`[News API] Error deleting news:`, error);
     throw error;
   }
 };
@@ -166,7 +166,7 @@ export const uploadNewsImages = async (
     console.log(`[NEWS API] Profile Image Upload Success:`, response.data);
     return response.status === 200;
   } catch (error) {
-    console.error(`[NEWS API] Error uploading profile image:`, error);
+    console.log(`[NEWS API] Error uploading profile image:`, error);
     return false;
   }
 };

@@ -29,7 +29,7 @@ export const fetchAllPoolTables = async (): Promise<
     console.log(`[PoolTable API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[PoolTable API] Error fetching all pool tables:`, error);
+    console.log(`[PoolTable API] Error fetching all pool tables:`, error);
     throw error;
   }
 };
@@ -46,10 +46,7 @@ export const fetchPoolTablesByStoreId = async (
     console.log(`[PoolTable API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(
-      `[PoolTable API] Error fetching pool tables for store:`,
-      error
-    );
+    console.log(`[PoolTable API] Error fetching pool tables for store:`, error);
     throw error;
   }
 };
@@ -70,7 +67,7 @@ export const fetchPoolTableByUid = async (
     console.log(`[PoolTable API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(
+    console.log(
       `[PoolTable API] Error fetching pool table by UID ${uid}:`,
       error
     );
@@ -96,7 +93,7 @@ export const createPoolTable = async (poolTable: {
     console.log(`[PoolTable API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[PoolTable API] Error creating pool table:`, error);
+    console.log(`[PoolTable API] Error creating pool table:`, error);
     throw error;
   }
 };
@@ -125,7 +122,7 @@ export const updatePoolTable = async (
     console.log(`[PoolTable API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(
+    console.log(
       `[PoolTable API] Error updating pool table with UID ${uid}:`,
       error
     );
@@ -152,7 +149,7 @@ export const deletePoolTable = async (
     );
     return response.data;
   } catch (error) {
-    console.error(
+    console.log(
       `[PoolTable API] Error deleting pool table with UID ${uid}:`,
       error
     );

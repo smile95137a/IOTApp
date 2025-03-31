@@ -26,7 +26,7 @@ import { setAuth } from '@/store/authSlice';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
 
-const PersonalInfoScreen = ({ route, navigation }: any) => {
+const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   const genderOptions = [
     { label: '男', value: 'male' },
     { label: '女', value: 'female' },
@@ -119,41 +119,36 @@ const PersonalInfoScreen = ({ route, navigation }: any) => {
         return;
       }
 
-      console.log('[Register] 註冊成功:', data);
       const userId = data.id;
 
       if (profileImage) {
-        console.log('[Upload] 開始上傳頭像...');
         const uploadSuccess = await uploadProfileImage(userId, profileImage);
         if (!uploadSuccess) {
-          console.warn('[Upload] 頭像上傳失敗');
           Alert.alert('錯誤', '頭像上傳失敗，請稍後重試');
-        } else {
-          console.log('[Upload] 頭像上傳成功');
         }
       }
 
-      console.log('[Login] 嘗試自動登入...');
       const loginResult = await loginUser({ type: 'email', email, password });
 
-      if (loginResult.success) {
-        console.log('[Login] 自動登入成功:', loginResult.data.user);
-        Alert.alert('成功', '註冊並登入成功');
-        const { accessToken, user } = loginResult.data;
-        dispatch(setAuth({ token: accessToken, user }));
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Main' }],
-        });
-      } else {
-        console.warn('[Login] 自動登入失敗:', loginResult.message);
-        Alert.alert('錯誤', '自動登入失敗，請手動登入');
+      if (!loginResult.success) {
+        console.warn('[Login] 登入失敗:', loginResult.message);
+        Alert.alert('登入失敗', '帳號已建立，請手動登入');
+        return;
       }
+      console.log('[Login] 登入成功:', loginResult.data.user);
+      const { accessToken, user } = loginResult.data;
+      dispatch(setAuth({ token: accessToken, user }));
+      Alert.alert('註冊成功', '歡迎加入！');
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Main' }],
+      });
 
       dispatch(hideLoading());
     } catch (error) {
       dispatch(hideLoading());
-      console.error('[Error]', error);
+      console.log('[Error]', error);
       Alert.alert('錯誤', '發生未知錯誤，請稍後再試');
     }
   };
@@ -448,4 +443,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PersonalInfoScreen;
+export default RegisterPersonalInformationScreen;

@@ -18,7 +18,7 @@ export const createMonitor = async (monitorReq) => {
     console.log(`[Monitor API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Monitor API] Error creating monitor:`, error);
+    console.log(`[Monitor API] Error creating monitor:`, error);
     throw error;
   }
 };
@@ -35,7 +35,7 @@ export const updateMonitor = async (monitorUpdateReq) => {
     console.log(`[Monitor API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Monitor API] Error updating monitor:`, error);
+    console.log(`[Monitor API] Error updating monitor:`, error);
     throw error;
   }
 };
@@ -52,7 +52,7 @@ export const getMonitorsByStoreId = async (storeUid) => {
     console.log(`[Monitor API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Monitor API] Error fetching monitors for store:`, error);
+    console.log(`[Monitor API] Error fetching monitors for store:`, error);
     throw error;
   }
 };
@@ -69,7 +69,7 @@ export const deleteMonitor = async (id) => {
     console.log(`[Monitor API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Monitor API] Error deleting monitor:`, error);
+    console.log(`[Monitor API] Error deleting monitor:`, error);
     throw error;
   }
 };

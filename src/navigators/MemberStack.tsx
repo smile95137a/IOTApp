@@ -66,7 +66,7 @@ const MainLayout = ({ children }) => {
         } catch (error) {
           dispatch(hideLoading());
 
-          console.error('[User Info] Fetch error:', error);
+          console.log('[User Info] Fetch error:', error);
         }
       };
 

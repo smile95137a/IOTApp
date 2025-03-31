@@ -50,7 +50,7 @@ const ResetPasswordScreen = ({ navigation }: any) => {
         Alert.alert('錯誤', response.message || '請檢查您的舊密碼');
       }
     } catch (error) {
-      console.error(`[ResetPassword] Error:`, error);
+      console.log(`[ResetPassword] Error:`, error);
       Alert.alert('錯誤', '無法連線到伺服器');
     }
   };

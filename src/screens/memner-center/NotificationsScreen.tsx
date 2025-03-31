@@ -23,7 +23,7 @@ const NotificationsScreen = ({ navigation }: any) => {
         const response = await fetchAllNews();
         setNotifications(response.data);
       } catch (error) {
-        console.error('Error fetching news:', error);
+        console.log('Error fetching news:', error);
       }
     };
 

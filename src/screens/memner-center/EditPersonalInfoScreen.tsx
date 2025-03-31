@@ -135,7 +135,7 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
       });
     } catch (error) {
       dispatch(hideLoading());
-      console.error('[Error]', error);
+      console.log('[Error]', error);
       Alert.alert('錯誤', '發生未知錯誤，請稍後再試');
     }
   };
@@ -157,7 +157,7 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
           }
         } catch (error) {
           dispatch(hideLoading());
-          console.error('[User Info] Fetch error:', error);
+          console.log('[User Info] Fetch error:', error);
         }
       };
 

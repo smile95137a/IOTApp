@@ -35,7 +35,7 @@ export const fetchAllStores = async (): Promise<ApiResponse<Store[]>> => {
     console.log(`[Store API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Store API] Error fetching all stores:`, error);
+    console.log(`[Store API] Error fetching all stores:`, error);
     throw error;
   }
 };
@@ -55,7 +55,7 @@ export const fetchStoreByUid = async (
     console.log(`[Store API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Store API] Error fetching store by UID ${uid}:`, error);
+    console.log(`[Store API] Error fetching store by UID ${uid}:`, error);
     throw error;
   }
 };
@@ -75,7 +75,7 @@ export const createStore = async (
     console.log(`[Store API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Store API] Error creating store:`, error);
+    console.log(`[Store API] Error creating store:`, error);
     throw error;
   }
 };
@@ -97,7 +97,7 @@ export const updateStore = async (
     console.log(`[Store API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Store API] Error updating store with UID ${uid}:`, error);
+    console.log(`[Store API] Error updating store with UID ${uid}:`, error);
     throw error;
   }
 };
@@ -115,7 +115,7 @@ export const deleteStore = async (uid: string): Promise<ApiResponse<void>> => {
     console.log(`[Store API] Store with UID ${uid} deleted successfully.`);
     return response.data;
   } catch (error) {
-    console.error(`[Store API] Error deleting store with UID ${uid}:`, error);
+    console.log(`[Store API] Error deleting store with UID ${uid}:`, error);
     throw error;
   }
 };
@@ -149,7 +149,7 @@ export const uploadStoreImages = async (
     console.log(`[Store API] Profile Image Upload Success:`, response.data);
     return response.status === 200;
   } catch (error) {
-    console.error(`[Store API] Error uploading profile image:`, error);
+    console.log(`[Store API] Error uploading profile image:`, error);
     return false;
   }
 };
@@ -164,7 +164,7 @@ export const fetchStoresByVendorId = async (
     console.log(`[Store API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`[Store API] Error fetching stores by vendor ID:`, error);
+    console.log(`[Store API] Error fetching stores by vendor ID:`, error);
     throw error;
   }
 };
