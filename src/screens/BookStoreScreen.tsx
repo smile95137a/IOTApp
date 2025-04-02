@@ -2,8 +2,8 @@ import { fetchAllStores } from '@/api/storeApi';
 import Header from '@/component/Header';
 import ImageCarousel from '@/component/ImageCarousel';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
-import { AppDispatch } from '@/store/store';
-import React, { useEffect, useState } from 'react';
+import { AppDispatch, RootState } from '@/store/store';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,14 +15,18 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Location from 'expo-location';
 import { findNearestStores } from '@/utils/LocationUtils';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { LinearGradient } from 'expo-linear-gradient';
+import { fetchUserInfo } from '@/api/userApi';
+import { setUser } from '@/store/userSlice';
+import { useFocusEffect } from '@react-navigation/native';
 
 const StoreScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
+
   const [stores, setStores] = useState<any[]>([]);
   const [isLoadGps, setIsLoadGps] = useState(false);
   const [locationData, setLocationData] = useState<{
@@ -30,7 +34,14 @@ const StoreScreen = ({ navigation }: any) => {
     longitude?: number;
   }>({});
   const [nearStores, setNearStores] = useState<any[]>([]);
-
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+  useFocusEffect(
+    useCallback(() => {
+      if (!isLoggedIn) {
+        navigation.navigate('Auth');
+      }
+    }, [])
+  );
   useEffect(() => {
     loadStores();
     getUserLocation();
@@ -100,8 +111,8 @@ const StoreScreen = ({ navigation }: any) => {
       >
         <View style={styles.container}>
           <Header title="門市探索" isDarkMode />
-          <ImageCarousel />
           <ScrollView contentContainerStyle={styles.storeList}>
+            <ImageCarousel />
             {nearStores.map((item) => (
               <TouchableOpacity
                 key={item.id}

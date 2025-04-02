@@ -12,12 +12,18 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { fetchPoolTableByUid } from '@/api/poolTableAPI';
 import { decryptData } from '@/utils/cryptoUtils';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { getGamePrice } from '@/api/gameApi';
+import { logJson } from '@/utils/logJsonUtils';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store/store';
+import { showLoading, hideLoading } from '@/store/loadingSlice';
 
 const { width, height } = Dimensions.get('window');
 const SCAN_BOX_SIZE = 250;
 
 const CameraScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch<AppDispatch>();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const scanAnim = useRef(new Animated.Value(0)).current;
@@ -78,17 +84,47 @@ const CameraScreen = () => {
       const tableUid = decryptData(data);
       const response = await fetchPoolTableByUid(tableUid);
       if (response.success) {
-        Alert.alert('已掃描到', '前往開台', [
-          {
-            text: '確定',
-            onPress: () => {
-              (navigation as any).navigate('Member', {
-                screen: 'Reservation',
-                params: { tableUid },
-              });
+        if (response.data.gameId) {
+          Alert.alert('已掃描到', '是否前往付款', [
+            {
+              text: '確定',
+              onPress: async () => {
+                dispatch(showLoading());
+                const { success, data, message } = await getGamePrice({
+                  gameId: response.data.gameId,
+                });
+                dispatch(hideLoading());
+                if (success) {
+                  (navigation as any).navigate('Member', {
+                    screen: 'Payment',
+                    params: {
+                      type: 'gameEnd',
+                      payData: {
+                        gameId: response.data.gameId,
+                        poolTableId: response.data.poolTableId,
+                      },
+                      totalAmount: data.price,
+                    },
+                  });
+                } else {
+                  Alert.alert('錯誤', message || '無法載入店家資訊');
+                }
+              },
             },
-          },
-        ]);
+          ]);
+        } else {
+          Alert.alert('已掃描到', '前往開台', [
+            {
+              text: '確定',
+              onPress: () => {
+                (navigation as any).navigate('Member', {
+                  screen: 'Reservation',
+                  params: { tableUid },
+                });
+              },
+            },
+          ]);
+        }
       } else {
         Alert.alert('錯誤', response.message || '無法獲取桌檯資訊', [
           {

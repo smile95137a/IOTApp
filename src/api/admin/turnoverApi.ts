@@ -12,14 +12,14 @@ const basePath = `/api/b/turnover`;
  */
 export const fetchTurnover = async (): Promise<ApiResponse<string>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Turnover API] Fetching turnover from: ${url}`);
+  console.log(`[Turnover API] Fetching turnover from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Turnover API] Response:`, response.data);
+    console.log(`[Turnover API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Turnover API] Error fetching turnover:`, error);
+    console.log(`[Turnover API] Error fetching turnover:`, error);
     throw error;
   }
 };

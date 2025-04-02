@@ -14,14 +14,14 @@ const basePath = `/news`;
 // 獲取所有新聞
 export const fetchAllNews = async (): Promise<ApiResponse<News[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[News API] Fetching all news from: ${url}`);
+  console.log(`[News API] Fetching all news from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[News API] Response:`, response.data);
+    console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[News API] Error fetching all news:`, error);
+    console.log(`[News API] Error fetching all news:`, error);
     throw error;
   }
 };
@@ -31,14 +31,14 @@ export const fetchNewsById = async (
   newsUid: string
 ): Promise<ApiResponse<News>> => {
   const url = `${API_BASE_URL}${basePath}/${newsUid}`;
-  logJson(`[News API] Fetching news by ID from: ${url}`);
+  console.log(`[News API] Fetching news by ID from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[News API] Response:`, response.data);
+    console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[News API] Error fetching news by ID:`, error);
+    console.log(`[News API] Error fetching news by ID:`, error);
     throw error;
   }
 };
@@ -48,14 +48,14 @@ export const fetchNewsByStatus = async (
   status: string
 ): Promise<ApiResponse<News[]>> => {
   const url = `${API_BASE_URL}${basePath}/status/${status}`;
-  logJson(`[News API] Fetching news by status from: ${url}`);
+  console.log(`[News API] Fetching news by status from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[News API] Response:`, response.data);
+    console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[News API] Error fetching news by status:`, error);
+    console.log(`[News API] Error fetching news by status:`, error);
     throw error;
   }
 };
@@ -63,14 +63,14 @@ export const fetchNewsByStatus = async (
 // 獲取所有新聞（不考慮用戶登入狀態）
 export const fetchAllNewsNoUser = async (): Promise<ApiResponse<News[]>> => {
   const url = `${API_BASE_URL}${basePath}/query`;
-  logJson(`[News API] Fetching all news (no user) from: ${url}`);
+  console.log(`[News API] Fetching all news (no user) from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[News API] Response:`, response.data);
+    console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[News API] Error fetching all news (no user):`, error);
+    console.log(`[News API] Error fetching all news (no user):`, error);
     throw error;
   }
 };
@@ -80,14 +80,14 @@ export const fetchNewsByIdNoUser = async (
   newsUid: string
 ): Promise<ApiResponse<News>> => {
   const url = `${API_BASE_URL}${basePath}/query/${newsUid}`;
-  logJson(`[News API] Fetching news by ID (no user) from: ${url}`);
+  console.log(`[News API] Fetching news by ID (no user) from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[News API] Response:`, response.data);
+    console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[News API] Error fetching news by ID (no user):`, error);
+    console.log(`[News API] Error fetching news by ID (no user):`, error);
     throw error;
   }
 };
@@ -97,14 +97,14 @@ export const fetchNewsByStatusNoUser = async (
   status: string
 ): Promise<ApiResponse<News[]>> => {
   const url = `${API_BASE_URL}${basePath}/query/status/${status}`;
-  logJson(`[News API] Fetching news by status (no user) from: ${url}`);
+  console.log(`[News API] Fetching news by status (no user) from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[News API] Response:`, response.data);
+    console.log(`[News API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[News API] Error fetching news by status (no user):`, error);
+    console.log(`[News API] Error fetching news by status (no user):`, error);
     throw error;
   }
 };

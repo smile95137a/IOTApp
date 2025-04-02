@@ -113,12 +113,12 @@ const VendorManagementScreen = () => {
                   <TouchableOpacity
                     key={item.uid}
                     style={styles.cardWrapper}
-                    onPress={() =>
-                      navigation.navigate('StoreManagementStack', {
-                        screen: 'StoreManagement',
-                        params: { vendor: item }, // 若有要傳資料
-                      })
-                    }
+                    onPress={() => {
+                      setVisibleMenuId(null);
+                      navigation.navigate('AddVendor', {
+                        vendor: item,
+                      });
+                    }}
                   >
                     <Image
                       source={require('@/assets/iot-logo-black.png')}

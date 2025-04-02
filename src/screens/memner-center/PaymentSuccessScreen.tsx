@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 40,
     paddingVertical: 12,
+    marginBottom: 40,
   },
   startGameText: {
     fontSize: 18,

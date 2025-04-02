@@ -25,14 +25,14 @@ export interface Banner {
  */
 export const fetchAllBanners = async (): Promise<ApiResponse<Banner[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Banner API] Fetching all banners from: ${url}`);
+  console.log(`[Banner API] Fetching all banners from: ${url}`);
 
   try {
     const response = await api.get<ApiResponse<Banner[]>>(url);
-    logJson(`[Banner API] Response:`, response.data);
+    console.log(`[Banner API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Banner API] Error fetching banners:`, error);
+    console.log(`[Banner API] Error fetching banners:`, error);
     throw error;
   }
 };

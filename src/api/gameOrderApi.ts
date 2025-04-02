@@ -10,14 +10,14 @@ const basePath = `/game-order`;
 // 取得使用者的遊戲訂單紀錄
 export const fetchGameOrders = async (): Promise<ApiResponse<any[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[GameOrder API] Fetching game orders from: ${url}`);
+  console.log(`[GameOrder API] Fetching game orders from: ${url}`);
 
   try {
     const response = await api.get<ApiResponse<any[]>>(url);
-    logJson(`[GameOrder API] Response:`, response.data);
+    console.log(`[GameOrder API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[GameOrder API] Error fetching game orders:`, error);
+    console.log(`[GameOrder API] Error fetching game orders:`, error);
     throw error;
   }
 };

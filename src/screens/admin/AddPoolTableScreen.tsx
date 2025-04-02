@@ -107,8 +107,6 @@ const AddPoolTableScreen = () => {
           Alert.alert('錯誤', message || '更新失敗');
         }
       } else {
-        console.log('))))))))))(((((((', poolTableData);
-
         const { success, message } = await createPoolTable(poolTableData);
         dispatch(hideLoading());
 

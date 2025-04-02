@@ -16,14 +16,14 @@ const basePath = `/stores`;
  */
 export const fetchAllStores = async (): Promise<ApiResponse<Store[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Store API] Fetching all stores from: ${url}`);
+  console.log(`[Store API] Fetching all stores from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Store API] Response:`, response.data);
+    console.log(`[Store API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Store API] Error fetching stores:`, error);
+    console.log(`[Store API] Error fetching stores:`, error);
     throw error;
   }
 };
@@ -36,14 +36,14 @@ export const fetchStoreByUid = async (
   uid: string
 ): Promise<ApiResponse<Store[]>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  logJson(`[Store API] Fetching store by UID: ${uid}, URL: ${url}`);
+  console.log(`[Store API] Fetching store by UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Store API] Response for UID ${uid}:`, response.data);
+    console.log(`[Store API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Store API] Error fetching store by UID ${uid}:`, error);
+    console.log(`[Store API] Error fetching store by UID ${uid}:`, error);
     throw error;
   }
 };

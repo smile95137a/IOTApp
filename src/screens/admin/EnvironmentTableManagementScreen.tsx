@@ -97,11 +97,7 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
   };
 
   const handleAddOrUpdateEquipment = async () => {
-    if (
-      !equipmentName.trim() ||
-      !autoStartTime.trim() ||
-      !autoStopTime.trim()
-    ) {
+    if (!equipmentName.trim()) {
       Alert.alert('錯誤', '請填寫完整設備資訊');
       return;
     }
@@ -279,28 +275,6 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
                   onValueChange={() => toggleSwitch(index)}
                 />
               </View>
-              {/* 時間設置 */}
-              <View style={styles.timeRow}>
-                <Text style={styles.timeLabel}>自動啟閉：</Text>
-                <TouchableOpacity
-                  style={styles.timeEdit}
-                  onPress={() => handleEditEquipment(index)}
-                >
-                  <Text style={styles.timeText}>{light.autoStartTime}</Text>
-                  <Icon name="edit" size={14} color="#4285F4" />
-                </TouchableOpacity>
-                <Text style={styles.timeLabel}>開啟</Text>
-                <TouchableOpacity
-                  style={styles.timeEdit}
-                  onPress={() => handleEditEquipment(index)}
-                >
-                  <Text style={styles.timeText}>{light.autoStopTime}</Text>
-                  <Icon name="edit" size={14} color="#4285F4" />
-                </TouchableOpacity>
-                <Text style={styles.timeLabel}>
-                  {light.enabled ? '開啟' : '關閉'}
-                </Text>
-              </View>
             </View>
           ))}
           <TouchableOpacity style={styles.addButton} onPress={showModal}>
@@ -319,22 +293,6 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
                 placeholder="輸入設備名稱"
                 value={equipmentName}
                 onChangeText={setEquipmentName}
-              />
-
-              <Text style={styles.modalLabel}>自動開始時間</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder="HH:mm(未開放)"
-                value={autoStartTime}
-                onChangeText={setAutoStartTime}
-              />
-
-              <Text style={styles.modalLabel}>自動結束時間</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder="HH:mm(未開放)"
-                value={autoStopTime}
-                onChangeText={setAutoStopTime}
               />
 
               <Text style={styles.modalLabel}>設備描述</Text>

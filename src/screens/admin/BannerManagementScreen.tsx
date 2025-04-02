@@ -111,14 +111,16 @@ const BannerManagementScreen = () => {
                       <Text style={styles.cardTitle}>ID: {item.bannerId}</Text>
                       <View style={styles.cardActions}>
                         <Menu
-                          visible={visibleMenuId === item.uid}
+                          visible={visibleMenuId === item.bannerId}
                           onDismiss={() => setVisibleMenuId(null)}
                           anchor={
                             <TouchableOpacity
                               style={styles.iconButton}
                               onPress={() =>
                                 setVisibleMenuId(
-                                  visibleMenuId === item.uid ? null : item.uid
+                                  visibleMenuId === item.bannerId
+                                    ? null
+                                    : item.bannerId
                                 )
                               }
                             >

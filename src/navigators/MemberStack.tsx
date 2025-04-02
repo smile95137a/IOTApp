@@ -203,6 +203,7 @@ const MemberStack = () => {
           </MainLayout>
         )}
       </Stack.Screen>
+
       <Stack.Screen name="PaymentSuccess">
         {(props) => (
           <MainLayout>

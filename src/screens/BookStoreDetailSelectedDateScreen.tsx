@@ -244,8 +244,11 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
             </View>
           )}
 
-          {/* Tables */}
-          <ScrollView style={styles.tablesSection}>
+          <ScrollView
+            style={styles.tablesSection}
+            contentContainerStyle={{ paddingBottom: 80 }}
+            showsVerticalScrollIndicator={false}
+          >
             <View
               style={{
                 paddingHorizontal: 16,

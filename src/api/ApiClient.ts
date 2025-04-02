@@ -12,8 +12,8 @@ api.interceptors.request.use(async (config) => {
   const token = await AsyncStorage.getItem('accessToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    logJson(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
-    logJson(`[API Request] Authorization: Bearer ${token}`);
+    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
+    console.log(`[API Request] Authorization: Bearer ${token}`);
   }
   return config;
 });
@@ -21,11 +21,11 @@ api.interceptors.request.use(async (config) => {
 // ✅ 在每個回應後加上 log
 api.interceptors.response.use(
   (response) => {
-    logJson(`[API Response] ${response.config.url}`, response.data);
+    console.log(`[API Response] ${response.config.url}`, response.data);
     return response;
   },
   (error) => {
-    logJson(
+    console.log(
       `[API Error] ${error.config?.url}:`,
       error.response?.data || error.message
     );

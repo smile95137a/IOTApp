@@ -20,6 +20,7 @@ import { Picker } from '@react-native-picker/picker';
 import { getImageUrl } from '@/utils/ImageUtils';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { ScrollView } from 'react-native-gesture-handler';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const AddNewsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -62,15 +63,40 @@ const AddNewsScreen = () => {
     }
   };
 
-  const pickImage = async () => {
+  const handleUploadPhoto = async () => {
+    let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permission.status !== 'granted') {
+      Alert.alert('權限不足', '請允許存取相簿權限');
+      return;
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
     });
 
-    if (!result.canceled && result.assets.length > 0) {
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  // 拍照
+  const handleTakePhoto = async () => {
+    let permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (permission.status !== 'granted') {
+      Alert.alert('權限不足', '請允許存取相機權限');
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
@@ -117,35 +143,61 @@ const AddNewsScreen = () => {
                   <Picker.Item label="可用" value="AVAILABLE" />
                   <Picker.Item label="不可用" value="UNAVAILABLE" />
                 </Picker>
-                {news.id ? (
-                  <>
-                    {image ? (
+
+                <View style={styles.uploadContainer}>
+                  <Text style={styles.inputLabel}>上傳照片</Text>
+                  <View style={styles.uploadWrapper}>
+                    {news.id ? (
                       <>
-                        <Image source={{ uri: image }} style={styles.image} />
+                        {image ? (
+                          <>
+                            <Image
+                              source={{ uri: image }}
+                              style={styles.profileImage}
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <Image
+                              src={getImageUrl(news.imageUrl)}
+                              style={styles.profileImage}
+                              resizeMode="cover"
+                            />
+                          </>
+                        )}
                       </>
                     ) : (
                       <>
-                        <Image
-                          src={getImageUrl(news.imageUrl)}
-                          style={styles.image}
-                          resizeMode="cover"
-                        />
+                        {image && (
+                          <Image
+                            source={{ uri: image }}
+                            style={styles.profileImage}
+                          />
+                        )}
                       </>
                     )}
-                  </>
-                ) : (
-                  <>
-                    {image && (
-                      <Image source={{ uri: image }} style={styles.image} />
-                    )}
-                  </>
-                )}
-                <TouchableOpacity
-                  style={styles.uploadButton}
-                  onPress={pickImage}
-                >
-                  <Text style={styles.uploadButtonText}>上傳圖片</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.uploadButton}
+                      onPress={handleUploadPhoto}
+                    >
+                      <MaterialIcons
+                        name="file-upload"
+                        size={30}
+                        color="#666666"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.uploadButton}
+                      onPress={handleTakePhoto}
+                    >
+                      <MaterialIcons
+                        name="camera-alt"
+                        size={30}
+                        color="#666666"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
                 <TouchableOpacity
                   style={styles.saveButton}
                   onPress={handleSave}
@@ -186,13 +238,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 15,
   },
-  uploadButton: {
-    backgroundColor: '#28a745',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 15,
-  },
+
   uploadButtonText: { color: '#fff', fontSize: 18 },
   image: {
     width: '100%',
@@ -207,6 +253,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveButtonText: { color: '#fff', fontSize: 18 },
+  uploadContainer: {
+    marginTop: 20,
+  },
+  uploadWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: '#FFF',
+    height: 200,
+    position: 'relative',
+    marginBottom: 12,
+  },
+  uploadButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#D9D9D9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    zIndex: 2,
+  },
+  profileImage: {
+    position: 'absolute', // 讓圖片絕對定位在父容器內
+    left: 0,
+    inset: 0,
+    zIndex: 1, // 確保圖片在最上層
+  },
+  inputLabel: {
+    fontSize: 22,
+    marginBottom: 5,
+  },
 });
 
 export default AddNewsScreen;

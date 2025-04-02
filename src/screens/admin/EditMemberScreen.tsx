@@ -286,12 +286,6 @@ const EditMemberScreen = ({ route, navigation }) => {
                 <Text style={styles.blacklistText}>加入黑名單</Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={handleDeleteUser}
-            >
-              <Text style={styles.deleteText}>刪除用戶</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

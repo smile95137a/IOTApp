@@ -9,17 +9,17 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import moment from 'moment';
-import { endGame, startGame } from '@/api/gameApi';
+import { endGame, getGamePrice, startGame } from '@/api/gameApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
+import { logJson } from '@/utils/logJsonUtils';
 
 const ContactScreen = ({ navigation, route }) => {
   const { transaction } = route.params || {}; // 安全獲取 transaction
   const [elapsedTime, setElapsedTime] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
-
   useEffect(() => {
     if (transaction?.startTime) {
       const startTime = moment(transaction.startTime, 'YYYY/MM/DD HH:mm:ss');
@@ -45,15 +45,18 @@ const ContactScreen = ({ navigation, route }) => {
   const handleEndGame = async () => {
     try {
       dispatch(showLoading());
-      const { success, data, message } = await endGame({
+      const { success, data, message } = await getGamePrice({
         gameId: transaction.gameId,
       });
       dispatch(hideLoading());
       if (success) {
         navigation.navigate('Payment', {
           type: 'gameEnd',
-          payData: { uid: transaction.gameId },
-          totalAmount: data.totalPrice,
+          payData: {
+            gameId: transaction.gameId,
+            poolTableId: transaction.poolTableId,
+          },
+          totalAmount: data.price,
         });
       } else {
         Alert.alert('錯誤', message || '無法載入店家資訊');

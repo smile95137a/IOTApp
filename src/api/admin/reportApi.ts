@@ -10,14 +10,14 @@ const basePath = `/api/b/reports`;
 // 取得報告數據
 export const fetchReportData = async (reportRequest: any): Promise<any> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Report API] Fetching report data from: ${url}`, reportRequest);
+  console.log(`[Report API] Fetching report data from: ${url}`, reportRequest);
 
   try {
     const response = await api.post(url, reportRequest);
-    logJson(`[Report API] Response:`, response.data);
+    console.log(`[Report API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Report API] Error fetching report data:`, error);
+    console.log(`[Report API] Error fetching report data:`, error);
     throw error;
   }
 };

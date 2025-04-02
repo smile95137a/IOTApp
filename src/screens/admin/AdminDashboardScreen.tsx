@@ -1,36 +1,35 @@
-import { fetchAllUsers } from '@/api/admin/adminUserApi';
 import { fetchTurnover } from '@/api/admin/turnoverApi';
-import { fetchAllBanners } from '@/api/bannerApi';
 import NumberFormatter from '@/component/NumberFormatter';
 import SharedScreenLayout from '@/navigators/SharedScreenLayout';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
-import { genRandomNumbers } from '@/utils/RandomUtils';
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
   SafeAreaView,
   Alert,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch } from 'react-redux';
 
 const AdminDashboardScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
-
-  const loadBanners = async () => {
+  const [todayTotalAmount, setTodayTotalAmount] = useState(0);
+  const [todayTransactionCount, setTodayTransactionCount] = useState(0);
+  const loadTurnoverData = async () => {
     try {
       dispatch(showLoading());
       const { success, data, message } = await fetchTurnover();
       dispatch(hideLoading());
-      if (success) {
+
+      if (success && data) {
+        setTodayTotalAmount(data.todayTotalAmount);
+        setTodayTransactionCount(data.todayTransactionCount);
       } else {
-        Alert.alert('錯誤', message || '無法載入 Banner');
+        Alert.alert('錯誤', message || '無法載入營收資料');
       }
     } catch (error) {
       dispatch(hideLoading());
@@ -39,12 +38,12 @@ const AdminDashboardScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    loadBanners();
+    loadTurnoverData();
   }, []);
 
   useFocusEffect(
     useCallback(() => {
-      loadBanners();
+      loadTurnoverData();
     }, [])
   );
 
@@ -60,13 +59,14 @@ const AdminDashboardScreen = ({ navigation }) => {
             />
             <Text style={styles.headerTitle}>無人撞球管理系統</Text>
           </View>
+
           <View style={styles.mainContainer}>
             {/* Report Section */}
             <View style={styles.reportSection}>
               <Text style={styles.sectionTitle}>今日收款：</Text>
               <Text style={styles.reportValue}>
-                <NumberFormatter number={0} />元 /
-                <NumberFormatter number={0} />筆
+                <NumberFormatter number={todayTotalAmount} />元 /
+                <NumberFormatter number={todayTransactionCount} />筆
               </Text>
               <View style={styles.divider} />
             </View>
@@ -76,15 +76,6 @@ const AdminDashboardScreen = ({ navigation }) => {
     </SharedScreenLayout>
   );
 };
-
-const features = [
-  { icon: 'chart-line', label: '經營報表', route: 'ReportSummaryScreen' },
-  { icon: 'account-group', label: '會員管理', route: 'MemberManagementScreen' },
-  { icon: 'crown', label: '優惠方案設定', route: 'PromotionSettingsScreen' },
-  { icon: 'pool', label: '桌台管理', route: 'PromotionSettingsScreen' },
-  { icon: 'tools', label: '設備管理', route: 'DeviceManagementScreen' },
-  { icon: 'store', label: '我的門店', route: 'MyStoreHomeScreen' },
-];
 
 const styles = StyleSheet.create({
   safeArea: {

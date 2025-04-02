@@ -16,14 +16,14 @@ const basePath = `/api/b/menus`;
  */
 export const fetchAllMenus = async (): Promise<ApiResponse<Menu[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Menu API] Fetching all menus from: ${url}`);
+  console.log(`[Menu API] Fetching all menus from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Menu API] Response:`, response.data);
+    console.log(`[Menu API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Menu API] Error fetching all menus:`, error);
+    console.log(`[Menu API] Error fetching all menus:`, error);
     throw error;
   }
 };
@@ -35,14 +35,14 @@ export const fetchMenuById = async (
   menuId: number
 ): Promise<ApiResponse<Menu>> => {
   const url = `${API_BASE_URL}${basePath}/${menuId}`;
-  logJson(`[Menu API] Fetching menu by ID from: ${url}`);
+  console.log(`[Menu API] Fetching menu by ID from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Menu API] Response:`, response.data);
+    console.log(`[Menu API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Menu API] Error fetching menu by ID:`, error);
+    console.log(`[Menu API] Error fetching menu by ID:`, error);
     throw error;
   }
 };
@@ -54,14 +54,14 @@ export const createMenus = async (
   menus: Menu[]
 ): Promise<ApiResponse<Menu[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Menu API] Creating menus at: ${url}`);
+  console.log(`[Menu API] Creating menus at: ${url}`);
 
   try {
     const response = await api.post(url, menus);
-    logJson(`[Menu API] Response:`, response.data);
+    console.log(`[Menu API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Menu API] Error creating menus:`, error);
+    console.log(`[Menu API] Error creating menus:`, error);
     throw error;
   }
 };
@@ -74,14 +74,14 @@ export const updateMenu = async (
   menu: Menu
 ): Promise<ApiResponse<Menu>> => {
   const url = `${API_BASE_URL}${basePath}/${menuId}`;
-  logJson(`[Menu API] Updating menu at: ${url}`);
+  console.log(`[Menu API] Updating menu at: ${url}`);
 
   try {
     const response = await api.put(url, menu);
-    logJson(`[Menu API] Response:`, response.data);
+    console.log(`[Menu API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Menu API] Error updating menu:`, error);
+    console.log(`[Menu API] Error updating menu:`, error);
     throw error;
   }
 };
@@ -93,14 +93,14 @@ export const deleteMenu = async (
   menuId: number
 ): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/${menuId}`;
-  logJson(`[Menu API] Deleting menu at: ${url}`);
+  console.log(`[Menu API] Deleting menu at: ${url}`);
 
   try {
     const response = await api.delete(url);
-    logJson(`[Menu API] Response:`, response.data);
+    console.log(`[Menu API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Menu API] Error deleting menu:`, error);
+    console.log(`[Menu API] Error deleting menu:`, error);
     throw error;
   }
 };

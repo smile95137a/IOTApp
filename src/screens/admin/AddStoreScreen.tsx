@@ -28,6 +28,8 @@ import * as ImagePicker from 'expo-image-picker';
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { logJson } from '@/utils/logJsonUtils';
+import { getImageUrl } from '@/utils/ImageUtils';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const weekDays = [
   'monday',
   'tuesday',
@@ -167,7 +169,7 @@ const AddStoreScreen = () => {
         })),
       })),
     };
-    logJson(storeData, 'Store Data');
+    logJson('Store Data', storeData);
     try {
       dispatch(showLoading());
 
@@ -198,18 +200,44 @@ const AddStoreScreen = () => {
     }
   };
 
-  const pickImage = async () => {
+  const handleUploadPhoto = async () => {
+    let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permission.status !== 'granted') {
+      Alert.alert('權限不足', '請允許存取相簿權限');
+      return;
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
     });
 
-    if (!result.canceled && result.assets.length > 0) {
+    if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
+
+  // 拍照
+  const handleTakePhoto = async () => {
+    let permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (permission.status !== 'granted') {
+      Alert.alert('權限不足', '請允許存取相機權限');
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
   const handleMapPress = (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     Alert.alert(
@@ -285,8 +313,8 @@ const AddStoreScreen = () => {
                   provider={PROVIDER_DEFAULT}
                   style={styles.map}
                   initialRegion={{
-                    latitude: selectedLocation?.latitude || 25.033964,
-                    longitude: selectedLocation?.longitude || 121.564468,
+                    latitude: selectedLocation?.latitude ?? 25.033964,
+                    longitude: selectedLocation?.longitude ?? 121.564468,
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
                   }}
@@ -317,20 +345,6 @@ const AddStoreScreen = () => {
                 keyboardType="numeric"
                 value={deposit}
                 onChangeText={setDeposit}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="折扣費率 (可選)"
-                keyboardType="numeric"
-                value={discountRate}
-                onChangeText={setDiscountRate}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="一般費率 (可選)"
-                keyboardType="numeric"
-                value={regularRate}
-                onChangeText={setRegularRate}
               />
               <TextInput
                 style={styles.input}
@@ -461,10 +475,61 @@ const AddStoreScreen = () => {
                   </TouchableOpacity>
                 </View>
               ))}
-              <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-                <Text style={styles.uploadButtonText}>上傳圖片</Text>
-              </TouchableOpacity>
-              {image && <Image source={{ uri: image }} style={styles.image} />}
+
+              <View style={styles.uploadContainer}>
+                <Text style={styles.inputLabel}>上傳照片</Text>
+                <View style={styles.uploadWrapper}>
+                  {store?.id ? (
+                    <>
+                      {image ? (
+                        <>
+                          <Image
+                            source={{ uri: image }}
+                            style={styles.profileImage}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Image
+                            src={getImageUrl(store.imgUrl)}
+                            style={styles.profileImage}
+                            resizeMode="cover"
+                          />
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {image && (
+                        <Image
+                          source={{ uri: image }}
+                          style={styles.profileImage}
+                        />
+                      )}
+                    </>
+                  )}
+                  <TouchableOpacity
+                    style={styles.uploadButton}
+                    onPress={handleUploadPhoto}
+                  >
+                    <MaterialIcons
+                      name="file-upload"
+                      size={30}
+                      color="#666666"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.uploadButton}
+                    onPress={handleTakePhoto}
+                  >
+                    <MaterialIcons
+                      name="camera-alt"
+                      size={30}
+                      color="#666666"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
               <TouchableOpacity
                 style={styles.submitButton}
                 onPress={handleSubmit}
@@ -569,13 +634,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  uploadButton: {
-    backgroundColor: '#28a745',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 15,
-  },
+
   image: {
     width: '100%',
     height: 200,
@@ -595,6 +654,43 @@ const styles = StyleSheet.create({
 
   map: {
     flex: 1,
+  },
+  uploadContainer: {
+    marginTop: 20,
+  },
+  uploadWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: '#FFF',
+    height: 200,
+    position: 'relative',
+    marginBottom: 12,
+  },
+  uploadButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#D9D9D9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    zIndex: 2,
+  },
+  profileImage: {
+    position: 'absolute', // 讓圖片絕對定位在父容器內
+    left: 0,
+    inset: 0,
+    zIndex: 1, // 確保圖片在最上層
+  },
+  inputLabel: {
+    fontSize: 22,
+    marginBottom: 5,
   },
 });
 

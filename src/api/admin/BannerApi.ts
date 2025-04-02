@@ -12,14 +12,14 @@ const basePath = `/api/b/banners`;
  */
 export const fetchAllBanners = async (): Promise<ApiResponse<any[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Banner API] Fetching all banners from: ${url}`);
+  console.log(`[Banner API] Fetching all banners from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Banner API] Response:`, response.data);
+    console.log(`[Banner API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Banner API] Error fetching all banners:`, error);
+    console.log(`[Banner API] Error fetching all banners:`, error);
     throw error;
   }
 };
@@ -31,14 +31,14 @@ export const fetchBannerById = async (
   id: number
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/${id}`;
-  logJson(`[Banner API] Fetching banner by ID: ${url}`);
+  console.log(`[Banner API] Fetching banner by ID: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Banner API] Response:`, response.data);
+    console.log(`[Banner API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Banner API] Error fetching banner by ID:`, error);
+    console.log(`[Banner API] Error fetching banner by ID:`, error);
     throw error;
   }
 };
@@ -50,14 +50,14 @@ export const createBanner = async (
   bannerReq: any
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Banner API] Creating new banner: ${url}`, bannerReq);
+  console.log(`[Banner API] Creating new banner: ${url}`, bannerReq);
 
   try {
     const response = await api.post(url, bannerReq);
-    logJson(`[Banner API] Response:`, response.data);
+    console.log(`[Banner API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Banner API] Error creating banner:`, error);
+    console.log(`[Banner API] Error creating banner:`, error);
     throw error;
   }
 };
@@ -70,14 +70,14 @@ export const updateBanner = async (
   bannerReq: any
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/${id}`;
-  logJson(`[Banner API] Updating banner: ${url}`, bannerReq);
+  console.log(`[Banner API] Updating banner: ${url}`, bannerReq);
 
   try {
     const response = await api.put(url, bannerReq);
-    logJson(`[Banner API] Response:`, response.data);
+    console.log(`[Banner API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Banner API] Error updating banner:`, error);
+    console.log(`[Banner API] Error updating banner:`, error);
     throw error;
   }
 };
@@ -87,14 +87,14 @@ export const updateBanner = async (
  */
 export const deleteBanner = async (id: number): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/${id}`;
-  logJson(`[Banner API] Deleting banner: ${url}`);
+  console.log(`[Banner API] Deleting banner: ${url}`);
 
   try {
     const response = await api.delete(url);
-    logJson(`[Banner API] Response:`, response.data);
+    console.log(`[Banner API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Banner API] Error deleting banner:`, error);
+    console.log(`[Banner API] Error deleting banner:`, error);
     throw error;
   }
 };
@@ -107,7 +107,7 @@ export const uploadBannerImage = async (
   imageUri: string
 ): Promise<ApiResponse<string>> => {
   const url = `${API_BASE_URL}${basePath}/${bannerId}/upload-image`;
-  logJson(`[Banner API] Uploading banner image: ${url}`);
+  console.log(`[Banner API] Uploading banner image: ${url}`);
 
   const formData = new FormData();
   formData.append('file', {
@@ -121,10 +121,10 @@ export const uploadBannerImage = async (
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    logJson(`[Banner API] Response:`, response.data);
+    console.log(`[Banner API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Banner API] Error uploading banner image:`, error);
+    console.log(`[Banner API] Error uploading banner image:`, error);
     throw error;
   }
 };

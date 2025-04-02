@@ -14,14 +14,14 @@ export const fetchAllTableEquipments = async (): Promise<
   ApiResponse<any[]>
 > => {
   const url = `${API_BASE_URL}${basePath}/table`;
-  logJson(`[Equipment API] Fetching all table equipments from: ${url}`);
+  console.log(`[Equipment API] Fetching all table equipments from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error fetching table equipments:`, error);
+    console.log(`[Equipment API] Error fetching table equipments:`, error);
     throw error;
   }
 };
@@ -33,14 +33,14 @@ export const fetchAllStoreEquipments = async (): Promise<
   ApiResponse<any[]>
 > => {
   const url = `${API_BASE_URL}${basePath}/store`;
-  logJson(`[Equipment API] Fetching all store equipments from: ${url}`);
+  console.log(`[Equipment API] Fetching all store equipments from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error fetching store equipments:`, error);
+    console.log(`[Equipment API] Error fetching store equipments:`, error);
     throw error;
   }
 };
@@ -48,7 +48,7 @@ export const fetchStoreEquipmentsByStoreId = async (
   storeId: number
 ): Promise<ApiResponse<any[]>> => {
   const url = `${API_BASE_URL}${basePath}/store/${storeId}`;
-  logJson(
+  console.log(
     `[Equipment API] Fetching store equipments by storeId ${storeId}: ${url}`
   );
   return api.get(url).then((res) => res.data);
@@ -60,14 +60,14 @@ export const fetchTableEquipmentById = async (
   id: number
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/table/${id}`;
-  logJson(`[Equipment API] Fetching table equipment with ID: ${id}`);
+  console.log(`[Equipment API] Fetching table equipment with ID: ${id}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error fetching table equipment:`, error);
+    console.log(`[Equipment API] Error fetching table equipment:`, error);
     throw error;
   }
 };
@@ -79,14 +79,14 @@ export const fetchStoreEquipmentById = async (
   id: number
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/store/${id}`;
-  logJson(`[Equipment API] Fetching store equipment with ID: ${id}`);
+  console.log(`[Equipment API] Fetching store equipment with ID: ${id}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error fetching store equipment:`, error);
+    console.log(`[Equipment API] Error fetching store equipment:`, error);
     throw error;
   }
 };
@@ -98,14 +98,14 @@ export const createTableEquipment = async (
   equipment: any
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/table`;
-  logJson(`[Equipment API] Creating table equipment`);
+  console.log(`[Equipment API] Creating table equipment`);
 
   try {
     const response = await api.post(url, equipment);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error creating table equipment:`, error);
+    console.log(`[Equipment API] Error creating table equipment:`, error);
     throw error;
   }
 };
@@ -118,14 +118,14 @@ export const updateTableEquipment = async (
   equipment: any
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/table/${id}`;
-  logJson(`[Equipment API] Updating table equipment with ID: ${id}`);
+  console.log(`[Equipment API] Updating table equipment with ID: ${id}`);
 
   try {
     const response = await api.put(url, equipment);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error updating table equipment:`, error);
+    console.log(`[Equipment API] Error updating table equipment:`, error);
     throw error;
   }
 };
@@ -137,14 +137,14 @@ export const createStoreEquipment = async (
   equipment: any
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/store`;
-  logJson(`[Equipment API] Creating store equipment`, equipment);
+  console.log(`[Equipment API] Creating store equipment`, equipment);
 
   try {
     const response = await api.post(url, equipment);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error creating store equipment:`, error);
+    console.log(`[Equipment API] Error creating store equipment:`, error);
     throw error;
   }
 };
@@ -157,14 +157,14 @@ export const updateStoreEquipment = async (
   equipment: any
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/store/${id}`;
-  logJson(`[Equipment API] Updating store equipment with ID: ${id}`);
+  console.log(`[Equipment API] Updating store equipment with ID: ${id}`);
 
   try {
     const response = await api.put(url, equipment);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error updating store equipment:`, error);
+    console.log(`[Equipment API] Error updating store equipment:`, error);
     throw error;
   }
 };
@@ -176,14 +176,14 @@ export const deleteTableEquipment = async (
   id: number
 ): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/table/${id}`;
-  logJson(`[Equipment API] Deleting table equipment with ID: ${id}`);
+  console.log(`[Equipment API] Deleting table equipment with ID: ${id}`);
 
   try {
     const response = await api.delete(url);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error deleting table equipment:`, error);
+    console.log(`[Equipment API] Error deleting table equipment:`, error);
     throw error;
   }
 };
@@ -195,14 +195,14 @@ export const deleteStoreEquipment = async (
   id: number
 ): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/store/${id}`;
-  logJson(`[Equipment API] Deleting store equipment with ID: ${id}`);
+  console.log(`[Equipment API] Deleting store equipment with ID: ${id}`);
 
   try {
     const response = await api.delete(url);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error deleting store equipment:`, error);
+    console.log(`[Equipment API] Error deleting store equipment:`, error);
     throw error;
   }
 };
@@ -215,14 +215,17 @@ export const updateTableEquipmentStatus = async (
   status: boolean
 ): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/table/${id}/status?status=${status}`;
-  logJson(`[Equipment API] Updating table equipment status for ID: ${id}`);
+  console.log(`[Equipment API] Updating table equipment status for ID: ${id}`);
 
   try {
     const response = await api.put(url);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error updating table equipment status:`, error);
+    console.log(
+      `[Equipment API] Error updating table equipment status:`,
+      error
+    );
     throw error;
   }
 };
@@ -235,14 +238,17 @@ export const updateStoreEquipmentStatus = async (
   status: boolean
 ): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/store/${id}/status?status=${status}`;
-  logJson(`[Equipment API] Updating store equipment status for ID: ${id}`);
+  console.log(`[Equipment API] Updating store equipment status for ID: ${id}`);
 
   try {
     const response = await api.put(url);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error updating store equipment status:`, error);
+    console.log(
+      `[Equipment API] Error updating store equipment status:`,
+      error
+    );
     throw error;
   }
 };
@@ -250,16 +256,16 @@ export const fetchTableEquipmentsByTableId = async (
   tableId: number
 ): Promise<ApiResponse<any[]>> => {
   const url = `${API_BASE_URL}${basePath}/table/${tableId}`;
-  logJson(
+  console.log(
     `[Equipment API] Fetching table equipments for table ID ${tableId}: ${url}`
   );
 
   try {
     const response = await api.get(url);
-    logJson(`[Equipment API] Response:`, response.data);
+    console.log(`[Equipment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Equipment API] Error fetching table equipments:`, error);
+    console.log(`[Equipment API] Error fetching table equipments:`, error);
     throw error;
   }
 };

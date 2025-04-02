@@ -10,14 +10,14 @@ const basePath = `/game-records`;
 // 取得使用者的遊戲紀錄
 export const fetchGameRecords = async (): Promise<ApiResponse<any[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[GameRecord API] Fetching game records from: ${url}`);
+  console.log(`[GameRecord API] Fetching game records from: ${url}`);
 
   try {
     const response = await api.get<ApiResponse<any[]>>(url);
-    logJson(`[GameRecord API] Response:`, response.data);
+    console.log(`[GameRecord API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[GameRecord API] Error fetching game records:`, error);
+    console.log(`[GameRecord API] Error fetching game records:`, error);
     throw error;
   }
 };

@@ -15,24 +15,24 @@ export const loginUser = async (loginData: {
   password: string;
 }): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/login`;
-  logJson(`[Login] Sending request to ${url}`);
-  logJson(`[Login] Login Type: ${loginData.type}`);
+  console.log(`[Login] Sending request to ${url}`);
+  console.log(`[Login] Login Type: ${loginData.type}`);
 
   if (loginData.type === 'email') {
-    logJson(`[Login] Email: ${loginData.email}`);
+    console.log(`[Login] Email: ${loginData.email}`);
   } else if (loginData.type === 'phone') {
-    logJson(`[Login] Phone: ${loginData.countryCode}${loginData.phone}`);
+    console.log(`[Login] Phone: ${loginData.countryCode}${loginData.phone}`);
   }
 
-  logJson(`[Login] Password: ${'*'.repeat(loginData.password.length)}`);
+  console.log(`[Login] Password: ${'*'.repeat(loginData.password.length)}`);
 
   try {
     const response = await api.post(url, loginData);
-    logJson(`[Login] API Response from ${url}:`, response.data);
+    console.log(`[Login] API Response from ${url}:`, response.data);
 
     return response.data;
   } catch (error) {
-    logJson(`[Login] Error during request to ${url}:`, error);
+    console.log(`[Login] Error during request to ${url}:`, error);
     throw error;
   }
 };

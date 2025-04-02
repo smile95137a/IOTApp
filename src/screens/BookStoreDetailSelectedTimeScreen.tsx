@@ -275,7 +275,11 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
             </View>
           )}
 
-          <ScrollView style={styles.tablesSection}>
+          <ScrollView
+            style={styles.tablesSection}
+            contentContainerStyle={{ paddingBottom: 80 }}
+            showsVerticalScrollIndicator={false}
+          >
             {timeSlots.map((slot, index) => (
               <TimeSlotSelector
                 key={index}

@@ -1,4 +1,5 @@
 import { checkoutGame, startGame } from '@/api/gameApi';
+import NumberFormatter from '@/component/NumberFormatter';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useRoute } from '@react-navigation/native';
@@ -26,10 +27,14 @@ const PaymentScreen = ({ navigation }: any) => {
       dispatch(showLoading());
       const { success, data, message } =
         type === 'game'
-          ? await startGame({ poolTableUId: payData.uid })
+          ? await startGame({ poolTableUId: payData.gameId })
           : type === 'gameEnd'
-          ? await checkoutGame({ payType: 1, gameId: payData.uid })
-          : await startGame({ poolTableUId: payData.uid });
+          ? await checkoutGame({
+              payType: 1,
+              gameId: payData.gameId,
+              poolTableId: payData.poolTableId,
+            })
+          : await startGame({ poolTableUId: payData.gameId });
       dispatch(hideLoading());
       if (success && data) {
         navigation.navigate('PaymentSuccess', {
@@ -51,13 +56,22 @@ const PaymentScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Order Details */}
         <View style={styles.orderDetails}>
           <Text style={styles.orderItem}>訂單內容：</Text>
-          <Text style={styles.orderDetail}>- 球桌租金 {totalAmount}</Text>
+          <Text style={styles.orderDetail}>
+            - 球桌{type === 'game' ? '租金' : '費用'}
+            <NumberFormatter number={totalAmount} />
+          </Text>
           <View style={styles.totalContainer}>
-            <Text style={styles.totalAmount}>總金額：{totalAmount}元</Text>
+            <Text style={styles.totalAmount}>
+              總金額：
+              <NumberFormatter number={totalAmount} />元
+            </Text>
           </View>
         </View>
 
@@ -110,7 +124,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    flex: 1,
+    paddingBottom: 20,
   },
   header: {
     flexDirection: 'row',

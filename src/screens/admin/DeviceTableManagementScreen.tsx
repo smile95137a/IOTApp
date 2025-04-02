@@ -3,6 +3,7 @@ import {
   fetchAllPoolTables,
   fetchPoolTablesByStoreId,
 } from '@/api/admin/poolTableApi';
+import HeaderBar from '@/component/admin/HeaderBar';
 import Header from '@/component/Header';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
@@ -69,9 +70,7 @@ const DeviceTableManagementScreen = () => {
           />
         </View>
         {/* Header */}
-        <View style={styles.header}>
-          <Header title="桌台管理" onBackPress={() => navigation.goBack()} />
-        </View>
+        <HeaderBar title="設備管理" />
         <View style={styles.mainContainer}>
           <View style={styles.gridContainer}>
             {poolTables.map((table, index) => (

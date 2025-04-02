@@ -21,14 +21,14 @@ export const topUp = async (
   topOpReq: TopOpReq
 ): Promise<ApiResponse<Boolean>> => {
   const url = `${API_BASE_URL}${basePath}/topOp`;
-  logJson(`[Payment API] Processing top-up at: ${url}`);
+  console.log(`[Payment API] Processing top-up at: ${url}`);
 
   try {
     const response = await api.post<ApiResponse<Boolean>>(url, topOpReq);
-    logJson(`[Payment API] Response:`, response.data);
+    console.log(`[Payment API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Payment API] Error processing top-up:`, error);
+    console.log(`[Payment API] Error processing top-up:`, error);
     throw error;
   }
 };

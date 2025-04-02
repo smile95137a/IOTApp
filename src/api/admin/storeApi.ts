@@ -16,14 +16,14 @@ const basePath = `/api/b/stores`;
  */
 export const fetchAllStores = async (): Promise<ApiResponse<Store[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Store API] Fetching all stores from: ${url}`);
+  console.log(`[Store API] Fetching all stores from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Store API] Response:`, response.data);
+    console.log(`[Store API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Store API] Error fetching all stores:`, error);
+    console.log(`[Store API] Error fetching all stores:`, error);
     throw error;
   }
 };
@@ -36,14 +36,14 @@ export const fetchStoreByUid = async (
   uid: string
 ): Promise<ApiResponse<Store>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  logJson(`[Store API] Fetching store by UID: ${uid}, URL: ${url}`);
+  console.log(`[Store API] Fetching store by UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Store API] Response for UID ${uid}:`, response.data);
+    console.log(`[Store API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Store API] Error fetching store by UID ${uid}:`, error);
+    console.log(`[Store API] Error fetching store by UID ${uid}:`, error);
     throw error;
   }
 };
@@ -56,14 +56,14 @@ export const createStore = async (
   store: Partial<Store>
 ): Promise<ApiResponse<Store>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Store API] Creating store at: ${url}`);
+  console.log(`[Store API] Creating store at: ${url}`);
 
   try {
     const response = await api.post(url, store);
-    logJson(`[Store API] Response:`, response.data);
+    console.log(`[Store API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Store API] Error creating store:`, error);
+    console.log(`[Store API] Error creating store:`, error);
     throw error;
   }
 };
@@ -78,14 +78,14 @@ export const updateStore = async (
   store: Partial<Store>
 ): Promise<ApiResponse<Store>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  logJson(`[Store API] Updating store with UID: ${uid}, URL: ${url}`);
+  console.log(`[Store API] Updating store with UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.put(url, store);
-    logJson(`[Store API] Response for UID ${uid}:`, response.data);
+    console.log(`[Store API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Store API] Error updating store with UID ${uid}:`, error);
+    console.log(`[Store API] Error updating store with UID ${uid}:`, error);
     throw error;
   }
 };
@@ -96,14 +96,14 @@ export const updateStore = async (
  */
 export const deleteStore = async (uid: string): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  logJson(`[Store API] Deleting store with UID: ${uid}, URL: ${url}`);
+  console.log(`[Store API] Deleting store with UID: ${uid}, URL: ${url}`);
 
   try {
     const response = await api.delete(url);
-    logJson(`[Store API] Store with UID ${uid} deleted successfully.`);
+    console.log(`[Store API] Store with UID ${uid} deleted successfully.`);
     return response.data;
   } catch (error) {
-    logJson(`[Store API] Error deleting store with UID ${uid}:`, error);
+    console.log(`[Store API] Error deleting store with UID ${uid}:`, error);
     throw error;
   }
 };
@@ -116,7 +116,9 @@ export const uploadStoreImages = async (
   imageUri: string
 ): Promise<boolean> => {
   const url = `${API_BASE_URL}${basePath}/${userId}/upload-image`;
-  logJson(`[Store API] Uploading profile image for user: ${userId} to ${url}`);
+  console.log(
+    `[Store API] Uploading profile image for user: ${userId} to ${url}`
+  );
 
   try {
     const formData = new FormData();
@@ -126,16 +128,16 @@ export const uploadStoreImages = async (
       type: 'image/jpeg',
     });
 
-    logJson(`[Store API] FormData:`, formData);
+    console.log(`[Store API] FormData:`, formData);
 
     const response = await api.post(url, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    logJson(`[Store API] Profile Image Upload Success:`, response.data);
+    console.log(`[Store API] Profile Image Upload Success:`, response.data);
     return response.status === 200;
   } catch (error) {
-    logJson(`[Store API] Error uploading profile image:`, error);
+    console.log(`[Store API] Error uploading profile image:`, error);
     return false;
   }
 };
@@ -143,14 +145,14 @@ export const fetchStoresByVendorId = async (
   vendorId: number
 ): Promise<ApiResponse<Store[]>> => {
   const url = `${API_BASE_URL}${basePath}/${vendorId}/stores`;
-  logJson(`[Store API] Fetching stores by vendor ID: ${url}`);
+  console.log(`[Store API] Fetching stores by vendor ID: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Store API] Response:`, response.data);
+    console.log(`[Store API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Store API] Error fetching stores by vendor ID:`, error);
+    console.log(`[Store API] Error fetching stores by vendor ID:`, error);
     throw error;
   }
 };

@@ -18,14 +18,19 @@ export const fetchUserTransactionRecord = async (): Promise<
   ApiResponse<TransactionRecord[]>
 > => {
   const url = `${API_BASE_URL}${basePath}/user`;
-  logJson(`[TransactionRecord API] Fetching user transactions from: ${url}`);
+  console.log(
+    `[TransactionRecord API] Fetching user transactions from: ${url}`
+  );
 
   try {
     const response = await api.get<ApiResponse<TransactionRecord[]>>(url);
-    logJson(`[TransactionRecord API] Response:`, response.data);
+    console.log(`[TransactionRecord API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[TransactionRecord API] Error fetching user transactions:`, error);
+    console.log(
+      `[TransactionRecord API] Error fetching user transactions:`,
+      error
+    );
     throw error;
   }
 };

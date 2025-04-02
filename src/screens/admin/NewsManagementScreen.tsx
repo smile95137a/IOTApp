@@ -40,7 +40,7 @@ const NewsManagementScreen = () => {
       if (success) {
         setNewsList(data);
       } else {
-        Alert.alert('錯誤', message || '無法載入最新消息');
+        setNewsList([]);
       }
     } catch (error) {
       dispatch(hideLoading());
@@ -113,14 +113,14 @@ const NewsManagementScreen = () => {
                       <Text style={styles.cardTitle}>{item.title}</Text>
                       <View style={styles.cardActions}>
                         <Menu
-                          visible={visibleMenuId === item.uid}
+                          visible={visibleMenuId === item.id}
                           onDismiss={() => setVisibleMenuId(null)}
                           anchor={
                             <TouchableOpacity
                               style={styles.iconButton}
                               onPress={() =>
                                 setVisibleMenuId(
-                                  visibleMenuId === item.uid ? null : item.uid
+                                  visibleMenuId === item.id ? null : item.id
                                 )
                               }
                             >

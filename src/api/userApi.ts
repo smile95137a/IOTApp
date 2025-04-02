@@ -19,14 +19,14 @@ export interface User {
  */
 export const fetchUserInfo = async (): Promise<ApiResponse<User>> => {
   const url = `${API_BASE_URL}${basePath}/getUserInfo`;
-  logJson(`[User API] Fetching user info from: ${url}`);
+  console.log(`[User API] Fetching user info from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[User API] Response:`, response.data);
+    console.log(`[User API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[User API] Error fetching user info:`, error);
+    console.log(`[User API] Error fetching user info:`, error);
     throw error;
   }
 };
@@ -39,14 +39,14 @@ export const registerUser = async (
   userReq: any
 ): Promise<ApiResponse<User>> => {
   const url = `${API_BASE_URL}${basePath}/register`;
-  logJson(`[User API] Registering user at ${url} with data:`, userReq);
+  console.log(`[User API] Registering user at ${url} with data:`, userReq);
 
   try {
     const response = await api.post(url, userReq);
-    logJson(`[User API] Registration Response:`, response.data);
+    console.log(`[User API] Registration Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[User API] Error registering user:`, error);
+    console.log(`[User API] Error registering user:`, error);
     throw error;
   }
 };
@@ -59,14 +59,14 @@ export const updateUser = async (
   userReq: Partial<User>
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/updateUser`;
-  logJson(`[User API] Updating user at ${url} with data:`, userReq);
+  console.log(`[User API] Updating user at ${url} with data:`, userReq);
 
   try {
     const response = await api.put(url, userReq);
-    logJson(`[User API] Update Response:`, response.data);
+    console.log(`[User API] Update Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[User API] Error updating user:`, error);
+    console.log(`[User API] Error updating user:`, error);
     throw error;
   }
 };
@@ -80,14 +80,14 @@ export const resetPassword = async (userReq: {
   newPassword: string;
 }): Promise<ApiResponse<boolean>> => {
   const url = `${API_BASE_URL}${basePath}/resetPwd`;
-  logJson(`[User API] Resetting password at ${url} with data:`, userReq);
+  console.log(`[User API] Resetting password at ${url} with data:`, userReq);
 
   try {
     const response = await api.put(url, userReq);
-    logJson(`[User API] Reset Password Response:`, response.data);
+    console.log(`[User API] Reset Password Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[User API] Error resetting password:`, error);
+    console.log(`[User API] Error resetting password:`, error);
     throw error;
   }
 };
@@ -102,7 +102,9 @@ export const uploadProfileImage = async (
   imageUri: string
 ): Promise<boolean> => {
   const url = `${API_BASE_URL}${basePath}/${userId}/upload-profile-image`;
-  logJson(`[User API] Uploading profile image for user: ${userId} to ${url}`);
+  console.log(
+    `[User API] Uploading profile image for user: ${userId} to ${url}`
+  );
 
   try {
     const formData = new FormData();
@@ -112,16 +114,16 @@ export const uploadProfileImage = async (
       type: 'image/jpeg',
     });
 
-    logJson(`[User API] FormData:`, formData);
+    console.log(`[User API] FormData:`, formData);
 
     const response = await api.post(url, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    logJson(`[User API] Profile Image Upload Success:`, response.data);
+    console.log(`[User API] Profile Image Upload Success:`, response.data);
     return response.status === 200;
   } catch (error) {
-    logJson(`[User API] Error uploading profile image:`, error);
+    console.log(`[User API] Error uploading profile image:`, error);
     return false;
   }
 };

@@ -12,14 +12,14 @@ const basePath = `/api/b/monitor`;
  */
 export const createMonitor = async (monitorReq) => {
   const url = `${API_BASE_URL}${basePath}/create`;
-  logJson(`[Monitor API] Creating new monitor: ${url}`, monitorReq);
+  console.log(`[Monitor API] Creating new monitor: ${url}`, monitorReq);
 
   try {
     const response = await api.post(url, monitorReq);
-    logJson(`[Monitor API] Response:`, response.data);
+    console.log(`[Monitor API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Monitor API] Error creating monitor:`, error);
+    console.log(`[Monitor API] Error creating monitor:`, error);
     throw error;
   }
 };
@@ -29,14 +29,14 @@ export const createMonitor = async (monitorReq) => {
  */
 export const updateMonitor = async (monitorUpdateReq) => {
   const url = `${API_BASE_URL}${basePath}/update`;
-  logJson(`[Monitor API] Updating monitor: ${url}`, monitorUpdateReq);
+  console.log(`[Monitor API] Updating monitor: ${url}`, monitorUpdateReq);
 
   try {
     const response = await api.put(url, monitorUpdateReq);
-    logJson(`[Monitor API] Response:`, response.data);
+    console.log(`[Monitor API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Monitor API] Error updating monitor:`, error);
+    console.log(`[Monitor API] Error updating monitor:`, error);
     throw error;
   }
 };
@@ -46,14 +46,14 @@ export const updateMonitor = async (monitorUpdateReq) => {
  */
 export const getMonitorsByStoreId = async (storeUid) => {
   const url = `${API_BASE_URL}${basePath}/store/${storeUid}`;
-  logJson(`[Monitor API] Fetching monitors for store: ${url}`);
+  console.log(`[Monitor API] Fetching monitors for store: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Monitor API] Response:`, response.data);
+    console.log(`[Monitor API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Monitor API] Error fetching monitors for store:`, error);
+    console.log(`[Monitor API] Error fetching monitors for store:`, error);
     throw error;
   }
 };
@@ -63,14 +63,14 @@ export const getMonitorsByStoreId = async (storeUid) => {
  */
 export const deleteMonitor = async (id) => {
   const url = `${API_BASE_URL}${basePath}/delete/${id}`;
-  logJson(`[Monitor API] Deleting monitor: ${url}`);
+  console.log(`[Monitor API] Deleting monitor: ${url}`);
 
   try {
     const response = await api.delete(url);
-    logJson(`[Monitor API] Response:`, response.data);
+    console.log(`[Monitor API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Monitor API] Error deleting monitor:`, error);
+    console.log(`[Monitor API] Error deleting monitor:`, error);
     throw error;
   }
 };

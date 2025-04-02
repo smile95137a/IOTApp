@@ -12,14 +12,14 @@ const basePath = `/api/b/vendors`;
 
 export const fetchAllVendors = async (): Promise<ApiResponse<Vendor[]>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Vendor API] Fetching all vendors from: ${url}`);
+  console.log(`[Vendor API] Fetching all vendors from: ${url}`);
 
   try {
     const response = await api.get(url);
-    logJson(`[Vendor API] Response:`, response.data);
+    console.log(`[Vendor API] Response:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(`[Vendor API] Error fetching all vendors:`, error);
+    console.log(`[Vendor API] Error fetching all vendors:`, error);
     throw error;
   }
 };
@@ -28,13 +28,13 @@ export const fetchVendorById = async (
   uid: string
 ): Promise<ApiResponse<Vendor>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  logJson(`[Vendor API] Fetching vendor with ID: ${uid}`);
+  console.log(`[Vendor API] Fetching vendor with ID: ${uid}`);
 
   try {
     const response = await api.get(url);
     return response.data;
   } catch (error) {
-    logJson(`[Vendor API] Error fetching vendor:`, error);
+    console.log(`[Vendor API] Error fetching vendor:`, error);
     throw error;
   }
 };
@@ -43,13 +43,13 @@ export const createVendor = async (
   vendor: Partial<Vendor>
 ): Promise<ApiResponse<Vendor>> => {
   const url = `${API_BASE_URL}${basePath}`;
-  logJson(`[Vendor API] Creating vendor:`, vendor);
+  console.log(`[Vendor API] Creating vendor:`, vendor);
 
   try {
     const response = await api.post(url, vendor);
     return response.data;
   } catch (error) {
-    logJson(`[Vendor API] Error creating vendor:`, error);
+    console.log(`[Vendor API] Error creating vendor:`, error);
     throw error;
   }
 };
@@ -59,26 +59,26 @@ export const updateVendor = async (
   vendor: Partial<Vendor>
 ): Promise<ApiResponse<Vendor>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  logJson(`[Vendor API] Updating vendor:`, vendor);
+  console.log(`[Vendor API] Updating vendor:`, vendor);
 
   try {
     const response = await api.put(url, vendor);
     return response.data;
   } catch (error) {
-    logJson(`[Vendor API] Error updating vendor:`, error);
+    console.log(`[Vendor API] Error updating vendor:`, error);
     throw error;
   }
 };
 
 export const deleteVendor = async (uid: string): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  logJson(`[Vendor API] Deleting vendor with ID: ${uid}`);
+  console.log(`[Vendor API] Deleting vendor with ID: ${uid}`);
 
   try {
     const response = await api.delete(url);
     return response.data;
   } catch (error) {
-    logJson(`[Vendor API] Error deleting vendor:`, error);
+    console.log(`[Vendor API] Error deleting vendor:`, error);
     throw error;
   }
 };
@@ -88,13 +88,13 @@ export const fetchStoresByVendor = async (
   vendorId: number
 ): Promise<ApiResponse<Store[]>> => {
   const url = `${API_BASE_URL}${basePath}/${vendorId}/stores`;
-  logJson(`[Vendor API] Fetching stores for vendor ID: ${vendorId}`);
+  console.log(`[Vendor API] Fetching stores for vendor ID: ${vendorId}`);
 
   try {
     const response = await api.get(url);
     return response.data;
   } catch (error) {
-    logJson(`[Vendor API] Error fetching stores:`, error);
+    console.log(`[Vendor API] Error fetching stores:`, error);
     throw error;
   }
 };
@@ -104,13 +104,13 @@ export const addStoreToVendor = async (
   store: Partial<Store>
 ): Promise<ApiResponse<Store>> => {
   const url = `${API_BASE_URL}${basePath}/${vendorId}/stores`;
-  logJson(`[Vendor API] Adding store to vendor:`, store);
+  console.log(`[Vendor API] Adding store to vendor:`, store);
 
   try {
     const response = await api.post(url, store);
     return response.data;
   } catch (error) {
-    logJson(`[Vendor API] Error adding store:`, error);
+    console.log(`[Vendor API] Error adding store:`, error);
     throw error;
   }
 };
@@ -120,7 +120,7 @@ export const updateStoreVendor = async (
   vendorId: number
 ): Promise<ApiResponse<Store>> => {
   const url = `${API_BASE_URL}${basePath}/${storeId}/vendor/${vendorId}`;
-  logJson(
+  console.log(
     `[Vendor API] Updating store vendor relation: store ${storeId} -> vendor ${vendorId}`
   );
 
@@ -128,7 +128,7 @@ export const updateStoreVendor = async (
     const response = await api.put(url);
     return response.data;
   } catch (error) {
-    logJson(`[Vendor API] Error updating store vendor:`, error);
+    console.log(`[Vendor API] Error updating store vendor:`, error);
     throw error;
   }
 };
@@ -137,13 +137,13 @@ export const deleteStore = async (
   storeId: number
 ): Promise<ApiResponse<void>> => {
   const url = `${API_BASE_URL}${basePath}/${storeId}`;
-  logJson(`[Vendor API] Deleting store ID: ${storeId}`);
+  console.log(`[Vendor API] Deleting store ID: ${storeId}`);
 
   try {
     const response = await api.delete(url);
     return response.data;
   } catch (error) {
-    logJson(`[Vendor API] Error deleting store:`, error);
+    console.log(`[Vendor API] Error deleting store:`, error);
     throw error;
   }
 };

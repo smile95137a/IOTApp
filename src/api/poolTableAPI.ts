@@ -16,19 +16,19 @@ export const fetchPoolTablesByStoreUid = async (
   storeUid: string
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/store/${storeUid}`;
-  logJson(
+  console.log(
     `[PoolTable API] Fetching pool tables for storeUid: ${storeUid}, URL: ${url}`
   );
 
   try {
     const response = await api.get(url);
-    logJson(
+    console.log(
       `[PoolTable API] Response for storeUid ${storeUid}:`,
       response.data
     );
     return response.data;
   } catch (error) {
-    logJson(
+    console.log(
       `[PoolTable API] Error fetching pool tables for storeUid ${storeUid}:`,
       error
     );
@@ -45,14 +45,16 @@ export const fetchPoolTableByUid = async (
   uid: string
 ): Promise<ApiResponse<any>> => {
   const url = `${API_BASE_URL}${basePath}/${uid}`;
-  logJson(`[PoolTable API] Fetching pool table with UID: ${uid}, URL: ${url}`);
+  console.log(
+    `[PoolTable API] Fetching pool table with UID: ${uid}, URL: ${url}`
+  );
 
   try {
     const response = await api.get(url);
-    logJson(`[PoolTable API] Response for UID ${uid}:`, response.data);
+    console.log(`[PoolTable API] Response for UID ${uid}:`, response.data);
     return response.data;
   } catch (error) {
-    logJson(
+    console.log(
       `[PoolTable API] Error fetching pool table with UID ${uid}:`,
       error
     );
