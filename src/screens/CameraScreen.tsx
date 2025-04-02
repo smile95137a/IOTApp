@@ -82,6 +82,8 @@ const CameraScreen = () => {
     setScanned(true);
     try {
       const tableUid = decryptData(data);
+      logJson('asdasdasd', tableUid);
+
       const response = await fetchPoolTableByUid(tableUid);
       if (response.success) {
         if (response.data.gameId) {
@@ -126,11 +128,14 @@ const CameraScreen = () => {
           ]);
         }
       } else {
-        Alert.alert('錯誤', response.message || '無法獲取桌檯資訊', [
+        Alert.alert('已掃描到', '前往開台', [
           {
             text: '確定',
             onPress: () => {
-              setScanned(false);
+              (navigation as any).navigate('Member', {
+                screen: 'Reservation',
+                params: { tableUid },
+              });
             },
           },
         ]);
