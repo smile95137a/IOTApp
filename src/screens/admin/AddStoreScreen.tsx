@@ -75,7 +75,9 @@ const AddStoreScreen = () => {
   const [selectedLocation, setSelectedLocation] = useState<{
     latitude: number;
     longitude: number;
-  } | null>(store ? { latitude: store.lat, longitude: store.lon } : null);
+  } | null>(
+    store ? { latitude: Number(store.lat), longitude: Number(store.lon) } : null
+  );
 
   const [pricingSchedules, setPricingSchedules] = useState(
     weekDays.map((day) => {
