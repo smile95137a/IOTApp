@@ -63,32 +63,33 @@ const MainStackNavigator = () => {
             },
           })}
         />
-
         <Tab.Screen
-          name="Camera"
-          component={CameraStack}
+          name="Recharge"
+          component={MemberStack}
           options={{
-            tabBarLabel: '',
-            tabBarButton: () => {
-              const navigation = useNavigation();
-              return (
-                <View style={styles.cameraButtonWrapper}>
-                  <TouchableOpacity
-                    style={styles.cameraButton}
-                    onPress={() => {
-                      navigation.navigate('Camera');
-                    }}
-                  >
-                    <Image
-                      source={require('@/assets/iot-camera-logo.png')}
-                      style={styles.cameraImage}
-                    />
-                  </TouchableOpacity>
-                </View>
-              );
-            },
+            tabBarLabel: '儲值',
+            tabBarIcon: ({ color, size }) => (
+              <Feather name="dollar-sign" color={color} size={size} />
+            ),
           }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              e.preventDefault();
+              navigation.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: 'Member',
+                    state: {
+                      routes: [{ name: 'Recharge' }],
+                    },
+                  },
+                ],
+              });
+            },
+          })}
         />
+
         <Tab.Screen
           name="Explore"
           component={StoreStack}

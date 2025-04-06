@@ -6,6 +6,7 @@ import {
   Text,
   View,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,7 +21,7 @@ import PaymentScreen from '@/screens/memner-center/PaymentScreen';
 import ReservationScreen from '@/screens/memner-center/ReservationScreen';
 import PaymentSuccessScreen from '@/screens/memner-center/PaymentSuccessScreen';
 import ContactScreen from '@/screens/memner-center/ContactScreen';
-import { fetchUserInfo, User } from '@/api/userApi';
+import { fetchUserInfo, uploadProfileImage, User } from '@/api/userApi';
 import NumberFormatter from '@/component/NumberFormatter';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import RechargeSuccess from '@/screens/memner-center/RechargeSuccess';
@@ -32,6 +33,7 @@ import EditPersonalInfoScreen from '@/screens/memner-center/EditPersonalInfoScre
 import { LinearGradient } from 'expo-linear-gradient';
 import GameOngoingScreen from '@/screens/memner-center/GameOngoingScreen';
 import MyBookHistoryScreen from '@/screens/memner-center/MyBookHistoryScreen';
+import * as ImagePicker from 'expo-image-picker';
 
 const Stack = createStackNavigator();
 
@@ -42,37 +44,97 @@ const MainLayout = ({ children }) => {
 
   const [localUser, setLocalUser] = useState(user);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+  const fetchAndSetUserInfo = async () => {
+    try {
+      dispatch(showLoading());
+      const response = await fetchUserInfo();
+      dispatch(hideLoading());
+
+      if (response.success) {
+        console.log('[User Info] API Response:', response.data);
+        dispatch(setUser(response.data));
+        setLocalUser(response.data);
+      } else {
+        console.warn('[User Info] Fetch failed:', response.message);
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      console.log('[User Info] Fetch error:', error);
+    }
+  };
+
   useEffect(() => {
     if (isLoggedIn) {
-      const getUserInfo = async () => {
-        if (user) {
-          setLocalUser(user);
-
-          return;
-        }
-
-        try {
-          dispatch(showLoading());
-          const response = await fetchUserInfo();
-          dispatch(hideLoading());
-
-          if (response.success) {
-            console.log('[User Info] API Response:', response.data);
-            dispatch(setUser(response.data));
-            setLocalUser(response.data);
-          } else {
-            console.warn('[User Info] Fetch failed:', response.message);
-          }
-        } catch (error) {
-          dispatch(hideLoading());
-
-          console.log('[User Info] Fetch error:', error);
-        }
-      };
-
-      getUserInfo();
+      if (user) {
+        setLocalUser(user);
+      } else {
+        fetchAndSetUserInfo();
+      }
     }
-  }, [user]);
+  }, [user, isLoggedIn]);
+
+  const handleUploadPhoto = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permission.status !== 'granted') {
+      Alert.alert('權限不足', '請允許存取相簿權限');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const profileImage = result.assets[0].uri;
+      dispatch(showLoading());
+      const uploadSuccess = await uploadProfileImage(user?.id, profileImage);
+      dispatch(hideLoading());
+      if (!uploadSuccess) {
+        Alert.alert('錯誤', '頭像上傳失敗，請稍後重試');
+      } else {
+        console.log('[Upload] 頭像上傳成功');
+        await fetchAndSetUserInfo();
+      }
+    }
+  };
+
+  const handleTakePhoto = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (permission.status !== 'granted') {
+      Alert.alert('權限不足', '請允許存取相機權限');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const profileImage = result.assets[0].uri;
+      dispatch(showLoading());
+      const uploadSuccess = await uploadProfileImage(user?.id, profileImage);
+      dispatch(hideLoading());
+      if (!uploadSuccess) {
+        Alert.alert('錯誤', '頭像上傳失敗，請稍後重試');
+      } else {
+        console.log('[Upload] 頭像上傳成功');
+        await fetchAndSetUserInfo();
+      }
+    }
+  };
+
+  const handleChangeAvatar = () => {
+    Alert.alert('選擇頭像', '請選擇照片來源', [
+      { text: '拍照', onPress: handleTakePhoto },
+      { text: '從相簿選擇', onPress: handleUploadPhoto },
+      { text: '取消', style: 'cancel' },
+    ]);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -92,10 +154,12 @@ const MainLayout = ({ children }) => {
           {/* User Info */}
           <View style={styles.userInfoContainer}>
             <View style={styles.userInfoLeft}>
-              <Image
-                src={getImageUrl(localUser?.imgUrl)}
-                style={styles.avatar}
-              />
+              <TouchableOpacity onPress={handleChangeAvatar}>
+                <Image
+                  src={getImageUrl(localUser?.imgUrl)}
+                  style={styles.avatar}
+                />
+              </TouchableOpacity>
             </View>
             <View style={styles.userInfoRight}>
               <Text style={styles.userName}>{localUser?.name || ''}</Text>

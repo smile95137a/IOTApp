@@ -43,27 +43,12 @@ const RechargeScreen = ({ navigation }) => {
         Alert.alert('錯誤', '無法找到對應的儲值選項');
         return;
       }
-
       const total = ~~selected.amount + ~~selected.bonus;
-      try {
-        dispatch(showLoading());
-        const { success, data, message } = await topUp({
-          price: total,
-          payType: 1,
-        });
-        dispatch(hideLoading());
-        if (success) {
-          dispatch(addAmount(total));
-          navigation.navigate('RechargeSuccess', { selectedOption: selected });
-        } else {
-          Alert.alert('錯誤', message || '無法載入店家資訊');
-        }
-      } catch (error) {
-        dispatch(hideLoading());
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        Alert.alert('錯誤', errorMessage);
-      }
+
+      navigation.navigate('Payment', {
+        type: 'recharge',
+        totalAmount: total,
+      });
     } else {
       Alert.alert('錯誤', '請選擇儲值金額');
     }
@@ -140,24 +125,24 @@ const styles = StyleSheet.create({
     minHeight: 108,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#FFC702',
+    borderColor: '#F67943',
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   selectedOption: {
-    backgroundColor: '#FFC702',
-    borderColor: '#FFC702',
+    backgroundColor: '#F67943',
+    borderColor: '#F67943',
   },
   amountText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FFC702',
+    color: '#F67943',
   },
   bonusText: {
     fontSize: 14,
-    color: '#FFC702',
+    color: '#F67943',
     marginTop: 8,
   },
   selectedText: {
@@ -169,7 +154,7 @@ const styles = StyleSheet.create({
     right: 8,
   },
   rechargeButton: {
-    backgroundColor: '#FFC702',
+    backgroundColor: '#F67943',
     borderRadius: 25,
     paddingVertical: 12,
     alignItems: 'center',
@@ -180,6 +165,7 @@ const styles = StyleSheet.create({
   rechargeButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#FFF',
   },
 });
 

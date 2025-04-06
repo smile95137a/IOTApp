@@ -112,7 +112,6 @@ const StoreScreen = ({ navigation }: any) => {
         <View style={styles.container}>
           <Header title="門市探索" isDarkMode />
           <ScrollView contentContainerStyle={styles.storeList}>
-            <ImageCarousel />
             {nearStores.map((item) => (
               <TouchableOpacity
                 key={item.id}

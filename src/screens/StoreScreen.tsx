@@ -86,7 +86,11 @@ const StoreScreen = ({ navigation }: any) => {
     if (stores.length > 0) {
       const latitude = locationData.latitude || 0;
       const longitude = locationData.longitude || 0;
-      setNearStores(findNearestStores(latitude, longitude, stores));
+
+      const arr = findNearestStores(latitude, longitude, stores);
+      arr.sort((a, b) => a.distance - b.distance);
+
+      setNearStores(arr);
     }
   }, [locationData, stores]);
 
@@ -101,7 +105,6 @@ const StoreScreen = ({ navigation }: any) => {
         <View style={styles.container}>
           <Header title="門市探索" isDarkMode />
           <ScrollView contentContainerStyle={styles.storeList}>
-            <ImageCarousel />
             {nearStores.map((item) => (
               <TouchableOpacity
                 key={item.id}

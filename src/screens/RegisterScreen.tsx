@@ -22,7 +22,6 @@ const RegisterScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch();
 
   const [isCodeSent, setIsCodeSent] = useState(false);
-  const [email, setEmail] = useState('');
   const [countryCode, setCountryCode] = useState('+886');
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
@@ -30,7 +29,7 @@ const RegisterScreen = ({ route, navigation }: any) => {
 
   const handleSendCode = () => {
     setIsCodeSent(true);
-    setTimer(60); // Set countdown to 60 seconds
+    setTimer(60);
   };
 
   const handleResendCode = () => {
@@ -64,7 +63,6 @@ const RegisterScreen = ({ route, navigation }: any) => {
   const handleNextStep = () => {
     dispatch(
       setRegisterData({
-        email,
         phone,
         countryCode,
         verificationCode,
@@ -90,21 +88,10 @@ const RegisterScreen = ({ route, navigation }: any) => {
             >
               <Text style={styles.title}>註冊</Text>
               <Text style={styles.subtitle}>
-                選擇一個方式手機或信箱來進行註冊
+                請輸入行動電話號碼進行實名認證。
               </Text>
 
               {/* Email Field */}
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>電子信箱</Text>
-                <View style={styles.inputWrapper}>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="請輸入電子信箱"
-                    value={email}
-                    onChangeText={setEmail}
-                  />
-                </View>
-              </View>
 
               {/* Phone Field */}
               <View style={styles.inputContainer}>

@@ -58,7 +58,6 @@ const NewsScreen = ({ navigation }: any) => {
         <View style={styles.container}>
           <Header title="最新消息" isDarkMode />
           <ScrollView contentContainerStyle={styles.scrollContent}>
-            <ImageCarousel />
             {newsData.map((item) => (
               <TouchableOpacity
                 key={item.id}

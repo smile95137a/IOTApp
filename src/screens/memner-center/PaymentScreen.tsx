@@ -1,7 +1,9 @@
 import { checkoutGame, startGame } from '@/api/gameApi';
+import { topUp } from '@/api/paymentApi';
 import NumberFormatter from '@/component/NumberFormatter';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
+import { addAmount } from '@/store/userSlice';
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
@@ -25,23 +27,41 @@ const PaymentScreen = ({ navigation }: any) => {
   const handlePaymentPress = async (method) => {
     try {
       dispatch(showLoading());
-      const { success, data, message } =
-        type === 'game'
-          ? await startGame({ poolTableUId: payData.uid })
-          : type === 'gameEnd'
-          ? await checkoutGame({
-              payType: 1,
-              gameId: payData.gameId,
-              poolTableId: payData.poolTableId,
-            })
-          : await startGame({ poolTableUId: payData.uid });
+
+      let result;
+
+      if (type === 'game') {
+        result = await startGame({ poolTableUId: payData.uid });
+      } else if (type === 'gameEnd') {
+        result = await checkoutGame({
+          payType: 1,
+          gameId: payData.gameId,
+          poolTableId: payData.poolTableId,
+        });
+      } else if (type === 'recharge') {
+        result = await await topUp({
+          price: totalAmount,
+          payType: 1,
+        });
+      } else {
+        result = await startGame({ poolTableUId: payData.uid });
+      }
+
+      const { success, data, message } = result;
+
       dispatch(hideLoading());
       if (success && data) {
-        navigation.navigate('PaymentSuccess', {
-          showStartGame: type === 'game',
-          totalAmount,
-          data,
-        });
+        if (type === 'recharge') {
+          dispatch(addAmount(totalAmount));
+          navigation.navigate('RechargeSuccess', { totalAmount });
+        } else {
+          navigation.navigate('PaymentSuccess', {
+            type,
+            showStartGame: type === 'game',
+            totalAmount,
+            data,
+          });
+        }
       } else {
         Alert.alert('錯誤', message || '無法載入店家資訊');
       }

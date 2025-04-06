@@ -1,3 +1,4 @@
+import NumberFormatter from '@/component/NumberFormatter';
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
@@ -10,7 +11,7 @@ import {
 
 const PaymentSuccessScreen = ({ navigation }) => {
   const route = useRoute();
-  const { totalAmount, showStartGame, data } = route.params || {}; // 獲取付款金額
+  const { type, totalAmount, showStartGame, data } = route.params || {}; // 獲取付款金額
 
   const handleStartGame = () => {
     navigation.navigate('Contact', { transaction: data });
@@ -23,7 +24,9 @@ const PaymentSuccessScreen = ({ navigation }) => {
         <View style={styles.divider} />
         <Text style={styles.totalAmount}>
           <Text style={styles.totalAmountLabel}>總金額：</Text>
-          <Text>${~~totalAmount} 元</Text>
+          <Text>
+            $<NumberFormatter number={~~totalAmount} /> 元
+          </Text>
         </Text>
       </View>
 

@@ -71,7 +71,7 @@ const HomeScreen = ({ navigation }) => {
         locationData.longitude,
         stores
       );
-      setNearStores(nearest.slice(0, 2));
+      setNearStores(nearest.slice(0, 1));
     }
   }, [locationData, stores]);
 

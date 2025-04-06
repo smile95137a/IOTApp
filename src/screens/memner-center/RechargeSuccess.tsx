@@ -8,11 +8,8 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-const RechargeSuccess = ({ route, navigation }) => {
-  const { selectedOption } = route.params || {};
-  const totalAmount = selectedOption
-    ? Number(selectedOption.amount) + Number(selectedOption.bonus)
-    : 0;
+const RechargeSuccess = ({ route, navigation }: any) => {
+  const { totalAmount } = route.params || {};
 
   return (
     <SafeAreaView style={styles.safeArea}>

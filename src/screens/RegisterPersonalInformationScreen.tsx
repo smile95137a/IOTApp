@@ -35,17 +35,18 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
 
   const dispatch = useDispatch();
   const pickerRef = useRef<RNPickerSelect>(null);
-  const { email, phone, countryCode, verificationCode } = useSelector(
+  const { phone, countryCode, verificationCode } = useSelector(
     (state: RootState) => state.register
   );
 
+  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [uid, setUid] = useState(genRandomNumbers(20));
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [gender, setGender] = useState('');
-  const [anonymousId] = useState(genRandomNumbers(20));
+  const [anonymousId, setAnonymousId] = useState('');
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const selectedGenderLabel =
-    genderOptions.find((option) => option.value === gender)?.label || '請選擇';
 
   const handleUploadPhoto = async () => {
     let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -92,8 +93,13 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
     });
   };
   const handleNextStep = async () => {
-    if (!name || !gender || !password) {
+    if (!name || !gender || !password || !uid || !confirmPassword) {
       Alert.alert('錯誤', '請填寫所有必填欄位');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('錯誤', '密碼與確認密碼不一致');
       return;
     }
 
@@ -106,6 +112,7 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
       phone,
       countryCode,
       verificationCode,
+      uid,
     };
 
     try {
@@ -166,6 +173,17 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
 
             <Text style={styles.title}>個人資料</Text>
             <ScrollView>
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>電子信箱</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="請輸入電子信箱"
+                    value={email}
+                    onChangeText={setEmail}
+                  />
+                </View>
+              </View>
               {/* 姓名 */}
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>姓名 *</Text>
@@ -191,6 +209,19 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
                   />
                 </View>
               </View>
+              {/* 再次確認密碼 */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>再次確認密碼 *</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="請再次輸入密碼"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry={true}
+                  />
+                </View>
+              </View>
 
               {/* 匿名 ID */}
               <View style={styles.inputContainer}>
@@ -200,9 +231,21 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
                 >
                   <TextInput
                     style={styles.input}
-                    placeholder="請輸入真實姓名"
+                    placeholder="請輸入匿名ID"
                     value={anonymousId}
-                    editable={false}
+                    onChangeText={setAnonymousId}
+                  />
+                </View>
+              </View>
+              {/* UID */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>UID *</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="請輸入 UID"
+                    value={uid}
+                    onChangeText={setUid}
                   />
                 </View>
               </View>
@@ -302,6 +345,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingBottom: 100,
   },
   title: {
     fontSize: 24,
