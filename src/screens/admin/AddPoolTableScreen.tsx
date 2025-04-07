@@ -25,6 +25,9 @@ import { encryptData } from '@/utils/cryptoUtils';
 import { fetchAllStores } from '@/api/admin/storeApi';
 import { Picker } from '@react-native-picker/picker';
 import HeaderBar from '@/component/admin/HeaderBar';
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 type PoolTableParams = {
   poolTable?: {
@@ -131,6 +134,37 @@ const AddPoolTableScreen = () => {
     setShowQRCode(true);
   };
 
+  const qrCodeRef = React.useRef<QRCode>(null);
+
+  const handleSaveQRCode = async () => {
+    try {
+      if (!qrCodeRef.current) return;
+
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('權限不足', '需要媒體存取權限才能儲存圖片');
+        return;
+      }
+
+      qrCodeRef.current.toDataURL(async (data) => {
+        const base64Code = `data:image/png;base64,${data}`;
+        const fileUri = FileSystem.cacheDirectory + `qrcode_${Date.now()}.png`;
+
+        await FileSystem.writeAsStringAsync(fileUri, data, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        const asset = await MediaLibrary.createAssetAsync(fileUri);
+        await MediaLibrary.createAlbumAsync('QRCode', asset, false);
+
+        Alert.alert('成功', '已儲存 QR Code 至相簿');
+      });
+    } catch (error) {
+      console.error('儲存失敗', error);
+      Alert.alert('錯誤', '儲存 QR Code 時發生錯誤');
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeArea}>
@@ -206,7 +240,20 @@ const AddPoolTableScreen = () => {
                   <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                       <Text style={styles.modalTitle}>桌檯 QR Code</Text>
-                      <QRCode value={qrCodeVal} size={200} />
+                      <QRCode
+                        value={qrCodeVal}
+                        size={200}
+                        getRef={(c) => (qrCodeRef.current = c)}
+                        quietZone={20}
+                      />
+
+                      <TouchableOpacity
+                        style={styles.closeButton}
+                        onPress={handleSaveQRCode}
+                      >
+                        <Text style={styles.closeButtonText}>儲存 QR Code</Text>
+                      </TouchableOpacity>
+
                       <TouchableOpacity
                         style={styles.closeButton}
                         onPress={() => setShowQRCode(false)}

@@ -7,6 +7,7 @@ import LoadingMask from '@/component/LoadingMask';
 import { useDispatch } from 'react-redux';
 import { loadAuthState } from '@/store/authSlice';
 import { AppDispatch } from '@/store/store';
+import CameraStack from './CameraStack'; // Add this import
 
 const Tab = createBottomTabNavigator();
 
@@ -15,7 +16,7 @@ const RootStackNavigator = () => {
 
   useEffect(() => {
     dispatch(loadAuthState());
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
@@ -28,6 +29,7 @@ const RootStackNavigator = () => {
         <Tab.Screen name="Main" component={MainStackNavigator} />
         <Tab.Screen name="Auth" component={AuthStackNavigator} />
         <Tab.Screen name="Admin" component={AdminStackNavigator} />
+        <Tab.Screen name="Camera" component={CameraStack} />
       </Tab.Navigator>
     </>
   );

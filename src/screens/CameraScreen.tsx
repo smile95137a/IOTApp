@@ -17,6 +17,7 @@ import { logJson } from '@/utils/logJsonUtils';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the X button
 
 const { width, height } = Dimensions.get('window');
 const SCAN_BOX_SIZE = 250;
@@ -82,7 +83,6 @@ const CameraScreen = () => {
     setScanned(true);
     try {
       const tableUid = decryptData(data);
-      logJson('asdasdasd', tableUid);
 
       const response = await fetchPoolTableByUid(tableUid);
       if (response.success) {
@@ -219,6 +219,19 @@ const CameraScreen = () => {
           <Text style={styles.tipText}>請將 QR 碼置於框內自動掃描</Text>
         </View>
       </View>
+
+      <TouchableOpacity
+        style={[styles.closeButton, { zIndex: 10 }]}
+        onPress={() => {
+          console.log('Close button pressed!');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          });
+        }}
+      >
+        <Ionicons name="close" size={32} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -306,6 +319,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     marginTop: 8,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 20,
+    padding: 10,
   },
 });
 
