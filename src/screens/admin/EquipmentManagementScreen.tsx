@@ -27,11 +27,13 @@ import {
   Store,
 } from '@/api/admin/storeApi';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 
 const EquipmentManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const [stores, setStores] = useState<Store[]>([]);
+  const { openInfoDialog } = useDialog();
 
   const loadStores = async () => {
     try {
@@ -41,11 +43,19 @@ const EquipmentManagementScreen = () => {
       if (success) {
         setStores(data);
       } else {
-        Alert.alert('錯誤', message || '無法載入店家資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入店家資訊',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -55,7 +65,7 @@ const EquipmentManagementScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      loadStores(); // 當頁面獲取焦點時刷新數據
+      loadStores();
     }, [])
   );
 

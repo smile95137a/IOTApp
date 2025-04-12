@@ -25,10 +25,12 @@ import DatePickerComponent from '@/component/DatePickerComponent';
 import NumberFormatter from '@/component/NumberFormatter';
 import NoData from '@/component/NoData';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 
 const ReportDetailScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const route = useRoute();
+  const { openInfoDialog } = useDialog();
 
   const [reportData, setReportData] = useState([]);
   const [storeId, setStoreId] = useState(route.params?.storeId || '');
@@ -55,7 +57,11 @@ const ReportDetailScreen = () => {
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 

@@ -17,12 +17,14 @@ import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 
 const MonitorViewDetailScreen = () => {
   const route = useRoute();
   const storeId = route.params?.storeId;
   const dispatch = useDispatch<AppDispatch>();
   const [monitors, setMonitors] = useState([]);
+  const { openInfoDialog } = useDialog();
 
   const loadMonitors = async () => {
     try {
@@ -40,11 +42,19 @@ const MonitorViewDetailScreen = () => {
 
         setMonitors(formattedData);
       } else {
-        Alert.alert('錯誤', '無法獲取監視器列表');
+        await openInfoDialog({
+          title: '錯誤',
+          content: '無法獲取監視器列表',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '獲取監視器失敗');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '獲取監視器失敗',
+        confirmText: '我知道了',
+      });
     }
   };
 

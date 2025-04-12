@@ -34,16 +34,19 @@ import { LinearGradient } from 'expo-linear-gradient';
 import GameOngoingScreen from '@/screens/memner-center/GameOngoingScreen';
 import MyBookHistoryScreen from '@/screens/memner-center/MyBookHistoryScreen';
 import * as ImagePicker from 'expo-image-picker';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
 
 const Stack = createStackNavigator();
 
 const MainLayout = ({ children }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const user = useSelector((state: RootState) => state.user.user); // Get user from Redux
+  const user = useSelector((state: RootState) => state.user.user);
 
   const [localUser, setLocalUser] = useState(user);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+  const { openInfoDialog } = useInfoDialog();
+
   const fetchAndSetUserInfo = async () => {
     try {
       dispatch(showLoading());
@@ -76,8 +79,10 @@ const MainLayout = ({ children }) => {
   const handleUploadPhoto = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相簿權限');
-      return;
+      return openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相簿權限',
+      });
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -93,7 +98,7 @@ const MainLayout = ({ children }) => {
       const uploadSuccess = await uploadProfileImage(user?.id, profileImage);
       dispatch(hideLoading());
       if (!uploadSuccess) {
-        Alert.alert('錯誤', '頭像上傳失敗，請稍後重試');
+        openInfoDialog({ title: '錯誤', content: '頭像上傳失敗，請稍後重試' });
       } else {
         console.log('[Upload] 頭像上傳成功');
         await fetchAndSetUserInfo();
@@ -104,8 +109,10 @@ const MainLayout = ({ children }) => {
   const handleTakePhoto = async () => {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相機權限');
-      return;
+      return openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相機權限',
+      });
     }
 
     const result = await ImagePicker.launchCameraAsync({
@@ -120,7 +127,7 @@ const MainLayout = ({ children }) => {
       const uploadSuccess = await uploadProfileImage(user?.id, profileImage);
       dispatch(hideLoading());
       if (!uploadSuccess) {
-        Alert.alert('錯誤', '頭像上傳失敗，請稍後重試');
+        openInfoDialog({ title: '錯誤', content: '頭像上傳失敗，請稍後重試' });
       } else {
         console.log('[Upload] 頭像上傳成功');
         await fetchAndSetUserInfo();

@@ -1,4 +1,5 @@
 import { fetchPoolTableByUid } from '@/api/poolTableAPI';
+import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useRoute } from '@react-navigation/native';
@@ -20,6 +21,7 @@ const ReservationScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const route = useRoute();
   const { tableUid } = route.params || {}; // 從參數中獲取桌檯 UID
+  const { openInfoDialog } = useDialog();
 
   const [poolTable, setPoolTable] = useState(null);
   const [totalAmount, setTotalAmount] = useState(200); // 預設金額 200 元
@@ -38,7 +40,11 @@ const ReservationScreen = ({ navigation }) => {
       if (response.success) {
         setPoolTable(response.data);
       } else {
-        Alert.alert('錯誤', response.message || '無法獲取桌檯資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: response.message || '無法獲取桌檯資訊',
+        });
+
         navigation.reset({
           index: 0,
           routes: [{ name: 'Main' }],

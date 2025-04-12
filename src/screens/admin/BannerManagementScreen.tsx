@@ -23,9 +23,12 @@ import Header from '@/component/Header';
 import { deleteBanner, fetchAllBanners } from '@/api/admin/BannerApi';
 import { getImageUrl } from '@/utils/ImageUtils';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 
 const BannerManagementScreen = () => {
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
+  const { openInfoDialog, openConfirmDialog } = useDialog();
+
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const [banners, setBanners] = useState([]);
@@ -38,11 +41,19 @@ const BannerManagementScreen = () => {
       if (success) {
         setBanners(data);
       } else {
-        Alert.alert('錯誤', message || '無法載入 Banner');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入 Banner',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -57,23 +68,27 @@ const BannerManagementScreen = () => {
   );
 
   const handleDelete = async (id: number) => {
-    Alert.alert('刪除確認', '確定要刪除此 Banner 嗎？', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定',
-        onPress: async () => {
-          dispatch(showLoading());
-          try {
-            await deleteBanner(id);
-            loadBanners();
-          } catch (error) {
-            Alert.alert('錯誤', '刪除失敗');
-          } finally {
-            dispatch(hideLoading());
-          }
-        },
-      },
-    ]);
+    const confirmed = await openConfirmDialog({
+      title: '刪除確認',
+      content: '確定要刪除此 Banner 嗎？',
+      confirmText: '刪除',
+      cancelText: '取消',
+    });
+    if (!confirmed) return;
+
+    dispatch(showLoading());
+    try {
+      await deleteBanner(id);
+      await loadBanners();
+    } catch (error) {
+      await openInfoDialog({
+        title: '錯誤',
+        content: '刪除失敗',
+        confirmText: '我知道了',
+      });
+    } finally {
+      dispatch(hideLoading());
+    }
   };
 
   return (

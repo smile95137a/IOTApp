@@ -1,5 +1,6 @@
 import { fetchAllUsers } from '@/api/admin/adminUserApi';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { getImageUrl } from '@/utils/ImageUtils';
@@ -23,6 +24,7 @@ const MemberManagementScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [searchText, setSearchText] = useState('');
   const [userList, setUserList] = useState<any[]>([]);
+  const { openInfoDialog } = useDialog();
 
   const filteredMembers = userList.filter((member) => {
     const keyword = searchText.toLowerCase();
@@ -42,13 +44,21 @@ const MemberManagementScreen = ({ navigation }) => {
       if (success) {
         setUserList(data);
       } else {
-        Alert.alert('錯誤', message || '無法載入資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入資訊',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      Alert.alert('錯誤', errorMessage);
+      await openInfoDialog({
+        title: '錯誤',
+        content: errorMessage,
+        confirmText: '我知道了',
+      });
     }
   };
 

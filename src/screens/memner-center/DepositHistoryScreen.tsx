@@ -6,6 +6,7 @@ import {
 import DateFormatter from '@/component/DateFormatter';
 import Header from '@/component/Header';
 import NumberFormatter from '@/component/NumberFormatter';
+import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import React, { useEffect, useState } from 'react';
@@ -14,6 +15,8 @@ import { useDispatch } from 'react-redux';
 
 const DepositHistoryScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useDialog();
+
   const [transactions, setTransactions] = useState<TransactionRecord[]>([]);
 
   useEffect(() => {
@@ -25,13 +28,16 @@ const DepositHistoryScreen = ({ navigation }: any) => {
         if (success) {
           setTransactions(data);
         } else {
-          Alert.alert('錯誤', message || '無法載入交易紀錄');
+          await openInfoDialog({
+            title: '錯誤',
+            content: message || '無法載入交易紀錄',
+          });
         }
       } catch (error) {
         dispatch(hideLoading());
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        Alert.alert('錯誤', errorMessage);
+        await openInfoDialog({ title: '錯誤', content: errorMessage });
       }
     };
 

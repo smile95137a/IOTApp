@@ -1,6 +1,7 @@
 import { checkoutGame, startGame } from '@/api/gameApi';
 import { topUp } from '@/api/paymentApi';
 import NumberFormatter from '@/component/NumberFormatter';
+import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { addAmount } from '@/store/userSlice';
@@ -21,8 +22,9 @@ import { useDispatch } from 'react-redux';
 
 const PaymentScreen = ({ navigation }: any) => {
   const route = useRoute();
-  const { type, payData, totalAmount } = route.params || {}; // 從參數中獲取付款資訊
+  const { type, payData, totalAmount } = route.params || {};
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useDialog();
 
   const handlePaymentPress = async (method) => {
     try {
@@ -63,14 +65,20 @@ const PaymentScreen = ({ navigation }: any) => {
           });
         }
       } else {
-        Alert.alert('錯誤', message || '無法載入店家資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入店家資訊',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
 
-      Alert.alert('錯誤', errorMessage);
+      await openInfoDialog({
+        title: '錯誤',
+        content: errorMessage,
+      });
     }
   };
 

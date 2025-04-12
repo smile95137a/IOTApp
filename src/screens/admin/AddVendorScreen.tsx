@@ -21,11 +21,14 @@ import { fetchAllStores } from '@/api/admin/storeApi';
 import { fetchAllUsers } from '@/api/admin/adminUserApi';
 import { Picker } from '@react-native-picker/picker';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 
 const AddVendorScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useDialog();
+
   const vendor = route.params?.vendor || null;
 
   const [name, setName] = useState(vendor?.name || '');
@@ -53,11 +56,19 @@ const AddVendorScreen = () => {
         if (response.success) {
           setUsers(response.data);
         } else {
-          Alert.alert('錯誤', '無法獲取使用者列表');
+          await openInfoDialog({
+            title: '錯誤',
+            content: '無法獲取使用者列表',
+            confirmText: '我知道了',
+          });
         }
       } catch (error) {
         dispatch(hideLoading());
-        Alert.alert('錯誤', '獲取使用者失敗，請稍後再試');
+        await openInfoDialog({
+          title: '錯誤',
+          content: '獲取使用者失敗，請稍後再試',
+          confirmText: '我知道了',
+        });
       }
     };
 
@@ -66,7 +77,11 @@ const AddVendorScreen = () => {
 
   const handleSubmit = async () => {
     if (!name.trim() || !contactInfo.trim() || !userId) {
-      Alert.alert('錯誤', '請填寫完整資訊');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請填寫完整資訊',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -90,15 +105,26 @@ const AddVendorScreen = () => {
       dispatch(hideLoading());
 
       if (response.success) {
-        Alert.alert('成功', vendor?.id ? '廠商更新成功' : '廠商新增成功', [
-          { text: '確定', onPress: () => navigation.goBack() },
-        ]);
+        await openInfoDialog({
+          title: '成功',
+          content: vendor?.id ? '廠商更新成功' : '廠商新增成功',
+          confirmText: '確定',
+        });
+        navigation.goBack();
       } else {
-        Alert.alert('錯誤', response.message || '操作失敗');
+        await openInfoDialog({
+          title: '錯誤',
+          content: response.message || '操作失敗',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 

@@ -22,13 +22,14 @@ import HeaderBar from '@/component/admin/HeaderBar';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Dimensions } from 'react-native';
+import { useDialog } from '@/context/DialogContext';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const AddNewsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
   const news = route.params?.news || {};
-
+  const { openInfoDialog } = useDialog();
   const [title, setTitle] = useState(news.title || '');
   const [content, setContent] = useState(news.content || '');
   const [status, setStatus] = useState(news.status || 'AVAILABLE');
@@ -59,7 +60,11 @@ const AddNewsScreen = () => {
 
       navigation.goBack();
     } catch (error) {
-      Alert.alert('錯誤', '操作失敗');
+      await openInfoDialog({
+        title: '操作失敗',
+        content: '請稍後再試或聯絡管理員',
+        confirmText: '我知道了',
+      });
     } finally {
       dispatch(hideLoading());
     }
@@ -68,7 +73,11 @@ const AddNewsScreen = () => {
   const handleUploadPhoto = async () => {
     let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相簿權限');
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請至設定允許存取相簿權限',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -79,7 +88,7 @@ const AddNewsScreen = () => {
     });
 
     if (!result.canceled) {
-      navigation.navigate('CropImage', {
+      (navigation as any).navigate('CropImage', {
         uri: result.assets[0].uri,
         aspectRatio: [1, 1],
         from: {
@@ -94,7 +103,11 @@ const AddNewsScreen = () => {
   const handleTakePhoto = async () => {
     let permission = await ImagePicker.requestCameraPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相機權限');
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請至設定允許存取相機權限',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -104,7 +117,7 @@ const AddNewsScreen = () => {
     });
 
     if (!result.canceled) {
-      navigation.navigate('CropImage', {
+      (navigation as any).navigate('CropImage', {
         uri: result.assets[0].uri,
         aspectRatio: [1, 1],
         from: {

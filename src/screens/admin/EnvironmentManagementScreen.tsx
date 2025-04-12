@@ -28,11 +28,13 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
+import { useDialog } from '@/context/DialogContext';
 
 const EnvironmentManagementScreen = ({ navigation }) => {
   const route = useRoute();
   const storeId = route.params?.storeId;
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog, openConfirmDialog } = useDialog();
 
   const [equipments, setEquipments] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -95,27 +97,19 @@ const EnvironmentManagementScreen = ({ navigation }) => {
     showModal();
   };
 
-  const handleDeleteEquipment = (index) => {
-    Alert.alert('確認刪除', '確定要刪除此設備嗎？', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '刪除',
-        onPress: () => {
-          const updatedEquipments = equipments.filter((_, i) => i !== index);
-          setEquipments(updatedEquipments);
-        },
-        style: 'destructive',
-      },
-    ]);
-  };
-
   const handleAddOrUpdateEquipment = async () => {
     if (
       !equipmentName.trim() ||
       !autoStartTime.trim() ||
       !autoStopTime.trim()
     ) {
-      Alert.alert('錯誤', '請填寫完整設備資訊');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請填寫完整設備資訊',
+        confirmText: '我知道了',
+      });
+      return;
+
       return;
     }
 
@@ -157,11 +151,19 @@ const EnvironmentManagementScreen = ({ navigation }) => {
       if (response.success) {
         loadVendors();
       } else {
-        Alert.alert('錯誤', '無法獲取供應商列表');
+        await openInfoDialog({
+          title: '錯誤',
+          content: '無法獲取供應商列表',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
 
     // 清空欄位 & 關閉 Modal
@@ -187,15 +189,22 @@ const EnvironmentManagementScreen = ({ navigation }) => {
           description: item.description || '',
           enabled: !!item.status,
         }));
-        console.log('OOOOOOOO', formattedData);
 
         setEquipments(formattedData);
       } else {
-        Alert.alert('錯誤', '無法獲取供應商列表');
+        await openInfoDialog({
+          title: '錯誤',
+          content: '無法獲取供應商列表',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '獲取供應商失敗');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '獲取供應商失敗',
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -221,32 +230,45 @@ const EnvironmentManagementScreen = ({ navigation }) => {
       console.log('更新設備狀態失敗:', error);
       updatedEquipments[index].enabled = !newStatus;
       setEquipments([...updatedEquipments]);
-      Alert.alert('錯誤', '無法更新設備狀態，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '無法更新設備狀態，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
   const handleDelEquipment = async (index) => {
     const equipment = equipments[index];
 
-    Alert.alert('確認刪除', `確定要刪除設備「${equipment.name}」嗎？`, [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '刪除',
-        onPress: async () => {
-          try {
-            dispatch(showLoading());
-            await deleteStoreEquipment(equipment.id); // 可能需要 API 來刪除設備
-            dispatch(hideLoading());
+    const confirmed = await openConfirmDialog({
+      title: '確認刪除',
+      content: `確定要刪除設備「${equipment.name}」嗎？`,
+      confirmText: '刪除',
+      cancelText: '取消',
+    });
 
-            loadVendors();
-            Alert.alert('成功', '設備已刪除');
-          } catch (error) {
-            dispatch(hideLoading());
-            Alert.alert('錯誤', '刪除設備失敗，請稍後再試');
-          }
-        },
-        style: 'destructive',
-      },
-    ]);
+    if (!confirmed) return;
+
+    try {
+      dispatch(showLoading());
+      await deleteStoreEquipment(equipment.id);
+      dispatch(hideLoading());
+
+      await openInfoDialog({
+        title: '成功',
+        content: '設備已刪除',
+        confirmText: '我知道了',
+      });
+
+      loadVendors();
+    } catch (error) {
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: '刪除設備失敗，請稍後再試',
+        confirmText: '我知道了',
+      });
+    }
   };
 
   return (

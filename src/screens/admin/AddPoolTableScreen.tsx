@@ -28,6 +28,7 @@ import HeaderBar from '@/component/admin/HeaderBar';
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { useDialog } from '@/context/DialogContext';
 
 type PoolTableParams = {
   poolTable?: {
@@ -58,6 +59,8 @@ const AddPoolTableScreen = () => {
   const [qrCodeVal, setQrCodeVal] = useState('');
   const [showQRCode, setShowQRCode] = useState(false);
   const [stores, setStores] = useState([]);
+  const { openInfoDialog } = useDialog();
+
   useEffect(() => {
     const loadStores = async () => {
       try {
@@ -66,13 +69,21 @@ const AddPoolTableScreen = () => {
         dispatch(hideLoading());
 
         if (response.success) {
-          setStores(response.data); // 存入店家列表
+          setStores(response.data);
         } else {
-          Alert.alert('錯誤', '無法獲取店家列表');
+          await openInfoDialog({
+            title: '錯誤',
+            content: '無法獲取店家列表',
+            confirmText: '我知道了',
+          });
         }
       } catch (error) {
         dispatch(hideLoading());
-        Alert.alert('錯誤', '獲取店家失敗，請稍後再試');
+        await openInfoDialog({
+          title: '錯誤',
+          content: '獲取店家失敗，請稍後再試',
+          confirmText: '我知道了',
+        });
       }
     };
 
@@ -81,7 +92,13 @@ const AddPoolTableScreen = () => {
 
   const handleSubmit = async () => {
     if (!tableNumber.trim() || !status.trim() || !storeId.trim()) {
-      Alert.alert('錯誤', '請填寫完整資訊');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請填寫完整資訊',
+        confirmText: '我知道了',
+      });
+      return;
+
       return;
     }
 
@@ -103,27 +120,45 @@ const AddPoolTableScreen = () => {
         dispatch(hideLoading());
 
         if (success) {
-          Alert.alert('成功', '桌檯資訊更新成功', [
-            { text: '確定', onPress: () => navigation.goBack() },
-          ]);
+          await openInfoDialog({
+            title: '成功',
+            content: '桌檯資訊更新成功',
+            confirmText: '確定',
+          });
+          navigation.goBack();
         } else {
-          Alert.alert('錯誤', message || '更新失敗');
+          await openInfoDialog({
+            title: '錯誤',
+            content: message || '更新失敗',
+            confirmText: '我知道了',
+          });
         }
       } else {
         const { success, message } = await createPoolTable(poolTableData);
         dispatch(hideLoading());
 
         if (success) {
-          Alert.alert('成功', '桌檯新增成功', [
-            { text: '確定', onPress: () => navigation.goBack() },
-          ]);
+          await openInfoDialog({
+            title: '成功',
+            content: '桌檯新增成功',
+            confirmText: '確定',
+          });
+          navigation.goBack();
         } else {
-          Alert.alert('錯誤', message || '新增失敗');
+          await openInfoDialog({
+            title: '錯誤',
+            content: message || '新增失敗',
+            confirmText: '我知道了',
+          });
         }
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
   const genQrcode = () => {
@@ -142,7 +177,11 @@ const AddPoolTableScreen = () => {
 
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('權限不足', '需要媒體存取權限才能儲存圖片');
+        await openInfoDialog({
+          title: '權限不足',
+          content: '需要媒體存取權限才能儲存圖片',
+          confirmText: '我知道了',
+        });
         return;
       }
 
@@ -157,11 +196,19 @@ const AddPoolTableScreen = () => {
         const asset = await MediaLibrary.createAssetAsync(fileUri);
         await MediaLibrary.createAlbumAsync('QRCode', asset, false);
 
-        Alert.alert('成功', '已儲存 QR Code 至相簿');
+        await openInfoDialog({
+          title: '成功',
+          content: '已儲存 QR Code 至相簿',
+          confirmText: '我知道了',
+        });
       });
     } catch (error) {
       console.error('儲存失敗', error);
-      Alert.alert('錯誤', '儲存 QR Code 時發生錯誤');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '儲存 QR Code 時發生錯誤',
+        confirmText: '我知道了',
+      });
     }
   };
 

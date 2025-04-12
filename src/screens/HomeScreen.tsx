@@ -4,7 +4,8 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
-  Alert,
+  Text,
+  TouchableOpacity,
 } from 'react-native';
 import ImageCarousel from '@/component/ImageCarousel';
 import Header from '@/component/Header';
@@ -18,6 +19,7 @@ import HomeOptionButton from '@/component/home/HomeOptionButton';
 import { LinearGradient } from 'expo-linear-gradient';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useDialog } from '@/context/DialogContext';
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [stores, setStores] = useState<any[]>([]);
@@ -74,7 +76,21 @@ const HomeScreen = ({ navigation }) => {
       setNearStores(nearest.slice(0, 1));
     }
   }, [locationData, stores]);
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
+  const handleDelete = async () => {
+    await openInfoDialog({
+      title: '操作成功',
+      content: '您已成功儲值 100 元！',
+      confirmText: '我知道了',
+    });
+    const confirmed = await openConfirmDialog({
+      title: '是否刪除資料？',
+      content: '這個動作將無法還原！',
+      confirmText: '刪除',
+      cancelText: '取消',
+    });
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient
@@ -85,7 +101,9 @@ const HomeScreen = ({ navigation }) => {
       >
         <View style={styles.container}>
           <Header isDarkMode />
-
+          <TouchableOpacity onPress={handleDelete}>
+            <Text>刪除資料</Text>
+          </TouchableOpacity>
           <ScrollView contentContainerStyle={styles.content}>
             <ImageCarousel />
             <HomeOptionButton

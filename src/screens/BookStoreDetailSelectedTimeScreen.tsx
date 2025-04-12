@@ -26,11 +26,13 @@ import TimeSlotSelector from '@/component/book/TimeSlotSelector';
 import { Alert } from 'react-native';
 import { bookGame, getAvailableTimes } from '@/api/gameApi';
 import { genRandom } from '@/utils/RandomUtils';
+import { useDialog } from '@/context/DialogContext';
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { store, tableItem, selectedDate } = route.params;
+  const { openConfirmDialog, openInfoDialog } = useDialog();
   const [tables, setTables] = useState<any[]>([]);
   const [timeSlots, setTimeSlots] = useState([]);
   const [activeTimeSlot, setActiveTimeSlot] = useState<string | null>(null);
@@ -138,65 +140,52 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
     }
   };
   //
-  const handleTimeSlotReservation = (start: string, end: string) => {
-    Alert.alert(
-      '預約桌台',
-      `確認預約 ${store.name}\n桌台 ${tableItem.uid}\n${start}~${end}？`,
-      [
-        {
-          text: '取消',
-          style: 'cancel',
-        },
-        {
-          text: '確認預約',
-          onPress: async () => {
-            try {
-              dispatch(showLoading());
+  const handleTimeSlotReservation = async (start: string, end: string) => {
+    const confirmed = await openConfirmDialog({
+      title: '預約桌台',
+      content: `確認預約 ${store.name}\n桌台 ${tableItem.uid}\n${start}~${end}？`,
+    });
 
-              const { success, data, message } = await bookGame({
-                poolTableUId: tableItem.uid,
-                bookDate: selectedDate,
-                startTime: moment(
-                  `${selectedDate} ${start}`,
-                  'YYYY-MM-DD HH:mm'
-                ).format('YYYY/MM/DD HH:mm'),
-                endTime: moment(
-                  `${selectedDate} ${end}`,
-                  'YYYY-MM-DD HH:mm'
-                ).format('YYYY/MM/DD HH:mm'),
-              });
+    if (!confirmed) return;
 
-              dispatch(hideLoading());
+    try {
+      dispatch(showLoading());
 
-              if (success) {
-                Alert.alert('預約成功', '您已成功預約桌台！', [
-                  {
-                    text: '知道了',
-                    onPress: () => {
-                      navigation.navigate('Explore', {
-                        screen: 'BookStore',
-                      });
-                    },
-                  },
-                ]);
-              } else {
-                Alert.alert('預約失敗', message || '無法完成預約，請稍後再試');
-              }
-            } catch (error: any) {
-              dispatch(hideLoading());
+      const { success, data, message } = await bookGame({
+        poolTableUId: tableItem.uid,
+        bookDate: selectedDate,
+        startTime: moment(
+          `${selectedDate} ${start}`,
+          'YYYY-MM-DD HH:mm'
+        ).format('YYYY/MM/DD HH:mm'),
+        endTime: moment(`${selectedDate} ${end}`, 'YYYY-MM-DD HH:mm').format(
+          'YYYY/MM/DD HH:mm'
+        ),
+      });
 
-              const errMsg =
-                error?.response?.data?.message ||
-                error?.message ||
-                '發生未知錯誤，請稍後再試';
+      dispatch(hideLoading());
 
-              Alert.alert('錯誤', errMsg);
-              console.log('預約發生錯誤:', error);
-            }
-          },
-        },
-      ]
-    );
+      if (success) {
+        await openInfoDialog({
+          title: '預約成功',
+          content: '您已成功預約桌台！',
+        });
+        navigation.navigate('Explore', { screen: 'BookStore' });
+      } else {
+        await openInfoDialog({
+          title: '預約失敗',
+          content: message || '無法完成預約，請稍後再試',
+        });
+      }
+    } catch (error: any) {
+      dispatch(hideLoading());
+      const errMsg =
+        error?.response?.data?.message ||
+        error?.message ||
+        '發生未知錯誤，請稍後再試';
+
+      await openInfoDialog({ title: '錯誤', content: errMsg });
+    }
   };
 
   return (

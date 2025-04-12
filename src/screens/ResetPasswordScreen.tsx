@@ -16,6 +16,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Header from '@/component/Header';
 import { resetPassword } from '@/api/authApi'; // 連接後端 API
 import { LinearGradient } from 'expo-linear-gradient';
+import { useDialog } from '@/context/DialogContext';
 
 const ResetPasswordScreen = ({ navigation }: any) => {
   const [oldPassword, setOldPassword] = useState('');
@@ -26,14 +27,24 @@ const ResetPasswordScreen = ({ navigation }: any) => {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
 
+  const { openInfoDialog } = useDialog();
+
   const handleResetPassword = async () => {
     if (!oldPassword || !newPassword || !confirmPassword) {
-      Alert.alert('錯誤', '請輸入完整資訊');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請輸入完整資訊',
+        confirmText: '我知道了',
+      });
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert('錯誤', '新密碼與確認密碼不匹配');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '新密碼與確認密碼不匹配',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -44,14 +55,26 @@ const ResetPasswordScreen = ({ navigation }: any) => {
       });
 
       if (response.success) {
-        Alert.alert('成功', '您的密碼已更新，請使用新密碼登入');
+        await openInfoDialog({
+          title: '成功',
+          content: '您的密碼已更新，請使用新密碼登入',
+          confirmText: '前往登入',
+        });
         navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
       } else {
-        Alert.alert('錯誤', response.message || '請檢查您的舊密碼');
+        await openInfoDialog({
+          title: '錯誤',
+          content: response.message || '請檢查您的舊密碼',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       console.log(`[ResetPassword] Error:`, error);
-      Alert.alert('錯誤', '無法連線到伺服器');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '無法連線到伺服器',
+        confirmText: '我知道了',
+      });
     }
   };
 

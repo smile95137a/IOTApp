@@ -17,12 +17,15 @@ import { logJson } from '@/utils/logJsonUtils';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the X button
+import { Ionicons } from '@expo/vector-icons';
+import { useDialog } from '@/context/DialogContext';
 
 const { width, height } = Dimensions.get('window');
 const SCAN_BOX_SIZE = 250;
 
 const CameraScreen = () => {
+  const { openConfirmDialog, openInfoDialog } = useDialog();
+
   const navigation = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
   const [permission, requestPermission] = useCameraPermissions();
@@ -87,68 +90,69 @@ const CameraScreen = () => {
       const response = await fetchPoolTableByUid(tableUid);
       if (response.success) {
         if (response.data.gameId) {
-          Alert.alert('已掃描到', '是否前往付款', [
-            {
-              text: '確定',
-              onPress: async () => {
-                dispatch(showLoading());
-                const { success, data, message } = await getGamePrice({
-                  gameId: response.data.gameId,
-                });
-                dispatch(hideLoading());
-                if (success) {
-                  (navigation as any).navigate('Member', {
-                    screen: 'Payment',
-                    params: {
-                      type: 'gameEnd',
-                      payData: {
-                        gameId: response.data.gameId,
-                        poolTableId: response.data.poolTableId,
-                      },
-                      totalAmount: data.price,
-                    },
-                  });
-                } else {
-                  Alert.alert('錯誤', message || '無法載入店家資訊');
-                }
-              },
-            },
-          ]);
+          const confirm = await openConfirmDialog({
+            title: '已掃描到',
+            content: '是否前往付款？',
+          });
+
+          if (confirm) {
+            dispatch(showLoading());
+            const { success, data, message } = await getGamePrice({
+              gameId: response.data.gameId,
+            });
+            dispatch(hideLoading());
+
+            if (success) {
+              (navigation as any).navigate('Member', {
+                screen: 'Payment',
+                params: {
+                  type: 'gameEnd',
+                  payData: {
+                    gameId: response.data.gameId,
+                    poolTableId: response.data.poolTableId,
+                  },
+                  totalAmount: data.price,
+                },
+              });
+            } else {
+              await openInfoDialog({
+                title: '錯誤',
+                content: message || '無法載入店家資訊',
+              });
+            }
+          }
         } else {
-          Alert.alert('已掃描到', '前往開台', [
-            {
-              text: '確定',
-              onPress: () => {
-                (navigation as any).navigate('Member', {
-                  screen: 'Reservation',
-                  params: { tableUid },
-                });
-              },
-            },
-          ]);
+          const confirm = await openConfirmDialog({
+            title: '已掃描到',
+            content: '前往開台？',
+          });
+
+          if (confirm) {
+            (navigation as any).navigate('Member', {
+              screen: 'Reservation',
+              params: { tableUid },
+            });
+          }
         }
       } else {
-        Alert.alert('已掃描到', '前往開台', [
-          {
-            text: '確定',
-            onPress: () => {
-              (navigation as any).navigate('Member', {
-                screen: 'Reservation',
-                params: { tableUid },
-              });
-            },
-          },
-        ]);
+        const confirm = await openConfirmDialog({
+          title: '已掃描到',
+          content: '前往開台？',
+        });
+
+        if (confirm) {
+          (navigation as any).navigate('Member', {
+            screen: 'Reservation',
+            params: { tableUid },
+          });
+        }
       }
     } catch (error) {
-      Alert.alert('錯誤', '發生錯誤，請重試', [
-        {
-          text: '確定',
-          onPress: () => {
-            setScanned(false);
-          },
-        },
-      ]);
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請重試',
+      });
+      setScanned(false);
     }
   };
 

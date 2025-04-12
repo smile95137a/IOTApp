@@ -31,6 +31,7 @@ import { logJson } from '@/utils/logJsonUtils';
 import { getImageUrl } from '@/utils/ImageUtils';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Constants from 'expo-constants';
+import { useDialog } from '@/context/DialogContext';
 
 const weekDays = [
   'monday',
@@ -46,6 +47,7 @@ const AddStoreScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog, openConfirmDialog } = useDialog();
 
   const store = route.params?.store || null;
   const isEditMode = !!store;
@@ -118,11 +120,19 @@ const AddStoreScreen = () => {
         if (response.success) {
           setVendors(response.data);
         } else {
-          Alert.alert('錯誤', '無法獲取供應商列表');
+          await openInfoDialog({
+            title: '錯誤',
+            content: '無法獲取供應商列表',
+            confirmText: '我知道了',
+          });
         }
       } catch (error) {
         dispatch(hideLoading());
-        Alert.alert('錯誤', '獲取供應商失敗');
+        await openInfoDialog({
+          title: '錯誤',
+          content: '獲取供應商失敗',
+          confirmText: '我知道了',
+        });
       }
     };
 
@@ -149,7 +159,11 @@ const AddStoreScreen = () => {
       !lat.trim() ||
       !lon.trim()
     ) {
-      Alert.alert('錯誤', '請填寫完整資訊');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請填寫完整資訊',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -192,22 +206,39 @@ const AddStoreScreen = () => {
       dispatch(hideLoading());
 
       if (response.success) {
-        Alert.alert('成功', isEditMode ? '店家資訊更新成功' : '店家新增成功', [
-          { text: '確定', onPress: () => navigation.goBack() },
-        ]);
+        await openInfoDialog({
+          title: '成功',
+          content: isEditMode ? '店家資訊更新成功' : '店家新增成功',
+          confirmText: '確定',
+        });
+        navigation.goBack();
       } else {
-        Alert.alert('錯誤', response.message || '操作失敗');
+        await openInfoDialog({
+          title: '錯誤',
+          content: response.message || '操作失敗',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 
   const handleUploadPhoto = async () => {
     let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相簿權限');
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相簿權限',
+        confirmText: '我知道了',
+      });
+      return;
+
       return;
     }
 
@@ -227,7 +258,13 @@ const AddStoreScreen = () => {
   const handleTakePhoto = async () => {
     let permission = await ImagePicker.requestCameraPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相機權限');
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相機權限',
+        confirmText: '我知道了',
+      });
+      return;
+
       return;
     }
 
@@ -242,26 +279,20 @@ const AddStoreScreen = () => {
     }
   };
 
-  const handleMapPress = (event) => {
+  const handleMapPress = async (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
-    Alert.alert(
-      '確認選擇',
-      `你選擇的位置：\n緯度: ${latitude}\n經度: ${longitude}`,
-      [
-        {
-          text: '取消',
-          style: 'cancel',
-        },
-        {
-          text: '確定',
-          onPress: () => {
-            setSelectedLocation({ latitude, longitude });
-            setLat(String(latitude));
-            setLon(String(longitude));
-          },
-        },
-      ]
-    );
+    const confirmed = await openConfirmDialog({
+      title: '確認選擇',
+      content: `你選擇的位置：\n緯度: ${latitude}\n經度: ${longitude}`,
+      confirmText: '確定',
+      cancelText: '取消',
+    });
+
+    if (confirmed) {
+      setSelectedLocation({ latitude, longitude });
+      setLat(String(latitude));
+      setLon(String(longitude));
+    }
   };
 
   const removeTimeSlot = (dayIndex, slotIndex) => {
@@ -270,11 +301,28 @@ const AddStoreScreen = () => {
     setPricingSchedules(updatedSchedules);
   };
 
+  const confirmRemoveTimeSlot = async (dayIndex: number, slotIndex: number) => {
+    const confirmed = await openConfirmDialog({
+      title: '確定刪除',
+      content: '你要刪除這個折扣時段嗎？',
+      confirmText: '刪除',
+      cancelText: '取消',
+    });
+
+    if (confirmed) {
+      removeTimeSlot(dayIndex, slotIndex);
+    }
+  };
+
   const geocodeAddress = async (inputAddress: string) => {
     try {
       const apiKey = Constants?.expoConfig?.extra?.eas?.googleMapsApiKey;
       if (!apiKey) {
-        Alert.alert('缺少 Google Maps API 金鑰');
+        await openInfoDialog({
+          title: '錯誤',
+          content: '缺少 Google Maps API 金鑰',
+          confirmText: '我知道了',
+        });
         return;
       }
 
@@ -660,21 +708,9 @@ const AddStoreScreen = () => {
                         />
                         {slotIndex > 0 && (
                           <TouchableOpacity
-                            onPress={() => {
-                              Alert.alert(
-                                '確定刪除',
-                                '你要刪除這個折扣時段嗎？',
-                                [
-                                  { text: '取消', style: 'cancel' },
-                                  {
-                                    text: '刪除',
-                                    style: 'destructive',
-                                    onPress: () =>
-                                      removeTimeSlot(index, slotIndex),
-                                  },
-                                ]
-                              );
-                            }}
+                            onPress={() =>
+                              confirmRemoveTimeSlot(index, slotIndex)
+                            }
                             style={{
                               marginTop: 8,
                               padding: 8,

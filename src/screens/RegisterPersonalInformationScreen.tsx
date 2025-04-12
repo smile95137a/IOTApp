@@ -25,6 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setAuth } from '@/store/authSlice';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useDialog } from '@/context/DialogContext';
 
 const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   const genderOptions = [
@@ -48,10 +49,16 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   const [anonymousId, setAnonymousId] = useState('');
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
+  const { openInfoDialog } = useDialog();
+
   const handleUploadPhoto = async () => {
     let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相簿權限');
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相簿權限',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -71,7 +78,11 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   const handleTakePhoto = async () => {
     let permission = await ImagePicker.requestCameraPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相機權限');
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相機權限',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -94,12 +105,20 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   };
   const handleNextStep = async () => {
     if (!name || !gender || !password || !uid || !confirmPassword) {
-      Alert.alert('錯誤', '請填寫所有必填欄位');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請填寫所有必填欄位',
+        confirmText: '我知道了',
+      });
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('錯誤', '密碼與確認密碼不一致');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '密碼與確認密碼不一致',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -122,7 +141,11 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
 
       if (!success) {
         dispatch(hideLoading());
-        Alert.alert('錯誤', message || '註冊失敗，請重試');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '註冊失敗，請重試',
+          confirmText: '我知道了',
+        });
         return;
       }
 
@@ -131,7 +154,11 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
       if (profileImage) {
         const uploadSuccess = await uploadProfileImage(userId, profileImage);
         if (!uploadSuccess) {
-          Alert.alert('錯誤', '頭像上傳失敗，請稍後重試');
+          await openInfoDialog({
+            title: '錯誤',
+            content: '頭像上傳失敗，請稍後重試',
+            confirmText: '我知道了',
+          });
         }
       }
 
@@ -139,13 +166,21 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
 
       if (!loginResult.success) {
         console.warn('[Login] 登入失敗:', loginResult.message);
-        Alert.alert('登入失敗', '帳號已建立，請手動登入');
+        await openInfoDialog({
+          title: '登入失敗',
+          content: '帳號已建立，請手動登入',
+          confirmText: '我知道了',
+        });
         return;
       }
       console.log('[Login] 登入成功:', loginResult.data.user);
       const { accessToken, user } = loginResult.data;
       dispatch(setAuth({ token: accessToken, user }));
-      Alert.alert('註冊成功', '歡迎加入！');
+      await openInfoDialog({
+        title: '註冊成功',
+        content: '歡迎加入！',
+        confirmText: '進入首頁',
+      });
 
       navigation.reset({
         index: 0,
@@ -156,7 +191,11 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
     } catch (error) {
       dispatch(hideLoading());
       console.log('[Error]', error);
-      Alert.alert('錯誤', '發生未知錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生未知錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
   return (

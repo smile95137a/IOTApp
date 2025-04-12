@@ -6,6 +6,10 @@ export const useInfoDialog = () => {
   const [content, setContent] = useState('');
   const [confirmText, setConfirmText] = useState('確認');
 
+  const [resolver, setResolver] = useState<((value: boolean) => void) | null>(
+    null
+  );
+
   const openInfoDialog = ({
     title = '提示訊息',
     content,
@@ -19,10 +23,18 @@ export const useInfoDialog = () => {
     setContent(content);
     setConfirmText(confirmText);
     setIsOpen(true);
+
+    return new Promise<boolean>((resolve) => {
+      setResolver(() => resolve);
+    });
   };
 
   const closeInfoDialog = () => {
     setIsOpen(false);
+    if (resolver) {
+      resolver(true);
+      setResolver(null);
+    }
   };
 
   return {

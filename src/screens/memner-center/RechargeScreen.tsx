@@ -15,10 +15,12 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { addAmount } from '@/store/userSlice';
+import { useDialog } from '@/context/DialogContext';
 
 const RechargeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [selectedOption, setSelectedOption] = useState(null);
+  const { openInfoDialog } = useDialog();
 
   const rechargeOptions = [
     { id: 1, amount: '3000', bonus: '800' },
@@ -40,7 +42,11 @@ const RechargeScreen = ({ navigation }) => {
       );
 
       if (!selected) {
-        Alert.alert('錯誤', '無法找到對應的儲值選項');
+        await openInfoDialog({
+          title: '錯誤',
+          content: '無法找到對應的儲值選項',
+        });
+
         return;
       }
       const total = ~~selected.amount + ~~selected.bonus;
@@ -50,7 +56,10 @@ const RechargeScreen = ({ navigation }) => {
         totalAmount: total,
       });
     } else {
-      Alert.alert('錯誤', '請選擇儲值金額');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請選擇儲值金額',
+      });
     }
   };
 

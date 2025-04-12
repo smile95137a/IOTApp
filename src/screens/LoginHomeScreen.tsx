@@ -15,8 +15,10 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Facebook from 'expo-auth-session/providers/facebook';
 import { useAuthRequest } from 'expo-auth-session';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useDialog } from '@/context/DialogContext';
 
 const LoginHomeScreen = ({ navigation }: any) => {
+  const { openInfoDialog } = useDialog();
   const resetAndNavigateToMain = () => {
     navigation.reset({
       index: 0,
@@ -35,7 +37,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
     if (result?.type === 'success') {
       sendTokenToBackend(result.authentication?.idToken, 'google');
     } else {
-      Alert.alert('Google 登入失敗');
+      await openInfoDialog({ title: 'Google 登入失敗', content: '請再試一次' });
     }
   };
 
@@ -50,7 +52,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
       });
       sendTokenToBackend(credential.identityToken, 'apple');
     } catch (error) {
-      Alert.alert('Apple 登入失敗');
+      await openInfoDialog({ title: 'Apple 登入失敗', content: '請再試一次' });
     }
   };
 
@@ -64,7 +66,10 @@ const LoginHomeScreen = ({ navigation }: any) => {
     if (result?.type === 'success') {
       sendTokenToBackend(result.authentication?.accessToken, 'facebook');
     } else {
-      Alert.alert('Facebook 登入失敗');
+      await openInfoDialog({
+        title: 'Facebook 登入失敗',
+        content: '請再試一次',
+      });
     }
   };
 
@@ -74,21 +79,27 @@ const LoginHomeScreen = ({ navigation }: any) => {
     provider: string
   ) => {
     if (!token) {
-      Alert.alert(`${provider} 登入失敗`);
+      await openInfoDialog({
+        title: `${provider} 登入失敗`,
+        content: '找不到授權憑證',
+      });
       return;
     }
     try {
-      const response = await axios.post(`${BACKEND_URL}/login`, {
+      const response = await axios.post(`/login`, {
         token,
         provider,
       });
-      Alert.alert(`${provider} 登入成功`);
+      await openInfoDialog({
+        title: '登入成功',
+        content: `${provider} 登入成功`,
+      });
       navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
-    } catch (error) {
-      Alert.alert(
-        `${provider} 登入失敗`,
-        error.response?.data?.message || '未知錯誤'
-      );
+    } catch (error: any) {
+      await openInfoDialog({
+        title: `${provider} 登入失敗`,
+        content: error.response?.data?.message || '未知錯誤',
+      });
     }
   };
 

@@ -15,6 +15,7 @@ import {
 import { fetchAllVendors } from '@/api/admin/vendorApi';
 import HeaderBar from '@/component/admin/HeaderBar';
 import Header from '@/component/Header';
+import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useRoute } from '@react-navigation/native';
@@ -39,6 +40,7 @@ const MonitorManagementScreen = ({ navigation }) => {
   const route = useRoute();
   const storeId = route.params?.storeId;
   const dispatch = useDispatch<AppDispatch>();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const [monitors, setMonitors] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -76,23 +78,13 @@ const MonitorManagementScreen = ({ navigation }) => {
     showModal();
   };
 
-  const handleDeleteEquipment = (index: any) => {
-    Alert.alert('確認刪除', '確定要刪除此設備嗎？', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '刪除',
-        onPress: () => {
-          const updatedMonitors = monitors.filter((_, i) => i !== index);
-          setMonitors(updatedMonitors);
-        },
-        style: 'destructive',
-      },
-    ]);
-  };
-
   const handleAddOrUpdateEquipment = async () => {
     if (!monitorName.trim()) {
-      Alert.alert('錯誤', '請填寫完整設備資訊');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請填寫完整設備資訊',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -117,11 +109,19 @@ const MonitorManagementScreen = ({ navigation }) => {
       if (response.success) {
         loadMonitors();
       } else {
-        Alert.alert('錯誤', '無法獲取供應商列表');
+        await openInfoDialog({
+          title: '錯誤',
+          content: '無法獲取供應商列表',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
 
     // 清空欄位 & 關閉 Modal
@@ -132,37 +132,46 @@ const MonitorManagementScreen = ({ navigation }) => {
     setModalVisible(false);
   };
 
-  const handleDelMonitor = (index: number) => {
-    Alert.alert('確認刪除', '確定要刪除此監視器嗎？', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '刪除',
-        onPress: async () => {
-          try {
-            dispatch(showLoading());
-            const monitorToDelete = monitors[index];
+  const handleDelMonitor = async (index: number) => {
+    const confirmed = await openConfirmDialog({
+      title: '確認刪除',
+      content: `確定要刪除設備「${monitors[index].name}」嗎？`,
+      confirmText: '刪除',
+      cancelText: '取消',
+    });
 
-            // 調用 API 刪除設備
-            const response = await deleteMonitor(monitorToDelete.id);
-            dispatch(hideLoading());
+    if (!confirmed) return;
 
-            if (response.success) {
-              // 更新狀態，從列表中移除
-              const updatedMonitors = monitors.filter((_, i) => i !== index);
-              setMonitors(updatedMonitors);
-              Alert.alert('成功', '設備已刪除');
-            } else {
-              Alert.alert('錯誤', '刪除設備失敗，請稍後再試');
-            }
-          } catch (error) {
-            dispatch(hideLoading());
-            console.log('刪除監視器失敗:', error);
-            Alert.alert('錯誤', '發生錯誤，請稍後再試');
-          }
-        },
-        style: 'destructive',
-      },
-    ]);
+    try {
+      dispatch(showLoading());
+      const monitorToDelete = monitors[index];
+      const response = await deleteMonitor(monitorToDelete.id);
+      dispatch(hideLoading());
+
+      if (response.success) {
+        const updatedMonitors = monitors.filter((_, i) => i !== index);
+        setMonitors(updatedMonitors);
+        await openInfoDialog({
+          title: '成功',
+          content: '設備已刪除',
+          confirmText: '我知道了',
+        });
+      } else {
+        await openInfoDialog({
+          title: '錯誤',
+          content: '刪除設備失敗，請稍後再試',
+          confirmText: '我知道了',
+        });
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      console.log('刪除監視器失敗:', error);
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
+    }
   };
 
   const loadMonitors = async () => {
@@ -177,15 +186,24 @@ const MonitorManagementScreen = ({ navigation }) => {
           id: item.id,
           name: item.name,
           status: !!item.status,
+          alarm: !!item.alarm,
         }));
 
         setMonitors(formattedData);
       } else {
-        Alert.alert('錯誤', '無法獲取供應商列表');
+        await openInfoDialog({
+          title: '錯誤',
+          content: '無法獲取供應商列表',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '獲取供應商失敗');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '獲取供應商失敗',
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -215,7 +233,42 @@ const MonitorManagementScreen = ({ navigation }) => {
       console.log('更新設備狀態失敗:', error);
       updatedMonitors[index].status = !newStatus;
       setMonitors([...updatedMonitors]);
-      Alert.alert('錯誤', '無法更新設備狀態，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '無法更新設備狀態，請稍後再試',
+        confirmText: '我知道了',
+      });
+    }
+  };
+
+  const toggleAlarmSwitch = async (index: number) => {
+    const selectedMonitor = monitors[index];
+    const newAlarmStatus = !selectedMonitor.alarm;
+    const updatedMonitors = [...monitors];
+    updatedMonitors[index].alarm = newAlarmStatus;
+    setMonitors(updatedMonitors);
+
+    try {
+      dispatch(showLoading());
+      await updateMonitor({
+        name: selectedMonitor.name,
+        uid: selectedMonitor.uid,
+        status: selectedMonitor.status,
+        alarm: newAlarmStatus, // 傳給後端
+        storeId: storeId,
+      });
+      dispatch(hideLoading());
+    } catch (error) {
+      console.log('更新異常狀態失敗:', error);
+      updatedMonitors[index].alarm = !newAlarmStatus;
+      setMonitors([...updatedMonitors]);
+      await openInfoDialog({
+        title: '錯誤',
+        content: '異常狀態更新失敗',
+        confirmText: '我知道了',
+      });
+
+      dispatch(hideLoading());
     }
   };
 
@@ -230,7 +283,7 @@ const MonitorManagementScreen = ({ navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <HeaderBar title="環境管理" />
+          <HeaderBar title="後檯設備管理-攝影機管理" />
         </View>
         <View style={styles.mainContainer}>
           {monitors.map((monitor, index) => (
@@ -259,6 +312,15 @@ const MonitorManagementScreen = ({ navigation }) => {
                 <Switch
                   value={monitor.status}
                   onValueChange={() => toggleSwitch(index)}
+                />
+              </View>
+              <View style={{ ...styles.row, marginTop: 5 }}>
+                <Text style={{ fontSize: 14, color: '#888' }}>
+                  異常警報訊號
+                </Text>
+                <Switch
+                  value={monitor.alarm}
+                  onValueChange={() => toggleAlarmSwitch(index)}
                 />
               </View>
             </View>

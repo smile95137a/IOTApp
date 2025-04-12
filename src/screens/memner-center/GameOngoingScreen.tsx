@@ -18,10 +18,12 @@ import {
   Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { useDialog } from '@/context/DialogContext';
 
 const GameOngoingScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const [transactions, setTransactions] = useState<GameTransactionRecord[]>([]);
+  const { openInfoDialog } = useDialog();
 
   useEffect(() => {
     const loadTransactions = async () => {
@@ -32,13 +34,19 @@ const GameOngoingScreen = ({ navigation }: any) => {
         if (success) {
           setTransactions(data);
         } else {
-          Alert.alert('錯誤', message || '無法載入資訊');
+          await openInfoDialog({
+            title: '錯誤',
+            content: message || '無法載入資訊',
+          });
         }
       } catch (error) {
         dispatch(hideLoading());
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        Alert.alert('錯誤', errorMessage);
+        await openInfoDialog({
+          title: '錯誤',
+          content: errorMessage,
+        });
       }
     };
 

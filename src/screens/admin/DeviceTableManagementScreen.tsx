@@ -5,6 +5,7 @@ import {
 } from '@/api/admin/poolTableApi';
 import HeaderBar from '@/component/admin/HeaderBar';
 import Header from '@/component/Header';
+import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import {
@@ -31,6 +32,7 @@ const DeviceTableManagementScreen = () => {
   const route = useRoute();
   const storeId = route.params?.storeId;
   const [poolTables, setPoolTables] = useState<PoolTable[]>([]);
+  const { openInfoDialog } = useDialog();
 
   const loadPoolTables = async () => {
     try {
@@ -42,11 +44,19 @@ const DeviceTableManagementScreen = () => {
       if (success) {
         setPoolTables(data);
       } else {
-        Alert.alert('錯誤', message || '無法載入桌檯資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入桌檯資訊',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -56,7 +66,7 @@ const DeviceTableManagementScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      loadPoolTables(); // 當頁面獲取焦點時刷新數據
+      loadPoolTables();
     }, [])
   );
 

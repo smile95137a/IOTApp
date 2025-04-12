@@ -26,9 +26,11 @@ import { getImageUrl } from '@/utils/ImageUtils';
 import { fetchAllRoles } from '@/api/admin/roleApi';
 import CheckBox from 'expo-checkbox';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 
 const EditMemberScreen = ({ route, navigation }) => {
   const { member } = route.params;
+  const { openInfoDialog, openConfirmDialog } = useDialog();
 
   const dispatch = useDispatch<AppDispatch>();
   const [name, setName] = useState(member.name);
@@ -51,13 +53,21 @@ const EditMemberScreen = ({ route, navigation }) => {
         if (success) {
           setRoles(data);
         } else {
-          Alert.alert('錯誤', message || '無法獲取角色資訊');
+          await openInfoDialog({
+            title: '錯誤',
+            content: message || '無法獲取角色資訊',
+            confirmText: '我知道了',
+          });
         }
       } catch (error) {
         dispatch(hideLoading());
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        Alert.alert('錯誤', errorMessage);
+        await openInfoDialog({
+          title: '錯誤',
+          content: errorMessage,
+          confirmText: '我知道了',
+        });
       }
     };
 
@@ -78,25 +88,31 @@ const EditMemberScreen = ({ route, navigation }) => {
       dispatch(hideLoading());
 
       if (success) {
-        Alert.alert('更新成功', '會員資料已更新', [
-          {
-            text: '確定',
-            onPress: () => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'MemberManagement' }],
-              });
-            },
-          },
-        ]);
+        await openInfoDialog({
+          title: '更新成功',
+          content: '會員資料已更新',
+          confirmText: '確定',
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MemberManagement' }],
+        });
       } else {
-        Alert.alert('錯誤', message || '無法更新會員資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法更新會員資訊',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      Alert.alert('錯誤', errorMessage);
+      await openInfoDialog({
+        title: '錯誤',
+        content: errorMessage,
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -106,25 +122,31 @@ const EditMemberScreen = ({ route, navigation }) => {
       const { success, message } = await addUsersToBlacklist([member.id]);
       dispatch(hideLoading());
       if (success) {
-        Alert.alert('操作成功', `${name} 已加入黑名單`, [
-          {
-            text: '確定',
-            onPress: () => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'MemberManagement' }],
-              });
-            },
-          },
-        ]);
+        await openInfoDialog({
+          title: '操作成功',
+          content: `${name} 已加入黑名單`,
+          confirmText: '確定',
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MemberManagement' }],
+        });
       } else {
-        Alert.alert('錯誤', message || '無法載入資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入資訊',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      Alert.alert('錯誤', errorMessage);
+      await openInfoDialog({
+        title: '錯誤',
+        content: errorMessage,
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -134,62 +156,32 @@ const EditMemberScreen = ({ route, navigation }) => {
       const { success, message } = await removeUsersFromBlacklist([member.id]);
       dispatch(hideLoading());
       if (success) {
-        Alert.alert('操作成功', `${name} 已移出黑名單`, [
-          {
-            text: '確定',
-            onPress: () => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'MemberManagement' }],
-              });
-            },
-          },
-        ]);
+        await openInfoDialog({
+          title: '操作成功',
+          content: `${name} 已移出黑名單`,
+          confirmText: '確定',
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MemberManagement' }],
+        });
       } else {
-        Alert.alert('錯誤', message || '無法載入資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入資訊',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      Alert.alert('錯誤', errorMessage);
+      await openInfoDialog({
+        title: '錯誤',
+        content: errorMessage,
+        confirmText: '我知道了',
+      });
     }
-  };
-
-  const handleDeleteUser = async () => {
-    Alert.alert('刪除確認', `確定要刪除 ${name} 嗎？`, [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定',
-        onPress: async () => {
-          try {
-            dispatch(showLoading());
-            const { success, message } = await deleteUser(member.id);
-            dispatch(hideLoading());
-            if (success) {
-              Alert.alert('刪除成功', '用戶已刪除', [
-                {
-                  text: '確定',
-                  onPress: () => {
-                    navigation.reset({
-                      index: 0,
-                      routes: [{ name: 'MemberManagement' }],
-                    });
-                  },
-                },
-              ]);
-            } else {
-              Alert.alert('錯誤', message || '無法載入資訊');
-            }
-          } catch (error) {
-            dispatch(hideLoading());
-            const errorMessage =
-              error instanceof Error ? error.message : String(error);
-            Alert.alert('錯誤', errorMessage);
-          }
-        },
-      },
-    ]);
   };
 
   const toggleRoleSelection = (roleName) => {

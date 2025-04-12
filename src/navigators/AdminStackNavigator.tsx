@@ -109,7 +109,8 @@ const menuItems = {
 const CustomDrawerContent = (props: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
-  const [menus, setMenus] = useState([]); // 改變名稱以符合邏輯
+  const [menus, setMenus] = useState([]);
+  const { openInfoDialog } = useDialog();
 
   const loadMenus = async () => {
     try {
@@ -121,11 +122,17 @@ const CustomDrawerContent = (props: any) => {
         const sortedMenus = data.sort((a, b) => a.menuOrder - b.menuOrder);
         setMenus(sortedMenus);
       } else {
-        Alert.alert('錯誤', message || '無法載入選單');
+        openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入選單',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+      });
     }
   };
 
@@ -428,6 +435,7 @@ import MonitorViewScreen from '@/screens/admin/MonitorViewScreen';
 import MonitorViewDetailScreen from '@/screens/admin/MonitorViewDetailScreen';
 import PoolTableStoreManagementScreen from '@/screens/admin/PoolTableStoreManagementScreen';
 import CropImageScreen from '@/component/CropImageScreen';
+import { useDialog } from '@/context/DialogContext';
 
 const ReportStack = () => {
   const user = useSelector((state: RootState) => state.user);

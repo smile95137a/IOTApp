@@ -12,19 +12,29 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { useDialog } from '@/context/DialogContext';
 
 const AddPromotionScreen = ({ route, navigation }) => {
   const [promotionName, setPromotionName] = useState('');
   const [promotionAmount, setPromotionAmount] = useState('');
   const [actualCharge, setActualCharge] = useState('');
-  const [imageUri, setImageUri] = useState(null); // 儲存上傳圖片的路徑
+  const [imageUri, setImageUri] = useState(null);
+  const { openInfoDialog } = useDialog();
 
   const handleSelectImage = () => {
     launchImageLibrary({ mediaType: 'photo' }, (response) => {
       if (response.didCancel) {
-        Alert.alert('取消', '您已取消選擇圖片');
-      } else if (response.logMessage) {
-        Alert.alert('錯誤', response.logMessage);
+        openInfoDialog({
+          title: '取消',
+          content: '您已取消選擇圖片',
+          confirmText: '我知道了',
+        });
+      } else if (response.errorCode || response.errorMessage) {
+        openInfoDialog({
+          title: '錯誤',
+          content: response.errorMessage || '圖片選取失敗',
+          confirmText: '我知道了',
+        });
       } else {
         const uri = response.assets[0]?.uri;
         setImageUri(uri);

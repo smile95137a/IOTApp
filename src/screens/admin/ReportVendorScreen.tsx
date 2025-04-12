@@ -28,11 +28,14 @@ import {
 } from '@/api/admin/storeApi';
 import { Vendor, fetchAllVendors, deleteVendor } from '@/api/admin/vendorApi';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 
 const ReportVendorScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const navigation = useNavigation();
+
+  const { openInfoDialog, openConfirmDialog } = useDialog();
 
   const loadVendors = async () => {
     try {
@@ -42,14 +45,19 @@ const ReportVendorScreen = () => {
       if (success) {
         setVendors(data);
       } else {
-        Alert.alert('錯誤', message || '無法載入資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入資訊',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert(
-        '錯誤',
-        error instanceof Error ? error.message : String(error)
-      );
+      await openInfoDialog({
+        title: '錯誤',
+        content: error instanceof Error ? error.message : String(error),
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -59,39 +67,9 @@ const ReportVendorScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      loadVendors(); // 當頁面獲取焦點時刷新數據
+      loadVendors();
     }, [])
   );
-
-  // 刪除廠商
-  const handleDelete = (vendorId, vendorName) => {
-    Alert.alert('確認刪除', `確定要刪除廠商「${vendorName}」嗎？`, [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '刪除',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            dispatch(showLoading());
-            console.log('AAAAAAAAAA', vendorId);
-
-            const response = await deleteVendor(vendorId);
-            dispatch(hideLoading());
-
-            if (response.success) {
-              Alert.alert('成功', '廠商已刪除');
-              loadVendors(); // 重新載入列表
-            } else {
-              Alert.alert('錯誤', response.message || '刪除失敗');
-            }
-          } catch (error) {
-            dispatch(hideLoading());
-            Alert.alert('錯誤', '刪除失敗，請稍後再試');
-          }
-        },
-      },
-    ]);
-  };
 
   return (
     <Provider>

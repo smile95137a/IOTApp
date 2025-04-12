@@ -4,6 +4,7 @@ import {
 } from '@/api/transactionApi';
 import DateFormatter from '@/component/DateFormatter';
 import NumberFormatter from '@/component/NumberFormatter';
+import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import React, { useEffect, useState } from 'react';
@@ -12,6 +13,7 @@ import { useDispatch } from 'react-redux';
 
 const TransactionHistoryScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useDialog();
   const [transactions, setTransactions] = useState<GameTransactionRecord[]>([]);
 
   useEffect(() => {
@@ -23,13 +25,19 @@ const TransactionHistoryScreen = ({ navigation }: any) => {
         if (success) {
           setTransactions(data);
         } else {
-          Alert.alert('錯誤', message || '無法載入資訊');
+          await openInfoDialog({
+            title: '錯誤',
+            content: message || '無法載入資訊',
+          });
         }
       } catch (error) {
         dispatch(hideLoading());
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        Alert.alert('錯誤', errorMessage);
+        await openInfoDialog({
+          title: '錯誤',
+          content: error instanceof Error ? error.message : String(error),
+        });
       }
     };
 

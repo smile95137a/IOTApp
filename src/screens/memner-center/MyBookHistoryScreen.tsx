@@ -12,11 +12,12 @@ import {
   Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { useDialog } from '@/context/DialogContext';
 
 const GameHistoryScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const [transactions, setTransactions] = useState<GameTransactionRecord[]>([]);
-
+  const { openInfoDialog, openConfirmDialog } = useDialog();
   const loadTransactions = async () => {
     try {
       dispatch(showLoading());
@@ -25,13 +26,21 @@ const GameHistoryScreen = ({ navigation }: any) => {
       if (success) {
         setTransactions(data);
       } else {
-        Alert.alert('錯誤', message || '無法載入資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入資訊',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      Alert.alert('錯誤', errorMessage);
+      await openInfoDialog({
+        title: '錯誤',
+        content: errorMessage,
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -39,58 +48,78 @@ const GameHistoryScreen = ({ navigation }: any) => {
     loadTransactions();
   }, []);
 
-  const handleBookAction = (item: GameTransactionRecord) => {
-    Alert.alert('選擇操作', '請選擇要對預約進行的操作', [
-      {
-        text: '取消預約',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            dispatch(showLoading());
-            const res = await cancelBook({ gameId: item.gameId });
-            dispatch(hideLoading());
-            if (res.success) {
-              Alert.alert('已取消預約');
-              loadTransactions();
-            } else {
-              Alert.alert('錯誤', res.message || '取消失敗');
-            }
-          } catch (err) {
-            dispatch(hideLoading());
-            Alert.alert(
-              '錯誤',
-              err instanceof Error ? err.message : '取消失敗'
-            );
-          }
-        },
-      },
-      {
-        text: '開台（開始遊戲）',
-        onPress: async () => {
-          try {
-            dispatch(showLoading());
-            const res = await bookStart({
-              gameId: item.gameId,
-              poolTableId: item.poolTableId,
-            });
-            dispatch(hideLoading());
-            if (res.success) {
-              Alert.alert('遊戲已啟動');
-              loadTransactions();
-            } else {
-              Alert.alert('錯誤', res.message || '開台失敗');
-            }
-          } catch (err) {
-            dispatch(hideLoading());
-            const msg =
-              err?.response?.data?.message ||
-              (err instanceof Error ? err.message : '開台失敗');
-            Alert.alert('錯誤', msg);
-          }
-        },
-      },
-      { text: '取消', style: 'cancel' },
-    ]);
+  const handleBookAction = async (item: GameTransactionRecord) => {
+    const confirmed = await openConfirmDialog({
+      title: '預約操作',
+      content: '請選擇要對預約進行的操作',
+      confirmText: '開台（開始遊戲）',
+      cancelText: '取消預約',
+    });
+
+    if (confirmed) {
+      // 開台流程
+      try {
+        dispatch(showLoading());
+        const res = await bookStart({
+          gameId: item.gameId,
+          poolTableId: item.poolTableId,
+        });
+        dispatch(hideLoading());
+        if (res.success) {
+          await openInfoDialog({
+            title: '成功',
+            content: '遊戲已啟動',
+            confirmText: '我知道了',
+          });
+          loadTransactions();
+        } else {
+          await openInfoDialog({
+            title: '錯誤',
+            content: res.message || '開台失敗',
+            confirmText: '我知道了',
+          });
+        }
+      } catch (err) {
+        dispatch(hideLoading());
+        const msg =
+          err?.response?.data?.message ||
+          (err instanceof Error ? err.message : '開台失敗');
+        await openInfoDialog({
+          title: '錯誤',
+          content: msg,
+          confirmText: '我知道了',
+        });
+      }
+    } else {
+      // 取消預約流程
+      try {
+        dispatch(showLoading());
+        const res = await cancelBook({ gameId: item.gameId });
+        dispatch(hideLoading());
+        if (res.success) {
+          await openInfoDialog({
+            title: '已取消預約',
+            content: '',
+            confirmText: '我知道了',
+          });
+          loadTransactions();
+        } else {
+          await openInfoDialog({
+            title: '錯誤',
+            content: res.message || '取消失敗',
+            confirmText: '我知道了',
+          });
+        }
+      } catch (err) {
+        dispatch(hideLoading());
+        const msg = err instanceof Error ? err.message : '取消失敗';
+        await openInfoDialog({
+          title: '錯誤',
+          content: msg,
+          confirmText: '我知道了',
+        });
+      }
+    }
   };
 
   const renderStatus = (status: string) => {

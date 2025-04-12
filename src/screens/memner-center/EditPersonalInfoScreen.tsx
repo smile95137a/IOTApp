@@ -29,6 +29,7 @@ import { loginUser } from '@/api/authApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logOut, setAuth } from '@/store/authSlice';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useDialog } from '@/context/DialogContext';
 
 const EditPersonalInfoScreen = ({ route, navigation }: any) => {
   const genderOptions = [
@@ -43,11 +44,17 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
   const [localUser, setLocalUser] = useState(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
+  const { openInfoDialog } = useDialog();
+
   // 選擇相簿照片
   const handleUploadPhoto = async () => {
     let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相簿權限');
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相簿權限',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -67,7 +74,11 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
   const handleTakePhoto = async () => {
     let permission = await ImagePicker.requestCameraPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相機權限');
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相機權限',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -84,7 +95,11 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
 
   const handleNextStep = async () => {
     if (!name || !email) {
-      Alert.alert('錯誤', '請填寫所有必填欄位');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請填寫所有必填欄位',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -100,7 +115,11 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
 
       if (!success) {
         dispatch(hideLoading());
-        Alert.alert('錯誤', message || '更新失敗，請重試');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '更新失敗，請重試',
+          confirmText: '我知道了',
+        });
         return;
       }
 
@@ -112,7 +131,11 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
         const uploadSuccess = await uploadProfileImage(userId, profileImage);
         if (!uploadSuccess) {
           console.warn('[Upload] 頭像上傳失敗');
-          Alert.alert('錯誤', '頭像上傳失敗，請稍後重試');
+          await openInfoDialog({
+            title: '錯誤',
+            content: '頭像上傳失敗，請稍後重試',
+            confirmText: '我知道了',
+          });
         } else {
           console.log('[Upload] 頭像上傳成功');
         }
@@ -120,14 +143,12 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
 
       dispatch(hideLoading());
       if (email !== localUser.email) {
-        Alert.alert('訊息', '已更改email請重新登入', [
-          {
-            text: '確定',
-            onPress: () => {
-              dispatch(logOut());
-            },
-          },
-        ]);
+        await openInfoDialog({
+          title: '訊息',
+          content: '已更改 email，請重新登入',
+          confirmText: '確定',
+        });
+        dispatch(logOut());
       }
       navigation.reset({
         index: 0,
@@ -136,7 +157,11 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
     } catch (error) {
       dispatch(hideLoading());
       console.log('[Error]', error);
-      Alert.alert('錯誤', '發生未知錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生未知錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 

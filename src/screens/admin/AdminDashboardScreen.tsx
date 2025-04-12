@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import { Menu, Provider } from 'react-native-paper';
 import { fetchAllStores, fetchStoresByVendorId } from '@/api/admin/storeApi';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useDialog } from '@/context/DialogContext';
 
 const AdminDashboardScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -30,6 +31,9 @@ const AdminDashboardScreen = ({ navigation }) => {
 
   const [stores, setStores] = useState<any[]>([]);
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
+
+  const { openInfoDialog } = useDialog();
+
   const loadTurnoverData = async () => {
     try {
       dispatch(showLoading());
@@ -46,11 +50,19 @@ const AdminDashboardScreen = ({ navigation }) => {
           setMonthTransactionCount(data.monthTransactionCount);
         }
       } else {
-        Alert.alert('錯誤', message || '無法載入營收資料');
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入營收資料',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -63,11 +75,19 @@ const AdminDashboardScreen = ({ navigation }) => {
       if (response.success) {
         setStores(response.data);
       } else {
-        Alert.alert('錯誤', response.message || '無法載入店家資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: response.message || '無法載入店家資訊',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 

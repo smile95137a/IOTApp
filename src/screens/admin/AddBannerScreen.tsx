@@ -26,10 +26,13 @@ import { getImageUrl } from '@/utils/ImageUtils';
 import HeaderBar from '@/component/admin/HeaderBar';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { logJson } from '@/utils/logJsonUtils';
+import { useDialog } from '@/context/DialogContext';
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
+  const { openInfoDialog } = useDialog();
+
   const banner = route.params?.banner || {};
   const croppedImageUri = route.params?.croppedImageUri;
 
@@ -78,8 +81,11 @@ const AddBannerScreen = () => {
       navigation.goBack();
     } catch (error) {
       console.log(error);
-
-      Alert.alert('錯誤', '操作失敗');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '操作失敗，請稍後再試',
+        confirmText: '我知道了',
+      });
     } finally {
       dispatch(hideLoading());
     }
@@ -88,7 +94,11 @@ const AddBannerScreen = () => {
   const handleUploadPhoto = async () => {
     let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相簿權限');
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相簿權限',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -99,7 +109,7 @@ const AddBannerScreen = () => {
     });
 
     if (!result.canceled) {
-      navigation.navigate('CropImage', {
+      (navigation as any).navigate('CropImage', {
         uri: result.assets[0].uri,
         aspectRatio: [16, 9],
         from: {
@@ -115,7 +125,11 @@ const AddBannerScreen = () => {
   const handleTakePhoto = async () => {
     let permission = await ImagePicker.requestCameraPermissionsAsync();
     if (permission.status !== 'granted') {
-      Alert.alert('權限不足', '請允許存取相機權限');
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相機權限',
+        confirmText: '我知道了',
+      });
       return;
     }
 
@@ -125,7 +139,7 @@ const AddBannerScreen = () => {
     });
 
     if (!result.canceled) {
-      navigation.navigate('CropImage', {
+      (navigation as any).navigate('CropImage', {
         uri: result.assets[0].uri,
         aspectRatio: [16, 9],
         from: {

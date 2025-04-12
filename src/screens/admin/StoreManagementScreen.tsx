@@ -26,6 +26,7 @@ import {
   fetchStoresByVendorId,
 } from '@/api/admin/storeApi';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 
 const StoreManagementScreen = () => {
   const route = useRoute();
@@ -34,6 +35,8 @@ const StoreManagementScreen = () => {
   const [stores, setStores] = useState([]);
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
   const vendor = route.params?.vendor;
+
+  const { openInfoDialog, openConfirmDialog } = useDialog();
 
   const loadStores = async () => {
     try {
@@ -46,11 +49,19 @@ const StoreManagementScreen = () => {
       if (response.success) {
         setStores(response.data);
       } else {
-        Alert.alert('錯誤', response.message || '無法載入店家資訊');
+        await openInfoDialog({
+          title: '錯誤',
+          content: response.message || '無法載入店家資訊',
+          confirmText: '我知道了',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -64,31 +75,43 @@ const StoreManagementScreen = () => {
     }, [])
   );
 
-  const handleDelete = (storeUid, storeName) => {
-    Alert.alert('確認刪除', `確定要刪除店家「${storeName}」嗎？`, [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '刪除',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            dispatch(showLoading());
-            const response = await deleteStore(storeUid);
-            dispatch(hideLoading());
+  const handleDelete = async (storeUid, storeName) => {
+    const confirmed = await openConfirmDialog({
+      title: '確認刪除',
+      content: `確定要刪除店家「${storeName}」嗎？`,
+      confirmText: '刪除',
+      cancelText: '取消',
+    });
 
-            if (response.success) {
-              Alert.alert('成功', '店家已刪除');
-              loadStores();
-            } else {
-              Alert.alert('錯誤', response.message || '刪除失敗');
-            }
-          } catch (error) {
-            dispatch(hideLoading());
-            Alert.alert('錯誤', '刪除失敗，請稍後再試');
-          }
-        },
-      },
-    ]);
+    if (!confirmed) return;
+
+    try {
+      dispatch(showLoading());
+      const response = await deleteStore(storeUid);
+      dispatch(hideLoading());
+
+      if (response.success) {
+        await openInfoDialog({
+          title: '成功',
+          content: '店家已刪除',
+          confirmText: '我知道了',
+        });
+        loadStores();
+      } else {
+        await openInfoDialog({
+          title: '錯誤',
+          content: response.message || '刪除失敗',
+          confirmText: '我知道了',
+        });
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: '刪除失敗，請稍後再試',
+        confirmText: '我知道了',
+      });
+    }
   };
 
   return (

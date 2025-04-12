@@ -22,6 +22,7 @@ import { loginUser } from '@/api/authApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useDialog } from '@/context/DialogContext';
 
 const LoginScreen = ({ route, navigation }: any) => {
   const { loginType } = route.params || { loginType: 'phone' };
@@ -31,6 +32,7 @@ const LoginScreen = ({ route, navigation }: any) => {
   const [password, setPassword] = useState('');
   const pickerRef = useRef<RNPickerSelect>(null);
   const dispatch = useDispatch();
+  const { openInfoDialog } = useDialog();
 
   const countryCodes = [
     { label: '+886', value: '+886' },
@@ -46,7 +48,10 @@ const LoginScreen = ({ route, navigation }: any) => {
 
   const handleLogin = async () => {
     if (!inputValue || !password) {
-      Alert.alert('錯誤', '請輸入完整資訊');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請輸入完整資訊',
+      });
       return;
     }
 
@@ -67,12 +72,18 @@ const LoginScreen = ({ route, navigation }: any) => {
           routes: [{ name: 'Main' }],
         });
       } else {
-        Alert.alert('登入失敗', response.message || '請檢查您的帳號密碼');
+        await openInfoDialog({
+          title: '登入失敗',
+          content: response.message || '請檢查您的帳號密碼',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
       console.log(`[Login] Error:`, error);
-      Alert.alert('錯誤', '無法連線到伺服器');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '無法連線到伺服器',
+      });
     }
   };
 

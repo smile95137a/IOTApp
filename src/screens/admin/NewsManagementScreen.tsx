@@ -24,9 +24,12 @@ import { deleteBanner, fetchAllBanners } from '@/api/admin/BannerApi';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { deleteNewsById, fetchAllNews } from '@/api/admin/newsApi';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 
 const NewsManagementScreen = () => {
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
+  const { openInfoDialog, openConfirmDialog } = useDialog();
+
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const [newsList, setNewsList] = useState([]);
@@ -44,7 +47,11 @@ const NewsManagementScreen = () => {
       }
     } catch (error) {
       dispatch(hideLoading());
-      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+      await openInfoDialog({
+        title: '錯誤',
+        content: '發生錯誤，請稍後再試',
+        confirmText: '我知道了',
+      });
     }
   };
 
@@ -59,23 +66,33 @@ const NewsManagementScreen = () => {
   );
 
   const handleDelete = async (id: string) => {
-    Alert.alert('刪除確認', '確定要刪除此最新消息嗎？', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定',
-        onPress: async () => {
-          try {
-            dispatch(showLoading());
-            await deleteNewsById(id);
-            await loadNews();
-          } catch (error) {
-            Alert.alert('錯誤', '刪除失敗');
-          } finally {
-            dispatch(hideLoading());
-          }
-        },
-      },
-    ]);
+    const confirmed = await openConfirmDialog({
+      title: '刪除確認',
+      content: '確定要刪除此最新消息嗎？',
+      confirmText: '刪除',
+      cancelText: '取消',
+    });
+
+    if (!confirmed) return;
+
+    try {
+      dispatch(showLoading());
+      await deleteNewsById(id);
+      await openInfoDialog({
+        title: '成功',
+        content: '最新消息已刪除',
+        confirmText: '我知道了',
+      });
+      await loadNews();
+    } catch (error) {
+      await openInfoDialog({
+        title: '錯誤',
+        content: '刪除失敗',
+        confirmText: '我知道了',
+      });
+    } finally {
+      dispatch(hideLoading());
+    }
   };
 
   return (

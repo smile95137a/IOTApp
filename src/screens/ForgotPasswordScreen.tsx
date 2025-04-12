@@ -14,22 +14,26 @@ import {
 } from 'react-native';
 import Header from '@/component/Header'; // 假設你已有 Header component
 import { LinearGradient } from 'expo-linear-gradient';
+import { useDialog } from '@/context/DialogContext';
 
 const ForgotPasswordScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
+  const { openInfoDialog } = useDialog();
 
   const handleResetPassword = async () => {
     if (!email) {
-      Alert.alert('錯誤', '請輸入 Email');
+      await openInfoDialog({ title: '錯誤', content: '請輸入 Email' });
       return;
     }
     try {
       // 呼叫後端 API 發送重設密碼連結
-      // 例如：await forgotPassword(email);
-      Alert.alert('成功', '已發送重設密碼的連結到您的信箱');
+      await openInfoDialog({
+        title: '成功',
+        content: '已發送重設密碼的連結到您的信箱',
+      });
       navigation.goBack();
     } catch (error) {
-      Alert.alert('錯誤', '無法發送重設密碼請求');
+      await openInfoDialog({ title: '錯誤', content: '無法發送重設密碼請求' });
     }
   };
 
