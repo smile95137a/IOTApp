@@ -43,7 +43,6 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
-  const [uid, setUid] = useState(genRandomNumbers(20));
   const [confirmPassword, setConfirmPassword] = useState('');
   const [gender, setGender] = useState('');
   const [anonymousId, setAnonymousId] = useState('');
@@ -104,7 +103,7 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
     });
   };
   const handleNextStep = async () => {
-    if (!name || !gender || !password || !uid || !confirmPassword) {
+    if (!name || !gender || !password || !confirmPassword) {
       await openInfoDialog({
         title: '錯誤',
         content: '請填寫所有必填欄位',
@@ -131,7 +130,6 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
       phone,
       countryCode,
       verificationCode,
-      uid,
     };
 
     try {
@@ -273,18 +271,6 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
                     placeholder="請輸入匿名ID"
                     value={anonymousId}
                     onChangeText={setAnonymousId}
-                  />
-                </View>
-              </View>
-              {/* UID */}
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>UID *</Text>
-                <View style={styles.inputWrapper}>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="請輸入 UID"
-                    value={uid}
-                    onChangeText={setUid}
                   />
                 </View>
               </View>

@@ -22,7 +22,7 @@ import { useDispatch } from 'react-redux';
 
 const PaymentScreen = ({ navigation }: any) => {
   const route = useRoute();
-  const { type, payData, totalAmount } = route.params || {};
+  const { type, payData, totalAmount, rechargeOption } = route.params || {};
   const dispatch = useDispatch<AppDispatch>();
   const { openInfoDialog } = useDialog();
 
@@ -42,8 +42,9 @@ const PaymentScreen = ({ navigation }: any) => {
         });
       } else if (type === 'recharge') {
         result = await await topUp({
-          price: totalAmount,
+          price: rechargeOption.amount,
           payType: 1,
+          point: rechargeOption.bonus,
         });
       } else {
         result = await startGame({ poolTableUId: payData.uid });

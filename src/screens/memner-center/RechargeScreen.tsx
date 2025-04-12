@@ -54,6 +54,7 @@ const RechargeScreen = ({ navigation }) => {
       navigation.navigate('Payment', {
         type: 'recharge',
         totalAmount: total,
+        rechargeOption: selected,
       });
     } else {
       await openInfoDialog({

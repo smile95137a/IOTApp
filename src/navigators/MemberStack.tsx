@@ -35,6 +35,7 @@ import GameOngoingScreen from '@/screens/memner-center/GameOngoingScreen';
 import MyBookHistoryScreen from '@/screens/memner-center/MyBookHistoryScreen';
 import * as ImagePicker from 'expo-image-picker';
 import { useInfoDialog } from '@/hooks/useInfoDialog';
+import { logJson } from '@/utils/logJsonUtils';
 
 const Stack = createStackNavigator();
 
@@ -57,6 +58,7 @@ const MainLayout = ({ children }) => {
         console.log('[User Info] API Response:', response.data);
         dispatch(setUser(response.data));
         setLocalUser(response.data);
+        logJson('setLocalUser', response.data);
       } else {
         console.warn('[User Info] Fetch failed:', response.message);
       }
@@ -162,14 +164,28 @@ const MainLayout = ({ children }) => {
           <View style={styles.userInfoContainer}>
             <View style={styles.userInfoLeft}>
               <TouchableOpacity onPress={handleChangeAvatar}>
-                <Image
-                  src={getImageUrl(localUser?.imgUrl)}
-                  style={styles.avatar}
-                />
+                {localUser?.imgUrl ? (
+                  <Image
+                    source={{ uri: getImageUrl(localUser.imgUrl) }}
+                    style={styles.avatar}
+                  />
+                ) : localUser?.gender === 'female' ? (
+                  <Image
+                    source={require('@/assets/iot-girl.png')}
+                    style={styles.avatar}
+                  />
+                ) : (
+                  <Image
+                    source={require('@/assets/iot-boy.png')}
+                    style={styles.avatar}
+                  />
+                )}
               </TouchableOpacity>
             </View>
             <View style={styles.userInfoRight}>
-              <Text style={styles.userName}>{localUser?.name || ''}</Text>
+              <Text style={styles.userName}>
+                {localUser?.anonymousId || localUser?.name}
+              </Text>
               <Text style={styles.userBalance}>
                 餘額：
                 <NumberFormatter number={localUser?.amount ?? 0} />元
