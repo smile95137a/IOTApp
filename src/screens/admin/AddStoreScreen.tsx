@@ -30,6 +30,8 @@ import HeaderBar from '@/component/admin/HeaderBar';
 import { logJson } from '@/utils/logJsonUtils';
 import { getImageUrl } from '@/utils/ImageUtils';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Constants from 'expo-constants';
+
 const weekDays = [
   'monday',
   'tuesday',
@@ -262,6 +264,52 @@ const AddStoreScreen = () => {
     );
   };
 
+  const removeTimeSlot = (dayIndex, slotIndex) => {
+    const updatedSchedules = [...pricingSchedules];
+    updatedSchedules[dayIndex].timeSlots.splice(slotIndex, 1);
+    setPricingSchedules(updatedSchedules);
+  };
+
+  const geocodeAddress = async (inputAddress: string) => {
+    try {
+      const apiKey = Constants?.expoConfig?.extra?.eas?.googleMapsApiKey;
+      if (!apiKey) {
+        Alert.alert('缺少 Google Maps API 金鑰');
+        return;
+      }
+
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+          inputAddress
+        )}&key=${apiKey}`
+      );
+      const data = await response.json();
+
+      if (data.status === 'OK') {
+        const location = data.results[0].geometry.location;
+        setLat(location.lat.toString());
+        setLon(location.lng.toString());
+        setSelectedLocation({
+          latitude: location.lat,
+          longitude: location.lng,
+        });
+      } else {
+      }
+    } catch (error) {}
+  };
+  const splitTime = (timeStr) => {
+    const [hour, minute] = timeStr.split(':');
+    return {
+      hour: parseInt(hour, 10),
+      minute: parseInt(minute, 10),
+    };
+  };
+
+  const formatTime = (hour, minute) =>
+    `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const minutes = Array.from({ length: 60 }, (_, i) => i);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeArea}>
@@ -294,6 +342,11 @@ const AddStoreScreen = () => {
                 placeholder="地址"
                 value={address}
                 onChangeText={setAddress}
+                onBlur={() => {
+                  if (address.trim()) {
+                    geocodeAddress(address);
+                  }
+                }}
               />
 
               <Picker
@@ -343,7 +396,7 @@ const AddStoreScreen = () => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="保證金 (可選)"
+                placeholder="最低消費金額"
                 keyboardType="numeric"
                 value={deposit}
                 onChangeText={setDeposit}
@@ -368,24 +421,100 @@ const AddStoreScreen = () => {
                   </Text>
 
                   <Text>營業開始時間</Text>
-                  <TextInput
-                    value={schedule.openTime}
-                    onChangeText={(text) =>
-                      updateSchedule(index, 'openTime', text)
-                    }
-                    placeholder="開放時間"
-                    style={styles.input}
-                  />
+                  <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+                    <Picker
+                      selectedValue={String(splitTime(schedule.openTime).hour)}
+                      style={[styles.picker, { flex: 1 }]}
+                      onValueChange={(hourStr) => {
+                        const hour = parseInt(hourStr, 10);
+                        const { minute } = splitTime(schedule.openTime);
+                        updateSchedule(
+                          index,
+                          'openTime',
+                          formatTime(hour, minute)
+                        );
+                      }}
+                    >
+                      {hours.map((h) => (
+                        <Picker.Item
+                          key={h}
+                          label={`${h} 時`}
+                          value={String(h)}
+                        />
+                      ))}
+                    </Picker>
+                    <Picker
+                      selectedValue={String(
+                        splitTime(schedule.openTime).minute
+                      )}
+                      style={[styles.picker, { flex: 1 }]}
+                      onValueChange={(minStr) => {
+                        const minute = parseInt(minStr, 10);
+                        const { hour } = splitTime(schedule.openTime);
+                        updateSchedule(
+                          index,
+                          'openTime',
+                          formatTime(hour, minute)
+                        );
+                      }}
+                    >
+                      {minutes.map((m) => (
+                        <Picker.Item
+                          key={m}
+                          label={`${m} 分`}
+                          value={String(m)}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
 
                   <Text>營業結束時間</Text>
-                  <TextInput
-                    value={schedule.closeTime}
-                    onChangeText={(text) =>
-                      updateSchedule(index, 'closeTime', text)
-                    }
-                    placeholder="結束時間"
-                    style={styles.input}
-                  />
+                  <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+                    <Picker
+                      selectedValue={String(splitTime(schedule.closeTime).hour)}
+                      style={[styles.picker, { flex: 1 }]}
+                      onValueChange={(hourStr) => {
+                        const hour = parseInt(hourStr, 10);
+                        const { minute } = splitTime(schedule.closeTime);
+                        updateSchedule(
+                          index,
+                          'closeTime',
+                          formatTime(hour, minute)
+                        );
+                      }}
+                    >
+                      {hours.map((h) => (
+                        <Picker.Item
+                          key={h}
+                          label={`${h} 時`}
+                          value={String(h)}
+                        />
+                      ))}
+                    </Picker>
+                    <Picker
+                      selectedValue={String(
+                        splitTime(schedule.closeTime).minute
+                      )}
+                      style={[styles.picker, { flex: 1 }]}
+                      onValueChange={(minStr) => {
+                        const minute = parseInt(minStr, 10);
+                        const { hour } = splitTime(schedule.closeTime);
+                        updateSchedule(
+                          index,
+                          'closeTime',
+                          formatTime(hour, minute)
+                        );
+                      }}
+                    >
+                      {minutes.map((m) => (
+                        <Picker.Item
+                          key={m}
+                          label={`${m} 分`}
+                          value={String(m)}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
 
                   <Text>一般費率</Text>
                   <TextInput
@@ -413,24 +542,102 @@ const AddStoreScreen = () => {
                   {schedule.timeSlots.map((slot, slotIndex) => (
                     <View key={slotIndex} style={{ marginTop: 8 }}>
                       <Text>折扣開始</Text>
-                      <TextInput
-                        value={slot.startTime}
-                        onChangeText={(text) =>
-                          updateTimeSlot(index, slotIndex, 'startTime', text)
-                        }
-                        placeholder="折扣開始"
-                        style={styles.input}
-                      />
+                      <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+                        <Picker
+                          selectedValue={String(splitTime(slot.startTime).hour)}
+                          style={[styles.picker, { flex: 1 }]}
+                          onValueChange={(hourStr) => {
+                            const hour = parseInt(hourStr, 10);
+                            const { minute } = splitTime(slot.startTime);
+                            updateTimeSlot(
+                              index,
+                              slotIndex,
+                              'startTime',
+                              formatTime(hour, minute)
+                            );
+                          }}
+                        >
+                          {hours.map((h) => (
+                            <Picker.Item
+                              key={h}
+                              label={`${h} 時`}
+                              value={String(h)}
+                            />
+                          ))}
+                        </Picker>
+                        <Picker
+                          selectedValue={String(
+                            splitTime(slot.startTime).minute
+                          )}
+                          style={[styles.picker, { flex: 1 }]}
+                          onValueChange={(minStr) => {
+                            const minute = parseInt(minStr, 10);
+                            const { hour } = splitTime(slot.startTime);
+                            updateTimeSlot(
+                              index,
+                              slotIndex,
+                              'startTime',
+                              formatTime(hour, minute)
+                            );
+                          }}
+                        >
+                          {minutes.map((m) => (
+                            <Picker.Item
+                              key={m}
+                              label={`${m} 分`}
+                              value={String(m)}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
 
                       <Text>折扣結束</Text>
-                      <TextInput
-                        value={slot.endTime}
-                        onChangeText={(text) =>
-                          updateTimeSlot(index, slotIndex, 'endTime', text)
-                        }
-                        placeholder="折扣結束"
-                        style={styles.input}
-                      />
+                      <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+                        <Picker
+                          selectedValue={String(splitTime(slot.endTime).hour)}
+                          style={[styles.picker, { flex: 1 }]}
+                          onValueChange={(hourStr) => {
+                            const hour = parseInt(hourStr, 10);
+                            const { minute } = splitTime(slot.endTime);
+                            updateTimeSlot(
+                              index,
+                              slotIndex,
+                              'endTime',
+                              formatTime(hour, minute)
+                            );
+                          }}
+                        >
+                          {hours.map((h) => (
+                            <Picker.Item
+                              key={h}
+                              label={`${h} 時`}
+                              value={String(h)}
+                            />
+                          ))}
+                        </Picker>
+                        <Picker
+                          selectedValue={String(splitTime(slot.endTime).minute)}
+                          style={[styles.picker, { flex: 1 }]}
+                          onValueChange={(minStr) => {
+                            const minute = parseInt(minStr, 10);
+                            const { hour } = splitTime(slot.endTime);
+                            updateTimeSlot(
+                              index,
+                              slotIndex,
+                              'endTime',
+                              formatTime(hour, minute)
+                            );
+                          }}
+                        >
+                          {minutes.map((m) => (
+                            <Picker.Item
+                              key={m}
+                              label={`${m} 分`}
+                              value={String(m)}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
 
                       <View
                         style={{
@@ -451,6 +658,36 @@ const AddStoreScreen = () => {
                             )
                           }
                         />
+                        {slotIndex > 0 && (
+                          <TouchableOpacity
+                            onPress={() => {
+                              Alert.alert(
+                                '確定刪除',
+                                '你要刪除這個折扣時段嗎？',
+                                [
+                                  { text: '取消', style: 'cancel' },
+                                  {
+                                    text: '刪除',
+                                    style: 'destructive',
+                                    onPress: () =>
+                                      removeTimeSlot(index, slotIndex),
+                                  },
+                                ]
+                              );
+                            }}
+                            style={{
+                              marginTop: 8,
+                              padding: 8,
+                              backgroundColor: '#ffcccc',
+                              borderRadius: 6,
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Text style={{ color: '#900' }}>
+                              刪除這個折扣時段
+                            </Text>
+                          </TouchableOpacity>
+                        )}
                       </View>
                     </View>
                   ))}

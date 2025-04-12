@@ -23,7 +23,8 @@ const ImageCarousel = () => {
 
   const screenWidth = Dimensions.get('window').width;
   const horizontalPadding = 16;
-  const carouselWidth = screenWidth - horizontalPadding * 2;
+  const carouselWidth = screenWidth;
+  const carouselHeight = (carouselWidth * 8.8) / 16;
 
   useEffect(() => {
     const loadBanners = async () => {
@@ -52,11 +53,15 @@ const ImageCarousel = () => {
           params: { news: item.news },
         })
       }
-      style={[styles.bannerItem, { width: carouselWidth }]}
+      style={[
+        styles.bannerItem,
+        { width: carouselWidth, height: carouselHeight },
+      ]}
     >
       <Image
         src={getImageUrl(item.imageUrl)}
-        style={[styles.bannerImage, { width: carouselWidth }]}
+        style={StyleSheet.absoluteFill}
+        resizeMode="cover"
       />
     </TouchableOpacity>
   );
@@ -70,7 +75,7 @@ const ImageCarousel = () => {
     >
       <Carousel
         width={carouselWidth}
-        height={180}
+        height={carouselHeight}
         data={banners}
         loop
         autoPlay
@@ -98,13 +103,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bannerItem: {
-    borderRadius: 10,
+    width: '100%',
+    height: '100%',
+    borderRadius: 10, // 取消圓角
     overflow: 'hidden',
-  },
-  bannerImage: {
-    height: 165,
-    borderRadius: 10,
-    resizeMode: 'cover',
+    position: 'relative',
   },
   pagination: {
     flexDirection: 'row',

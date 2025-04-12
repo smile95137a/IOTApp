@@ -25,11 +25,13 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { getImageUrl } from '@/utils/ImageUtils';
 import HeaderBar from '@/component/admin/HeaderBar';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { logJson } from '@/utils/logJsonUtils';
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
   const banner = route.params?.banner || {};
+  const croppedImageUri = route.params?.croppedImageUri;
 
   const [status, setStatus] = useState(banner.status || 'AVAILABLE');
   const [newsId, setNewsId] = useState(banner?.news?.id || '');
@@ -92,13 +94,20 @@ const AddBannerScreen = () => {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      navigation.navigate('CropImage', {
+        uri: result.assets[0].uri,
+        aspectRatio: [16, 9],
+        from: {
+          tab: 'Admin',
+          stack: 'BannerManagementStack',
+          screen: 'AddBanner',
+        },
+      });
     }
   };
 
@@ -111,15 +120,36 @@ const AddBannerScreen = () => {
     }
 
     let result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      navigation.navigate('CropImage', {
+        uri: result.assets[0].uri,
+        aspectRatio: [16, 9],
+        from: {
+          tab: 'Admin',
+          stack: 'BannerManagementStack',
+          screen: 'AddBanner',
+        },
+      });
     }
   };
+  useEffect(() => {
+    const croppedUri = route.params?.croppedImageUri;
+    logJson('zxc', croppedUri);
+    if (croppedUri) {
+      setImage(croppedUri);
+    }
+  }, [route.params?.croppedImageUri]);
+
+  useEffect(() => {
+    if (croppedImageUri) {
+      console.log('裁切後圖片', croppedImageUri);
+      // 更新你的圖片 preview 或上傳邏輯
+    }
+  }, [croppedImageUri]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

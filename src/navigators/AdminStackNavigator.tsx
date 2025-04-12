@@ -60,7 +60,7 @@ const menuItems = {
     stack: 'VendorManagementStack',
     screen: 'VendorManagement',
     icon: 'truck-outline',
-    label: '廠商管理',
+    label: '加盟商管理',
   },
   store: {
     stack: 'StoreManagementStack',
@@ -202,7 +202,7 @@ const AdminDrawerNavigator = () => {
       <Drawer.Screen
         name="VendorManagementStack"
         component={VendorStack}
-        options={{ headerShown: false, title: '廠商管理' }}
+        options={{ headerShown: false, title: '加盟商管理' }}
       />
       <Drawer.Screen
         name="StoreManagementStack"
@@ -248,7 +248,7 @@ const VendorStack = () => {
       <Stack.Screen
         name="VendorManagement"
         component={VendorManagementScreen}
-        options={{ title: '廠商管理', headerShown: false }} // 隱藏 Header
+        options={{ title: '加盟商管理', headerShown: false }} // 隱藏 Header
       />
       <Stack.Screen
         name="AddVendor"
@@ -427,6 +427,7 @@ import MonitorManagementScreen from '@/screens/admin/MonitorManagementScreen';
 import MonitorViewScreen from '@/screens/admin/MonitorViewScreen';
 import MonitorViewDetailScreen from '@/screens/admin/MonitorViewDetailScreen';
 import PoolTableStoreManagementScreen from '@/screens/admin/PoolTableStoreManagementScreen';
+import CropImageScreen from '@/component/CropImageScreen';
 
 const ReportStack = () => {
   const user = useSelector((state: RootState) => state.user);

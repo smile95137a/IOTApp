@@ -47,6 +47,7 @@
     },
     "extra": {
       "eas": {
+        "googleMapsApiKey": "AIzaSyB6izt_B0opjB59EFe9Nz-JgQTARI4W5GI",
         "ENCRYPTION_KEY": "my_secure_encryption_key_123",
         "HASH_KEY": "MYHASHSTART",
         "HASH_VALUE": "MYHASHEND",

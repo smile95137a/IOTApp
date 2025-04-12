@@ -12,13 +12,24 @@ import {
   Image,
   SafeAreaView,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { Menu, Provider } from 'react-native-paper';
+import { fetchAllStores, fetchStoresByVendorId } from '@/api/admin/storeApi';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const AdminDashboardScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [todayTotalAmount, setTodayTotalAmount] = useState(0);
   const [todayTransactionCount, setTodayTransactionCount] = useState(0);
+  const [todayTopupAmount, setTodayTopupAmount] = useState(0);
+  const [todayTopupCount, setTodayTopupCount] = useState(0);
+  const [monthTotalAmount, setMonthTotalAmount] = useState(0);
+  const [monthTransactionCount, setMonthTransactionCount] = useState(0);
+
+  const [stores, setStores] = useState<any[]>([]);
+  const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
   const loadTurnoverData = async () => {
     try {
       dispatch(showLoading());
@@ -26,8 +37,14 @@ const AdminDashboardScreen = ({ navigation }) => {
       dispatch(hideLoading());
 
       if (success && data) {
-        setTodayTotalAmount(data.todayTotalAmount);
-        setTodayTransactionCount(data.todayTransactionCount);
+        if (success && data) {
+          setTodayTotalAmount(data.todayTotalAmount);
+          setTodayTransactionCount(data.todayTransactionCount);
+          setTodayTopupAmount(data.todayTopupAmount);
+          setTodayTopupCount(data.todayTopupCount);
+          setMonthTotalAmount(data.monthTotalAmount);
+          setMonthTransactionCount(data.monthTransactionCount);
+        }
       } else {
         Alert.alert('錯誤', message || '無法載入營收資料');
       }
@@ -37,43 +54,128 @@ const AdminDashboardScreen = ({ navigation }) => {
     }
   };
 
+  const loadStores = async () => {
+    try {
+      dispatch(showLoading());
+      const response = await fetchAllStores();
+      dispatch(hideLoading());
+
+      if (response.success) {
+        setStores(response.data);
+      } else {
+        Alert.alert('錯誤', response.message || '無法載入店家資訊');
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      Alert.alert('錯誤', '發生錯誤，請稍後再試');
+    }
+  };
+
   useEffect(() => {
     loadTurnoverData();
+    loadStores();
   }, []);
 
   useFocusEffect(
     useCallback(() => {
       loadTurnoverData();
+      loadStores();
     }, [])
   );
 
   return (
-    <SharedScreenLayout navigation={navigation} title="管理首頁">
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Image
-              source={require('@/assets/iot-logo-no-text.png')}
-              style={styles.headerIcon}
-            />
-            <Text style={styles.headerTitle}>無人撞球管理系統</Text>
-          </View>
+    <Provider>
+      <SharedScreenLayout navigation={navigation} title="管理首頁">
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.container}>
+            {/* Header */}
+            <View style={styles.header}>
+              <Image
+                source={require('@/assets/iot-logo-no-text.png')}
+                style={styles.headerIcon}
+              />
+              <Text style={styles.headerTitle}>無人撞球管理系統</Text>
+            </View>
 
-          <View style={styles.mainContainer}>
-            {/* Report Section */}
-            <View style={styles.reportSection}>
-              <Text style={styles.sectionTitle}>今日收款：</Text>
-              <Text style={styles.reportValue}>
-                <NumberFormatter number={todayTotalAmount} />元 /
-                <NumberFormatter number={todayTransactionCount} />筆
-              </Text>
+            <View style={styles.mainContainer}>
+              <View style={styles.reportSection}>
+                <Text style={styles.sectionTitle}>今日營運數據：</Text>
+
+                <Text style={styles.reportValue}>
+                  今日消費：
+                  <NumberFormatter number={todayTotalAmount} /> 元 /
+                  <NumberFormatter number={todayTransactionCount} /> 筆
+                </Text>
+
+                <Text style={styles.reportValue}>
+                  今日儲值：
+                  <NumberFormatter number={todayTopupAmount} /> 元 /
+                  <NumberFormatter number={todayTopupCount} /> 筆
+                </Text>
+
+                <Text style={styles.reportValue}>
+                  本月累計消費：
+                  <NumberFormatter number={monthTotalAmount} /> 元 /
+                  <NumberFormatter number={monthTransactionCount} /> 筆
+                </Text>
+              </View>
               <View style={styles.divider} />
+              <View style={styles.gridWrapper}>
+                {stores.map((item) => (
+                  <TouchableOpacity
+                    key={item.uid}
+                    style={styles.cardWrapper}
+                    onPress={() =>
+                      navigation.navigate('AddStore', { store: item })
+                    }
+                  >
+                    <Image
+                      source={require('@/assets/iot-logo-black.png')}
+                      style={styles.cardImage}
+                    />
+                    <View style={styles.cardFooter}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
+                      <View style={styles.cardActions}>
+                        <Menu
+                          visible={visibleMenuId === item.uid}
+                          onDismiss={() => setVisibleMenuId(null)}
+                          anchor={
+                            <TouchableOpacity
+                              style={styles.iconButton}
+                              onPress={() =>
+                                setVisibleMenuId(
+                                  visibleMenuId === item.uid ? null : item.uid
+                                )
+                              }
+                            >
+                              <Icon
+                                name="dots-vertical"
+                                size={20}
+                                color="#FFF"
+                              />
+                            </TouchableOpacity>
+                          }
+                        >
+                          <Menu.Item
+                            title="編輯"
+                            leadingIcon="pencil-outline"
+                          />
+                          <Menu.Item
+                            title="刪除"
+                            leadingIcon="trash-can-outline"
+                            titleStyle={{ color: 'red' }}
+                          />
+                        </Menu>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
           </View>
-        </View>
-      </SafeAreaView>
-    </SharedScreenLayout>
+        </SafeAreaView>
+      </SharedScreenLayout>
+    </Provider>
   );
 };
 
@@ -107,11 +209,10 @@ const styles = StyleSheet.create({
     flex: 1,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
+    padding: 20,
   },
   reportSection: {
     borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 16,
@@ -144,6 +245,48 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: '#2C3E50',
     textAlign: 'center',
+  },
+  gridWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  cardWrapper: {
+    backgroundColor: '#fff',
+    width: '48%',
+    height: 128,
+    borderRadius: 20,
+    padding: 14,
+    marginBottom: 8,
+    marginHorizontal: '1%',
+    borderWidth: 1,
+    borderColor: '#CCCCCC', // 可調整為你想要的顏色
+  },
+  cardImage: { width: '100%', height: '100%', flex: 1, resizeMode: 'contain' },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  cardTitle: { fontSize: 16, fontWeight: 'bold' },
+  cardActions: { flexDirection: 'row', alignItems: 'center' },
+  iconButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#595858',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addCardWrapper: {
+    backgroundColor: '#FFC702',
+    width: '48%',
+    height: 128,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
   },
 });
 

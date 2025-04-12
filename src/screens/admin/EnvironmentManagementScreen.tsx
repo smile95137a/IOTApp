@@ -27,6 +27,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
+import { Picker } from '@react-native-picker/picker';
 
 const EnvironmentManagementScreen = ({ navigation }) => {
   const route = useRoute();
@@ -37,11 +38,24 @@ const EnvironmentManagementScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [equipmentId, setEquipmentId] = useState(null);
   const [equipmentName, setEquipmentName] = useState('');
-  const [autoStartTime, setAutoStartTime] = useState('');
-  const [autoStopTime, setAutoStopTime] = useState('');
   const [equipmentDescription, setEquipmentDescription] = useState('');
   const [equipmentEnabled, setEquipmentEnabled] = useState(false);
   const [editingEquipmentIndex, setEditingEquipmentIndex] = useState(null);
+
+  const [startHour, setStartHour] = useState('10');
+  const [startMinute, setStartMinute] = useState('00');
+  const [endHour, setEndHour] = useState('20');
+  const [endMinute, setEndMinute] = useState('00');
+
+  const hours = Array.from({ length: 24 }, (_, i) =>
+    String(i).padStart(2, '0')
+  );
+  const minutes = Array.from({ length: 60 }, (_, i) =>
+    String(i).padStart(2, '0')
+  );
+
+  const autoStartTime = `${startHour}:${startMinute}`;
+  const autoStopTime = `${endHour}:${endMinute}`;
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const showModal = () => {
@@ -67,10 +81,16 @@ const EnvironmentManagementScreen = ({ navigation }) => {
     const equipment = equipments[index];
     setEquipmentId(equipment.id);
     setEquipmentName(equipment.name);
-    setAutoStartTime(equipment.autoStartTime);
-    setAutoStopTime(equipment.autoStopTime);
     setEquipmentDescription(equipment.description);
     setEquipmentEnabled(equipment.enabled);
+
+    const [sHour, sMin] = equipment.autoStartTime.split(':');
+    const [eHour, eMin] = equipment.autoStopTime.split(':');
+    setStartHour(sHour);
+    setStartMinute(sMin);
+    setEndHour(eHour);
+    setEndMinute(eMin);
+
     setEditingEquipmentIndex(index);
     showModal();
   };
@@ -147,8 +167,6 @@ const EnvironmentManagementScreen = ({ navigation }) => {
     // 清空欄位 & 關閉 Modal
     setEquipmentId(null);
     setEquipmentName('');
-    setAutoStartTime('');
-    setAutoStopTime('');
     setEquipmentDescription('');
     setEditingEquipmentIndex(null);
     setModalVisible(false);
@@ -301,11 +319,12 @@ const EnvironmentManagementScreen = ({ navigation }) => {
             <Text style={styles.addButtonText}>新增設備</Text>
           </TouchableOpacity>
         </View>
-        {/* 手寫 Modal */}
         {modalVisible && (
           <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>新增設備</Text>
+              <Text style={styles.modalTitle}>
+                {equipmentId ? '編輯設備' : '新增設備'}
+              </Text>
 
               <Text style={styles.modalLabel}>設備名稱</Text>
               <TextInput
@@ -316,20 +335,50 @@ const EnvironmentManagementScreen = ({ navigation }) => {
               />
 
               <Text style={styles.modalLabel}>自動開始時間</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder="HH:mm(未開放)"
-                value={autoStartTime}
-                onChangeText={setAutoStartTime}
-              />
+              <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+                <Picker
+                  selectedValue={startHour}
+                  style={{ flex: 1 }}
+                  onValueChange={setStartHour}
+                >
+                  {hours.map((h) => (
+                    <Picker.Item key={h} label={h} value={h} />
+                  ))}
+                </Picker>
+                <Text style={{ alignSelf: 'center' }}>：</Text>
+                <Picker
+                  selectedValue={startMinute}
+                  style={{ flex: 1 }}
+                  onValueChange={setStartMinute}
+                >
+                  {minutes.map((m) => (
+                    <Picker.Item key={m} label={m} value={m} />
+                  ))}
+                </Picker>
+              </View>
 
               <Text style={styles.modalLabel}>自動結束時間</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder="HH:mm(未開放)"
-                value={autoStopTime}
-                onChangeText={setAutoStopTime}
-              />
+              <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+                <Picker
+                  selectedValue={endHour}
+                  style={{ flex: 1 }}
+                  onValueChange={setEndHour}
+                >
+                  {hours.map((h) => (
+                    <Picker.Item key={h} label={h} value={h} />
+                  ))}
+                </Picker>
+                <Text style={{ alignSelf: 'center' }}>：</Text>
+                <Picker
+                  selectedValue={endMinute}
+                  style={{ flex: 1 }}
+                  onValueChange={setEndMinute}
+                >
+                  {minutes.map((m) => (
+                    <Picker.Item key={m} label={m} value={m} />
+                  ))}
+                </Picker>
+              </View>
 
               <Text style={styles.modalLabel}>設備描述</Text>
               <TextInput

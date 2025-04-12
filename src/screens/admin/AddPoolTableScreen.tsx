@@ -206,18 +206,6 @@ const AddPoolTableScreen = () => {
                 </Picker>
 
                 <TouchableOpacity
-                  style={[
-                    styles.toggleButton,
-                    isUse ? styles.toggleOn : styles.toggleOff,
-                  ]}
-                  onPress={() => setIsUse(!isUse)}
-                >
-                  <Text style={styles.toggleButtonText}>
-                    {isUse ? '已使用' : '未使用'}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
                   style={styles.submitButton}
                   onPress={handleSubmit}
                 >

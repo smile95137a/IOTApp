@@ -103,7 +103,7 @@ const VendorManagementScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title="廠商管理" />
+            <HeaderBar title="加盟商管理" />
           </View>
 
           <View style={styles.contentWrapper}>

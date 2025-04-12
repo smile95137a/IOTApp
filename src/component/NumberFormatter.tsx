@@ -16,7 +16,7 @@ const NumberFormatter: React.FC<NumberFormatterProps> = ({
     ...options,
   });
 
-  return <>{formatter.format(number)}</>;
+  return <>{formatter.format(~~number)}</>;
 };
 
 export default NumberFormatter;

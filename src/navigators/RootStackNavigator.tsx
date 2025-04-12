@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { loadAuthState } from '@/store/authSlice';
 import { AppDispatch } from '@/store/store';
 import CameraStack from './CameraStack'; // Add this import
+import CropImageScreen from '@/component/CropImageScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,6 +31,7 @@ const RootStackNavigator = () => {
         <Tab.Screen name="Auth" component={AuthStackNavigator} />
         <Tab.Screen name="Admin" component={AdminStackNavigator} />
         <Tab.Screen name="Camera" component={CameraStack} />
+        <Tab.Screen name="CropImage" component={CropImageScreen} />
       </Tab.Navigator>
     </>
   );

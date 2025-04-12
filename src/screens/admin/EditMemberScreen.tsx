@@ -29,7 +29,6 @@ import HeaderBar from '@/component/admin/HeaderBar';
 
 const EditMemberScreen = ({ route, navigation }) => {
   const { member } = route.params;
-  console.log('@@@@@@@', member);
 
   const dispatch = useDispatch<AppDispatch>();
   const [name, setName] = useState(member.name);
@@ -201,8 +200,20 @@ const EditMemberScreen = ({ route, navigation }) => {
     );
   };
 
-  const getGender = (gender) => {
+  const getGender = (gender: any) => {
     return gender === 'female' ? '女' : gender === 'male' ? '男' : '未知';
+  };
+
+  const getRoleCHName = (roleName: string): string => {
+    const roleNameMap: Record<string, string> = {
+      ROLE_ADMIN: '系統管理員',
+      ROLE_USER: '一般會員',
+      ROLE_MANUFACTURER: '管理者',
+      ROLE_STORE_MANAGER: '店長',
+      ROLE_BLACKLIST: '黑名單',
+    };
+
+    return roleNameMap[roleName] || '';
   };
 
   return (
@@ -256,15 +267,19 @@ const EditMemberScreen = ({ route, navigation }) => {
               <Text style={styles.label}>角色：</Text>
             </View>
             <View style={styles.roleContainer}>
-              {roles.map((item) => (
-                <View key={item.roleName} style={styles.checkboxContainer}>
-                  <CheckBox
-                    value={selectedRoles.includes(item.roleName)}
-                    onValueChange={() => toggleRoleSelection(item.roleName)}
-                  />
-                  <Text style={styles.checkboxLabel}>{item.roleName}</Text>
-                </View>
-              ))}
+              {roles
+                .filter((role) => role.roleName !== 'ROLE_BLACKLIST')
+                .map((item) => (
+                  <View key={item.roleName} style={styles.checkboxContainer}>
+                    <CheckBox
+                      value={selectedRoles.includes(item.roleName)}
+                      onValueChange={() => toggleRoleSelection(item.roleName)}
+                    />
+                    <Text style={styles.checkboxLabel}>
+                      {getRoleCHName(item.roleName)}
+                    </Text>
+                  </View>
+                ))}
             </View>
             {/* 按鈕組 */}
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>

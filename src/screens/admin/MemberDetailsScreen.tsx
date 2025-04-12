@@ -43,6 +43,12 @@ const MemberDetailsScreen = ({ route, navigation }) => {
             />
             <Text style={styles.memberName}>{member.name}</Text>
           </View>
+
+          {/* 新增：匿名 ID */}
+          <Text style={styles.memberInfo}>
+            匿名 ID：{member.anonymousId || '—'}
+          </Text>
+
           <Text style={styles.memberInfo}>
             性別：{getGender(member.gender)}
           </Text>
@@ -51,14 +57,25 @@ const MemberDetailsScreen = ({ route, navigation }) => {
             {member.phoneNumber}
           </Text>
           <Text style={styles.memberInfo}>Email：{member.email}</Text>
+
           <View style={styles.divider} />
 
           <View style={styles.spendingContainer}>
+            {/* 修改：消費總額與筆數 */}
             <Text style={styles.spendingText}>
               消費總額：
-              <NumberFormatter number={~~member.totalAmount} />元
+              <NumberFormatter number={~~member.totalAmount} />
+              元（{member.totalOrders || 0} 筆）
+            </Text>
+
+            {/* 新增：儲值總額與筆數 */}
+            <Text style={styles.spendingText}>
+              儲值總額：
+              <NumberFormatter number={~~member.totalTopupAmount} />
+              元（{member.totalTopupOrders || 0} 筆）
             </Text>
           </View>
+
           <TouchableOpacity
             style={styles.editButton}
             onPress={() => navigation.navigate('EditMember', { member })}

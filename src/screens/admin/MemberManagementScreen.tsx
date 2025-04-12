@@ -24,10 +24,15 @@ const MemberManagementScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
   const [userList, setUserList] = useState<any[]>([]);
 
-  const filteredMembers = userList.filter(
-    (member) =>
-      member.name.includes(searchText) || member.email.includes(searchText)
-  );
+  const filteredMembers = userList.filter((member) => {
+    const keyword = searchText.toLowerCase();
+    return (
+      member.name?.toLowerCase().includes(keyword) ||
+      member.email?.toLowerCase().includes(keyword) ||
+      member.anonymousId?.toLowerCase().includes(keyword) ||
+      member.phoneNumber?.includes(keyword)
+    );
+  });
 
   const loadMembers = async () => {
     try {

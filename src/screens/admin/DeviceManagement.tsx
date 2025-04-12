@@ -75,7 +75,7 @@ const DeviceManagementScreen = ({ navigation }) => {
           >
             <View style={styles.cardContent}>
               <Image
-                source={require('@/assets/iot-switch.png')}
+                source={require('@/assets/iot-mo-logo.png')}
                 style={styles.cardIcon}
               />
               <Text style={styles.cardText}>攝影機管理</Text>

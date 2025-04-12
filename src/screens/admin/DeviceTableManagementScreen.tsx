@@ -66,11 +66,11 @@ const DeviceTableManagementScreen = () => {
         <View style={styles.fixedImageContainer}>
           <Image
             source={require('@/assets/iot-admin-bg.png')}
-            resizeMode="contain" // Adjust to fit properly
+            resizeMode="contain"
           />
         </View>
         {/* Header */}
-        <HeaderBar title="設備管理" />
+        <HeaderBar title="後檯設備管理-桌檯管理" />
         <View style={styles.mainContainer}>
           <View style={styles.gridContainer}>
             {poolTables.map((table, index) => (

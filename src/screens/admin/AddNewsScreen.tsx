@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,8 @@ import { getImageUrl } from '@/utils/ImageUtils';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Dimensions } from 'react-native';
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const AddNewsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -72,17 +74,23 @@ const AddNewsScreen = () => {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      navigation.navigate('CropImage', {
+        uri: result.assets[0].uri,
+        aspectRatio: [1, 1],
+        from: {
+          tab: 'Admin',
+          stack: 'NewsManagementStack',
+          screen: 'AddNews',
+        },
+      });
     }
   };
 
-  // 拍照
   const handleTakePhoto = async () => {
     let permission = await ImagePicker.requestCameraPermissionsAsync();
     if (permission.status !== 'granted') {
@@ -91,15 +99,29 @@ const AddNewsScreen = () => {
     }
 
     let result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      navigation.navigate('CropImage', {
+        uri: result.assets[0].uri,
+        aspectRatio: [1, 1],
+        from: {
+          tab: 'Admin',
+          stack: 'NewsManagementStack',
+          screen: 'AddNews',
+        },
+      });
     }
   };
+
+  useEffect(() => {
+    const croppedImageUri = route.params?.croppedImageUri;
+    if (croppedImageUri) {
+      setImage(croppedImageUri);
+    }
+  }, [route.params?.croppedImageUri]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -257,17 +279,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   uploadWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    width: SCREEN_WIDTH - 40,
+    height: SCREEN_WIDTH - 40,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     padding: 10,
     backgroundColor: '#FFF',
-    height: 200,
     position: 'relative',
     marginBottom: 12,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   uploadButton: {
     width: 60,
