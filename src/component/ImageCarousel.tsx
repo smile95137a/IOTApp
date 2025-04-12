@@ -24,10 +24,11 @@ const ImageCarousel = () => {
 
   const screenWidth = Dimensions.get('window').width;
   const horizontalPadding = 16;
-  const carouselWidth = screenWidth;
+  const carouselWidth = screenWidth - horizontalPadding * 2;
   const carouselHeight = (carouselWidth * 9) / 16;
 
   const { openConfirmDialog, openInfoDialog } = useDialog();
+
   useEffect(() => {
     const loadBanners = async () => {
       try {
@@ -113,11 +114,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bannerItem: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 10, // 取消圓角
+    borderRadius: 10,
     overflow: 'hidden',
-    position: 'relative',
   },
   pagination: {
     flexDirection: 'row',
