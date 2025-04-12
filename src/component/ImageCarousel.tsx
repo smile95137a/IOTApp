@@ -1,4 +1,5 @@
 import { Banner, fetchAllBanners } from '@/api/bannerApi';
+import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { getImageUrl } from '@/utils/ImageUtils';
@@ -26,6 +27,7 @@ const ImageCarousel = () => {
   const carouselWidth = screenWidth;
   const carouselHeight = (carouselWidth * 8.8) / 16;
 
+  const { openConfirmDialog, openInfoDialog } = useDialog();
   useEffect(() => {
     const loadBanners = async () => {
       try {
@@ -33,12 +35,20 @@ const ImageCarousel = () => {
         if (success) {
           setBanners(data);
         } else {
-          Alert.alert('錯誤', message || '無法載入資訊');
+          openInfoDialog({
+            title: '系統訊息',
+            content: message || '無法載入店家資訊',
+            confirmText: '我知道了',
+          });
         }
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        Alert.alert('錯誤', errorMessage);
+        openInfoDialog({
+          title: '系統訊息',
+          content: errorMessage,
+          confirmText: '我知道了',
+        });
       }
     };
     loadBanners();

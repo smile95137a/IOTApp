@@ -6,12 +6,15 @@ import store from '@/store/store';
 import RootStackNavigator from '@/navigators/RootStackNavigator';
 import 'react-native-gesture-handler';
 import LoadingMask from '@/component/LoadingMask';
+import { DialogProvider } from '@/context/DialogContext';
 export default function App() {
   return (
     <Provider store={store}>
       <LoadingMask />
       <NavigationContainer>
-        <RootStackNavigator />
+        <DialogProvider>
+          <RootStackNavigator />
+        </DialogProvider>
       </NavigationContainer>
     </Provider>
   );

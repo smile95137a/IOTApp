@@ -2,6 +2,7 @@ import { News, fetchNewsByStatusNoUser } from '@/api/newsApi';
 import DateFormatter from '@/component/DateFormatter';
 import Header from '@/component/Header';
 import ImageCarousel from '@/component/ImageCarousel';
+import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { getImageUrl } from '@/utils/ImageUtils';
@@ -23,6 +24,7 @@ import { useDispatch } from 'react-redux';
 const NewsScreen = ({ navigation }: any) => {
   const [newsData, setNewsData] = useState<News[]>([]);
   const dispatch = useDispatch<AppDispatch>();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   useEffect(() => {
     const loadNews = async () => {
@@ -35,13 +37,21 @@ const NewsScreen = ({ navigation }: any) => {
         if (success) {
           setNewsData(data);
         } else {
-          Alert.alert('錯誤', message || '無法載入店家資訊');
+          openInfoDialog({
+            title: '系統訊息',
+            content: message || '無法載入店家資訊',
+            confirmText: '我知道了',
+          });
         }
       } catch (error) {
         dispatch(hideLoading());
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        Alert.alert('錯誤', errorMessage);
+        openInfoDialog({
+          title: '系統訊息',
+          content: errorMessage,
+          confirmText: '我知道了',
+        });
       }
     };
     loadNews();

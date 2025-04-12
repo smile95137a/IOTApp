@@ -15,9 +15,12 @@ import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Linking } from 'react-native';
+import { useDialog } from '@/context/DialogContext';
 
 const ContactScreen = ({ navigation, route }) => {
-  const { transaction } = route.params || {}; // 安全獲取 transaction
+  const { openConfirmDialog, openInfoDialog } = useDialog();
+
+  const { transaction } = route.params || {};
   const [elapsedTime, setElapsedTime] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
@@ -49,6 +52,7 @@ const ContactScreen = ({ navigation, route }) => {
         gameId: transaction.gameId,
       });
       dispatch(hideLoading());
+
       if (success) {
         navigation.navigate('Payment', {
           type: 'gameEnd',
@@ -59,26 +63,40 @@ const ContactScreen = ({ navigation, route }) => {
           totalAmount: data.price,
         });
       } else {
-        Alert.alert('錯誤', message || '無法載入店家資訊');
+        openInfoDialog({
+          title: '錯誤',
+          content: message || '無法載入店家資訊',
+        });
       }
     } catch (error) {
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-
-      Alert.alert('錯誤', errorMessage);
+      openInfoDialog({
+        title: '錯誤',
+        content: errorMessage,
+      });
     }
   };
 
-  const handleCall = () => {
+  const handleCall = async () => {
     const phoneNumber = transaction?.contactInfo;
     if (phoneNumber) {
-      Alert.alert('撥打電話', `確定要撥打 ${phoneNumber} 嗎？`, [
-        { text: '取消', style: 'cancel' },
-        { text: '撥打', onPress: () => Linking.openURL(`tel:${phoneNumber}`) },
-      ]);
+      const confirmed = await openConfirmDialog({
+        title: '撥打電話',
+        content: `確定要撥打 ${phoneNumber} 嗎？`,
+        confirmText: '撥打',
+        cancelText: '取消',
+      });
+
+      if (confirmed) {
+        Linking.openURL(`tel:${phoneNumber}`);
+      }
     } else {
-      Alert.alert('錯誤', '找不到電話號碼');
+      openInfoDialog({
+        title: '錯誤',
+        content: '找不到電話號碼',
+      });
     }
   };
 
