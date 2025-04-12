@@ -36,11 +36,13 @@ import MyBookHistoryScreen from '@/screens/memner-center/MyBookHistoryScreen';
 import * as ImagePicker from 'expo-image-picker';
 import { useInfoDialog } from '@/hooks/useInfoDialog';
 import { logJson } from '@/utils/logJsonUtils';
+import { useRoute } from '@react-navigation/native';
 
 const Stack = createStackNavigator();
 
 const MainLayout = ({ children }) => {
   const dispatch = useDispatch();
+  const route = useRoute();
   const navigation = useNavigation();
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -81,59 +83,65 @@ const MainLayout = ({ children }) => {
   const handleUploadPhoto = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
-      return openInfoDialog({
+      await openInfoDialog({
         title: '權限不足',
         content: '請允許存取相簿權限',
+        confirmText: '我知道了',
       });
+      return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 1,
     });
 
     if (!result.canceled) {
-      const profileImage = result.assets[0].uri;
-      dispatch(showLoading());
-      const uploadSuccess = await uploadProfileImage(user?.id, profileImage);
-      dispatch(hideLoading());
-      if (!uploadSuccess) {
-        openInfoDialog({ title: '錯誤', content: '頭像上傳失敗，請稍後重試' });
-      } else {
-        console.log('[Upload] 頭像上傳成功');
-        await fetchAndSetUserInfo();
-      }
+      (navigation as any).navigate('CropImage', {
+        uri: result.assets[0].uri,
+        aspectRatio: [1, 1],
+        isCircle: true,
+        from: {
+          tab: 'Main',
+          stack: 'Member',
+          screen: 'MemberCenter',
+        },
+      });
+    }
+
+    if (!result.canceled) {
     }
   };
 
+  // 拍照
   const handleTakePhoto = async () => {
-    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    let permission = await ImagePicker.requestCameraPermissionsAsync();
     if (permission.status !== 'granted') {
-      return openInfoDialog({
+      await openInfoDialog({
         title: '權限不足',
         content: '請允許存取相機權限',
+        confirmText: '我知道了',
       });
+      return;
     }
 
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: false,
       quality: 1,
     });
 
     if (!result.canceled) {
-      const profileImage = result.assets[0].uri;
-      dispatch(showLoading());
-      const uploadSuccess = await uploadProfileImage(user?.id, profileImage);
-      dispatch(hideLoading());
-      if (!uploadSuccess) {
-        openInfoDialog({ title: '錯誤', content: '頭像上傳失敗，請稍後重試' });
-      } else {
-        console.log('[Upload] 頭像上傳成功');
-        await fetchAndSetUserInfo();
-      }
+      (navigation as any).navigate('CropImage', {
+        uri: result.assets[0].uri,
+        aspectRatio: [1, 1],
+        isCircle: true,
+        from: {
+          tab: 'Main',
+          stack: 'Member',
+          screen: 'MemberCenter',
+        },
+      });
     }
   };
 
@@ -144,6 +152,31 @@ const MainLayout = ({ children }) => {
       { text: '取消', style: 'cancel' },
     ]);
   };
+
+  useEffect(() => {
+    const croppedImageUri = route.params?.croppedImageUri;
+    if (croppedImageUri && user?.id) {
+      const upload = async () => {
+        dispatch(showLoading());
+        const uploadSuccess = await uploadProfileImage(
+          user.id,
+          croppedImageUri
+        );
+        dispatch(hideLoading());
+
+        if (!uploadSuccess) {
+          openInfoDialog({
+            title: '錯誤',
+            content: '頭像上傳失敗，請稍後重試',
+          });
+        } else {
+          console.log('[Upload] 頭像上傳成功');
+          await fetchAndSetUserInfo();
+        }
+      };
+      upload();
+    }
+  }, [route.params?.croppedImageUri]);
 
   return (
     <SafeAreaView style={styles.safeArea}>

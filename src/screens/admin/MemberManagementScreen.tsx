@@ -115,11 +115,17 @@ const MemberManagementScreen = ({ navigation }) => {
                 />
                 <View style={styles.memberInfo}>
                   <Text style={styles.memberName}>{item.name}</Text>
+                  {item.anonymousId && (
+                    <Text style={styles.memberId}>
+                      匿名 ID：{item.anonymousId}
+                    </Text>
+                  )}
                   <Text style={styles.memberPhone}>
                     {item.countryCode}
                     {item.phoneNumber}
                   </Text>
                 </View>
+
                 <TouchableOpacity
                   style={styles.arrowContainer}
                   onPress={() =>
@@ -199,6 +205,11 @@ const styles = StyleSheet.create({
   },
   memberPhone: {
     color: '#666',
+  },
+  memberId: {
+    color: '#888',
+    fontSize: 12,
+    marginTop: 2,
   },
 });
 
