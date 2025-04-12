@@ -14,7 +14,7 @@ import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
-import { logJson } from '@/utils/logJsonUtils';
+import { Linking } from 'react-native';
 
 const ContactScreen = ({ navigation, route }) => {
   const { transaction } = route.params || {}; // 安全獲取 transaction
@@ -70,6 +70,18 @@ const ContactScreen = ({ navigation, route }) => {
     }
   };
 
+  const handleCall = () => {
+    const phoneNumber = transaction?.contactInfo;
+    if (phoneNumber) {
+      Alert.alert('撥打電話', `確定要撥打 ${phoneNumber} 嗎？`, [
+        { text: '取消', style: 'cancel' },
+        { text: '撥打', onPress: () => Linking.openURL(`tel:${phoneNumber}`) },
+      ]);
+    } else {
+      Alert.alert('錯誤', '找不到電話號碼');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
@@ -93,12 +105,15 @@ const ContactScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.contactContainer}>
-          <FontAwesome
-            name="phone"
-            size={24}
-            color="#424242"
-            style={styles.contactIcon}
-          />
+          <TouchableOpacity onPress={handleCall}>
+            <FontAwesome
+              name="phone"
+              size={24}
+              color="#424242"
+              style={styles.contactIcon}
+            />
+          </TouchableOpacity>
+
           <View style={styles.textContainer}>
             <Text style={styles.contactTitle}>聯絡店長</Text>
             <Text style={styles.contactSubtitle}>

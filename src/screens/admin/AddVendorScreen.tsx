@@ -26,68 +26,46 @@ const AddVendorScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
-
   const vendor = route.params?.vendor || null;
 
   const [name, setName] = useState(vendor?.name || '');
   const [contactInfo, setContactInfo] = useState(vendor?.contactInfo || '');
-  const [stores, setStores] = useState([]);
+  const [userId, setUserId] = useState(`${vendor?.userId}` || '');
+  const [companyAddress, setCompanyAddress] = useState(
+    vendor?.companyAddress || ''
+  );
+  const [phoneNumber, setPhoneNumber] = useState(vendor?.phoneNumber || '');
+  const [email, setEmail] = useState(vendor?.email || '');
+  const [telephoneNumber, setTelephoneNumber] = useState(
+    vendor?.telephoneNumber || ''
+  );
+  const [address, setAddress] = useState(vendor?.address || '');
+  const [companyName, setCompanyName] = useState(vendor?.companyName || '');
+
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(`${vendor?.userId}` || '');
 
   useEffect(() => {
-    const loadStores = async () => {
-      try {
-        dispatch(showLoading());
-        const response = await fetchAllStores();
-        dispatch(hideLoading());
-
-        if (response.success) {
-          setStores(response.data);
-        } else {
-          Alert.alert('錯誤', '無法獲取店家列表');
-        }
-      } catch (error) {
-        dispatch(hideLoading());
-        Alert.alert('錯誤', '獲取店家失敗，請稍後再試');
-      }
-    };
-
     const loadUsers = async () => {
       try {
         dispatch(showLoading());
         const response = await fetchAllUsers();
         dispatch(hideLoading());
-
         if (response.success) {
-          console.log('原始使用者資料:', response.data); // 確認 API 回傳的資料格式
-
-          // 過濾 roles 陣列中包含 roleId 為 1 或 2 的使用者
-          const filteredUsers = response.data.filter((user) => {
-            console.log(`使用者 ${user.name} 的角色:`, user.roles); // 確認 roles 陣列內容
-            return user.roles.some((role) => {
-              return role.id === 1 || role.id === 2;
-            });
-          });
-
-          console.log('過濾後的使用者:', filteredUsers); // 確認篩選後的結果
-          setUsers(filteredUsers);
+          setUsers(response.data);
         } else {
           Alert.alert('錯誤', '無法獲取使用者列表');
         }
       } catch (error) {
         dispatch(hideLoading());
-        console.log('獲取使用者時發生錯誤:', error);
         Alert.alert('錯誤', '獲取使用者失敗，請稍後再試');
       }
     };
 
-    loadStores();
     loadUsers();
   }, []);
 
   const handleSubmit = async () => {
-    if (!name.trim() || !contactInfo.trim() || !selectedUser) {
+    if (!name.trim() || !contactInfo.trim() || !userId) {
       Alert.alert('錯誤', '請填寫完整資訊');
       return;
     }
@@ -95,19 +73,20 @@ const AddVendorScreen = () => {
     const vendorData = {
       name,
       contactInfo,
-      userId: selectedUser,
+      userId,
+      companyAddress,
+      phoneNumber,
+      email,
+      telephoneNumber,
+      address,
+      companyName,
     };
 
     try {
       dispatch(showLoading());
-      let response;
-
-      if (vendor?.id) {
-        response = await updateVendor(vendor.uid, vendorData);
-      } else {
-        response = await createVendor(vendorData);
-      }
-
+      const response = vendor?.id
+        ? await updateVendor(vendor.uid, vendorData)
+        : await createVendor(vendorData);
       dispatch(hideLoading());
 
       if (response.success) {
@@ -138,58 +117,104 @@ const AddVendorScreen = () => {
           <View style={styles.headerWrapper}>
             <HeaderBar title={vendor?.id ? '編輯廠商' : '新增廠商'} />
           </View>
-          <View style={styles.contentWrapper}>
-            <ScrollView contentContainerStyle={styles.container}>
-              <Text style={styles.header}>
-                {vendor?.id ? '編輯廠商' : '新增廠商'}
+
+          <ScrollView style={styles.contentWrapper}>
+            <Text style={styles.header}>
+              {vendor?.id ? '編輯廠商' : '新增廠商'}
+            </Text>
+
+            <Text style={styles.label}>指派使用者</Text>
+            <Picker
+              selectedValue={userId}
+              onValueChange={setUserId}
+              style={styles.picker}
+            >
+              <Picker.Item label="請選擇使用者" value="" />
+              {users.map((user) => (
+                <Picker.Item
+                  key={user.id}
+                  label={user.name}
+                  value={String(user.id)}
+                />
+              ))}
+            </Picker>
+
+            <Text style={styles.label}>名稱</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder="請輸入名稱"
+            />
+
+            <Text style={styles.label}>聯絡人資訊</Text>
+            <TextInput
+              style={styles.input}
+              value={contactInfo}
+              onChangeText={setContactInfo}
+              placeholder="請輸入聯絡人資訊"
+            />
+
+            <Text style={styles.label}>公司名稱</Text>
+            <TextInput
+              style={styles.input}
+              value={companyName}
+              onChangeText={setCompanyName}
+              placeholder="請輸入公司名稱"
+            />
+
+            <Text style={styles.label}>公司地址</Text>
+            <TextInput
+              style={styles.input}
+              value={companyAddress}
+              onChangeText={setCompanyAddress}
+              placeholder="請輸入公司地址"
+            />
+
+            <Text style={styles.label}>住宅地址</Text>
+            <TextInput
+              style={styles.input}
+              value={address}
+              onChangeText={setAddress}
+              placeholder="請輸入住宅地址"
+            />
+
+            <Text style={styles.label}>行動電話</Text>
+            <TextInput
+              style={styles.input}
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              placeholder="請輸入行動電話"
+              keyboardType="phone-pad"
+            />
+
+            <Text style={styles.label}>電子郵件</Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="請輸入電子郵件"
+              keyboardType="email-address"
+            />
+
+            <Text style={styles.label}>室內電話</Text>
+            <TextInput
+              style={styles.input}
+              value={telephoneNumber}
+              onChangeText={setTelephoneNumber}
+              placeholder="請輸入室內電話"
+              keyboardType="phone-pad"
+            />
+
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+            >
+              <Text style={styles.submitButtonText}>
+                {vendor?.id ? '更新' : '提交'}
               </Text>
-
-              <TextInput
-                style={styles.input}
-                placeholder="廠商名稱"
-                value={name}
-                onChangeText={setName}
-                autoCapitalize="words"
-                returnKeyType="next"
-                maxLength={50}
-              />
-
-              <TextInput
-                style={styles.input}
-                placeholder="聯絡資訊 (電子郵件或電話)"
-                value={contactInfo}
-                onChangeText={setContactInfo}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                returnKeyType="done"
-                maxLength={100}
-              />
-
-              <Picker
-                selectedValue={selectedUser}
-                onValueChange={setSelectedUser}
-                style={styles.picker}
-              >
-                <Picker.Item label="請選擇使用者" value="" />
-                {users.map((user) => (
-                  <Picker.Item
-                    key={user.id}
-                    label={user.name}
-                    value={String(user.id)}
-                  />
-                ))}
-              </Picker>
-
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={handleSubmit}
-              >
-                <Text style={styles.submitButtonText}>
-                  {vendor?.id ? '更新' : '提交'}
-                </Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
@@ -198,7 +223,7 @@ const AddVendorScreen = () => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
-  container: { flex: 1 },
+  container: { flexGrow: 1 },
   backgroundImageWrapper: {
     position: 'absolute',
     width: '100%',
@@ -206,7 +231,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-
   headerWrapper: { backgroundColor: '#FFFFFF' },
   contentWrapper: { flex: 1, padding: 20 },
   header: {
@@ -214,13 +238,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 5,
+    marginTop: 10,
+  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 10,
     fontSize: 16,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   picker: {
     borderWidth: 1,
