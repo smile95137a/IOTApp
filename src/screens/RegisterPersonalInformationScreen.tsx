@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -63,13 +63,20 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+      navigation.navigate('CropImage', {
+        uri: result.assets[0].uri,
+        aspectRatio: [1, 1],
+        isCircle: true,
+        from: {
+          tab: 'Auth',
+          stack: 'PersonalInfo',
+        },
+      });
     }
   };
 
@@ -86,13 +93,20 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
     }
 
     let result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+      navigation.navigate('CropImage', {
+        uri: result.assets[0].uri,
+        aspectRatio: [1, 1],
+        isCircle: true,
+        from: {
+          tab: 'Auth',
+          stack: 'PersonalInfo',
+        },
+      });
     }
   };
 
@@ -196,6 +210,14 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
       });
     }
   };
+
+  useEffect(() => {
+    const croppedImageUri = route.params?.croppedImageUri;
+    if (croppedImageUri) {
+      setProfileImage(croppedImageUri);
+    }
+  }, [route.params?.croppedImageUri]);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView style={styles.safeArea}>
@@ -430,8 +452,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     backgroundColor: '#FFF',
-    height: 200,
     position: 'relative',
+    aspectRatio: 1,
   },
   uploadButton: {
     width: 60,

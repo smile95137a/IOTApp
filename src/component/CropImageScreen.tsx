@@ -28,6 +28,7 @@ const CropImageScreen = () => {
   const imageUri = route.params?.uri;
   const from = route.params?.from || 'AddBanner';
   const aspectRatio = route.params?.aspectRatio || [16, 9];
+  const isCircle = route.params?.isCircle || false;
 
   const CROP_WIDTH = SCREEN_WIDTH;
   const CROP_HEIGHT = (CROP_WIDTH * aspectRatio[1]) / aspectRatio[0];
@@ -100,13 +101,20 @@ const CropImageScreen = () => {
       });
 
       if (from?.tab && from?.stack && from?.screen) {
-        navigation.navigate(from.tab, {
+        (navigation as any).navigate(from.tab, {
           screen: from.stack,
           params: {
             screen: from.screen,
             params: {
               croppedImageUri: uri,
             },
+          },
+        });
+      } else if (from?.tab && from?.stack) {
+        (navigation as any).navigate(from.tab, {
+          screen: from.stack,
+          params: {
+            croppedImageUri: uri,
           },
         });
       } else {
@@ -163,6 +171,7 @@ const CropImageScreen = () => {
                 position: 'absolute',
                 top: 0,
                 left: 0,
+                borderRadius: isCircle ? CROP_WIDTH / 2 : 0,
               },
             ]}
             pointerEvents="none"
