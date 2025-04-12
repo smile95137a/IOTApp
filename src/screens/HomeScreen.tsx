@@ -101,9 +101,6 @@ const HomeScreen = ({ navigation }) => {
       >
         <View style={styles.container}>
           <Header isDarkMode />
-          <TouchableOpacity onPress={handleDelete}>
-            <Text>刪除資料</Text>
-          </TouchableOpacity>
           <ScrollView contentContainerStyle={styles.content}>
             <ImageCarousel />
             <HomeOptionButton

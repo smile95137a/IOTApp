@@ -29,6 +29,8 @@ import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { useDialog } from '@/context/DialogContext';
+import { captureRef } from 'react-native-view-shot';
+import ViewShot from 'react-native-view-shot';
 
 type PoolTableParams = {
   poolTable?: {
@@ -169,13 +171,13 @@ const AddPoolTableScreen = () => {
     setShowQRCode(true);
   };
 
-  const qrCodeRef = React.useRef<QRCode>(null);
+  const qrCodeRef = React.useRef<any>(null);
 
   const handleSaveQRCode = async () => {
     try {
-      if (!qrCodeRef.current) return;
-
+      const uri = await qrCodeRef.current.capture();
       const { status } = await MediaLibrary.requestPermissionsAsync();
+
       if (status !== 'granted') {
         await openInfoDialog({
           title: '權限不足',
@@ -185,22 +187,13 @@ const AddPoolTableScreen = () => {
         return;
       }
 
-      qrCodeRef.current.toDataURL(async (data) => {
-        const base64Code = `data:image/png;base64,${data}`;
-        const fileUri = FileSystem.cacheDirectory + `qrcode_${Date.now()}.png`;
-
-        await FileSystem.writeAsStringAsync(fileUri, data, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-
-        const asset = await MediaLibrary.createAssetAsync(fileUri);
-        await MediaLibrary.createAlbumAsync('QRCode', asset, false);
-
-        await openInfoDialog({
-          title: '成功',
-          content: '已儲存 QR Code 至相簿',
-          confirmText: '我知道了',
-        });
+      const asset = await MediaLibrary.createAssetAsync(uri);
+      await MediaLibrary.createAlbumAsync('QRCode', asset, false);
+      setShowQRCode(false);
+      await openInfoDialog({
+        title: '成功',
+        content: '已儲存 QR Code 至相簿',
+        confirmText: '我知道了',
       });
     } catch (error) {
       console.error('儲存失敗', error);
@@ -275,12 +268,12 @@ const AddPoolTableScreen = () => {
                   <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                       <Text style={styles.modalTitle}>桌檯 QR Code</Text>
-                      <QRCode
-                        value={qrCodeVal}
-                        size={200}
-                        getRef={(c) => (qrCodeRef.current = c)}
-                        quietZone={20}
-                      />
+                      <ViewShot
+                        ref={qrCodeRef}
+                        options={{ format: 'png', result: 'tmpfile' }}
+                      >
+                        <QRCode value={qrCodeVal} size={200} quietZone={20} />
+                      </ViewShot>
 
                       <TouchableOpacity
                         style={styles.closeButton}

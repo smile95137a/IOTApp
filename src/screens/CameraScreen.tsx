@@ -72,17 +72,6 @@ const CameraScreen = () => {
     const scanBoxX = (width - SCAN_BOX_SIZE) / 2;
     const scanBoxY = (height - SCAN_BOX_SIZE) / 2;
 
-    if (bounds?.origin) {
-      const { x, y } = bounds.origin;
-      const isInScanBox =
-        x >= scanBoxX &&
-        x <= scanBoxX + SCAN_BOX_SIZE &&
-        y >= scanBoxY &&
-        y <= scanBoxY + SCAN_BOX_SIZE;
-
-      if (!isInScanBox) return;
-    }
-
     setScanned(true);
     try {
       const tableUid = decryptData(data);
@@ -120,6 +109,8 @@ const CameraScreen = () => {
                 content: message || '無法載入店家資訊',
               });
             }
+          } else {
+            setScanned(false);
           }
         } else {
           const confirm = await openConfirmDialog({
@@ -132,6 +123,8 @@ const CameraScreen = () => {
               screen: 'Reservation',
               params: { tableUid },
             });
+          } else {
+            setScanned(false);
           }
         }
       } else {
@@ -145,6 +138,8 @@ const CameraScreen = () => {
             screen: 'Reservation',
             params: { tableUid },
           });
+        } else {
+          setScanned(false);
         }
       }
     } catch (error) {

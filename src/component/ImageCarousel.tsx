@@ -25,7 +25,7 @@ const ImageCarousel = () => {
   const screenWidth = Dimensions.get('window').width;
   const horizontalPadding = 16;
   const carouselWidth = screenWidth;
-  const carouselHeight = (carouselWidth * 8.8) / 16;
+  const carouselHeight = (carouselWidth * 9) / 16;
 
   const { openConfirmDialog, openInfoDialog } = useDialog();
   useEffect(() => {

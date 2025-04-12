@@ -358,6 +358,19 @@ const AddStoreScreen = () => {
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const minutes = Array.from({ length: 60 }, (_, i) => i);
 
+  const getDayOfWeekCHName = (day: string): string => {
+    const map: Record<string, string> = {
+      MONDAY: '星期一',
+      TUESDAY: '星期二',
+      WEDNESDAY: '星期三',
+      THURSDAY: '星期四',
+      FRIDAY: '星期五',
+      SATURDAY: '星期六',
+      SUNDAY: '星期日',
+    };
+    return map[day.toUpperCase()] || day;
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeArea}>
@@ -465,7 +478,7 @@ const AddStoreScreen = () => {
               {pricingSchedules.map((schedule, index) => (
                 <View key={index} style={{ marginBottom: 20 }}>
                   <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>
-                    {schedule.dayOfWeek}
+                    {getDayOfWeekCHName(schedule.dayOfWeek)}
                   </Text>
 
                   <Text>營業開始時間</Text>

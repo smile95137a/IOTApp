@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   newsImage: {
     width: '100%',
-    height: 230,
+    aspectRatio: 1, // ✅ 保持 1:1 比例
     borderRadius: 10,
     marginBottom: 15,
   },

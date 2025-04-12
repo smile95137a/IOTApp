@@ -27,6 +27,7 @@ import {
   Store,
 } from '@/api/admin/storeApi';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useDialog } from '@/context/DialogContext';
 
 const PoolTableStoreManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();

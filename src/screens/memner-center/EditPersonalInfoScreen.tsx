@@ -43,6 +43,7 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
   const [email, setEmail] = useState('');
   const [localUser, setLocalUser] = useState(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [anonymousId, setAnonymousId] = useState('');
 
   const { openInfoDialog } = useDialog();
 
@@ -106,6 +107,7 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
     const userData = {
       name,
       email,
+      anonymousId,
     };
 
     try {
@@ -177,6 +179,7 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
           if (response.success) {
             setName(response.data.name);
             setEmail(response.data.email);
+            setAnonymousId(response.data.anonymousId || '');
             setLocalUser(response.data);
           } else {
           }
@@ -207,6 +210,18 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
             />
           </View>
         </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>匿名 ID *</Text>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder="請輸入匿名 ID"
+              value={anonymousId}
+              onChangeText={setAnonymousId}
+            />
+          </View>
+        </View>
+
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>連絡信箱 *</Text>
           <View style={styles.inputWrapper}>

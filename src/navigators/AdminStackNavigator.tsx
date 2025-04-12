@@ -443,18 +443,6 @@ const ReportStack = () => {
 
   return (
     <Stack.Navigator>
-      {isAdmin && (
-        <Stack.Screen
-          name="ReportVendor"
-          component={ReportVendorScreen}
-          options={{ title: '報表總覽', headerShown: false }}
-        />
-      )}
-      <Stack.Screen
-        name="ReportStore"
-        component={ReportStoreScreen}
-        options={{ title: '報表總覽', headerShown: false }}
-      />
       <Stack.Screen
         name="ReportDetail"
         component={ReportDetailScreen}

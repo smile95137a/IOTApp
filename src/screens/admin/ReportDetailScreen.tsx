@@ -1,6 +1,6 @@
 import Header from '@/component/Header';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -26,11 +26,16 @@ import NumberFormatter from '@/component/NumberFormatter';
 import NoData from '@/component/NoData';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { fetchAllVendors } from '@/api/admin/vendorApi';
+import { fetchStoresByVendorId } from '@/api/admin/storeApi';
 
 const ReportDetailScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const route = useRoute();
   const { openInfoDialog } = useDialog();
+
+  const [vendors, setVendors] = useState([]);
+  const [stores, setStores] = useState([]);
 
   const [reportData, setReportData] = useState([]);
   const [storeId, setStoreId] = useState(route.params?.storeId || '');
@@ -65,6 +70,50 @@ const ReportDetailScreen = () => {
     }
   };
 
+  useEffect(() => {
+    const loadVendorsAndStores = async () => {
+      try {
+        dispatch(showLoading());
+        const vendorRes = await fetchAllVendors(); // 你已有這個 API
+        dispatch(hideLoading());
+
+        if (vendorRes.success) setVendors(vendorRes.data);
+      } catch (error) {
+        dispatch(hideLoading());
+      }
+    };
+
+    loadVendorsAndStores();
+  }, []);
+
+  useEffect(() => {
+    const loadStores = async () => {
+      if (!vendorId) {
+        setStores([]);
+        setStoreId('');
+        return;
+      }
+      try {
+        dispatch(showLoading());
+        const { success, data } = await fetchStoresByVendorId(vendorId);
+        dispatch(hideLoading());
+        if (success) {
+          setStores(data);
+          setStoreId('');
+        }
+      } catch (error) {
+        dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: '載入店家失敗',
+          confirmText: '我知道了',
+        });
+      }
+    };
+
+    loadStores();
+  }, [vendorId]);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeArea}>
@@ -88,6 +137,41 @@ const ReportDetailScreen = () => {
               >
                 <ScrollView>
                   <View style={styles.filterContainer}>
+                    <View style={styles.row}>
+                      <View style={styles.flexOne}>
+                        <Text style={styles.label}>廠商</Text>
+                        <Picker
+                          selectedValue={vendorId}
+                          onValueChange={(value) => setVendorId(value)}
+                        >
+                          <Picker.Item label="請選擇廠商" value="" />
+                          {vendors.map((vendor) => (
+                            <Picker.Item
+                              key={vendor.id}
+                              label={vendor.name}
+                              value={String(vendor.id)}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                      <View style={styles.flexOne}>
+                        <Text style={styles.label}>店家</Text>
+                        <Picker
+                          selectedValue={storeId}
+                          onValueChange={(value) => setStoreId(value)}
+                        >
+                          <Picker.Item label="請選擇店家" value="" />
+                          {stores.map((store) => (
+                            <Picker.Item
+                              key={store.id}
+                              label={store.name}
+                              value={String(store.id)}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                    </View>
+
                     <View style={styles.row}>
                       <View style={styles.flexOne}>
                         <Text style={styles.label}>報告類型</Text>

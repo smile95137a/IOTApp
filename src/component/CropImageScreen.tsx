@@ -19,7 +19,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { captureRef } from 'react-native-view-shot';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { logJson } from '@/utils/logJsonUtils';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -28,7 +27,7 @@ const CropImageScreen = () => {
   const navigation = useNavigation();
   const imageUri = route.params?.uri;
   const from = route.params?.from || 'AddBanner';
-  const aspectRatio = route.params?.aspectRatio || [16, 9]; // 預設 16:9
+  const aspectRatio = route.params?.aspectRatio || [16, 9];
 
   const CROP_WIDTH = SCREEN_WIDTH;
   const CROP_HEIGHT = (CROP_WIDTH * aspectRatio[1]) / aspectRatio[0];
@@ -56,7 +55,6 @@ const CropImageScreen = () => {
 
         setImageSize({ width: scaledWidth, height: scaledHeight });
 
-        // ✅ 把圖片一開始對齊裁切框中心
         translateX.value = (CROP_WIDTH - scaledWidth) / 2;
         translateY.value = (CROP_HEIGHT - scaledHeight) / 2;
         lastTranslateX.value = translateX.value;
@@ -100,6 +98,7 @@ const CropImageScreen = () => {
         quality: 1,
         result: 'tmpfile',
       });
+
       if (from?.tab && from?.stack && from?.screen) {
         navigation.navigate(from.tab, {
           screen: from.stack,
@@ -121,36 +120,51 @@ const CropImageScreen = () => {
   return (
     <GestureHandlerRootView style={styles.root}>
       <View style={styles.container}>
-        <View
-          style={[styles.cropArea, { width: CROP_WIDTH, height: CROP_HEIGHT }]}
-          ref={viewShotRef}
-          collapsable={false}
-        >
-          <PinchGestureHandler onGestureEvent={pinchGesture}>
-            <Animated.View
-              style={{
+        <View style={{ position: 'relative' }}>
+          <View
+            style={[
+              styles.cropArea,
+              { width: CROP_WIDTH, height: CROP_HEIGHT },
+            ]}
+            ref={viewShotRef}
+            collapsable={false}
+          >
+            <PinchGestureHandler onGestureEvent={pinchGesture}>
+              <Animated.View
+                style={{
+                  width: CROP_WIDTH,
+                  height: CROP_HEIGHT,
+                  overflow: 'hidden',
+                }}
+              >
+                <PanGestureHandler onGestureEvent={panGesture}>
+                  <Animated.View style={[animatedStyle]}>
+                    <Image
+                      source={{ uri: imageUri }}
+                      style={{
+                        width: imageSize.width,
+                        height: imageSize.height,
+                      }}
+                      resizeMode="cover"
+                    />
+                  </Animated.View>
+                </PanGestureHandler>
+              </Animated.View>
+            </PinchGestureHandler>
+          </View>
+
+          {/* ✅ 白邊框移到裁切區外面，避免被截圖 */}
+          <View
+            style={[
+              styles.frame,
+              {
                 width: CROP_WIDTH,
                 height: CROP_HEIGHT,
-                overflow: 'hidden',
-              }}
-            >
-              <PanGestureHandler onGestureEvent={panGesture}>
-                <Animated.View style={[animatedStyle]}>
-                  <Image
-                    source={{ uri: imageUri }}
-                    style={{
-                      width: imageSize.width,
-                      height: imageSize.height,
-                    }}
-                    resizeMode="contain"
-                  />
-                </Animated.View>
-              </PanGestureHandler>
-            </Animated.View>
-          </PinchGestureHandler>
-
-          <View
-            style={[styles.frame, { width: CROP_WIDTH, height: CROP_HEIGHT }]}
+                position: 'absolute',
+                top: 0,
+                left: 0,
+              },
+            ]}
             pointerEvents="none"
           />
         </View>
@@ -175,7 +189,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   frame: {
-    position: 'absolute',
     borderWidth: 2,
     borderColor: '#fff',
   },

@@ -145,9 +145,12 @@ const AdminDashboardScreen = ({ navigation }) => {
                   <TouchableOpacity
                     key={item.uid}
                     style={styles.cardWrapper}
-                    onPress={() =>
-                      navigation.navigate('AddStore', { store: item })
-                    }
+                    onPress={() => {
+                      navigation.navigate('EquipmentStack', {
+                        screen: 'DeviceManagement',
+                        params: { storeId: item.id },
+                      });
+                    }}
                   >
                     <Image
                       source={require('@/assets/iot-logo-black.png')}
@@ -155,38 +158,6 @@ const AdminDashboardScreen = ({ navigation }) => {
                     />
                     <View style={styles.cardFooter}>
                       <Text style={styles.cardTitle}>{item.name}</Text>
-                      <View style={styles.cardActions}>
-                        <Menu
-                          visible={visibleMenuId === item.uid}
-                          onDismiss={() => setVisibleMenuId(null)}
-                          anchor={
-                            <TouchableOpacity
-                              style={styles.iconButton}
-                              onPress={() =>
-                                setVisibleMenuId(
-                                  visibleMenuId === item.uid ? null : item.uid
-                                )
-                              }
-                            >
-                              <Icon
-                                name="dots-vertical"
-                                size={20}
-                                color="#FFF"
-                              />
-                            </TouchableOpacity>
-                          }
-                        >
-                          <Menu.Item
-                            title="編輯"
-                            leadingIcon="pencil-outline"
-                          />
-                          <Menu.Item
-                            title="刪除"
-                            leadingIcon="trash-can-outline"
-                            titleStyle={{ color: 'red' }}
-                          />
-                        </Menu>
-                      </View>
                     </View>
                   </TouchableOpacity>
                 ))}
