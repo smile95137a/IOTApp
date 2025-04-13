@@ -45,6 +45,17 @@ const ReportDetailScreen = () => {
   const [reportType, setReportType] = useState('ConsumptionAmount');
   const [periodType, setPeriodType] = useState('DAY');
 
+  const reportTypeOptions = [
+    { label: '儲值金額', value: 'DepositAmount' },
+    { label: '儲值筆數', value: 'DepositCount' },
+    { label: '消費金額', value: 'ConsumptionAmount' },
+    { label: '消費筆數', value: 'ConsumptionCount' },
+    { label: '單店營業額', value: 'StoreRevenue' },
+    { label: '廠商營業額', value: 'VendorRevenue' },
+    { label: '剩餘儲值金金額', value: 'RemainingBalance' },
+    { label: '會員數量', value: 'UserCount' },
+  ];
+
   const handleSearch = async () => {
     try {
       dispatch(showLoading());
@@ -179,23 +190,13 @@ const ReportDetailScreen = () => {
                           selectedValue={reportType}
                           onValueChange={setReportType}
                         >
-                          <Picker.Item label="儲值金額" value="DepositAmount" />
-                          <Picker.Item
-                            label="消費金額"
-                            value="ConsumptionAmount"
-                          />
-                          <Picker.Item
-                            label="單店營業額"
-                            value="StoreRevenue"
-                          />
-                          <Picker.Item
-                            label="廠商營業額"
-                            value="VendorRevenue"
-                          />
-                          <Picker.Item
-                            label="剩餘儲值金金額"
-                            value="RemainingBalance"
-                          />
+                          {reportTypeOptions.map((option) => (
+                            <Picker.Item
+                              key={option.value}
+                              label={option.label}
+                              value={option.value}
+                            />
+                          ))}
                         </Picker>
                       </View>
                       <View style={styles.flexOne}>
