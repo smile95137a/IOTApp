@@ -80,7 +80,7 @@ const ContactScreen = ({ navigation, route }) => {
   };
 
   const handleCall = async () => {
-    const phoneNumber = transaction?.contactInfo;
+    const phoneNumber = transaction?.vendor?.contactInfo;
     if (phoneNumber) {
       const confirmed = await openConfirmDialog({
         title: '撥打電話',

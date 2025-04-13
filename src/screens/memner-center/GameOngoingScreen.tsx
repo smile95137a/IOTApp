@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useDialog } from '@/context/DialogContext';
+import { logJson } from '@/utils/logJsonUtils';
 
 const GameOngoingScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -53,7 +54,7 @@ const GameOngoingScreen = ({ navigation }: any) => {
     loadTransactions();
   }, []);
 
-  const handleTransactionPress = (transaction: GameTransactionRecord) => {
+  const handleTransactionPress = (transaction: any) => {
     navigation.navigate('Contact', { transaction });
   };
 

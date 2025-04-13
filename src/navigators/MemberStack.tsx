@@ -59,6 +59,7 @@ const MainLayout = ({ children }) => {
       if (response.success) {
         console.log('[User Info] API Response:', response.data);
         dispatch(setUser(response.data));
+        logJson(response.data);
         setLocalUser(response.data);
         logJson('setLocalUser', response.data);
       } else {
@@ -217,11 +218,20 @@ const MainLayout = ({ children }) => {
             </View>
             <View style={styles.userInfoRight}>
               <Text style={styles.userName}>
-                {localUser?.anonymousId || localUser?.name}
+                會員：{localUser?.anonymousId || localUser?.name}
               </Text>
               <Text style={styles.userBalance}>
-                餘額：
-                <NumberFormatter number={localUser?.amount ?? 0} />元
+                儲值金額：
+                <NumberFormatter number={localUser?.amount ?? 0} />
+                （消費優先扣除）
+              </Text>
+              <Text style={styles.userBalance}>
+                贈送：
+                <NumberFormatter number={localUser?.point ?? 0} />
+              </Text>
+              <Text style={styles.userBalance}>
+                可用餘額：
+                <NumberFormatter number={localUser?.totalAmount ?? 0} />
               </Text>
             </View>
           </View>
