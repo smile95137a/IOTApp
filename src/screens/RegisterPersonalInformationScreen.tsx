@@ -284,7 +284,7 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
 
               {/* 匿名 ID */}
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>匿名 ID *</Text>
+                <Text style={styles.inputLabel}>匿名 ID</Text>
                 <View
                   style={[styles.inputWrapper, styles.disabledInputWrapper]}
                 >

@@ -92,15 +92,18 @@ const CameraScreen = () => {
             dispatch(hideLoading());
 
             if (success) {
-              (navigation as any).navigate('Member', {
-                screen: 'Payment',
+              (navigation as any).navigate('Main', {
+                screen: 'Member',
                 params: {
-                  type: 'gameEnd',
-                  payData: {
-                    gameId: response.data.gameId,
-                    poolTableId: response.data.poolTableId,
+                  screen: 'Payment',
+                  params: {
+                    type: 'gameEnd',
+                    payData: {
+                      gameId: response.data.gameId,
+                      poolTableId: response.data.poolTableId,
+                    },
+                    totalAmount: data.price,
                   },
-                  totalAmount: data.price,
                 },
               });
             } else {
@@ -119,9 +122,12 @@ const CameraScreen = () => {
           });
 
           if (confirm) {
-            (navigation as any).navigate('Member', {
-              screen: 'Reservation',
-              params: { tableUid },
+            (navigation as any).navigate('Main', {
+              screen: 'Member',
+              params: {
+                screen: 'Reservation',
+                params: { tableUid },
+              },
             });
           } else {
             setScanned(false);
@@ -134,9 +140,12 @@ const CameraScreen = () => {
         });
 
         if (confirm) {
-          (navigation as any).navigate('Member', {
-            screen: 'Reservation',
-            params: { tableUid },
+          (navigation as any).navigate('Main', {
+            screen: 'Member',
+            params: {
+              screen: 'Reservation',
+              params: { tableUid },
+            },
           });
         } else {
           setScanned(false);
