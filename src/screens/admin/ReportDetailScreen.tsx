@@ -14,6 +14,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { fetchReportData } from '@/api/admin/reportApi';
@@ -26,6 +27,8 @@ import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
 import { fetchAllVendors } from '@/api/admin/vendorApi';
 import { fetchStoresByVendorId } from '@/api/admin/storeApi';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import DynamicDatePicker from '@/component/admin/DynamicDatePicker';
 
 const ReportDetailScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -158,35 +161,55 @@ const ReportDetailScreen = () => {
                   <View style={styles.row}>
                     <View style={styles.flexOne}>
                       <Text style={styles.label}>廠商</Text>
-                      <Picker
-                        selectedValue={vendorId}
+                      <RNPickerSelect
+                        value={vendorId}
                         onValueChange={(value) => setVendorId(value)}
-                      >
-                        <Picker.Item label="請選擇廠商" value="" />
-                        {vendors.map((vendor) => (
-                          <Picker.Item
-                            key={vendor.id}
-                            label={vendor.name}
-                            value={String(vendor.id)}
+                        items={vendors.map((vendor) => ({
+                          key: vendor.id,
+                          label: vendor.name,
+                          value: String(vendor.id),
+                        }))}
+                        style={{
+                          inputIOS: styles.dropdownInput,
+                          inputAndroid: styles.dropdownInput,
+                          iconContainer: styles.iconContainer,
+                        }}
+                        Icon={() => (
+                          <MaterialIcons
+                            name="arrow-drop-down"
+                            size={24}
+                            color="#888"
                           />
-                        ))}
-                      </Picker>
+                        )}
+                        useNativeAndroidPickerStyle={false}
+                        placeholder={{ label: '請選擇', value: '' }}
+                      />
                     </View>
                     <View style={styles.flexOne}>
                       <Text style={styles.label}>店家</Text>
-                      <Picker
-                        selectedValue={storeId}
+                      <RNPickerSelect
+                        value={storeId}
                         onValueChange={(value) => setStoreId(value)}
-                      >
-                        <Picker.Item label="請選擇店家" value="" />
-                        {stores.map((store) => (
-                          <Picker.Item
-                            key={store.id}
-                            label={store.name}
-                            value={String(store.id)}
+                        items={stores.map((store) => ({
+                          key: store.id,
+                          label: store.name,
+                          value: String(store.id),
+                        }))}
+                        style={{
+                          inputIOS: styles.dropdownInput,
+                          inputAndroid: styles.dropdownInput,
+                          iconContainer: styles.iconContainer,
+                        }}
+                        Icon={() => (
+                          <MaterialIcons
+                            name="arrow-drop-down"
+                            size={24}
+                            color="#888"
                           />
-                        ))}
-                      </Picker>
+                        )}
+                        useNativeAndroidPickerStyle={false}
+                        placeholder={{ label: '請選擇', value: '' }}
+                      />
                     </View>
                   </View>
 
@@ -218,29 +241,40 @@ const ReportDetailScreen = () => {
                     </View>
                     <View style={styles.flexOne}>
                       <Text style={styles.label}>期間類型</Text>
-                      <Picker
-                        selectedValue={periodType}
-                        onValueChange={setPeriodType}
-                      >
-                        <Picker.Item label="日報" value="DAY" />
-                        <Picker.Item label="週報" value="WEEK" />
-                        <Picker.Item label="月報" value="MONTH" />
-                        <Picker.Item label="年報" value="YEARS" />
-                      </Picker>
+                      <RNPickerSelect
+                        value={periodType}
+                        onValueChange={(value) => setPeriodType(value)}
+                        items={[
+                          { label: '日報', value: 'DAY' },
+                          { label: '週報', value: 'WEEK' },
+                          { label: '月報', value: 'MONTH' },
+                          { label: '年報', value: 'YEARS' },
+                        ]}
+                        style={{
+                          inputIOS: styles.dropdownInput,
+                          inputAndroid: styles.dropdownInput,
+                          iconContainer: styles.iconContainer,
+                        }}
+                        Icon={() => (
+                          <MaterialIcons
+                            name="arrow-drop-down"
+                            size={24}
+                            color="#888"
+                          />
+                        )}
+                        useNativeAndroidPickerStyle={false}
+                        placeholder={{ label: '請選擇', value: '' }}
+                      />
                     </View>
                   </View>
 
                   <View style={styles.row}>
-                    <DatePickerComponent
-                      label="開始日期"
-                      date={startDate}
-                      setDate={setStartDate}
-                      style={styles.flexOne}
-                    />
-                    <DatePickerComponent
-                      label="結束日期"
-                      date={endDate}
-                      setDate={setEndDate}
+                    <DynamicDatePicker
+                      periodType={periodType}
+                      startDate={startDate}
+                      endDate={endDate}
+                      setStartDate={setStartDate}
+                      setEndDate={setEndDate}
                       style={styles.flexOne}
                     />
                   </View>
@@ -397,6 +431,20 @@ const styles = StyleSheet.create({
   },
   tableRow: { flexDirection: 'row', paddingVertical: 6 },
   cellText: { fontSize: 14, color: '#333', textAlign: 'center' },
+  dropdownInput: {
+    fontSize: 14,
+    color: '#000',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    width: 100,
+    alignItems: 'center',
+  },
+  iconContainer: {
+    top: '50%',
+    right: 10,
+    marginTop: -12,
+    position: 'absolute',
+  },
 });
 
 export default ReportDetailScreen;

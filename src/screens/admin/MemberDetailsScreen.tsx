@@ -43,7 +43,7 @@ const MemberDetailsScreen = ({ route, navigation }) => {
             />
             <Text style={styles.memberName}>{member.name}</Text>
           </View>
-
+          <Text style={styles.memberInfo}>UUID：{member.uid}</Text>
           {/* 新增：匿名 ID */}
           <Text style={styles.memberInfo}>
             匿名 ID：{member.anonymousId || '—'}

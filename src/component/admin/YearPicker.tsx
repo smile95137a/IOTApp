@@ -10,26 +10,16 @@ interface Props {
   style?: any;
 }
 
-const DatePickerComponent = ({ label, date, setDate, style }: Props) => {
-  const dates: { label: string; value: string }[] = [];
-  const today = new Date();
-  for (let i = 0; i < 90; i++) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const formatted = `${y}-${m}-${day}`;
-    dates.push({ label: formatted, value: formatted });
-  }
+const YearPicker = ({ label, date, setDate, style }: Props) => {
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
 
-  const selectedValue = `${date.getFullYear()}-${String(
-    date.getMonth() + 1
-  ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  const selectedYear = String(date.getFullYear());
 
-  const handleChange = (value: string) => {
-    const [year, month, day] = value.split('-').map(Number);
-    const newDate = new Date(year, month - 1, day);
+  const handleChange = (yearStr: string) => {
+    const year = parseInt(yearStr, 10);
+    const newDate = new Date(date);
+    newDate.setFullYear(year);
     setDate(newDate);
   };
 
@@ -37,9 +27,12 @@ const DatePickerComponent = ({ label, date, setDate, style }: Props) => {
     <View style={[styles.wrapper, style]}>
       <Text style={styles.label}>{label}</Text>
       <RNPickerSelect
-        value={selectedValue}
+        value={selectedYear}
         onValueChange={handleChange}
-        items={dates}
+        items={years.map((year) => ({
+          label: `${year}`,
+          value: String(year), // 💡 字串 value
+        }))}
         style={{
           inputIOS: styles.input,
           inputAndroid: styles.input,
@@ -49,7 +42,7 @@ const DatePickerComponent = ({ label, date, setDate, style }: Props) => {
           <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
         )}
         useNativeAndroidPickerStyle={false}
-        placeholder={{ label: '選擇日期', value: '' }}
+        placeholder={{ label: '選擇年份', value: '' }}
       />
     </View>
   );
@@ -75,4 +68,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DatePickerComponent;
+export default YearPicker;

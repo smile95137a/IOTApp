@@ -3,6 +3,7 @@ import authReducer from './authSlice';
 import loadingReducer from './loadingSlice';
 import registerReducer from './registerSlice';
 import userReducer from './userSlice';
+import storeSelectionReducer from './storeSelectionSlice';
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     loading: loadingReducer,
     register: registerReducer,
     user: userReducer,
+    storeSelection: storeSelectionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

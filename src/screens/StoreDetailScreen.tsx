@@ -22,6 +22,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Feather from '@expo/vector-icons/Feather';
 import moment from 'moment';
 import { logJson } from '@/utils/logJsonUtils';
+import { setSelectedStore } from '@/store/storeSelectionSlice';
 
 const StoreDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -77,6 +78,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
 
     loadTables();
     getTodayPricing();
+    dispatch(setSelectedStore(store));
   }, [store.uid]);
 
   const handleShare = async () => {

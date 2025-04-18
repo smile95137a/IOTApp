@@ -299,12 +299,17 @@ const StoreStack = () => {
       <Stack.Screen
         name="StoreManagement"
         component={StoreManagementScreen}
-        options={{ title: '店家管理', headerShown: false }} // 隱藏 Header
+        options={{ title: '店家管理', headerShown: false }}
       />
       <Stack.Screen
         name="AddStore"
         component={AddStoreScreen}
-        options={{ title: '新增店家', headerShown: false }} // 讓返回按鈕可用
+        options={{ title: '新增店家', headerShown: false }}
+      />
+      <Stack.Screen
+        name="AdminStoreDetail"
+        component={AdminStoreDetailScreen}
+        options={{ title: '店家詳細資料', headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -436,6 +441,7 @@ import MonitorViewDetailScreen from '@/screens/admin/MonitorViewDetailScreen';
 import PoolTableStoreManagementScreen from '@/screens/admin/PoolTableStoreManagementScreen';
 import CropImageScreen from '@/component/CropImageScreen';
 import { useDialog } from '@/context/DialogContext';
+import AdminStoreDetailScreen from '@/screens/admin/AdminStoreDetailScreen';
 
 const ReportStack = () => {
   const user = useSelector((state: RootState) => state.user);

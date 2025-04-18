@@ -111,11 +111,31 @@ const PaymentScreen = ({ navigation }: any) => {
               label: '儲值金結帳',
               detail: '',
               icon: 'account-balance-wallet',
+              image: require('@/assets/iot-pay1.png'),
             },
-            { label: '信用卡結帳', detail: '', icon: 'credit-card' },
-            { label: 'LINE PAY', detail: '', icon: 'payment' },
-            { label: '街口支付', detail: '', icon: 'store' },
-            { label: 'Apple Pay', detail: '', icon: 'apple' },
+            {
+              label: '信用卡結帳',
+              detail: '',
+              icon: 'credit-card',
+            },
+            {
+              label: 'LINE PAY',
+              detail: '',
+              icon: 'payment',
+              image: require('@/assets/iot-line-pay.png'),
+            },
+            {
+              label: '街口支付',
+              detail: '',
+              icon: 'store',
+              image: require('@/assets/iot-l-pay.png'),
+            },
+            {
+              label: 'Apple Pay',
+              detail: '',
+              icon: 'apple',
+              image: require('@/assets/iot-apple-pay.png'),
+            },
           ].map((method, index) => (
             <TouchableOpacity
               key={index}
@@ -123,12 +143,16 @@ const PaymentScreen = ({ navigation }: any) => {
               onPress={() => handlePaymentPress(method.label)}
             >
               <View style={styles.paymentInfo}>
-                <Icon
-                  name={method.icon}
-                  size={24}
-                  color="#333"
-                  style={styles.paymentIcon}
-                />
+                {method.image ? (
+                  <Image source={method.image} style={styles.methodImage} />
+                ) : (
+                  <Icon
+                    name={method.icon}
+                    size={24}
+                    color="#333"
+                    style={styles.paymentIcon}
+                  />
+                )}
                 <Text style={styles.paymentLabel}>{method.label}</Text>
               </View>
               <View style={styles.paymentDetailsContainer}>
@@ -273,6 +297,12 @@ const styles = StyleSheet.create({
     height: 112,
     zIndex: -1,
     opacity: 0.1,
+  },
+  methodImage: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+    marginRight: 8,
   },
 });
 

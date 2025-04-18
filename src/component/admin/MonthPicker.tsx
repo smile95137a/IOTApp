@@ -10,26 +10,27 @@ interface Props {
   style?: any;
 }
 
-const DatePickerComponent = ({ label, date, setDate, style }: Props) => {
-  const dates: { label: string; value: string }[] = [];
-  const today = new Date();
-  for (let i = 0; i < 90; i++) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const formatted = `${y}-${m}-${day}`;
-    dates.push({ label: formatted, value: formatted });
+const MonthPicker = ({ label, date, setDate, style }: Props) => {
+  const currentYear = new Date().getFullYear();
+
+  // 建立近三年內月份選項：YYYY-MM
+  const months = [];
+  for (let y = currentYear; y >= currentYear - 2; y--) {
+    for (let m = 1; m <= 12; m++) {
+      const value = `${y}-${String(m).padStart(2, '0')}`;
+      months.push({ label: value, value });
+    }
   }
 
   const selectedValue = `${date.getFullYear()}-${String(
     date.getMonth() + 1
-  ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  ).padStart(2, '0')}`;
 
   const handleChange = (value: string) => {
-    const [year, month, day] = value.split('-').map(Number);
-    const newDate = new Date(year, month - 1, day);
+    const [year, month] = value.split('-').map(Number);
+    const newDate = new Date(date);
+    newDate.setFullYear(year);
+    newDate.setMonth(month - 1);
     setDate(newDate);
   };
 
@@ -39,7 +40,7 @@ const DatePickerComponent = ({ label, date, setDate, style }: Props) => {
       <RNPickerSelect
         value={selectedValue}
         onValueChange={handleChange}
-        items={dates}
+        items={months}
         style={{
           inputIOS: styles.input,
           inputAndroid: styles.input,
@@ -49,7 +50,7 @@ const DatePickerComponent = ({ label, date, setDate, style }: Props) => {
           <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
         )}
         useNativeAndroidPickerStyle={false}
-        placeholder={{ label: '選擇日期', value: '' }}
+        placeholder={{ label: '選擇月份', value: '' }}
       />
     </View>
   );
@@ -75,4 +76,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DatePickerComponent;
+export default MonthPicker;

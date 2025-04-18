@@ -186,7 +186,6 @@ const MonitorManagementScreen = ({ navigation }) => {
           id: item.id,
           name: item.name,
           status: !!item.status,
-          alarm: !!item.alarm,
         }));
 
         setMonitors(formattedData);
@@ -241,37 +240,6 @@ const MonitorManagementScreen = ({ navigation }) => {
     }
   };
 
-  const toggleAlarmSwitch = async (index: number) => {
-    const selectedMonitor = monitors[index];
-    const newAlarmStatus = !selectedMonitor.alarm;
-    const updatedMonitors = [...monitors];
-    updatedMonitors[index].alarm = newAlarmStatus;
-    setMonitors(updatedMonitors);
-
-    try {
-      dispatch(showLoading());
-      await updateMonitor({
-        name: selectedMonitor.name,
-        uid: selectedMonitor.uid,
-        status: selectedMonitor.status,
-        alarm: newAlarmStatus, // 傳給後端
-        storeId: storeId,
-      });
-      dispatch(hideLoading());
-    } catch (error) {
-      console.log('更新異常狀態失敗:', error);
-      updatedMonitors[index].alarm = !newAlarmStatus;
-      setMonitors([...updatedMonitors]);
-      await openInfoDialog({
-        title: '錯誤',
-        content: '異常狀態更新失敗',
-        confirmText: '我知道了',
-      });
-
-      dispatch(hideLoading());
-    }
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -312,15 +280,6 @@ const MonitorManagementScreen = ({ navigation }) => {
                 <Switch
                   value={monitor.status}
                   onValueChange={() => toggleSwitch(index)}
-                />
-              </View>
-              <View style={{ ...styles.row, marginTop: 5 }}>
-                <Text style={{ fontSize: 14, color: '#888' }}>
-                  異常警報訊號
-                </Text>
-                <Switch
-                  value={monitor.alarm}
-                  onValueChange={() => toggleAlarmSwitch(index)}
                 />
               </View>
             </View>

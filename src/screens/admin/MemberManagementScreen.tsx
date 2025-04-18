@@ -32,6 +32,7 @@ const MemberManagementScreen = ({ navigation }) => {
       member.name?.toLowerCase().includes(keyword) ||
       member.email?.toLowerCase().includes(keyword) ||
       member.anonymousId?.toLowerCase().includes(keyword) ||
+      +member.uid?.toLowerCase().includes(keyword) ||
       member.phoneNumber?.includes(keyword)
     );
   });
@@ -115,6 +116,7 @@ const MemberManagementScreen = ({ navigation }) => {
                 />
                 <View style={styles.memberInfo}>
                   <Text style={styles.memberName}>{item.name}</Text>
+                  <Text style={styles.memberId}>UUID：{item.uid}</Text>
                   {item.anonymousId && (
                     <Text style={styles.memberId}>
                       匿名 ID：{item.anonymousId}

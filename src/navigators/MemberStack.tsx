@@ -43,13 +43,17 @@ const Stack = createStackNavigator();
 const MainLayout = ({ children }) => {
   const dispatch = useDispatch();
   const route = useRoute();
+  const currentScreenName = route.name;
+
   const navigation = useNavigation();
   const user = useSelector((state: RootState) => state.user.user);
 
   const [localUser, setLocalUser] = useState(user);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const { openInfoDialog } = useInfoDialog();
-
+  const selectedStore = useSelector(
+    (state: RootState) => state.storeSelection.selectedStore
+  );
   const fetchAndSetUserInfo = async () => {
     try {
       dispatch(showLoading());
@@ -235,6 +239,12 @@ const MainLayout = ({ children }) => {
               </Text>
             </View>
           </View>
+          {/* Store Info */}
+          {currentScreenName === 'Payment' && selectedStore && (
+            <View style={styles.storeInfoContainer}>
+              <Text style={styles.storeTitle}>{selectedStore.name}</Text>
+            </View>
+          )}
 
           {/* Menu List */}
           <View style={styles.menuContainer}>{children}</View>
@@ -408,6 +418,17 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     backgroundColor: '#FAFAFA',
     flex: 1,
+  },
+  storeInfoContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+
+  storeTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 6,
   },
 });
 

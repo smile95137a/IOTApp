@@ -146,9 +146,9 @@ const AdminDashboardScreen = ({ navigation }) => {
                     key={item.uid}
                     style={styles.cardWrapper}
                     onPress={() => {
-                      navigation.navigate('EquipmentStack', {
-                        screen: 'DeviceManagement',
-                        params: { storeId: item.id },
+                      navigation.navigate('StoreManagementStack', {
+                        screen: 'AdminStoreDetail',
+                        params: { store: item },
                       });
                     }}
                   >
