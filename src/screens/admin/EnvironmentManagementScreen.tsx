@@ -29,6 +29,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 import { useDialog } from '@/context/DialogContext';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const EnvironmentManagementScreen = ({ navigation }) => {
   const route = useRoute();
@@ -284,7 +285,7 @@ const EnvironmentManagementScreen = ({ navigation }) => {
         <View style={styles.header}>
           <HeaderBar title="環境管理" />
         </View>
-        <View style={styles.mainContainer}>
+        <ScrollView style={styles.mainContainer}>
           {equipments.map((light, index) => (
             <View key={index} style={styles.item}>
               {/* 名稱與開關 */}
@@ -340,7 +341,7 @@ const EnvironmentManagementScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.addButton} onPress={showModal}>
             <Text style={styles.addButtonText}>新增設備</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
         {modalVisible && (
           <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
             <View style={styles.modalContent}>

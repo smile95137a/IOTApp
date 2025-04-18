@@ -31,6 +31,7 @@ import {
   TextInput,
   Alert,
   Animated,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
@@ -267,7 +268,7 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
         <View style={styles.header}>
           <HeaderBar title="環境管理" />
         </View>
-        <View style={styles.mainContainer}>
+        <ScrollView style={styles.mainContainer}>
           {equipments.map((light, index) => (
             <View key={index} style={styles.item}>
               {/* 名稱與開關 */}
@@ -301,7 +302,7 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.addButton} onPress={showModal}>
             <Text style={styles.addButtonText}>新增設備</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
         {/* 手寫 Modal */}
         {modalVisible && (
           <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>

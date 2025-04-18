@@ -137,9 +137,16 @@ const AdminStoreDetailScreen = () => {
     if (name.includes('冷氣')) return 'air-conditioner';
     if (name.includes('燈')) return 'lightbulb';
     if (name.includes('音響')) return 'speaker';
-    return 'fan'; // 預設 icon
+    if (name.includes('電扇')) return 'fan';
+    if (name.includes('門')) return 'door';
+    if (name.includes('窗')) return 'window-closed';
+    if (name.includes('電視')) return 'television';
+    if (name.includes('監視')) return 'cctv';
+    if (name.includes('WiFi')) return 'wifi';
+    if (name.includes('打卡')) return 'calendar-check';
+    if (name.includes('電源')) return 'power-plug';
+    return 'tools'; // fallback 預設 icon
   };
-
   const getTableCounts = () => {
     const tables = storeDetail?.poolTables ?? [];
     const total = tables.length;
@@ -192,20 +199,28 @@ const AdminStoreDetailScreen = () => {
               <View style={styles.sectionBlock}>
                 <View style={styles.gridRow}>
                   {equipments.map((item, index) => (
-                    <View key={item.id} style={styles.gridItem}>
-                      <View style={styles.deviceInfo}>
+                    <View key={item.id} style={styles.gridItemColumn}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginBottom: 8,
+                        }}
+                      >
                         <MaterialCommunityIcons
                           name={getIconName(item.name)}
-                          size={20}
-                          color={item.enabled ? '#4CAF50' : '#9E9E9E'}
-                          style={{ marginRight: 8 }}
+                          size={28}
+                          color={item.enabled ? '#22C55E' : '#A1A1AA'}
+                          style={{ marginRight: 10 }}
                         />
                         <Text style={styles.deviceItem}>{item.name}</Text>
                       </View>
-                      <Switch
-                        value={item.enabled}
-                        onValueChange={() => toggleEquipmentSwitch(index)}
-                      />
+                      <View style={{ alignItems: 'flex-end' }}>
+                        <Switch
+                          value={item.enabled}
+                          onValueChange={() => toggleEquipmentSwitch(index)}
+                        />
+                      </View>
                     </View>
                   ))}
                 </View>
@@ -218,7 +233,7 @@ const AdminStoreDetailScreen = () => {
                     <TouchableOpacity
                       key={item.id}
                       style={[
-                        styles.gridItem,
+                        styles.gridItemColumn,
                         !item.enabled && styles.monitorAbnormalBorder,
                       ]}
                       onPress={() => openMonitorDetail(item)}
@@ -355,20 +370,20 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
-  gridItem: {
+  gridItemColumn: {
     width: '48%',
-    backgroundColor: '#FAFAFA',
-    padding: 14,
-    marginBottom: 14,
-    borderRadius: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    marginBottom: 16,
+    borderRadius: 14,
     justifyContent: 'space-between',
     shadowColor: '#000',
-    shadowOpacity: 0.04,
+    shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 3,
-    elevation: 1,
+    shadowRadius: 6,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   deviceItem: {
     fontSize: 15,
