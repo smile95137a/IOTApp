@@ -93,9 +93,12 @@ const PaymentScreen = ({ navigation }: any) => {
         <View style={styles.orderDetails}>
           <Text style={styles.orderItem}>訂單內容：</Text>
           <Text style={styles.orderDetail}>
-            - 球桌{type === 'game' ? '租金' : '費用'}
+            {type === 'recharge'
+              ? '- 儲值金額 '
+              : `- 球桌${type === 'game' ? '租金' : '費用'} `}
             <NumberFormatter number={totalAmount} />
           </Text>
+
           <View style={styles.totalContainer}>
             <Text style={styles.totalAmount}>
               總金額：

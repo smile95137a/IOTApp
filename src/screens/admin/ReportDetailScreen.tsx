@@ -62,6 +62,14 @@ const ReportDetailScreen = () => {
   ];
 
   const handleSearch = async () => {
+    if (periodType === 'DAY' && endDate < startDate) {
+      await openInfoDialog({
+        title: '錯誤',
+        content: '日報查詢時，結束日期不能早於開始日期',
+        confirmText: '我知道了',
+      });
+      return;
+    }
     try {
       dispatch(showLoading());
       const allResults = [];
