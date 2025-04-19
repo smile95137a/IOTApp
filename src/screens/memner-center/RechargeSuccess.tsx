@@ -1,5 +1,9 @@
+import { fetchUserInfo } from '@/api/userApi';
 import NumberFormatter from '@/component/NumberFormatter';
-import React from 'react';
+import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { setUser } from '@/store/userSlice';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,10 +11,35 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 const RechargeSuccess = ({ route, navigation }: any) => {
   const { totalAmount } = route.params || {};
+  const dispatch = useDispatch();
+  useFocusEffect(
+    useCallback(() => {
+      const getUserInfo = async () => {
+        try {
+          dispatch(showLoading());
+          const response = await fetchUserInfo();
+          dispatch(hideLoading());
 
+          if (response.success) {
+            console.log('[User Info] API Response:', response.data);
+            dispatch(setUser(response.data));
+          } else {
+            console.warn('[User Info] Fetch failed:', response.message);
+          }
+        } catch (error) {
+          dispatch(hideLoading());
+
+          console.log('[User Info] Fetch error:', error);
+        }
+      };
+
+      getUserInfo();
+    }, [])
+  );
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>

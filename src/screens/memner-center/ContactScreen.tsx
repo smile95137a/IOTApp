@@ -16,6 +16,7 @@ import { useDispatch } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Linking } from 'react-native';
 import { useDialog } from '@/context/DialogContext';
+import NumberFormatter from '@/component/NumberFormatter';
 
 const ContactScreen = ({ navigation, route }) => {
   const { openConfirmDialog, openInfoDialog } = useDialog();
@@ -104,9 +105,29 @@ const ContactScreen = ({ navigation, route }) => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
         <View style={styles.timerSection}>
-          <Text style={styles.price}>100元/小時</Text>
-          <Text style={styles.timerText}>球局已進行</Text>
+          <View style={styles.timerTopRow}>
+            <View style={styles.rateBox}>
+              <Text style={styles.price}>
+                一般時段：
+                <NumberFormatter
+                  number={60 * ~~transaction?.regularRateAmount}
+                />
+                元/小時
+              </Text>
+            </View>
+            <View style={styles.rateBox}>
+              <Text style={styles.price}>
+                優惠時段：
+                <NumberFormatter
+                  number={60 * ~~transaction?.discountRateAmount}
+                />
+                元/小時
+              </Text>
+            </View>
+          </View>
+
           <View style={styles.timerTimeContainer}>
+            <Text style={styles.timerText}>球局已進行</Text>
             <View style={styles.timeBox}>
               <Text style={styles.timerNumber}>
                 {String(hours).padStart(2, '0')}
@@ -119,6 +140,12 @@ const ContactScreen = ({ navigation, route }) => {
               </Text>
             </View>
             <Text style={styles.timerColon}>分</Text>
+            <View style={styles.timeBox}>
+              <Text style={styles.timerNumber}>
+                {String(seconds).padStart(2, '0')}
+              </Text>
+            </View>
+            <Text style={styles.timerColon}>秒</Text>
           </View>
         </View>
 
@@ -167,7 +194,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   timerSection: {
-    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#00BFFF',
     paddingHorizontal: 6,
@@ -176,10 +202,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   price: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#ffffff',
-    marginRight: 16,
     borderWidth: 1,
     borderColor: '#ffffff',
     paddingHorizontal: 8,
@@ -269,6 +294,16 @@ const styles = StyleSheet.create({
   endButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  timerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  rateBox: {
+    flex: 1,
+    paddingHorizontal: 4,
   },
 });
 

@@ -27,6 +27,7 @@ import { Alert } from 'react-native';
 import { bookGame, getAvailableTimes } from '@/api/gameApi';
 import { genRandom } from '@/utils/RandomUtils';
 import { useDialog } from '@/context/DialogContext';
+import { logJson } from '@/utils/logJsonUtils';
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -35,11 +36,14 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const { openConfirmDialog, openInfoDialog } = useDialog();
   const [tables, setTables] = useState<any[]>([]);
   const [timeSlots, setTimeSlots] = useState([]);
-  const [activeTimeSlot, setActiveTimeSlot] = useState<string | null>(null);
+  const [activeTimeSlots, setActiveTimeSlots] = useState<string[]>([]);
 
   const handleSelectSlot = (id: string) => {
-    setActiveTimeSlot((prev) => (prev === id ? null : id)); // toggle 選取
+    setActiveTimeSlots((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
   };
+
   const [todayPricing, setTodayPricing] = useState<any>(null);
   const [currentRegularSlot, setCurrentRegularSlot] = useState<any>(null);
   const [currentDiscountSlot, setCurrentDiscountSlot] = useState<any>(null);
@@ -139,50 +143,69 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
       dispatch(hideLoading());
     }
   };
-  //
-  const handleTimeSlotReservation = async (start: string, end: string) => {
+
+  const handleMultipleReservation = async () => {
+    if (activeTimeSlots.length === 0) {
+      await openInfoDialog({
+        title: '請選擇時段',
+        content: '請至少選擇一個時段進行預約',
+      });
+      return;
+    }
+    const selected = timeSlots
+      .filter((x) => activeTimeSlots.includes(x.id))
+      .sort((a, b) => moment(a.start, 'HH:mm').diff(moment(b.start, 'HH:mm'))); // 先排序時段
+
+    // 檢查是否連續
+    let isContinuous = true;
+    for (let i = 1; i < selected.length; i++) {
+      const prevEnd = moment(selected[i - 1].end, 'HH:mm');
+      const currentStart = moment(selected[i].start, 'HH:mm');
+      if (!currentStart.isSame(prevEnd)) {
+        isContinuous = false;
+        break;
+      }
+    }
+
+    if (!isContinuous) {
+      await openInfoDialog({
+        title: '選取錯誤',
+        content: '您選擇的時段不連續，請重新選擇連續的時段',
+      });
+      return;
+    }
+
+    const confirmText = selected.map((s) => `${s.start} - ${s.end}`).join('\n');
+
     const confirmed = await openConfirmDialog({
-      title: '預約桌台',
-      content: `確認預約 ${store.name}\n桌台 ${tableItem.uid}\n${start}~${end}？`,
+      title: '確認預約',
+      content: `確認預約以下時段？\n${confirmText}`,
     });
 
     if (!confirmed) return;
 
     try {
-      dispatch(showLoading());
-
-      const { success, data, message } = await bookGame({
-        poolTableUId: tableItem.uid,
-        bookDate: selectedDate,
-        startTime: moment(
-          `${selectedDate} ${start}`,
-          'YYYY-MM-DD HH:mm'
-        ).format('YYYY/MM/DD HH:mm'),
-        endTime: moment(`${selectedDate} ${end}`, 'YYYY-MM-DD HH:mm').format(
-          'YYYY/MM/DD HH:mm'
-        ),
+      (navigation as any).navigate('Main', {
+        screen: 'Member',
+        params: {
+          screen: 'Payment',
+          params: {
+            type: 'bookGame',
+            payData: {
+              poolTableUId: tableItem.uid,
+              bookDate: selectedDate,
+              selectedTime: selected,
+            },
+            totalAmount: store.deposit,
+          },
+        },
       });
-
-      dispatch(hideLoading());
-
-      if (success) {
-        await openInfoDialog({
-          title: '預約成功',
-          content: '您已成功預約桌台！',
-        });
-        navigation.navigate('Explore', { screen: 'BookStore' });
-      } else {
-        await openInfoDialog({
-          title: '預約失敗',
-          content: message || '無法完成預約，請稍後再試',
-        });
-      }
     } catch (error: any) {
       dispatch(hideLoading());
       const errMsg =
         error?.response?.data?.message ||
         error?.message ||
-        '發生未知錯誤，請稍後再試';
+        '發生錯誤，請稍後再試';
 
       await openInfoDialog({ title: '錯誤', content: errMsg });
     }
@@ -278,13 +301,13 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
                 status={
                   slot.status === 'booked'
                     ? 'booked'
-                    : activeTimeSlot === slot.id
+                    : activeTimeSlots.includes(slot.id)
                     ? 'selected'
                     : 'available'
                 }
-                onSelect={() => handleTimeSlotReservation(slot.start, slot.end)}
-                onCancel={() => handleSelectSlot(slot.id)}
-                onPress={() => handleSelectSlot(slot.id)}
+                onSelect={handleMultipleReservation}
+                onPress={() => handleSelectSlot(slot.id)} // 點選卡片區域切換選取
+                onCancel={() => handleSelectSlot(slot.id)} // 點選取消按鈕取消該時段
               />
             ))}
           </ScrollView>

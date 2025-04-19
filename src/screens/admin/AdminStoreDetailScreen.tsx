@@ -265,6 +265,17 @@ const AdminStoreDetailScreen = () => {
                 <Text style={styles.modalItem}>
                   名稱：{selectedMonitor?.name}
                 </Text>
+                <Text style={styles.modalItem}>監控畫面：</Text>
+                <Image
+                  source={require('@/assets/iot-mom.jpg')}
+                  style={{
+                    width: '100%',
+                    height: 200,
+                    marginTop: 10,
+                    borderRadius: 8,
+                  }}
+                  resizeMode="cover"
+                />
                 <Text style={styles.modalClose} onPress={closeMonitorDetail}>
                   關閉
                 </Text>

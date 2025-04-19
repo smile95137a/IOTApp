@@ -1,6 +1,10 @@
+import { fetchUserInfo } from '@/api/userApi';
 import NumberFormatter from '@/component/NumberFormatter';
-import { useRoute } from '@react-navigation/native';
-import React from 'react';
+import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { setUser } from '@/store/userSlice';
+import { logJson } from '@/utils/logJsonUtils';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
+import React, { useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,13 +12,38 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 const PaymentSuccessScreen = ({ navigation }) => {
   const route = useRoute();
-  const { type, totalAmount, showStartGame, data } = route.params || {}; // 獲取付款金額
+  const { type, totalAmount, showStartGame, data } = route.params || {};
+  const dispatch = useDispatch();
+  useFocusEffect(
+    useCallback(() => {
+      const getUserInfo = async () => {
+        try {
+          dispatch(showLoading());
+          const response = await fetchUserInfo();
+          dispatch(hideLoading());
 
+          if (response.success) {
+            console.log('[User Info] API Response:', response.data);
+            dispatch(setUser(response.data));
+          } else {
+            console.warn('[User Info] Fetch failed:', response.message);
+          }
+        } catch (error) {
+          dispatch(hideLoading());
+
+          console.log('[User Info] Fetch error:', error);
+        }
+      };
+
+      getUserInfo();
+    }, [])
+  );
   const handleStartGame = () => {
-    navigation.navigate('Contact', { transaction: data });
+    navigation.navigate('Contact', { transaction: data.gameRecord });
   };
 
   return (

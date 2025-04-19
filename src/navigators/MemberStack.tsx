@@ -235,7 +235,7 @@ const MainLayout = ({ children }) => {
               </Text>
               <Text style={styles.userBalance}>
                 可用餘額：
-                <NumberFormatter number={localUser?.totalAmount ?? 0} />
+                <NumberFormatter number={localUser?.balance ?? 0} />
               </Text>
             </View>
           </View>

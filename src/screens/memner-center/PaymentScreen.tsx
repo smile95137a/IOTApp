@@ -1,11 +1,13 @@
-import { checkoutGame, startGame } from '@/api/gameApi';
+import { bookGame, checkoutGame, startGame } from '@/api/gameApi';
 import { topUp } from '@/api/paymentApi';
 import NumberFormatter from '@/component/NumberFormatter';
 import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { addAmount } from '@/store/userSlice';
+import { logJson } from '@/utils/logJsonUtils';
 import { useRoute } from '@react-navigation/native';
+import moment from 'moment';
 import React from 'react';
 import {
   View,
@@ -41,10 +43,31 @@ const PaymentScreen = ({ navigation }: any) => {
           poolTableId: payData.poolTableId,
         });
       } else if (type === 'recharge') {
-        result = await await topUp({
+        result = await topUp({
           price: rechargeOption.amount,
           payType: 1,
           point: rechargeOption.bonus,
+        });
+      } else if (type === 'bookGame') {
+        const { poolTableUId, bookDate, selectedTime } = payData;
+
+        if (!Array.isArray(selectedTime) || selectedTime.length === 0) {
+          throw new Error('未提供有效的時段資料');
+        }
+
+        const first = selectedTime[0];
+        const last = selectedTime[selectedTime.length - 1];
+        result = await bookGame({
+          poolTableUId,
+          bookDate,
+          payType: 1,
+          startTime: moment(
+            `${bookDate} ${first.start}`,
+            'YYYY-MM-DD HH:mm'
+          ).format('YYYY/MM/DD HH:mm'),
+          endTime: moment(`${bookDate} ${last.end}`, 'YYYY-MM-DD HH:mm').format(
+            'YYYY/MM/DD HH:mm'
+          ),
         });
       } else {
         result = await startGame({ poolTableUId: payData.uid });
@@ -55,7 +78,6 @@ const PaymentScreen = ({ navigation }: any) => {
       dispatch(hideLoading());
       if (success && data) {
         if (type === 'recharge') {
-          dispatch(addAmount(totalAmount));
           navigation.navigate('RechargeSuccess', { totalAmount });
         } else {
           navigation.navigate('PaymentSuccess', {
@@ -95,7 +117,9 @@ const PaymentScreen = ({ navigation }: any) => {
           <Text style={styles.orderDetail}>
             {type === 'recharge'
               ? '- 儲值金額 '
-              : `- 球桌${type === 'game' ? '租金' : '費用'} `}
+              : `- 球桌${
+                  type === 'game' || type === 'bookGame' ? '租金' : '費用'
+                } `}
             <NumberFormatter number={totalAmount} />
           </Text>
 
