@@ -64,11 +64,13 @@ const GameHistoryScreen = ({ navigation }: any) => {
 
   return (
     <ScrollView contentContainerStyle={styles.transactionList}>
-      {transactions.map((item) => (
-        <TouchableOpacity key={item.id}>
+      {transactions.map((item, index) => (
+        <TouchableOpacity key={index}>
           <View style={styles.transactionItem}>
             <View style={styles.transactionDetails}>
-              <Text style={styles.transactionLocation}>{item.gameId}</Text>
+              <Text style={styles.transactionLocation}>
+                {item.gameOrderName}
+              </Text>
               <Text style={styles.transactionInfo}>
                 {item.startTime} -{item.endTime}
               </Text>
