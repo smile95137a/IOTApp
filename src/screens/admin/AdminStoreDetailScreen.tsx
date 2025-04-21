@@ -236,7 +236,7 @@ const AdminStoreDetailScreen = () => {
                         styles.gridItemColumn,
                         !item.enabled && styles.monitorAbnormalBorder,
                       ]}
-                      onPress={() => openMonitorDetail(item)}
+                      onPress={() => item.enabled && openMonitorDetail(item)}
                     >
                       <View>
                         <Text style={styles.deviceItem}>{item.name}</Text>

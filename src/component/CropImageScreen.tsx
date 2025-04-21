@@ -100,22 +100,29 @@ const CropImageScreen = () => {
         result: 'tmpfile',
       });
 
-      if (from?.tab && from?.stack && from?.screen) {
-        (navigation as any).navigate(from.tab, {
-          screen: from.stack,
+      const fromTab = from?.tab;
+      const fromStack = from?.stack;
+      const fromScreen = from?.screen;
+
+      const originalParams = route.params || {};
+
+      const returnParams = {
+        ...originalParams,
+        croppedImageUri: uri,
+      };
+
+      if (fromTab && fromStack && fromScreen) {
+        (navigation as any).navigate(fromTab, {
+          screen: fromStack,
           params: {
-            screen: from.screen,
-            params: {
-              croppedImageUri: uri,
-            },
+            screen: fromScreen,
+            params: returnParams,
           },
         });
-      } else if (from?.tab && from?.stack) {
-        (navigation as any).navigate(from.tab, {
-          screen: from.stack,
-          params: {
-            croppedImageUri: uri,
-          },
+      } else if (fromTab && fromStack) {
+        (navigation as any).navigate(fromTab, {
+          screen: fromStack,
+          params: returnParams,
         });
       } else {
         navigation.goBack();

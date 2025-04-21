@@ -143,6 +143,75 @@ const ReportDetailScreen = () => {
 
     loadStores();
   }, [vendorId]);
+  const tableSchemaMap: Record<string, { key: string; label: string }[]> = {
+    DepositAmount: [
+      { key: 'dateTime', label: '日期' },
+      { key: 'amount', label: '金額' },
+    ],
+    DepositCount: [
+      { key: 'dateTime', label: '日期' },
+      { key: 'amount', label: '金額' },
+    ],
+    ConsumptionAmount: [
+      { key: 'dateTime', label: '日期' },
+      { key: 'amount', label: '金額' },
+    ],
+    ConsumptionCount: [
+      { key: 'dateTime', label: '日期' },
+      { key: 'amount', label: '金額' },
+    ],
+    StoreRevenue: [
+      { key: 'dateTime', label: '日期' },
+      { key: 'amount', label: '金額' },
+    ],
+    VendorRevenue: [
+      { key: 'dateTime', label: '日期' },
+      { key: 'amount', label: '金額' },
+    ],
+    UserCount: [
+      { key: 'dateTime', label: '日期' },
+      { key: 'amount', label: '數量' },
+    ],
+    RemainingBalance: [
+      { key: 'userId', label: '編號' },
+      { key: 'userName', label: '姓名' },
+      { key: 'remainingBalance', label: '剩餘金額' },
+    ],
+  };
+
+  const renderTable = (group: { type: string; data: any[] }) => {
+    const schema = tableSchemaMap[group.type];
+
+    if (!schema || group.data.length === 0) {
+      return <NoData text="查無資料！您可嘗試其他搜尋條件！" />;
+    }
+
+    return (
+      <>
+        <View style={styles.tableHeader}>
+          {schema.map((col, i) => (
+            <Text key={i} style={[styles.headerText, styles.flexOne]}>
+              {col.label}
+            </Text>
+          ))}
+        </View>
+
+        {group.data.map((item, index) => (
+          <View key={index} style={styles.tableRow}>
+            {schema.map((col, i) => (
+              <Text key={i} style={[styles.cellText, styles.flexOne]}>
+                {typeof item[col.key] === 'number' ? (
+                  <NumberFormatter number={item[col.key]} />
+                ) : (
+                  item[col.key]
+                )}
+              </Text>
+            ))}
+          </View>
+        ))}
+      </>
+    );
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -162,9 +231,12 @@ const ReportDetailScreen = () => {
           <View style={styles.contentWrapper}>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              style={styles.container}
+              style={{ flex: 1 }}
             >
-              <ScrollView>
+              <ScrollView
+                contentContainerStyle={{ paddingBottom: 40 }}
+                keyboardShouldPersistTaps="handled"
+              >
                 <View style={styles.filterContainer}>
                   <View style={styles.row}>
                     <View style={styles.flexOne}>
@@ -293,76 +365,28 @@ const ReportDetailScreen = () => {
                 </View>
 
                 <>
-                  {reportData.length === 0 ? (
-                    <NoData text="查無資料！您可嘗試其他搜尋條件！" />
-                  ) : (
-                    reportData.map((group, i) => {
-                      const typeLabel =
-                        reportTypeOptions.find((r) => r.value === group.type)
-                          ?.label || group.type;
-                      return (
-                        <View style={styles.tableContainer} key={i}>
-                          <View style={{ width: '100%', marginVertical: 20 }}>
-                            <Text
-                              style={{
-                                fontSize: 16,
-                                fontWeight: 'bold',
-                                marginBottom: 6,
-                              }}
-                            >
-                              {typeLabel}
-                            </Text>
-                            <>
-                              {group.data.length === 0 ? (
-                                <NoData text="查無資料！您可嘗試其他搜尋條件！" />
-                              ) : (
-                                <>
-                                  <View style={styles.tableHeader}>
-                                    <Text
-                                      style={[
-                                        styles.headerText,
-                                        styles.flexOne,
-                                      ]}
-                                    >
-                                      日期
-                                    </Text>
-                                    <Text
-                                      style={[
-                                        styles.headerText,
-                                        styles.flexOne,
-                                      ]}
-                                    >
-                                      金額
-                                    </Text>
-                                  </View>
-                                  {group.data.map((item, index) => (
-                                    <View key={index} style={styles.tableRow}>
-                                      <Text
-                                        style={[
-                                          styles.cellText,
-                                          styles.flexOne,
-                                        ]}
-                                      >
-                                        {item.dateTime}
-                                      </Text>
-                                      <Text
-                                        style={[
-                                          styles.cellText,
-                                          styles.flexOne,
-                                        ]}
-                                      >
-                                        <NumberFormatter number={item.amount} />
-                                      </Text>
-                                    </View>
-                                  ))}
-                                </>
-                              )}
-                            </>
-                          </View>
+                  {reportData.map((group, i) => {
+                    const typeLabel =
+                      reportTypeOptions.find((r) => r.value === group.type)
+                        ?.label || group.type;
+
+                    return (
+                      <View style={styles.tableContainer} key={i}>
+                        <View style={{ width: '100%', marginVertical: 20 }}>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              fontWeight: 'bold',
+                              marginBottom: 6,
+                            }}
+                          >
+                            {typeLabel}
+                          </Text>
+                          {renderTable(group)}
                         </View>
-                      );
-                    })
-                  )}
+                      </View>
+                    );
+                  })}
                 </>
               </ScrollView>
             </KeyboardAvoidingView>
@@ -452,6 +476,34 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  remainingCardWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  remainingCard: {
+    width: '48%',
+    backgroundColor: '#FFFBEA',
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  remainingText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#555',
+    marginBottom: 8,
+  },
+  remainingAmount: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#C43D00',
   },
 });
 

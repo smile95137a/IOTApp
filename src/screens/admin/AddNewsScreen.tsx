@@ -23,12 +23,14 @@ import { ScrollView } from 'react-native-gesture-handler';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Dimensions } from 'react-native';
 import { useDialog } from '@/context/DialogContext';
+import { logJson } from '@/utils/logJsonUtils';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const AddNewsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
-  const news = route.params?.news || {};
+  const [news, setNews] = useState(route.params?.news || {});
+
   const { openInfoDialog } = useDialog();
   const [title, setTitle] = useState(news.title || '');
   const [content, setContent] = useState(news.content || '');
@@ -96,6 +98,7 @@ const AddNewsScreen = () => {
           stack: 'NewsManagementStack',
           screen: 'AddNews',
         },
+        news,
       });
     }
   };
@@ -125,16 +128,19 @@ const AddNewsScreen = () => {
           stack: 'NewsManagementStack',
           screen: 'AddNews',
         },
+        news,
       });
     }
   };
 
   useEffect(() => {
-    const croppedImageUri = route.params?.croppedImageUri;
-    if (croppedImageUri) {
-      setImage(croppedImageUri);
+    if (route.params?.croppedImageUri) {
+      setImage(route.params.croppedImageUri);
     }
-  }, [route.params?.croppedImageUri]);
+    if (route.params?.news) {
+      setNews(route.params.news);
+    }
+  }, [route.params]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

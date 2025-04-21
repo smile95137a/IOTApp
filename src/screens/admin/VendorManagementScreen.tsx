@@ -177,12 +177,6 @@ const VendorManagementScreen = () => {
                             title="編輯"
                             leadingIcon="pencil-outline"
                           />
-                          <Menu.Item
-                            onPress={() => handleDelete(item.uid, item.name)}
-                            title="刪除"
-                            leadingIcon="trash-can-outline"
-                            titleStyle={{ color: 'red' }}
-                          />
                         </Menu>
                       </View>
                     </View>

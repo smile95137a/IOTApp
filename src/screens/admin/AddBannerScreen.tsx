@@ -33,14 +33,11 @@ const AddBannerScreen = () => {
   const dispatch = useDispatch();
   const { openInfoDialog } = useDialog();
 
-  const banner = route.params?.banner || {};
-  const croppedImageUri = route.params?.croppedImageUri;
-
+  const [banner, setBanner] = useState(route.params?.banner || {});
   const [status, setStatus] = useState(banner.status || 'AVAILABLE');
   const [newsId, setNewsId] = useState(banner?.news?.id || '');
   const [image, setImage] = useState(null);
   const [newsList, setNewsList] = useState([]);
-  console.log(banner);
 
   useEffect(() => {
     const loadNews = async () => {
@@ -117,6 +114,7 @@ const AddBannerScreen = () => {
           stack: 'BannerManagementStack',
           screen: 'AddBanner',
         },
+        banner,
       });
     }
   };
@@ -147,23 +145,18 @@ const AddBannerScreen = () => {
           stack: 'BannerManagementStack',
           screen: 'AddBanner',
         },
+        banner,
       });
     }
   };
   useEffect(() => {
-    const croppedUri = route.params?.croppedImageUri;
-    logJson('zxc', croppedUri);
-    if (croppedUri) {
-      setImage(croppedUri);
+    if (route.params?.croppedImageUri) {
+      setImage(route.params.croppedImageUri);
     }
-  }, [route.params?.croppedImageUri]);
-
-  useEffect(() => {
-    if (croppedImageUri) {
-      console.log('裁切後圖片', croppedImageUri);
-      // 更新你的圖片 preview 或上傳邏輯
+    if (route.params?.banner) {
+      setBanner(route.params.banner);
     }
-  }, [croppedImageUri]);
+  }, [route.params]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

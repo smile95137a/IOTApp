@@ -78,6 +78,7 @@ const NewsManagementScreen = () => {
     try {
       dispatch(showLoading());
       await deleteNewsById(id);
+      dispatch(hideLoading());
       await openInfoDialog({
         title: '成功',
         content: '最新消息已刪除',
@@ -156,12 +157,6 @@ const NewsManagementScreen = () => {
                             }
                             title="編輯"
                             leadingIcon="pencil-outline"
-                          />
-                          <Menu.Item
-                            onPress={() => handleDelete(item.newsUid)}
-                            title="刪除"
-                            leadingIcon="trash-can-outline"
-                            titleStyle={{ color: 'red' }}
                           />
                         </Menu>
                       </View>
