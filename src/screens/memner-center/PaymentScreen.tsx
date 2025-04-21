@@ -28,7 +28,7 @@ const PaymentScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const { openInfoDialog } = useDialog();
 
-  const handlePaymentPress = async (method) => {
+  const handlePaymentPress = async (method: string, payType: number) => {
     try {
       dispatch(showLoading());
 
@@ -38,14 +38,14 @@ const PaymentScreen = ({ navigation }: any) => {
         result = await startGame({ poolTableUId: payData.uid });
       } else if (type === 'gameEnd') {
         result = await checkoutGame({
-          payType: 1,
+          payType,
           gameId: payData.gameId,
           poolTableId: payData.poolTableId,
         });
       } else if (type === 'recharge') {
         result = await topUp({
           price: rechargeOption.amount,
-          payType: 1,
+          payType,
           point: rechargeOption.bonus,
         });
       } else if (type === 'bookGame') {
@@ -60,7 +60,7 @@ const PaymentScreen = ({ navigation }: any) => {
         result = await bookGame({
           poolTableUId,
           bookDate,
-          payType: 1,
+          payType,
           startTime: moment(
             `${bookDate} ${first.start}`,
             'YYYY-MM-DD HH:mm'
@@ -105,6 +105,43 @@ const PaymentScreen = ({ navigation }: any) => {
     }
   };
 
+  const paymentMethods = [
+    {
+      label: '儲值金結帳',
+      detail: '',
+      icon: 'account-balance-wallet',
+      image: require('@/assets/iot-pay1.png'),
+      payType: 1,
+    },
+    {
+      label: '信用卡結帳',
+      detail: '',
+      icon: 'credit-card',
+      payType: 2,
+    },
+    {
+      label: 'LINE PAY',
+      detail: '',
+      icon: 'payment',
+      image: require('@/assets/iot-line-pay.png'),
+      payType: 3,
+    },
+    {
+      label: '街口支付',
+      detail: '',
+      icon: 'store',
+      image: require('@/assets/iot-l-pay.png'),
+      payType: 4,
+    },
+    {
+      label: 'Apple Pay',
+      detail: '',
+      icon: 'apple',
+      image: require('@/assets/iot-apple-pay.png'),
+      payType: 5,
+    },
+  ];
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -133,66 +170,38 @@ const PaymentScreen = ({ navigation }: any) => {
 
         {/* Payment Methods */}
         <View style={styles.paymentMethods}>
-          {[
-            {
-              label: '儲值金結帳',
-              detail: '',
-              icon: 'account-balance-wallet',
-              image: require('@/assets/iot-pay1.png'),
-            },
-            {
-              label: '信用卡結帳',
-              detail: '',
-              icon: 'credit-card',
-            },
-            {
-              label: 'LINE PAY',
-              detail: '',
-              icon: 'payment',
-              image: require('@/assets/iot-line-pay.png'),
-            },
-            {
-              label: '街口支付',
-              detail: '',
-              icon: 'store',
-              image: require('@/assets/iot-l-pay.png'),
-            },
-            {
-              label: 'Apple Pay',
-              detail: '',
-              icon: 'apple',
-              image: require('@/assets/iot-apple-pay.png'),
-            },
-          ].map((method, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.paymentButton}
-              onPress={() => handlePaymentPress(method.label)}
-            >
-              <View style={styles.paymentInfo}>
-                {method.image ? (
-                  <Image source={method.image} style={styles.methodImage} />
-                ) : (
-                  <Icon
-                    name={method.icon}
-                    size={24}
-                    color="#333"
-                    style={styles.paymentIcon}
-                  />
-                )}
-                <Text style={styles.paymentLabel}>{method.label}</Text>
-              </View>
-              <View style={styles.paymentDetailsContainer}>
-                <Text style={styles.paymentDetail}>{method.detail}</Text>
-                <Icon name="chevron-right" size={32} color="#000" />
-              </View>
-              <Image
-                source={require('@/assets/iot-pay-bg.png')}
-                style={styles.absoluteImage}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          ))}
+          {paymentMethods
+            .filter((method) => !(type === 'recharge' && method.payType === 1))
+            .map((method, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.paymentButton}
+                onPress={() => handlePaymentPress(method.label, method.payType)}
+              >
+                <View style={styles.paymentInfo}>
+                  {method.image ? (
+                    <Image source={method.image} style={styles.methodImage} />
+                  ) : (
+                    <Icon
+                      name={method.icon}
+                      size={24}
+                      color="#333"
+                      style={styles.paymentIcon}
+                    />
+                  )}
+                  <Text style={styles.paymentLabel}>{method.label}</Text>
+                </View>
+                <View style={styles.paymentDetailsContainer}>
+                  <Text style={styles.paymentDetail}>{method.detail}</Text>
+                  <Icon name="chevron-right" size={32} color="#000" />
+                </View>
+                <Image
+                  source={require('@/assets/iot-pay-bg.png')}
+                  style={styles.absoluteImage}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            ))}
         </View>
       </ScrollView>
     </SafeAreaView>

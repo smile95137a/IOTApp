@@ -34,12 +34,13 @@ export const fetchUserTransactionRecord = async (): Promise<
     throw error;
   }
 };
-
 export const getPayType = (payTypeId: number): string => {
   const payTypes: Record<number, string> = {
-    1: '信用卡',
-    2: 'Apple Pay',
-    3: 'Google Pay',
+    1: '儲值金',
+    2: '信用卡',
+    3: 'LINE PAY',
+    4: '街口支付',
+    5: 'Apple Pay',
   };
 
   return payTypes[payTypeId] || '未知支付方式';
