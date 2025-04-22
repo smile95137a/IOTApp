@@ -66,7 +66,7 @@ const menuItems = [
     icon: 'admin-panel-settings',
     color: '#3F51B5',
     screen: 'Admin',
-    authRoleId: [1, 2],
+    authRoleId: [1, 2, 5],
   },
   {
     id: 10,

@@ -182,9 +182,34 @@ const CustomDrawerContent = (props: any) => {
 };
 
 const AdminDrawerNavigator = () => {
+  const [initialRoute, setInitialRoute] = useState<string | null>(null); // 初始為 null，代表還沒準備好
+
+  useEffect(() => {
+    const fetchInitialMenu = async () => {
+      const { success, data } = await fetchAllMenus();
+      if (success && data.length > 0) {
+        const sorted = data.sort((a, b) => a.menuOrder - b.menuOrder);
+        const firstKey = sorted.find((menu) => menuItems[menu.url])?.url;
+        if (firstKey) {
+          setInitialRoute(menuItems[firstKey].stack);
+        } else {
+          setInitialRoute('DashboardStack');
+        }
+      } else {
+        setInitialRoute('DashboardStack');
+      }
+    };
+
+    fetchInitialMenu();
+  }, []);
+
+  if (!initialRoute) {
+    return null;
+  }
+
   return (
     <Drawer.Navigator
-      initialRouteName="DashboardStack"
+      initialRouteName={initialRoute}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         drawerStyle: {

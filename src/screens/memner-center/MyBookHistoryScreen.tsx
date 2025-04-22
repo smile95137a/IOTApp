@@ -84,8 +84,8 @@ const GameHistoryScreen = ({ navigation }: any) => {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
         const msg =
-          err?.response?.data?.message ||
-          (err instanceof Error ? err.message : '開台失敗');
+          error?.response?.data?.message ||
+          (error instanceof Error ? error.message : '開台失敗');
         await openInfoDialog({
           title: '錯誤',
           content: msg,
@@ -115,7 +115,7 @@ const GameHistoryScreen = ({ navigation }: any) => {
       } catch (error) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
-        const msg = err instanceof Error ? err.message : '取消失敗';
+        const msg = error instanceof Error ? error.message : '取消失敗';
         await openInfoDialog({
           title: '錯誤',
           content: msg,
