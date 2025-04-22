@@ -52,7 +52,8 @@
         "HASH_KEY": "MYHASHSTART",
         "HASH_VALUE": "MYHASHEND",
         "API_BASE_URL": "https://ipoolspace.tw",
-        "projectId": "a9f981a8-30e0-4d5e-ba21-25e6e6512792"
+        "projectId": "a9f981a8-30e0-4d5e-ba21-25e6e6512792",
+        "version": "422v1"
       }
     },
     "plugins": ["expo-build-properties"]

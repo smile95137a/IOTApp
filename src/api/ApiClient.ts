@@ -1,11 +1,13 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logJson } from '@/utils/logJsonUtils';
+import { handleUnauthorizedLogout } from '@/utils/authUtils';
 
 export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 5000,
 });
 
 api.interceptors.request.use(async (config) => {
@@ -18,17 +20,22 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// ✅ 在每個回應後加上 log
 api.interceptors.response.use(
   (response) => {
     console.log(`[API Response] ${response.config.url}`, response.data);
     return response;
   },
-  (error) => {
+  async (error) => {
+    const status = error.response?.status;
     console.log(
       `[API Error] ${error.config?.url}:`,
       error.response?.data || error.message
     );
+
+    if (status === 401) {
+      await handleUnauthorizedLogout();
+    }
+
     return Promise.reject(error);
   }
 );

@@ -20,6 +20,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useDialog } from '@/context/DialogContext';
+import Constants from 'expo-constants';
+
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [stores, setStores] = useState<any[]>([]);
@@ -28,6 +30,7 @@ const HomeScreen = ({ navigation }) => {
     longitude?: number;
   }>({});
   const [nearStores, setNearStores] = useState<any[]>([]);
+  const appVersion = Constants.expoConfig?.extra?.eas?.version || 'unknown';
 
   useEffect(() => {
     loadStores();
@@ -73,6 +76,8 @@ const HomeScreen = ({ navigation }) => {
         locationData.longitude,
         stores
       );
+      nearest.sort((a, b) => a.distance - b.distance);
+
       setNearStores(nearest.slice(0, 1));
     }
   }, [locationData, stores]);
@@ -100,7 +105,7 @@ const HomeScreen = ({ navigation }) => {
         style={styles.gradient}
       >
         <View style={styles.container}>
-          <Header isDarkMode />
+          <Header title={appVersion} isDarkMode />
           <ScrollView contentContainerStyle={styles.content}>
             <ImageCarousel />
             <HomeOptionButton

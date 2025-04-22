@@ -79,10 +79,15 @@ const LoginScreen = ({ route, navigation }: any) => {
       }
     } catch (error) {
       dispatch(hideLoading());
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        '發生未知錯誤，請稍後再試';
+
       console.log(`[Login] Error:`, error);
       await openInfoDialog({
         title: '錯誤',
-        content: '無法連線到伺服器',
+        content: errorMessage,
       });
     }
   };
