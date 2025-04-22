@@ -1,18 +1,29 @@
 import 'react-native-reanimated';
-import React, { useRef } from 'react';
-import { Provider } from 'react-redux';
+import React, { useRef, useEffect } from 'react';
+import { Provider, useDispatch } from 'react-redux';
 import {
   NavigationContainer,
   NavigationContainerRef,
 } from '@react-navigation/native';
-import store from '@/store/store';
+import store, { AppDispatch } from '@/store/store';
 import RootStackNavigator from '@/navigators/RootStackNavigator';
 import 'react-native-gesture-handler';
 import LoadingMask from '@/component/LoadingMask';
 import { DialogProvider } from '@/context/DialogContext';
-import { setNavigationRef } from '@/utils/authUtils';
+import { setNavigationRef, setDispatchRef } from '@/utils/authUtils';
+
 export default function App() {
   const navigationRef = useRef<NavigationContainerRef<any> | null>(null);
+
+  const Initializer = () => {
+    const dispatch = useDispatch<AppDispatch>();
+
+    useEffect(() => {
+      setDispatchRef(dispatch);
+    }, [dispatch]);
+
+    return null;
+  };
 
   return (
     <Provider store={store}>
@@ -26,6 +37,7 @@ export default function App() {
         }}
       >
         <DialogProvider>
+          <Initializer />
           <RootStackNavigator />
         </DialogProvider>
       </NavigationContainer>

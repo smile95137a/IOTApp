@@ -51,6 +51,7 @@ const ReservationScreen = ({ navigation }) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       console.log('Error fetching pool table:', error);
     }

@@ -62,6 +62,7 @@ const HomeScreen = ({ navigation }) => {
         console.log('錯誤', message || '無法載入店家資訊');
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);

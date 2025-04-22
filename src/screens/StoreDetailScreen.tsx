@@ -46,6 +46,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
           console.log(`API 回應失敗: 未能獲取桌台數據`);
         }
       } catch (error) {
+        if (error.isAutoLogout) return;
         dispatch(hideLoading());
         console.log('Failed to fetch pool tables:', error);
       }
@@ -98,6 +99,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         console.log('Share dismissed');
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       console.log('Error sharing: ', error);
     }
   };
@@ -114,7 +116,8 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
       } else {
         console.log('不支援撥打此電話:', phoneNumber);
       }
-    } catch (err) {
+    } catch (error) {
+      if (error.isAutoLogout) return;
       console.log('發生錯誤:', err);
     } finally {
       dispatch(hideLoading());

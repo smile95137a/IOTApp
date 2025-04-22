@@ -44,6 +44,7 @@ const NewsScreen = ({ navigation }: any) => {
           });
         }
       } catch (error) {
+        if (error.isAutoLogout) return;
         dispatch(hideLoading());
         const errorMessage =
           error instanceof Error ? error.message : String(error);

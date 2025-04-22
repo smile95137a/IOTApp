@@ -127,8 +127,9 @@ const CropImageScreen = () => {
       } else {
         navigation.goBack();
       }
-    } catch (err) {
-      console.warn('截圖失敗:', err);
+    } catch (error) {
+      if (error.isAutoLogout) return;
+      console.warn('截圖失敗:', error);
     }
   };
 

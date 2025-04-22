@@ -62,6 +62,7 @@ const AddNewsScreen = () => {
 
       navigation.goBack();
     } catch (error) {
+      if (error.isAutoLogout) return;
       await openInfoDialog({
         title: '操作失敗',
         content: '請稍後再試或聯絡管理員',

@@ -152,6 +152,7 @@ const CameraScreen = () => {
         }
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       await openInfoDialog({
         title: '錯誤',
         content: '發生錯誤，請重試',

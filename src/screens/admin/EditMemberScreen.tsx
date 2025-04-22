@@ -60,6 +60,7 @@ const EditMemberScreen = ({ route, navigation }) => {
           });
         }
       } catch (error) {
+        if (error.isAutoLogout) return;
         dispatch(hideLoading());
         const errorMessage =
           error instanceof Error ? error.message : String(error);
@@ -105,6 +106,7 @@ const EditMemberScreen = ({ route, navigation }) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -139,6 +141,7 @@ const EditMemberScreen = ({ route, navigation }) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -173,6 +176,7 @@ const EditMemberScreen = ({ route, navigation }) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);

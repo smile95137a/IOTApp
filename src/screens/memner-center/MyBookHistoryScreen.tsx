@@ -33,6 +33,7 @@ const GameHistoryScreen = ({ navigation }: any) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -79,7 +80,8 @@ const GameHistoryScreen = ({ navigation }: any) => {
             confirmText: '我知道了',
           });
         }
-      } catch (err) {
+      } catch (error) {
+        if (error.isAutoLogout) return;
         dispatch(hideLoading());
         const msg =
           err?.response?.data?.message ||
@@ -110,7 +112,8 @@ const GameHistoryScreen = ({ navigation }: any) => {
             confirmText: '我知道了',
           });
         }
-      } catch (err) {
+      } catch (error) {
+        if (error.isAutoLogout) return;
         dispatch(hideLoading());
         const msg = err instanceof Error ? err.message : '取消失敗';
         await openInfoDialog({

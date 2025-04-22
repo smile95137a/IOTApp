@@ -43,6 +43,7 @@ const ImageCarousel = () => {
           });
         }
       } catch (error) {
+        if (error.isAutoLogout) return;
         const errorMessage =
           error instanceof Error ? error.message : String(error);
         openInfoDialog({

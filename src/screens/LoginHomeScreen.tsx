@@ -52,6 +52,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
       });
       sendTokenToBackend(credential.identityToken, 'apple');
     } catch (error) {
+      if (error.isAutoLogout) return;
       await openInfoDialog({ title: 'Apple 登入失敗', content: '請再試一次' });
     }
   };
@@ -96,6 +97,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
       });
       navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
     } catch (error: any) {
+      if (error.isAutoLogout) return;
       await openInfoDialog({
         title: `${provider} 登入失敗`,
         content: error.response?.data?.message || '未知錯誤',

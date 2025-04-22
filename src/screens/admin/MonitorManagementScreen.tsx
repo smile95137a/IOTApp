@@ -117,6 +117,7 @@ const MonitorManagementScreen = ({ navigation }) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
@@ -165,6 +166,7 @@ const MonitorManagementScreen = ({ navigation }) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       console.log('刪除監視器失敗:', error);
       await openInfoDialog({
@@ -198,6 +200,7 @@ const MonitorManagementScreen = ({ navigation }) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
@@ -228,9 +231,8 @@ const MonitorManagementScreen = ({ navigation }) => {
       });
       dispatch(hideLoading());
       loadMonitors();
-      console.log('設備狀態更新成功！');
     } catch (error) {
-      console.log('更新設備狀態失敗:', error);
+      if (error.isAutoLogout) return;
       updatedMonitors[index].status = !newStatus;
       setMonitors([...updatedMonitors]);
       await openInfoDialog({

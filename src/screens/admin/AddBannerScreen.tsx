@@ -45,6 +45,7 @@ const AddBannerScreen = () => {
         const response = await fetchAllNews();
         setNewsList(response.data || []);
       } catch (error) {
+        if (error.isAutoLogout) return;
         console.log('Error fetching news:', error);
       }
     };
@@ -77,6 +78,7 @@ const AddBannerScreen = () => {
 
       navigation.goBack();
     } catch (error) {
+      if (error.isAutoLogout) return;
       console.log(error);
       await openInfoDialog({
         title: '錯誤',

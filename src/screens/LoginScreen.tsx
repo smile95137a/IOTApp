@@ -78,6 +78,7 @@ const LoginScreen = ({ route, navigation }: any) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       const errorMessage =
         error?.response?.data?.message ||

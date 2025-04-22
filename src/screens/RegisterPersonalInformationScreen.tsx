@@ -201,6 +201,7 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
 
       dispatch(hideLoading());
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       console.log('[Error]', error);
       await openInfoDialog({

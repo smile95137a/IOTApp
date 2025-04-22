@@ -170,6 +170,7 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
         routes: [{ name: 'MemberCenter' }],
       });
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       console.log('[Error]', error);
       await openInfoDialog({
@@ -197,6 +198,7 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
           } else {
           }
         } catch (error) {
+          if (error.isAutoLogout) return;
           dispatch(hideLoading());
           console.log('[User Info] Fetch error:', error);
         }

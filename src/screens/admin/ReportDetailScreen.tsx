@@ -91,6 +91,7 @@ const ReportDetailScreen = () => {
       setReportData(allResults);
       dispatch(hideLoading());
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
@@ -109,6 +110,7 @@ const ReportDetailScreen = () => {
 
         if (vendorRes.success) setVendors(vendorRes.data);
       } catch (error) {
+        if (error.isAutoLogout) return;
         dispatch(hideLoading());
       }
     };
@@ -132,6 +134,7 @@ const ReportDetailScreen = () => {
           setStoreId('');
         }
       } catch (error) {
+        if (error.isAutoLogout) return;
         dispatch(hideLoading());
         await openInfoDialog({
           title: '錯誤',

@@ -48,6 +48,7 @@ const BannerManagementScreen = () => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
@@ -81,6 +82,7 @@ const BannerManagementScreen = () => {
       await deleteBanner(id);
       await loadBanners();
     } catch (error) {
+      if (error.isAutoLogout) return;
       await openInfoDialog({
         title: '錯誤',
         content: '刪除失敗',

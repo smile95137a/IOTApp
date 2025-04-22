@@ -69,6 +69,7 @@ const ResetPasswordScreen = ({ navigation }: any) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       console.log(`[ResetPassword] Error:`, error);
       await openInfoDialog({
         title: '錯誤',

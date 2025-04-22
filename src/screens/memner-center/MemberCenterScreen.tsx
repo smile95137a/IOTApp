@@ -101,6 +101,7 @@ const MemberCenterScreen = ({ navigation }: any) => {
               console.warn('[User Info] Fetch failed:', response.message);
             }
           } catch (error) {
+            if (error.isAutoLogout) return;
             dispatch(hideLoading());
 
             console.log('[User Info] Fetch error:', error);

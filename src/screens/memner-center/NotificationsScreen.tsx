@@ -23,6 +23,7 @@ const NotificationsScreen = ({ navigation }: any) => {
         const response = await fetchAllNews();
         setNotifications(response.data);
       } catch (error) {
+        if (error.isAutoLogout) return;
         console.log('Error fetching news:', error);
       }
     };

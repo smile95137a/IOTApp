@@ -3,25 +3,38 @@ import {
   CommonActions,
   NavigationContainerRef,
 } from '@react-navigation/native';
+import { AppDispatch } from '@/store/store';
+import { logOut } from '@/store/authSlice';
 
+// ====== 全域變數 ======
 let navigationRef: NavigationContainerRef<any> | null = null;
+let dispatchRef: AppDispatch | null = null;
 
+// ====== Setter functions ======
 export const setNavigationRef = (ref: NavigationContainerRef<any>) => {
   navigationRef = ref;
 };
 
+export const setDispatchRef = (dispatch: AppDispatch) => {
+  dispatchRef = dispatch;
+};
+
+// ====== Getter with check ======
+const getDispatchRef = (): AppDispatch => {
+  if (!dispatchRef) {
+    throw new Error('[AuthUtils] dispatchRef not set!');
+  }
+  return dispatchRef;
+};
+
+// ====== 登出處理器 ======
 export const handleUnauthorizedLogout = async () => {
   console.warn('[Auth] 401 Unauthorized - clearing storage and redirecting');
-  await AsyncStorage.clear();
 
-  if (navigationRef) {
-    navigationRef.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'Home' }], // ← 你要導回的首頁名稱
-      })
-    );
-  } else {
-    console.error('Navigation ref not set!');
+  try {
+    const dispatch = getDispatchRef();
+    dispatch(logOut());
+  } catch (error) {
+    console.error('[Auth] handleUnauthorizedLogout error:', error);
   }
 };

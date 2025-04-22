@@ -74,6 +74,7 @@ const StoreScreen = ({ navigation }: any) => {
         console.log('錯誤', message || '無法載入店家資訊');
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       console.log(
         '錯誤',

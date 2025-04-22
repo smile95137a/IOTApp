@@ -46,6 +46,7 @@ const ReportStoreScreen = () => {
         setStores([]);
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       setStores([]);
     }

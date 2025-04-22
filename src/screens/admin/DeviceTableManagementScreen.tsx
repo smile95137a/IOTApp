@@ -51,6 +51,7 @@ const DeviceTableManagementScreen = () => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',

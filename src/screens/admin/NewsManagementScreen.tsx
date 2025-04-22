@@ -46,6 +46,7 @@ const NewsManagementScreen = () => {
         setNewsList([]);
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
@@ -86,6 +87,7 @@ const NewsManagementScreen = () => {
       });
       await loadNews();
     } catch (error) {
+      if (error.isAutoLogout) return;
       await openInfoDialog({
         title: '錯誤',
         content: '刪除失敗',

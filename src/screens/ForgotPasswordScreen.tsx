@@ -33,6 +33,7 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
       });
       navigation.goBack();
     } catch (error) {
+      if (error.isAutoLogout) return;
       await openInfoDialog({ title: '錯誤', content: '無法發送重設密碼請求' });
     }
   };

@@ -140,6 +140,7 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
@@ -183,6 +184,7 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
@@ -211,6 +213,7 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
       loadVendors();
       console.log('設備狀態更新成功！');
     } catch (error) {
+      if (error.isAutoLogout) return;
       console.log('更新設備狀態失敗:', error);
       updatedEquipments[index].enabled = !newStatus;
       setEquipments([...updatedEquipments]);
@@ -246,6 +249,7 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
 
       loadVendors();
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',

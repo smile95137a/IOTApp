@@ -80,6 +80,7 @@ const AddPoolTableScreen = () => {
           });
         }
       } catch (error) {
+        if (error.isAutoLogout) return;
         dispatch(hideLoading());
         await openInfoDialog({
           title: '錯誤',
@@ -155,6 +156,7 @@ const AddPoolTableScreen = () => {
         }
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
@@ -196,6 +198,7 @@ const AddPoolTableScreen = () => {
         confirmText: '我知道了',
       });
     } catch (error) {
+      if (error.isAutoLogout) return;
       console.error('儲存失敗', error);
       await openInfoDialog({
         title: '錯誤',

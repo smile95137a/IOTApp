@@ -128,6 +128,7 @@ const CustomDrawerContent = (props: any) => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       openInfoDialog({
         title: '錯誤',

@@ -127,6 +127,7 @@ const AddStoreScreen = () => {
           });
         }
       } catch (error) {
+        if (error.isAutoLogout) return;
         dispatch(hideLoading());
         await openInfoDialog({
           title: '錯誤',
@@ -220,6 +221,7 @@ const AddStoreScreen = () => {
         });
       }
     } catch (error) {
+      if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
@@ -343,7 +345,9 @@ const AddStoreScreen = () => {
         });
       } else {
       }
-    } catch (error) {}
+    } catch (error) {
+      if (error.isAutoLogout) return;
+    }
   };
   const splitTime = (timeStr) => {
     const [hour, minute] = timeStr.split(':');
