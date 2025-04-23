@@ -22,6 +22,7 @@ import { fetchAllUsers } from '@/api/admin/adminUserApi';
 import { Picker } from '@react-native-picker/picker';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const AddVendorScreen = () => {
   const navigation = useNavigation();
@@ -62,13 +63,12 @@ const AddVendorScreen = () => {
             confirmText: '我知道了',
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
         await openInfoDialog({
           title: '錯誤',
-          content: '獲取使用者失敗，請稍後再試',
-          confirmText: '我知道了',
+          content: getErrorMessage(error),
         });
       }
     };
@@ -111,7 +111,7 @@ const AddVendorScreen = () => {
           content: vendor?.id ? '廠商更新成功' : '廠商新增成功',
           confirmText: '確定',
         });
-        navigation.goBack();
+        (navigation as any).goBack();
       } else {
         await openInfoDialog({
           title: '錯誤',
@@ -119,13 +119,12 @@ const AddVendorScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };

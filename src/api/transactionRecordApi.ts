@@ -26,7 +26,7 @@ export const fetchUserTransactionRecord = async (): Promise<
     const response = await api.get<ApiResponse<TransactionRecord[]>>(url);
     console.log(`[TransactionRecord API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(
       `[TransactionRecord API] Error fetching user transactions:`,
       error

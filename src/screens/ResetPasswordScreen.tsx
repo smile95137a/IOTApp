@@ -16,9 +16,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Header from '@/component/Header';
 import { resetPassword } from '@/api/authApi'; // 連接後端 API
 import { LinearGradient } from 'expo-linear-gradient';
-import { useDialog } from '@/context/DialogContext';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
+import { hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { useDispatch } from 'react-redux';
 
 const ResetPasswordScreen = ({ navigation }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,8 +32,6 @@ const ResetPasswordScreen = ({ navigation }: any) => {
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
-
-  const { openInfoDialog } = useDialog();
 
   const handleResetPassword = async () => {
     if (!oldPassword || !newPassword || !confirmPassword) {
@@ -60,7 +64,7 @@ const ResetPasswordScreen = ({ navigation }: any) => {
           content: '您的密碼已更新，請使用新密碼登入',
           confirmText: '前往登入',
         });
-        navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+        (navigation as any).reset({ index: 0, routes: [{ name: 'Login' }] });
       } else {
         await openInfoDialog({
           title: '錯誤',
@@ -68,13 +72,12 @@ const ResetPasswordScreen = ({ navigation }: any) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
-      console.log(`[ResetPassword] Error:`, error);
+      dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '無法連線到伺服器',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -89,7 +92,10 @@ const ResetPasswordScreen = ({ navigation }: any) => {
           style={styles.gradient}
         >
           <View style={styles.container}>
-            <Header onBackPress={() => navigation.goBack()} isDarkMode />
+            <Header
+              onBackPress={() => (navigation as any).goBack()}
+              isDarkMode
+            />
 
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

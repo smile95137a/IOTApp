@@ -27,7 +27,7 @@ export const fetchPoolTablesByStoreUid = async (
       response.data
     );
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(
       `[PoolTable API] Error fetching pool tables for storeUid ${storeUid}:`,
       error
@@ -53,7 +53,7 @@ export const fetchPoolTableByUid = async (
     const response = await api.get(url);
     console.log(`[PoolTable API] Response for UID ${uid}:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(
       `[PoolTable API] Error fetching pool table with UID ${uid}:`,
       error

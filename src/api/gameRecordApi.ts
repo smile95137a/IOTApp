@@ -16,7 +16,7 @@ export const fetchGameRecords = async (): Promise<ApiResponse<any[]>> => {
     const response = await api.get<ApiResponse<any[]>>(url);
     console.log(`[GameRecord API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[GameRecord API] Error fetching game records:`, error);
     throw error;
   }

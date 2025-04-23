@@ -2,6 +2,7 @@ import { Banner, fetchAllBanners } from '@/api/bannerApi';
 import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
@@ -10,7 +11,6 @@ import {
   Image,
   StyleSheet,
   Dimensions,
-  Alert,
   TouchableOpacity,
 } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
@@ -32,24 +32,24 @@ const ImageCarousel = () => {
   useEffect(() => {
     const loadBanners = async () => {
       try {
+        dispatch(showLoading());
         const { success, data, message } = await fetchAllBanners();
+        dispatch(hideLoading());
         if (success) {
           setBanners(data);
         } else {
-          openInfoDialog({
+          await openInfoDialog({
             title: '系統訊息',
-            content: message || '無法載入店家資訊',
+            content: message || '無法載入輪播圖片資訊',
             confirmText: '我知道了',
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        openInfoDialog({
-          title: '系統訊息',
-          content: errorMessage,
-          confirmText: '我知道了',
+        dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
         });
       }
     };
@@ -60,7 +60,7 @@ const ImageCarousel = () => {
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={() =>
-        navigation.navigate('News', {
+        (navigation as any).navigate('News', {
           screen: 'NewsDetailScreen',
           params: { news: item.news },
         })

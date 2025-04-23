@@ -3,6 +3,7 @@ import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -51,15 +52,12 @@ const MemberManagementScreen = ({ navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
       await openInfoDialog({
         title: '錯誤',
-        content: errorMessage,
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -104,7 +102,9 @@ const MemberManagementScreen = ({ navigation }) => {
                 key={item.uid}
                 style={styles.memberItem}
                 onPress={() =>
-                  navigation.navigate('MemberDetails', { member: item })
+                  (navigation as any).navigate('MemberDetails', {
+                    member: item,
+                  })
                 }
               >
                 <Image
@@ -132,7 +132,9 @@ const MemberManagementScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={styles.arrowContainer}
                   onPress={() =>
-                    navigation.navigate('MemberDetails', { member: item })
+                    (navigation as any).navigate('MemberDetails', {
+                      member: item,
+                    })
                   }
                 >
                   <Icon name="chevron-right" size={24} color="#666" />

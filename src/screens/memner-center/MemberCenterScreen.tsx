@@ -1,9 +1,11 @@
 import { fetchUserInfo } from '@/api/userApi';
 import Header from '@/component/Header';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
 import { logOut } from '@/store/authSlice';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
-import { RootState } from '@/store/store';
+import { AppDispatch, RootState } from '@/store/store';
 import { setUser } from '@/store/userSlice';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -78,7 +80,8 @@ const menuItems = [
 ];
 
 const MemberCenterScreen = ({ navigation }: any) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
   const user = useSelector((state: RootState) => state.user.user); // Get user from Redux
 
   const [localUser, setLocalUser] = useState(user);
@@ -100,11 +103,13 @@ const MemberCenterScreen = ({ navigation }: any) => {
             } else {
               console.warn('[User Info] Fetch failed:', response.message);
             }
-          } catch (error) {
+          } catch (error: any) {
             if (error.isAutoLogout) return;
             dispatch(hideLoading());
-
-            console.log('[User Info] Fetch error:', error);
+            await openInfoDialog({
+              title: '錯誤',
+              content: getErrorMessage(error),
+            });
           }
         };
 
@@ -114,7 +119,7 @@ const MemberCenterScreen = ({ navigation }: any) => {
   );
   const handleLogOut = () => {
     dispatch(logOut());
-    navigation.reset({
+    (navigation as any).reset({
       index: 0,
       routes: [{ name: 'Main' }],
     });
@@ -140,11 +145,11 @@ const MemberCenterScreen = ({ navigation }: any) => {
                 if (item.screen === 'LoginScreen') {
                   handleLogOut();
                 } else if (item.screen === 'BookStoreScreen') {
-                  navigation.navigate('Explore', {
+                  (navigation as any).navigate('Explore', {
                     screen: 'BookStore',
                   });
                 } else {
-                  navigation.navigate(item.screen);
+                  (navigation as any).navigate(item.screen);
                 }
               }}
             >

@@ -25,7 +25,7 @@ const NewsDetailScreen = ({ route, navigation }: any) => {
       >
         <Header
           title="最新消息"
-          onBackPress={() => navigation.goBack()}
+          onBackPress={() => (navigation as any).goBack()}
           isDarkMode
         />
         <ScrollView contentContainerStyle={styles.scrollContent}>

@@ -17,7 +17,7 @@ export const startGame = async (gameReq: any): Promise<ApiResponse<any>> => {
     const response = await api.post(url, gameReq);
     console.log(`[Game API]  startGame res:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Game API]  startGame error:`, error);
     throw error;
   }
@@ -35,7 +35,7 @@ export const checkoutGame = async (
     const response = await api.post(url, checkoutReq);
     console.log(`[Game API]  checkoutGame res:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Game API]  checkoutGame error:`, error);
     throw error;
   }
@@ -62,7 +62,7 @@ export const getAvailableTimes = async (
     });
     console.log(`[Game API]  getAvailableTimes res:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Game API]  getAvailableTimes error:`, error);
     throw error;
   }
@@ -78,7 +78,7 @@ export const bookGame = async (bookReq: any): Promise<ApiResponse<any>> => {
     const response = await api.post(url, bookReq);
     console.log(`[Game API]  bookGame res:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Game API]  bookGame error:`, error);
     throw error;
   }
@@ -94,7 +94,7 @@ export const cancelBook = async (gameReq: any): Promise<ApiResponse<any>> => {
     const response = await api.post(url, gameReq);
     console.log(`[Game API]  cancelBook res:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Game API]  cancelBook error:`, error);
     throw error;
   }
@@ -110,7 +110,7 @@ export const bookStart = async (gameReq: any): Promise<ApiResponse<any>> => {
     const response = await api.post(url, gameReq);
     console.log(`[Game API]  bookStart res:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Game API]  bookStart error:`, error);
     throw error;
   }
@@ -123,7 +123,7 @@ export const getBookGameList = async (): Promise<ApiResponse<any[]>> => {
     const response = await api.get(url);
     console.log(`[Game API]  getBookGame res:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Game API]  getBookGame error:`, error);
     throw error;
   }
@@ -139,7 +139,7 @@ export const getGamePrice = async (gameReq: any): Promise<ApiResponse<any>> => {
     const response = await api.post(url, gameReq);
     console.log(`[Game API]  getGamePrice res:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Game API]  getGamePrice error:`, error);
     throw error;
   }

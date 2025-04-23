@@ -34,7 +34,7 @@ export const handleUnauthorizedLogout = async () => {
   try {
     const dispatch = getDispatchRef();
     dispatch(logOut());
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Auth] handleUnauthorizedLogout error:', error);
   }
 };

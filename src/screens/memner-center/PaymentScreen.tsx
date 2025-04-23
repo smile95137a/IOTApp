@@ -5,6 +5,7 @@ import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { addAmount } from '@/store/userSlice';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { logJson } from '@/utils/logJsonUtils';
 import { useRoute } from '@react-navigation/native';
 import moment from 'moment';
@@ -78,9 +79,9 @@ const PaymentScreen = ({ navigation }: any) => {
       dispatch(hideLoading());
       if (success && data) {
         if (type === 'recharge') {
-          navigation.navigate('RechargeSuccess', { totalAmount });
+          (navigation as any).navigate('RechargeSuccess', { totalAmount });
         } else {
-          navigation.navigate('PaymentSuccess', {
+          (navigation as any).navigate('PaymentSuccess', {
             type,
             showStartGame: type === 'game',
             totalAmount,
@@ -93,15 +94,12 @@ const PaymentScreen = ({ navigation }: any) => {
           content: message || '無法載入店家資訊',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-
       await openInfoDialog({
         title: '錯誤',
-        content: errorMessage,
+        content: getErrorMessage(error),
       });
     }
   };

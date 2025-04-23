@@ -37,6 +37,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useInfoDialog } from '@/hooks/useInfoDialog';
 import { logJson } from '@/utils/logJsonUtils';
 import { useRoute } from '@react-navigation/native';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const Stack = createStackNavigator();
 
@@ -61,18 +62,17 @@ const MainLayout = ({ children }) => {
       dispatch(hideLoading());
 
       if (response.success) {
-        console.log('[User Info] API Response:', response.data);
         dispatch(setUser(response.data));
-        logJson(response.data);
         setLocalUser(response.data);
-        logJson('setLocalUser', response.data);
       } else {
-        console.warn('[User Info] Fetch failed:', response.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      console.log('[User Info] Fetch error:', error);
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 
@@ -195,7 +195,7 @@ const MainLayout = ({ children }) => {
         <View style={styles.container}>
           <Header
             title="會員中心"
-            onBackPress={() => navigation.goBack()}
+            onBackPress={() => (navigation as any).goBack()}
             isDarkMode
           />
 
@@ -262,7 +262,7 @@ const MemberStack = () => {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      navigation.navigate('Auth'); // 確保 AuthStack 在 RootNavigator 中已定義
+      (navigation as any).navigate('Auth'); // 確保 AuthStack 在 RootNavigator 中已定義
     }
 
     return () => {

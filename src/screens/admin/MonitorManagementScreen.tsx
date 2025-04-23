@@ -18,6 +18,7 @@ import Header from '@/component/Header';
 import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -116,13 +117,12 @@ const MonitorManagementScreen = ({ navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
 
@@ -165,14 +165,12 @@ const MonitorManagementScreen = ({ navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      console.log('刪除監視器失敗:', error);
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -199,13 +197,12 @@ const MonitorManagementScreen = ({ navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '獲取供應商失敗',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -231,14 +228,14 @@ const MonitorManagementScreen = ({ navigation }) => {
       });
       dispatch(hideLoading());
       loadMonitors();
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       updatedMonitors[index].status = !newStatus;
       setMonitors([...updatedMonitors]);
+      dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '無法更新設備狀態，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };

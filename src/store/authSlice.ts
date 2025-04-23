@@ -62,7 +62,7 @@ export const loadAuthState = () => async (dispatch: AppDispatch) => {
     if (token && user) {
       dispatch(setAuth({ token, user }));
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log('[Auth] Failed to load auth state:', error);
   }
 };

@@ -55,7 +55,7 @@ const AddPromotionScreen = ({ route, navigation }) => {
         <View style={styles.header}>
           <Header
             title="優惠方案設置"
-            onBackPress={() => navigation.goBack()}
+            onBackPress={() => (navigation as any).goBack()}
           />
         </View>
         <View style={styles.mainContainer}>

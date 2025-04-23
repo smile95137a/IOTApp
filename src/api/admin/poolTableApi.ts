@@ -24,7 +24,7 @@ export const fetchAllPoolTables = async (): Promise<
     const response = await api.get(url);
     console.log(`[PoolTable API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[PoolTable API] Error fetching all pool tables:`, error);
     throw error;
   }
@@ -41,7 +41,7 @@ export const fetchPoolTablesByStoreId = async (
     const response = await api.get(url);
     console.log(`[PoolTable API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[PoolTable API] Error fetching pool tables for store:`, error);
     throw error;
   }
@@ -62,7 +62,7 @@ export const fetchPoolTableByUid = async (
     const response = await api.get(url);
     console.log(`[PoolTable API] Response for UID ${uid}:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(
       `[PoolTable API] Error fetching pool table by UID ${uid}:`,
       error
@@ -88,7 +88,7 @@ export const createPoolTable = async (poolTable: {
     const response = await api.post(url, poolTable);
     console.log(`[PoolTable API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[PoolTable API] Error creating pool table:`, error);
     throw error;
   }
@@ -117,7 +117,7 @@ export const updatePoolTable = async (
     const response = await api.put(url, poolTable);
     console.log(`[PoolTable API] Response for UID ${uid}:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(
       `[PoolTable API] Error updating pool table with UID ${uid}:`,
       error
@@ -144,7 +144,7 @@ export const deletePoolTable = async (
       `[PoolTable API] Pool table with UID ${uid} deleted successfully.`
     );
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(
       `[PoolTable API] Error deleting pool table with UID ${uid}:`,
       error

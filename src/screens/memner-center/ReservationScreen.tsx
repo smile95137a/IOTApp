@@ -2,6 +2,7 @@ import { fetchPoolTableByUid } from '@/api/poolTableAPI';
 import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -45,19 +46,22 @@ const ReservationScreen = ({ navigation }) => {
           content: response.message || '無法獲取桌檯資訊',
         });
 
-        navigation.reset({
+        (navigation as any).reset({
           index: 0,
           routes: [{ name: 'Main' }],
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      console.log('Error fetching pool table:', error);
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
   const handleConfirmPayment = () => {
-    navigation.navigate('Payment', {
+    (navigation as any).navigate('Payment', {
       type: 'game',
       payData: { uid: tableUid },
       totalAmount: poolTable?.deposit,

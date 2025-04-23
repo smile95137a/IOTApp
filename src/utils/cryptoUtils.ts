@@ -14,7 +14,7 @@ export const encryptData = (data: string): string => {
   try {
     const encrypted = CryptoJS.AES.encrypt(data, ENCRYPTION_KEY).toString();
     return encrypted;
-  } catch (error) {
+  } catch (error: any) {
     console.log('加密失敗:', error);
     return '';
   }
@@ -30,7 +30,7 @@ export const decryptData = (encryptedData: string): string => {
     const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
     return decrypted;
-  } catch (error) {
+  } catch (error: any) {
     console.log('解密失敗:', error);
     return '';
   }

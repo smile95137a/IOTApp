@@ -27,6 +27,7 @@ import { useDispatch } from 'react-redux';
 import Header from '@/component/Header';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const PoolTableManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -53,13 +54,12 @@ const PoolTableManagementScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -95,7 +95,7 @@ const PoolTableManagementScreen = () => {
                   key={item.uid}
                   style={styles.card}
                   onPress={() =>
-                    navigation.navigate('AddPoolTable', {
+                    (navigation as any).navigate('AddPoolTable', {
                       poolTable: item,
                       storeId,
                     })
@@ -119,7 +119,9 @@ const PoolTableManagementScreen = () => {
 
               <TouchableOpacity
                 style={styles.addTableButton}
-                onPress={() => navigation.navigate('AddPoolTable', { storeId })}
+                onPress={() =>
+                  (navigation as any).navigate('AddPoolTable', { storeId })
+                }
               >
                 <Image
                   source={require('@/assets/iot-table-enable.png')}

@@ -20,7 +20,7 @@ export const fetchAllNews = async (): Promise<ApiResponse<News[]>> => {
     const response = await api.get(url);
     console.log(`[News API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[News API] Error fetching all news:`, error);
     throw error;
   }
@@ -37,7 +37,7 @@ export const fetchNewsById = async (
     const response = await api.get(url);
     console.log(`[News API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[News API] Error fetching news by ID:`, error);
     throw error;
   }
@@ -54,7 +54,7 @@ export const fetchNewsByStatus = async (
     const response = await api.get(url);
     console.log(`[News API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[News API] Error fetching news by status:`, error);
     throw error;
   }
@@ -69,7 +69,7 @@ export const fetchAllNewsNoUser = async (): Promise<ApiResponse<News[]>> => {
     const response = await api.get(url);
     console.log(`[News API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[News API] Error fetching all news (no user):`, error);
     throw error;
   }
@@ -86,7 +86,7 @@ export const fetchNewsByIdNoUser = async (
     const response = await api.get(url);
     console.log(`[News API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[News API] Error fetching news by ID (no user):`, error);
     throw error;
   }
@@ -103,7 +103,7 @@ export const fetchNewsByStatusNoUser = async (
     const response = await api.get(url);
     console.log(`[News API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[News API] Error fetching news by status (no user):`, error);
     throw error;
   }

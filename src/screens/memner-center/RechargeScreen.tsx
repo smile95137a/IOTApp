@@ -51,7 +51,7 @@ const RechargeScreen = ({ navigation }) => {
       }
       const total = ~~selected.amount + ~~selected.bonus;
 
-      navigation.navigate('Payment', {
+      (navigation as any).navigate('Payment', {
         type: 'recharge',
         totalAmount: total,
         rechargeOption: selected,

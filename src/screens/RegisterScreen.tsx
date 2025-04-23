@@ -55,7 +55,7 @@ const RegisterScreen = ({ route, navigation }: any) => {
   ];
 
   const resetAndNavigateToMain = () => {
-    navigation.reset({
+    (navigation as any).reset({
       index: 0,
       routes: [{ name: 'Main' }],
     });
@@ -69,7 +69,7 @@ const RegisterScreen = ({ route, navigation }: any) => {
       })
     );
 
-    navigation.navigate('PersonalInfo');
+    (navigation as any).navigate('PersonalInfo');
   };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -81,7 +81,10 @@ const RegisterScreen = ({ route, navigation }: any) => {
           style={styles.gradient}
         >
           <View style={styles.container}>
-            <Header onBackPress={() => navigation.goBack()} isDarkMode />
+            <Header
+              onBackPress={() => (navigation as any).goBack()}
+              isDarkMode
+            />
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
               style={styles.containerOS}

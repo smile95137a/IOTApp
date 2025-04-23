@@ -36,7 +36,10 @@ const StoreSettingsScreen = ({ navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <Header title="門市設定" onBackPress={() => navigation.goBack()} />
+          <Header
+            title="門市設定"
+            onBackPress={() => (navigation as any).goBack()}
+          />
         </View>
         <View style={styles.mainContainer}>
           {/* 門市圖片 */}

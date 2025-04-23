@@ -25,7 +25,10 @@ const TableDetailsScreen = ({ route, navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <Header title={table.name} onBackPress={() => navigation.goBack()} />
+          <Header
+            title={table.name}
+            onBackPress={() => (navigation as any).goBack()}
+          />
         </View>
         <View style={styles.mainContainer}>
           {/* 開關項目 */}

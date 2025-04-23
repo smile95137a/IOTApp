@@ -1,7 +1,10 @@
 import { fetchUserInfo } from '@/api/userApi';
 import NumberFormatter from '@/component/NumberFormatter';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
 import { setUser } from '@/store/userSlice';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { logJson } from '@/utils/logJsonUtils';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
@@ -14,10 +17,13 @@ import {
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 
-const PaymentSuccessScreen = ({ navigation }) => {
-  const route = useRoute();
+const PaymentSuccessScreen = ({ navigation }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
+
+  const route = useRoute<any>();
   const { type, totalAmount, showStartGame, data } = route.params || {};
-  const dispatch = useDispatch();
+
   useFocusEffect(
     useCallback(() => {
       const getUserInfo = async () => {
@@ -32,11 +38,13 @@ const PaymentSuccessScreen = ({ navigation }) => {
           } else {
             console.warn('[User Info] Fetch failed:', response.message);
           }
-        } catch (error) {
+        } catch (error: any) {
           if (error.isAutoLogout) return;
           dispatch(hideLoading());
-
-          console.log('[User Info] Fetch error:', error);
+          await openInfoDialog({
+            title: '錯誤',
+            content: getErrorMessage(error),
+          });
         }
       };
 
@@ -44,7 +52,7 @@ const PaymentSuccessScreen = ({ navigation }) => {
     }, [])
   );
   const handleStartGame = () => {
-    navigation.navigate('Contact', { transaction: data.gameRecord });
+    (navigation as any).navigate('Contact', { transaction: data.gameRecord });
   };
 
   return (

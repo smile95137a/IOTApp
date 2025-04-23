@@ -5,6 +5,7 @@ import ImageCarousel from '@/component/ImageCarousel';
 import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
@@ -43,15 +44,12 @@ const NewsScreen = ({ navigation }: any) => {
             confirmText: '我知道了',
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        openInfoDialog({
-          title: '系統訊息',
-          content: errorMessage,
-          confirmText: '我知道了',
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
         });
       }
     };
@@ -74,7 +72,9 @@ const NewsScreen = ({ navigation }: any) => {
                 key={item.id}
                 style={styles.newsItem}
                 onPress={() =>
-                  navigation.navigate('NewsDetailScreen', { news: item })
+                  (navigation as any).navigate('NewsDetailScreen', {
+                    news: item,
+                  })
                 }
               >
                 <Image

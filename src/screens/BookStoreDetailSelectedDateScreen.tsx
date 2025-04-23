@@ -23,6 +23,8 @@ import Feather from '@expo/vector-icons/Feather';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import { LocaleConfig } from 'react-native-calendars';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 LocaleConfig.locales['zh-tw'] = {
   monthNames: [
@@ -70,6 +72,7 @@ LocaleConfig.defaultLocale = 'zh-tw';
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
   const [selectedDate, setSelectedDate] = useState(
     moment().format('YYYY-MM-DD')
   );
@@ -91,10 +94,13 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
         } else {
           console.log(`API 回應失敗: 未能獲取桌台數據`);
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
-        console.log('Failed to fetch pool tables:', error);
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+        });
       }
     };
     const getTodayPricing = () => {
@@ -129,11 +135,12 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
 
   const handleShare = async () => {
     try {
+      dispatch(showLoading());
       const result = await Share.share({
         message: `店铺名称: ${store.name}\n地址: ${store.address}\n快来看看吧！`,
         url: 'https://example.com',
       });
-
+      dispatch(hideLoading());
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
           console.log('Shared with activity type: ', result.activityType);
@@ -143,9 +150,13 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
       } else if (result.action === Share.dismissedAction) {
         console.log('Share dismissed');
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
-      console.log('Error sharing: ', error);
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 
@@ -156,15 +167,19 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
       dispatch(showLoading());
 
       const supported = await Linking.canOpenURL(phoneNumber);
+      dispatch(hideLoading());
       if (supported) {
         await Linking.openURL(phoneNumber);
       } else {
         console.log('不支援撥打此電話:', phoneNumber);
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
-    } finally {
       dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
   //
@@ -180,7 +195,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
         <View style={styles.container}>
           <Header
             title={'預約開台'}
-            onBackPress={() => navigation.goBack()}
+            onBackPress={() => (navigation as any).goBack()}
             isDarkMode
           />
 
@@ -273,7 +288,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
                 current={selectedDate}
                 minDate={moment().format('YYYY-MM-DD')}
                 onDayPress={(day) => {
-                  navigation.navigate('BookStoreDetailSelectedTime', {
+                  (navigation as any).navigate('BookStoreDetailSelectedTime', {
                     tableItem,
                     store,
                     selectedDate: day.dateString,

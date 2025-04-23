@@ -32,6 +32,7 @@ import { getImageUrl } from '@/utils/ImageUtils';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Constants from 'expo-constants';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const weekDays = [
   'monday',
@@ -126,13 +127,12 @@ const AddStoreScreen = () => {
             confirmText: '我知道了',
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
         await openInfoDialog({
           title: '錯誤',
-          content: '獲取供應商失敗',
-          confirmText: '我知道了',
+          content: getErrorMessage(error),
         });
       }
     };
@@ -212,7 +212,7 @@ const AddStoreScreen = () => {
           content: isEditMode ? '店家資訊更新成功' : '店家新增成功',
           confirmText: '確定',
         });
-        navigation.goBack();
+        (navigation as any).goBack();
       } else {
         await openInfoDialog({
           title: '錯誤',
@@ -220,13 +220,12 @@ const AddStoreScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -345,7 +344,7 @@ const AddStoreScreen = () => {
         });
       } else {
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
     }
   };
@@ -395,7 +394,20 @@ const AddStoreScreen = () => {
               <Text style={styles.header}>
                 {isEditMode ? '編輯店家' : '新增店家'}
               </Text>
-
+              <Picker
+                selectedValue={vendorId}
+                onValueChange={setVendorId}
+                style={styles.picker}
+              >
+                <Picker.Item label="請選擇供應商" value="" />
+                {vendors.map((vendor) => (
+                  <Picker.Item
+                    key={vendor.id}
+                    label={vendor.name}
+                    value={String(vendor.id)}
+                  />
+                ))}
+              </Picker>
               <TextInput
                 style={styles.input}
                 placeholder="店家名稱"
@@ -414,20 +426,6 @@ const AddStoreScreen = () => {
                 }}
               />
 
-              <Picker
-                selectedValue={vendorId}
-                onValueChange={setVendorId}
-                style={styles.picker}
-              >
-                <Picker.Item label="請選擇供應商" value="" />
-                {vendors.map((vendor) => (
-                  <Picker.Item
-                    key={vendor.id}
-                    label={vendor.name}
-                    value={String(vendor.id)}
-                  />
-                ))}
-              </Picker>
               <View style={styles.mapContainer}>
                 <MapView
                   provider={PROVIDER_DEFAULT}
@@ -461,7 +459,7 @@ const AddStoreScreen = () => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="最低消費金額"
+                placeholder="開台押金"
                 keyboardType="numeric"
                 value={deposit}
                 onChangeText={setDeposit}

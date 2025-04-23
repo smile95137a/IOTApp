@@ -1,7 +1,10 @@
 import { fetchUserInfo } from '@/api/userApi';
 import NumberFormatter from '@/component/NumberFormatter';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
 import { setUser } from '@/store/userSlice';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import {
@@ -14,8 +17,9 @@ import {
 import { useDispatch } from 'react-redux';
 
 const RechargeSuccess = ({ route, navigation }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
   const { totalAmount } = route.params || {};
-  const dispatch = useDispatch();
   useFocusEffect(
     useCallback(() => {
       const getUserInfo = async () => {
@@ -30,11 +34,13 @@ const RechargeSuccess = ({ route, navigation }: any) => {
           } else {
             console.warn('[User Info] Fetch failed:', response.message);
           }
-        } catch (error) {
+        } catch (error: any) {
           if (error.isAutoLogout) return;
           dispatch(hideLoading());
-
-          console.log('[User Info] Fetch error:', error);
+          await openInfoDialog({
+            title: '錯誤',
+            content: getErrorMessage(error),
+          });
         }
       };
 

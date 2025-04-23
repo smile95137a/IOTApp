@@ -28,6 +28,7 @@ import {
 import { Vendor, fetchAllVendors, deleteVendor } from '@/api/admin/vendorApi';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const VendorManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -50,14 +51,12 @@ const VendorManagementScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-
       await openInfoDialog({
         title: '錯誤',
-        content: error instanceof Error ? error.message : String(error),
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -100,13 +99,12 @@ const VendorManagementScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '刪除失敗，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -136,7 +134,7 @@ const VendorManagementScreen = () => {
                     style={styles.cardWrapper}
                     onPress={() => {
                       setVisibleMenuId(null);
-                      navigation.navigate('AddVendor', {
+                      (navigation as any).navigate('AddVendor', {
                         vendor: item,
                       });
                     }}
@@ -172,7 +170,7 @@ const VendorManagementScreen = () => {
                           <Menu.Item
                             onPress={() => {
                               setVisibleMenuId(null);
-                              navigation.navigate('AddVendor', {
+                              (navigation as any).navigate('AddVendor', {
                                 vendor: item,
                               });
                             }}
@@ -186,7 +184,7 @@ const VendorManagementScreen = () => {
                 ))}
                 <TouchableOpacity
                   style={styles.addCardWrapper}
-                  onPress={() => navigation.navigate('AddVendor')}
+                  onPress={() => (navigation as any).navigate('AddVendor')}
                 >
                   <Image
                     source={require('@/assets/iot-logo-white.png')}

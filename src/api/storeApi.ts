@@ -22,7 +22,7 @@ export const fetchAllStores = async (): Promise<ApiResponse<Store[]>> => {
     const response = await api.get(url);
     console.log(`[Store API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Store API] Error fetching stores:`, error);
     throw error;
   }
@@ -42,7 +42,7 @@ export const fetchStoreByUid = async (
     const response = await api.get(url);
     console.log(`[Store API] Response for UID ${uid}:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Store API] Error fetching store by UID ${uid}:`, error);
     throw error;
   }

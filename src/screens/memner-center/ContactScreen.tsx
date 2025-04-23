@@ -17,6 +17,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Linking } from 'react-native';
 import { useDialog } from '@/context/DialogContext';
 import NumberFormatter from '@/component/NumberFormatter';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const ContactScreen = ({ navigation, route }) => {
   const { openConfirmDialog, openInfoDialog } = useDialog();
@@ -55,7 +56,7 @@ const ContactScreen = ({ navigation, route }) => {
       dispatch(hideLoading());
 
       if (success) {
-        navigation.navigate('Payment', {
+        (navigation as any).navigate('Payment', {
           type: 'gameEnd',
           payData: {
             gameId: transaction.gameId,
@@ -69,14 +70,12 @@ const ContactScreen = ({ navigation, route }) => {
           content: message || '無法載入店家資訊',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      openInfoDialog({
+      await openInfoDialog({
         title: '錯誤',
-        content: errorMessage,
+        content: getErrorMessage(error),
       });
     }
   };

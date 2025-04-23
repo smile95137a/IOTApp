@@ -12,12 +12,15 @@ import { AppDispatch } from '@/store/store';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
-
+import moment from 'moment';
+import NoData from '@/component/NoData';
+import { getErrorMessage } from '@/utils/errorUtils';
 const DepositHistoryScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const { openInfoDialog } = useDialog();
 
   const [transactions, setTransactions] = useState<TransactionRecord[]>([]);
+  const [isFetched, setIsFetched] = useState(false);
 
   useEffect(() => {
     const loadTransactions = async () => {
@@ -25,20 +28,28 @@ const DepositHistoryScreen = ({ navigation }: any) => {
         dispatch(showLoading());
         const { success, data, message } = await fetchUserTransactionRecord();
         dispatch(hideLoading());
+        setIsFetched(true);
         if (success) {
-          setTransactions(data);
+          const sortedData = [...data].sort((a, b) =>
+            moment(b.createdAt, 'YYYY/MM/DD HH:mm:ss').diff(
+              moment(a.createdAt, 'YYYY/MM/DD HH:mm:ss')
+            )
+          );
+          setTransactions(sortedData);
         } else {
+          setTransactions([]);
           await openInfoDialog({
             title: '錯誤',
             content: message || '無法載入交易紀錄',
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        await openInfoDialog({ title: '錯誤', content: errorMessage });
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+        });
       }
     };
 
@@ -47,29 +58,38 @@ const DepositHistoryScreen = ({ navigation }: any) => {
 
   return (
     <ScrollView contentContainerStyle={styles.transactionList}>
-      {transactions.map((item) => (
-        <View key={item.id} style={styles.transactionItem}>
-          <View style={styles.transactionDetails}>
-            <Text style={styles.transactionDate}>
-              <DateFormatter date={item.createdAt} format="YYYY.MM.DD HH:mm" />
-            </Text>
-            <Text style={styles.transactionLocation}>儲值紀錄</Text>
-            <Text style={styles.transactionInfo}>
-              {getPayType(item.payType)}
+      {isFetched && transactions.length === 0 ? (
+        <NoData text="目前尚無儲值紀錄" />
+      ) : (
+        transactions.map((item) => (
+          <View key={item.id} style={styles.transactionItem}>
+            <View style={styles.transactionDetails}>
+              <Text style={styles.transactionDate}>
+                <DateFormatter
+                  date={item.createdAt}
+                  format="YYYY.MM.DD HH:mm"
+                />
+              </Text>
+              <Text style={styles.transactionLocation}>儲值紀錄</Text>
+              <Text style={styles.transactionInfo}>
+                {getPayType(item.payType)}
+              </Text>
+            </View>
+            <Text style={styles.transactionAmount}>
+              NT
+              <NumberFormatter number={item.amount} />
             </Text>
           </View>
-          <Text style={styles.transactionAmount}>
-            NT
-            <NumberFormatter number={item.amount} />
-          </Text>
-        </View>
-      ))}
+        ))
+      )}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  transactionList: {},
+  transactionList: {
+    paddingBottom: 32,
+  },
   transactionItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',

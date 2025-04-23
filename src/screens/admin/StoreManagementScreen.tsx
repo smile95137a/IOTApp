@@ -27,6 +27,7 @@ import {
 } from '@/api/admin/storeApi';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const StoreManagementScreen = () => {
   const route = useRoute();
@@ -55,13 +56,12 @@ const StoreManagementScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -105,13 +105,12 @@ const StoreManagementScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '刪除失敗，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -140,7 +139,7 @@ const StoreManagementScreen = () => {
                     key={item.uid}
                     style={styles.cardWrapper}
                     onPress={() =>
-                      navigation.navigate('AddStore', { store: item })
+                      (navigation as any).navigate('AddStore', { store: item })
                     }
                   >
                     <Image
@@ -173,7 +172,9 @@ const StoreManagementScreen = () => {
                         >
                           <Menu.Item
                             onPress={() =>
-                              navigation.navigate('AddStore', { store: item })
+                              (navigation as any).navigate('AddStore', {
+                                store: item,
+                              })
                             }
                             title="編輯"
                             leadingIcon="pencil-outline"
@@ -185,7 +186,7 @@ const StoreManagementScreen = () => {
                 ))}
                 <TouchableOpacity
                   style={styles.addCardWrapper}
-                  onPress={() => navigation.navigate('AddStore')}
+                  onPress={() => (navigation as any).navigate('AddStore')}
                 >
                   <Image
                     source={require('@/assets/iot-logo-white.png')}

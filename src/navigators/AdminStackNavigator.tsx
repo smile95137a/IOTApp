@@ -109,7 +109,7 @@ const menuItems = {
 const CustomDrawerContent = (props: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
-  const [menus, setMenus] = useState([]);
+  const [menus, setMenus] = useState<any[]>([]);
   const { openInfoDialog } = useDialog();
 
   const loadMenus = async () => {
@@ -127,12 +127,12 @@ const CustomDrawerContent = (props: any) => {
           content: message || '無法載入選單',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      openInfoDialog({
+      await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -222,6 +222,11 @@ const AdminDrawerNavigator = () => {
         headerShown: false,
       }}
     >
+      <Drawer.Screen
+        name="AdminHome"
+        component={AdminHomeScreen}
+        options={{ headerShown: false, title: '管理首頁' }}
+      />
       <Drawer.Screen
         name="DashboardStack"
         component={DashboardStack}
@@ -468,6 +473,8 @@ import PoolTableStoreManagementScreen from '@/screens/admin/PoolTableStoreManage
 import CropImageScreen from '@/component/CropImageScreen';
 import { useDialog } from '@/context/DialogContext';
 import AdminStoreDetailScreen from '@/screens/admin/AdminStoreDetailScreen';
+import { getErrorMessage } from '@/utils/errorUtils';
+import AdminHomeScreen from '@/screens/admin/AdminHomeScreen';
 
 const ReportStack = () => {
   const user = useSelector((state: RootState) => state.user);

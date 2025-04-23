@@ -37,7 +37,7 @@ const MainStackNavigator = () => {
           listeners={({ navigation }) => ({
             tabPress: (e) => {
               e.preventDefault();
-              navigation.reset({
+              (navigation as any).reset({
                 index: 0,
                 routes: [{ name: 'Home' }],
               });
@@ -56,7 +56,7 @@ const MainStackNavigator = () => {
           listeners={({ navigation }) => ({
             tabPress: (e) => {
               e.preventDefault();
-              navigation.reset({
+              (navigation as any).reset({
                 index: 0,
                 routes: [{ name: 'News' }],
               });
@@ -75,7 +75,7 @@ const MainStackNavigator = () => {
           listeners={({ navigation }) => ({
             tabPress: (e) => {
               e.preventDefault();
-              navigation.reset({
+              (navigation as any).reset({
                 index: 0,
                 routes: [
                   {
@@ -102,7 +102,7 @@ const MainStackNavigator = () => {
           listeners={({ navigation }) => ({
             tabPress: (e) => {
               e.preventDefault();
-              navigation.reset({
+              (navigation as any).reset({
                 index: 0,
                 routes: [{ name: 'Explore' }],
               });
@@ -121,7 +121,7 @@ const MainStackNavigator = () => {
           listeners={({ navigation }) => ({
             tabPress: (e) => {
               e.preventDefault();
-              navigation.reset({
+              (navigation as any).reset({
                 index: 0,
                 routes: [{ name: 'Member' }],
               });

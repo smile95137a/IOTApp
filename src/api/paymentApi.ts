@@ -27,7 +27,7 @@ export const topUp = async (
     const response = await api.post<ApiResponse<Boolean>>(url, topOpReq);
     console.log(`[Payment API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Payment API] Error processing top-up:`, error);
     throw error;
   }

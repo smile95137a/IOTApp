@@ -20,11 +20,15 @@ import {
 import { useDispatch } from 'react-redux';
 import { useDialog } from '@/context/DialogContext';
 import { logJson } from '@/utils/logJsonUtils';
+import { getErrorMessage } from '@/utils/errorUtils';
+import NoData from '@/component/NoData';
 
 const GameOngoingScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const [transactions, setTransactions] = useState<GameTransactionRecord[]>([]);
   const { openInfoDialog } = useDialog();
+
+  const [transactions, setTransactions] = useState<GameTransactionRecord[]>([]);
+  const [isFetched, setIsFetched] = useState(false);
 
   useEffect(() => {
     const loadTransactions = async () => {
@@ -32,7 +36,17 @@ const GameOngoingScreen = ({ navigation }: any) => {
         dispatch(showLoading());
         const { success, data, message } = await fetchGameRecords();
         dispatch(hideLoading());
+        setIsFetched(true);
+
         if (success) {
+          if (!data || data.length === 0) {
+            setTransactions([]);
+            await openInfoDialog({
+              title: '提醒',
+              content: '目前尚無進行中的紀錄',
+            });
+            return;
+          }
           setTransactions(data);
         } else {
           await openInfoDialog({
@@ -40,14 +54,12 @@ const GameOngoingScreen = ({ navigation }: any) => {
             content: message || '無法載入資訊',
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
         await openInfoDialog({
           title: '錯誤',
-          content: errorMessage,
+          content: getErrorMessage(error),
         });
       }
     };
@@ -56,36 +68,38 @@ const GameOngoingScreen = ({ navigation }: any) => {
   }, []);
 
   const handleTransactionPress = (transaction: any) => {
-    navigation.navigate('Contact', { transaction });
+    (navigation as any).navigate('Contact', { transaction });
   };
 
   return (
     <ScrollView contentContainerStyle={styles.transactionList}>
-      {transactions.map((item) => (
-        <TouchableOpacity
-          key={item.id}
-          onPress={() => handleTransactionPress(item)}
-        >
-          <View style={styles.transactionItem}>
-            <View style={styles.transactionDetails}>
-              <Text style={styles.transactionLocation}>{item.storeName}</Text>
-              <Text style={styles.transactionInfo}>{item.poolTableName}</Text>
+      {isFetched && transactions.length === 0 ? (
+        <NoData text="目前尚無進行中的紀錄" />
+      ) : (
+        transactions.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            onPress={() => handleTransactionPress(item)}
+          >
+            <View style={styles.transactionItem}>
+              <View style={styles.transactionDetails}>
+                <Text style={styles.transactionLocation}>{item.storeName}</Text>
+                <Text style={styles.transactionInfo}>{item.poolTableName}</Text>
+              </View>
+              <Text style={styles.transactionAmount}>
+                NT
+                <NumberFormatter number={item.price} />
+              </Text>
             </View>
-            <Text style={styles.transactionAmount}>
-              NT
-              <NumberFormatter number={item.price} />
-            </Text>
-          </View>
-        </TouchableOpacity>
-      ))}
+          </TouchableOpacity>
+        ))
+      )}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   transactionList: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
     paddingBottom: 32,
   },
   transactionItem: {

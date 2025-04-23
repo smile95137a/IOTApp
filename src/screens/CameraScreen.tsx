@@ -19,6 +19,7 @@ import { AppDispatch } from '@/store/store';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const { width, height } = Dimensions.get('window');
 const SCAN_BOX_SIZE = 250;
@@ -151,11 +152,12 @@ const CameraScreen = () => {
           setScanned(false);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
+      dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請重試',
+        content: getErrorMessage(error),
       });
       setScanned(false);
     }
@@ -233,7 +235,7 @@ const CameraScreen = () => {
         style={[styles.closeButton, { zIndex: 10 }]}
         onPress={() => {
           console.log('Close button pressed!');
-          navigation.reset({
+          (navigation as any).reset({
             index: 0,
             routes: [{ name: 'Main' }],
           });

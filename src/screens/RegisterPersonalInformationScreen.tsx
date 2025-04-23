@@ -26,6 +26,7 @@ import { setAuth } from '@/store/authSlice';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   const genderOptions = [
@@ -68,7 +69,7 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
     });
 
     if (!result.canceled) {
-      navigation.navigate('CropImage', {
+      (navigation as any).navigate('CropImage', {
         uri: result.assets[0].uri,
         aspectRatio: [1, 1],
         isCircle: true,
@@ -98,7 +99,7 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
     });
 
     if (!result.canceled) {
-      navigation.navigate('CropImage', {
+      (navigation as any).navigate('CropImage', {
         uri: result.assets[0].uri,
         aspectRatio: [1, 1],
         isCircle: true,
@@ -111,7 +112,7 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   };
 
   const resetAndNavigateToMain = () => {
-    navigation.reset({
+    (navigation as any).reset({
       index: 0,
       routes: [{ name: 'Main' }],
     });
@@ -194,20 +195,18 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
         confirmText: '進入首頁',
       });
 
-      navigation.reset({
+      (navigation as any).reset({
         index: 0,
         routes: [{ name: 'Main' }],
       });
 
       dispatch(hideLoading());
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      console.log('[Error]', error);
       await openInfoDialog({
         title: '錯誤',
-        content: '發生未知錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -229,7 +228,10 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
           style={styles.gradient}
         >
           <View style={styles.container}>
-            <Header onBackPress={() => navigation.goBack()} isDarkMode />
+            <Header
+              onBackPress={() => (navigation as any).goBack()}
+              isDarkMode
+            />
 
             <Text style={styles.title}>個人資料</Text>
             <ScrollView>

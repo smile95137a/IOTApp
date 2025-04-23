@@ -23,9 +23,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { fetchUserInfo } from '@/api/userApi';
 import { setUser } from '@/store/userSlice';
 import { useFocusEffect } from '@react-navigation/native';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const StoreScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
 
   const [stores, setStores] = useState<any[]>([]);
   const [isLoadGps, setIsLoadGps] = useState(false);
@@ -38,7 +41,7 @@ const StoreScreen = ({ navigation }: any) => {
   useFocusEffect(
     useCallback(() => {
       if (!isLoggedIn) {
-        navigation.navigate('Auth');
+        (navigation as any).navigate('Auth');
       }
     }, [])
   );
@@ -84,13 +87,13 @@ const StoreScreen = ({ navigation }: any) => {
       } else {
         console.log('錯誤', message || '無法載入店家資訊');
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      console.log(
-        '錯誤',
-        error instanceof Error ? error.message : String(error)
-      );
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 
@@ -118,7 +121,9 @@ const StoreScreen = ({ navigation }: any) => {
                 key={item.id}
                 style={styles.storeItem}
                 onPress={() =>
-                  navigation.navigate('BookStoreDetail', { store: item })
+                  (navigation as any).navigate('BookStoreDetail', {
+                    store: item,
+                  })
                 }
               >
                 <View style={styles.storeImageContainer}>

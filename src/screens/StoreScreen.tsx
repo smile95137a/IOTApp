@@ -20,9 +20,13 @@ import * as Location from 'expo-location';
 import { findNearestStores } from '@/utils/LocationUtils';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const StoreScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
+
   const [stores, setStores] = useState<any[]>([]);
   const [isLoadGps, setIsLoadGps] = useState(false);
   const [locationData, setLocationData] = useState<{
@@ -69,17 +73,16 @@ const StoreScreen = ({ navigation }: any) => {
         });
 
         setStores(storesWithAvailableCount);
-        console.log(JSON.stringify(storesWithAvailableCount, null, 2));
       } else {
         console.log('錯誤', message || '無法載入店家資訊');
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      console.log(
-        '錯誤',
-        error instanceof Error ? error.message : String(error)
-      );
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 
@@ -111,7 +114,7 @@ const StoreScreen = ({ navigation }: any) => {
                 key={item.id}
                 style={styles.storeItem}
                 onPress={() =>
-                  navigation.navigate('StoreDetail', { store: item })
+                  (navigation as any).navigate('StoreDetail', { store: item })
                 }
               >
                 <View style={styles.storeImageContainer}>

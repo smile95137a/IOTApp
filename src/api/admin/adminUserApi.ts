@@ -22,7 +22,7 @@ export const fetchAllUsers = async (): Promise<ApiResponse<User[]>> => {
     const response = await api.get(url);
     console.log(`[User API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error fetching all users:`, error);
     throw error;
   }
@@ -39,7 +39,7 @@ export const fetchUserById = async (id: string): Promise<ApiResponse<User>> => {
     const response = await api.get(url);
     console.log(`[User API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error fetching user by ID:`, error);
     throw error;
   }
@@ -56,7 +56,7 @@ export const queryUser = async (req: any): Promise<ApiResponse<User[]>> => {
     const response = await api.post(url, req);
     console.log(`[User API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error querying user:`, error);
     throw error;
   }
@@ -73,7 +73,7 @@ export const createUser = async (req: any): Promise<ApiResponse<User>> => {
     const response = await api.post(url, req);
     console.log(`[User API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error creating user:`, error);
     throw error;
   }
@@ -90,7 +90,7 @@ export const updateUser = async (req: any): Promise<ApiResponse<User>> => {
     const response = await api.put(url, req);
     console.log(`[User API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error updating user:`, error);
     throw error;
   }
@@ -107,7 +107,7 @@ export const deleteUser = async (id: string): Promise<ApiResponse<boolean>> => {
     const response = await api.delete(url);
     console.log(`[User API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error deleting user:`, error);
     throw error;
   }
@@ -126,7 +126,7 @@ export const addUsersToBlacklist = async (
     const response = await api.put(url, userIds);
     console.log(`[User API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error adding users to blacklist:`, error);
     throw error;
   }
@@ -145,7 +145,7 @@ export const removeUsersFromBlacklist = async (
     const response = await api.put(url, userIds);
     console.log(`[User API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error removing users from blacklist:`, error);
     throw error;
   }

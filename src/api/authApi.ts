@@ -31,7 +31,7 @@ export const loginUser = async (loginData: {
     console.log(`[Login] API Response from ${url}:`, response.data);
 
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Login] Error during request to ${url}:`, error);
     throw error;
   }

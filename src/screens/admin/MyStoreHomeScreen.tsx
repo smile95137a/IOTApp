@@ -22,7 +22,10 @@ const MyStoreHomeScreen = ({ navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <Header title="我的門店" onBackPress={() => navigation.goBack()} />
+          <Header
+            title="我的門店"
+            onBackPress={() => (navigation as any).goBack()}
+          />
         </View>
         <View style={styles.mainContainer}>
           {/* 店鋪信息 */}
@@ -38,7 +41,7 @@ const MyStoreHomeScreen = ({ navigation }) => {
           <View style={styles.options}>
             <TouchableOpacity
               style={styles.optionButton}
-              onPress={() => navigation.navigate('PermissionSettings')}
+              onPress={() => (navigation as any).navigate('PermissionSettings')}
             >
               <View style={styles.optionContent}>
                 <Icon
@@ -54,7 +57,7 @@ const MyStoreHomeScreen = ({ navigation }) => {
 
             <TouchableOpacity
               style={styles.optionButton}
-              onPress={() => navigation.navigate('AccountSettings')}
+              onPress={() => (navigation as any).navigate('AccountSettings')}
             >
               <View style={styles.optionContent}>
                 <Icon
@@ -70,7 +73,7 @@ const MyStoreHomeScreen = ({ navigation }) => {
 
             <TouchableOpacity
               style={styles.optionButton}
-              onPress={() => navigation.navigate('StoreSettings')}
+              onPress={() => (navigation as any).navigate('StoreSettings')}
             >
               <View style={styles.optionContent}>
                 <Icon

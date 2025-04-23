@@ -29,6 +29,7 @@ import { fetchAllVendors } from '@/api/admin/vendorApi';
 import { fetchStoresByVendorId } from '@/api/admin/storeApi';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DynamicDatePicker from '@/component/admin/DynamicDatePicker';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const ReportDetailScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -90,13 +91,12 @@ const ReportDetailScreen = () => {
 
       setReportData(allResults);
       dispatch(hideLoading());
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -109,9 +109,13 @@ const ReportDetailScreen = () => {
         dispatch(hideLoading());
 
         if (vendorRes.success) setVendors(vendorRes.data);
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+        });
       }
     };
 
@@ -133,13 +137,12 @@ const ReportDetailScreen = () => {
           setStores(data);
           setStoreId('');
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
         await openInfoDialog({
           title: '錯誤',
-          content: '載入店家失敗',
-          confirmText: '我知道了',
+          content: getErrorMessage(error),
         });
       }
     };

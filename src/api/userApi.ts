@@ -25,7 +25,7 @@ export const fetchUserInfo = async (): Promise<ApiResponse<User>> => {
     const response = await api.get(url);
     console.log(`[User API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error fetching user info:`, error);
     throw error;
   }
@@ -45,7 +45,7 @@ export const registerUser = async (
     const response = await api.post(url, userReq);
     console.log(`[User API] Registration Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error registering user:`, error);
     throw error;
   }
@@ -65,7 +65,7 @@ export const updateUser = async (
     const response = await api.put(url, userReq);
     console.log(`[User API] Update Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error updating user:`, error);
     throw error;
   }
@@ -86,7 +86,7 @@ export const resetPassword = async (userReq: {
     const response = await api.put(url, userReq);
     console.log(`[User API] Reset Password Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error resetting password:`, error);
     throw error;
   }
@@ -122,7 +122,7 @@ export const uploadProfileImage = async (
 
     console.log(`[User API] Profile Image Upload Success:`, response.data);
     return response.status === 200;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[User API] Error uploading profile image:`, error);
     return false;
   }

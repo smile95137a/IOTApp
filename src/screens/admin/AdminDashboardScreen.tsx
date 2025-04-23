@@ -2,7 +2,7 @@ import { fetchTurnover } from '@/api/admin/turnoverApi';
 import NumberFormatter from '@/component/NumberFormatter';
 import SharedScreenLayout from '@/navigators/SharedScreenLayout';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
-import { AppDispatch } from '@/store/store';
+import { AppDispatch, RootState } from '@/store/store';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -14,11 +14,12 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Menu, Provider } from 'react-native-paper';
 import { fetchAllStores, fetchStoresByVendorId } from '@/api/admin/storeApi';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const AdminDashboardScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -28,9 +29,13 @@ const AdminDashboardScreen = ({ navigation }) => {
   const [todayTopupCount, setTodayTopupCount] = useState(0);
   const [monthTotalAmount, setMonthTotalAmount] = useState(0);
   const [monthTransactionCount, setMonthTransactionCount] = useState(0);
+  const [totalAmountAll, setTotalAmountAll] = useState(0);
+  const [totalTopupAmountAll, setTotalTopupAmountAll] = useState(0);
 
   const [stores, setStores] = useState<any[]>([]);
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
+  const user = useSelector((state: RootState) => state.user);
+  const isSuperAdmin = user.user?.roles?.some((role) => role.id === 1);
 
   const { openInfoDialog } = useDialog();
 
@@ -48,6 +53,8 @@ const AdminDashboardScreen = ({ navigation }) => {
           setTodayTopupCount(data.todayTopupCount);
           setMonthTotalAmount(data.monthTotalAmount);
           setMonthTransactionCount(data.monthTransactionCount);
+          setTotalAmountAll(data.totalAmountAll);
+          setTotalTopupAmountAll(data.totalTopupAmountAll);
         }
       } else {
         await openInfoDialog({
@@ -56,13 +63,12 @@ const AdminDashboardScreen = ({ navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -82,13 +88,12 @@ const AdminDashboardScreen = ({ navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -129,17 +134,31 @@ const AdminDashboardScreen = ({ navigation }) => {
                   <NumberFormatter number={todayTransactionCount} /> 筆
                 </Text>
 
-                <Text style={styles.reportValue}>
-                  今日儲值：
-                  <NumberFormatter number={todayTopupAmount} /> 元 /
-                  <NumberFormatter number={todayTopupCount} /> 筆
-                </Text>
+                {isSuperAdmin && (
+                  <Text style={styles.reportValue}>
+                    今日儲值：
+                    <NumberFormatter number={todayTopupAmount} /> 元 /
+                    <NumberFormatter number={todayTopupCount} /> 筆
+                  </Text>
+                )}
 
                 <Text style={styles.reportValue}>
                   本月累計消費：
                   <NumberFormatter number={monthTotalAmount} /> 元 /
                   <NumberFormatter number={monthTransactionCount} /> 筆
                 </Text>
+
+                <Text style={styles.reportValue}>
+                  所有消費總額：
+                  <NumberFormatter number={totalAmountAll} /> 元
+                </Text>
+
+                {isSuperAdmin && (
+                  <Text style={styles.reportValue}>
+                    所有儲值總額：
+                    <NumberFormatter number={totalTopupAmountAll} /> 元
+                  </Text>
+                )}
               </View>
               <View style={styles.divider} />
               <View style={styles.gridWrapper}>
@@ -148,7 +167,7 @@ const AdminDashboardScreen = ({ navigation }) => {
                     key={item.uid}
                     style={styles.cardWrapper}
                     onPress={() => {
-                      navigation.navigate('StoreManagementStack', {
+                      (navigation as any).navigate('StoreManagementStack', {
                         screen: 'AdminStoreDetail',
                         params: { store: item },
                       });

@@ -30,7 +30,10 @@ const AccountSettingsScreen = ({ navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <Header title="帳號設定" onBackPress={() => navigation.goBack()} />
+          <Header
+            title="帳號設定"
+            onBackPress={() => (navigation as any).goBack()}
+          />
         </View>
         <View style={styles.mainContainer}>
           {/* Profile Image */}

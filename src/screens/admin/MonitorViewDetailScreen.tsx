@@ -18,6 +18,7 @@ import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const MonitorViewDetailScreen = () => {
   const route = useRoute();
@@ -48,13 +49,12 @@ const MonitorViewDetailScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '獲取監視器失敗',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };

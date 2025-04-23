@@ -5,26 +5,20 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  Alert,
   Image,
   ScrollView,
 } from 'react-native';
-import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { useDispatch } from 'react-redux';
 import { Menu, Provider } from 'react-native-paper';
-import Header from '@/component/Header';
-import { deleteBanner, fetchAllBanners } from '@/api/admin/BannerApi';
 import { getImageUrl } from '@/utils/ImageUtils';
 import { deleteNewsById, fetchAllNews } from '@/api/admin/newsApi';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const NewsManagementScreen = () => {
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
@@ -32,7 +26,7 @@ const NewsManagementScreen = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
-  const [newsList, setNewsList] = useState([]);
+  const [newsList, setNewsList] = useState<any[]>([]);
 
   const loadNews = async () => {
     try {
@@ -45,13 +39,12 @@ const NewsManagementScreen = () => {
       } else {
         setNewsList([]);
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -86,15 +79,13 @@ const NewsManagementScreen = () => {
         confirmText: '我知道了',
       });
       await loadNews();
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
+      dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '刪除失敗',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
-    } finally {
-      dispatch(hideLoading());
     }
   };
 
@@ -122,7 +113,7 @@ const NewsManagementScreen = () => {
                     key={item.id}
                     style={styles.cardWrapper}
                     onPress={() =>
-                      navigation.navigate('AddNews', { news: item })
+                      (navigation as any).navigate('AddNews', { news: item })
                     }
                   >
                     <Image
@@ -155,10 +146,18 @@ const NewsManagementScreen = () => {
                         >
                           <Menu.Item
                             onPress={() =>
-                              navigation.navigate('AddNews', { news: item })
+                              (navigation as any).navigate('AddNews', {
+                                news: item,
+                              })
                             }
                             title="編輯"
                             leadingIcon="pencil-outline"
+                          />
+                          <Menu.Item
+                            onPress={() => handleDelete(item.newsUid)}
+                            title="刪除"
+                            leadingIcon="trash-can-outline"
+                            titleStyle={{ color: 'red' }}
                           />
                         </Menu>
                       </View>
@@ -167,7 +166,7 @@ const NewsManagementScreen = () => {
                 ))}
                 <TouchableOpacity
                   style={styles.addCardWrapper}
-                  onPress={() => navigation.navigate('AddNews')}
+                  onPress={() => (navigation as any).navigate('AddNews')}
                 >
                   <Image
                     source={require('@/assets/iot-logo-white.png')}

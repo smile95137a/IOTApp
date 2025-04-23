@@ -29,6 +29,7 @@ import {
 import { Vendor, fetchAllVendors, deleteVendor } from '@/api/admin/vendorApi';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const ReportVendorScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -51,13 +52,12 @@ const ReportVendorScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: error instanceof Error ? error.message : String(error),
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -96,7 +96,9 @@ const ReportVendorScreen = () => {
                     key={item.uid}
                     style={styles.cardWrapper}
                     onPress={() =>
-                      navigation.navigate('ReportStore', { vendorId: item.id })
+                      (navigation as any).navigate('ReportStore', {
+                        vendorId: item.id,
+                      })
                     }
                   >
                     <Image

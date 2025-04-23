@@ -18,7 +18,7 @@ export const fetchTurnover = async (): Promise<ApiResponse<string>> => {
     const response = await api.get(url);
     console.log(`[Turnover API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Turnover API] Error fetching turnover:`, error);
     throw error;
   }

@@ -27,11 +27,15 @@ import {
   Store,
 } from '@/api/admin/storeApi';
 import HeaderBar from '@/component/admin/HeaderBar';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const ReportStoreScreen = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
+
   const route = useRoute();
   const vendorId = route.params?.vendorId;
-  const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const [stores, setStores] = useState<Store[]>([]);
 
@@ -45,10 +49,14 @@ const ReportStoreScreen = () => {
       } else {
         setStores([]);
       }
-    } catch (error) {
+    } catch (error: any) {
+      setStores([]);
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      setStores([]);
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 
@@ -86,7 +94,7 @@ const ReportStoreScreen = () => {
                     key={item.uid}
                     style={styles.cardWrapper}
                     onPress={() =>
-                      navigation.navigate('ReportDetail', {
+                      (navigation as any).navigate('ReportDetail', {
                         storeId: item.id,
                         vendorId,
                       })

@@ -18,7 +18,7 @@ export const fetchAllBanners = async (): Promise<ApiResponse<any[]>> => {
     const response = await api.get(url);
     console.log(`[Banner API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Banner API] Error fetching all banners:`, error);
     throw error;
   }
@@ -37,7 +37,7 @@ export const fetchBannerById = async (
     const response = await api.get(url);
     console.log(`[Banner API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Banner API] Error fetching banner by ID:`, error);
     throw error;
   }
@@ -56,7 +56,7 @@ export const createBanner = async (
     const response = await api.post(url, bannerReq);
     console.log(`[Banner API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Banner API] Error creating banner:`, error);
     throw error;
   }
@@ -76,7 +76,7 @@ export const updateBanner = async (
     const response = await api.put(url, bannerReq);
     console.log(`[Banner API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Banner API] Error updating banner:`, error);
     throw error;
   }
@@ -93,7 +93,7 @@ export const deleteBanner = async (id: number): Promise<ApiResponse<void>> => {
     const response = await api.delete(url);
     console.log(`[Banner API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Banner API] Error deleting banner:`, error);
     throw error;
   }
@@ -123,7 +123,7 @@ export const uploadBannerImage = async (
 
     console.log(`[Banner API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Banner API] Error uploading banner image:`, error);
     throw error;
   }

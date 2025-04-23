@@ -28,6 +28,7 @@ import {
 } from '@/api/admin/storeApi';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const EquipmentManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -49,13 +50,12 @@ const EquipmentManagementScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -94,7 +94,7 @@ const EquipmentManagementScreen = () => {
                     key={item.uid}
                     style={styles.cardWrapper}
                     onPress={() =>
-                      navigation.navigate('DeviceManagement', {
+                      (navigation as any).navigate('DeviceManagement', {
                         storeId: item.id,
                       })
                     }

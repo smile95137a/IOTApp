@@ -24,6 +24,7 @@ import { deleteBanner, fetchAllBanners } from '@/api/admin/BannerApi';
 import { getImageUrl } from '@/utils/ImageUtils';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const BannerManagementScreen = () => {
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
@@ -47,13 +48,12 @@ const BannerManagementScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -77,19 +77,18 @@ const BannerManagementScreen = () => {
     });
     if (!confirmed) return;
 
-    dispatch(showLoading());
     try {
+      dispatch(showLoading());
       await deleteBanner(id);
       await loadBanners();
-    } catch (error) {
+      dispatch(hideLoading());
+    } catch (error: any) {
       if (error.isAutoLogout) return;
+      dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '刪除失敗',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
-    } finally {
-      dispatch(hideLoading());
     }
   };
 
@@ -117,7 +116,9 @@ const BannerManagementScreen = () => {
                     key={item.bannerId}
                     style={styles.cardWrapper}
                     onPress={() =>
-                      navigation.navigate('AddBanner', { banner: item })
+                      (navigation as any).navigate('AddBanner', {
+                        banner: item,
+                      })
                     }
                   >
                     <Image
@@ -152,7 +153,9 @@ const BannerManagementScreen = () => {
                         >
                           <Menu.Item
                             onPress={() =>
-                              navigation.navigate('AddBanner', { banner: item })
+                              (navigation as any).navigate('AddBanner', {
+                                banner: item,
+                              })
                             }
                             title="編輯"
                             leadingIcon="pencil-outline"
@@ -170,7 +173,7 @@ const BannerManagementScreen = () => {
                 ))}
                 <TouchableOpacity
                   style={styles.addCardWrapper}
-                  onPress={() => navigation.navigate('AddBanner')}
+                  onPress={() => (navigation as any).navigate('AddBanner')}
                 >
                   <Image
                     source={require('@/assets/iot-logo-white.png')}

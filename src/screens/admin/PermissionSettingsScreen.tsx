@@ -58,7 +58,10 @@ const PermissionSettingsScreen = ({ navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <Header title="權限設定" onBackPress={() => navigation.goBack()} />
+          <Header
+            title="權限設定"
+            onBackPress={() => (navigation as any).goBack()}
+          />
         </View>
         <View style={styles.mainContainer}>
           {permissions.map((permission) => (

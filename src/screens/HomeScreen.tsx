@@ -21,6 +21,8 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useDialog } from '@/context/DialogContext';
 import Constants from 'expo-constants';
+import { logJson } from '@/utils/logJsonUtils';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -61,12 +63,13 @@ const HomeScreen = ({ navigation }) => {
       } else {
         console.log('錯誤', message || '無法載入店家資訊');
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.log('錯誤', errorMessage);
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 
@@ -82,6 +85,7 @@ const HomeScreen = ({ navigation }) => {
       setNearStores(nearest.slice(0, 1));
     }
   }, [locationData, stores]);
+
   const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const handleDelete = async () => {
@@ -123,7 +127,7 @@ const HomeScreen = ({ navigation }) => {
                   : '無法獲取最近的店家'
               }
               onPress={() => {
-                navigation.reset({
+                (navigation as any).reset({
                   index: 0,
                   routes: [{ name: 'Explore' }],
                 });
@@ -134,7 +138,7 @@ const HomeScreen = ({ navigation }) => {
               title="掃碼開台"
               description="掃描球桌上的 QRcode 開台／關台"
               onPress={() => {
-                navigation.reset({
+                (navigation as any).reset({
                   index: 0,
                   routes: [{ name: 'Camera' }],
                 });
@@ -147,7 +151,7 @@ const HomeScreen = ({ navigation }) => {
               title="預約開台"
               description="選擇門市預約開台"
               onPress={() => {
-                navigation.reset({
+                (navigation as any).reset({
                   index: 0,
                   routes: [
                     {

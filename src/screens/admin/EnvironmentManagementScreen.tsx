@@ -30,6 +30,7 @@ import { useDispatch } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 import { useDialog } from '@/context/DialogContext';
 import { ScrollView } from 'react-native-gesture-handler';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const EnvironmentManagementScreen = ({ navigation }) => {
   const route = useRoute();
@@ -158,13 +159,12 @@ const EnvironmentManagementScreen = ({ navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
 
@@ -200,13 +200,12 @@ const EnvironmentManagementScreen = ({ navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '獲取供應商失敗',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -229,15 +228,14 @@ const EnvironmentManagementScreen = ({ navigation }) => {
       dispatch(hideLoading());
       loadVendors();
       console.log('設備狀態更新成功！');
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
-      console.log('更新設備狀態失敗:', error);
+      dispatch(hideLoading());
       updatedEquipments[index].enabled = !newStatus;
       setEquipments([...updatedEquipments]);
       await openInfoDialog({
         title: '錯誤',
-        content: '無法更新設備狀態，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -265,13 +263,12 @@ const EnvironmentManagementScreen = ({ navigation }) => {
       });
 
       loadVendors();
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '刪除設備失敗，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };

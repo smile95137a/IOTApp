@@ -16,11 +16,18 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 import { useAuthRequest } from 'expo-auth-session';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDialog } from '@/context/DialogContext';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
+import { hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { useDispatch } from 'react-redux';
 
 const LoginHomeScreen = ({ navigation }: any) => {
-  const { openInfoDialog } = useDialog();
+  const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
+
   const resetAndNavigateToMain = () => {
-    navigation.reset({
+    (navigation as any).reset({
       index: 0,
       routes: [{ name: 'Main' }],
     });
@@ -51,7 +58,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
         ],
       });
       sendTokenToBackend(credential.identityToken, 'apple');
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       await openInfoDialog({ title: 'Apple 登入失敗', content: '請再試一次' });
     }
@@ -95,12 +102,13 @@ const LoginHomeScreen = ({ navigation }: any) => {
         title: '登入成功',
         content: `${provider} 登入成功`,
       });
-      navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+      (navigation as any).reset({ index: 0, routes: [{ name: 'Main' }] });
     } catch (error: any) {
       if (error.isAutoLogout) return;
+      dispatch(hideLoading());
       await openInfoDialog({
-        title: `${provider} 登入失敗`,
-        content: error.response?.data?.message || '未知錯誤',
+        title: '錯誤',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -125,7 +133,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
             <TouchableOpacity
               style={styles.primaryButton}
               onPress={() =>
-                navigation.navigate('Login', { loginType: 'phone' })
+                (navigation as any).navigate('Login', { loginType: 'phone' })
               }
             >
               <MaterialIcons
@@ -142,7 +150,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
             <TouchableOpacity
               style={styles.primaryButton}
               onPress={() =>
-                navigation.navigate('Login', { loginType: 'email' })
+                (navigation as any).navigate('Login', { loginType: 'email' })
               }
             >
               <MaterialIcons
@@ -207,7 +215,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
           {/* Register Link */}
           <TouchableOpacity
             style={styles.registerLink}
-            onPress={() => navigation.navigate('Register')}
+            onPress={() => (navigation as any).navigate('Register')}
           >
             <Text style={styles.registerText}>註冊</Text>
           </TouchableOpacity>

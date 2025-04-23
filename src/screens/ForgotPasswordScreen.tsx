@@ -12,13 +12,19 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import Header from '@/component/Header'; // 假設你已有 Header component
+import Header from '@/component/Header';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useDialog } from '@/context/DialogContext';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
+import { hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { useDispatch } from 'react-redux';
 
 const ForgotPasswordScreen = ({ navigation }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
+
   const [email, setEmail] = useState('');
-  const { openInfoDialog } = useDialog();
 
   const handleResetPassword = async () => {
     if (!email) {
@@ -26,15 +32,18 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
       return;
     }
     try {
-      // 呼叫後端 API 發送重設密碼連結
       await openInfoDialog({
         title: '成功',
         content: '已發送重設密碼的連結到您的信箱',
       });
-      navigation.goBack();
-    } catch (error) {
+      (navigation as any).goBack();
+    } catch (error: any) {
       if (error.isAutoLogout) return;
-      await openInfoDialog({ title: '錯誤', content: '無法發送重設密碼請求' });
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 
@@ -49,7 +58,7 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
         >
           <View style={styles.container}>
             <Header
-              onBackPress={() => navigation.goBack()}
+              onBackPress={() => (navigation as any).goBack()}
               title="忘記密碼"
               isDarkMode
             />
@@ -74,7 +83,7 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
               </View>
               <TouchableOpacity
                 style={styles.resetButton}
-                onPress={() => navigation.navigate('ResetPassword')}
+                onPress={() => (navigation as any).navigate('ResetPassword')}
               >
                 <Text style={styles.resetButtonText}>發送重設密碼連結</Text>
               </TouchableOpacity>

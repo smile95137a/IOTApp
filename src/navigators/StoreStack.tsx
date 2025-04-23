@@ -14,8 +14,8 @@ const StoreStack = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('tabPress', () => {
-      navigation.reset({
+    const unsubscribe = (navigation as any).addListener('tabPress', () => {
+      (navigation as any).reset({
         index: 0,
         routes: [{ name: 'Explore' }],
       });

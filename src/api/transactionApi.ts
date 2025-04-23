@@ -22,7 +22,7 @@ export const fetchUserTransactions = async (): Promise<
     const response = await api.get<ApiResponse<GameTransactionRecord[]>>(url);
     console.log(`[Transaction API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Transaction API] Error fetching user transactions:`, error);
     throw error;
   }
@@ -42,7 +42,7 @@ export const fetchTransactionsByDateRange = async (
     const response = await api.get<ApiResponse<GameTransactionRecord[]>>(url);
     console.log(`[Transaction API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(
       `[Transaction API] Error fetching transactions by date range:`,
       error
@@ -64,7 +64,7 @@ export const fetchTransactionsByType = async (
     const response = await api.get<ApiResponse<GameTransactionRecord[]>>(url);
     console.log(`[Transaction API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(
       `[Transaction API] Error fetching transactions by type:`,
       error
@@ -84,7 +84,7 @@ export const fetchTransactionsByAmount = async (
     const response = await api.get<ApiResponse<GameTransactionRecord[]>>(url);
     console.log(`[Transaction API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(
       `[Transaction API] Error fetching transactions by amount:`,
       error

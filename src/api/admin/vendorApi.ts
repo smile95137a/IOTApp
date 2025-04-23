@@ -18,7 +18,7 @@ export const fetchAllVendors = async (): Promise<ApiResponse<Vendor[]>> => {
     const response = await api.get(url);
     console.log(`[Vendor API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Vendor API] Error fetching all vendors:`, error);
     throw error;
   }
@@ -33,7 +33,7 @@ export const fetchVendorById = async (
   try {
     const response = await api.get(url);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Vendor API] Error fetching vendor:`, error);
     throw error;
   }
@@ -48,7 +48,7 @@ export const createVendor = async (
   try {
     const response = await api.post(url, vendor);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Vendor API] Error creating vendor:`, error);
     throw error;
   }
@@ -64,7 +64,7 @@ export const updateVendor = async (
   try {
     const response = await api.put(url, vendor);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Vendor API] Error updating vendor:`, error);
     throw error;
   }
@@ -77,7 +77,7 @@ export const deleteVendor = async (uid: string): Promise<ApiResponse<void>> => {
   try {
     const response = await api.delete(url);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Vendor API] Error deleting vendor:`, error);
     throw error;
   }
@@ -93,7 +93,7 @@ export const fetchStoresByVendor = async (
   try {
     const response = await api.get(url);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Vendor API] Error fetching stores:`, error);
     throw error;
   }
@@ -109,7 +109,7 @@ export const addStoreToVendor = async (
   try {
     const response = await api.post(url, store);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Vendor API] Error adding store:`, error);
     throw error;
   }
@@ -127,7 +127,7 @@ export const updateStoreVendor = async (
   try {
     const response = await api.put(url);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Vendor API] Error updating store vendor:`, error);
     throw error;
   }
@@ -142,7 +142,7 @@ export const deleteStore = async (
   try {
     const response = await api.delete(url);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Vendor API] Error deleting store:`, error);
     throw error;
   }

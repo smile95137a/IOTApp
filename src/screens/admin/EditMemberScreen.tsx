@@ -27,6 +27,7 @@ import { fetchAllRoles } from '@/api/admin/roleApi';
 import CheckBox from 'expo-checkbox';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const EditMemberScreen = ({ route, navigation }) => {
   const { member } = route.params;
@@ -59,15 +60,12 @@ const EditMemberScreen = ({ route, navigation }) => {
             confirmText: '我知道了',
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
         await openInfoDialog({
           title: '錯誤',
-          content: errorMessage,
-          confirmText: '我知道了',
+          content: getErrorMessage(error),
         });
       }
     };
@@ -94,7 +92,7 @@ const EditMemberScreen = ({ route, navigation }) => {
           content: '會員資料已更新',
           confirmText: '確定',
         });
-        navigation.reset({
+        (navigation as any).reset({
           index: 0,
           routes: [{ name: 'MemberManagement' }],
         });
@@ -105,15 +103,12 @@ const EditMemberScreen = ({ route, navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
       await openInfoDialog({
         title: '錯誤',
-        content: errorMessage,
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -129,7 +124,7 @@ const EditMemberScreen = ({ route, navigation }) => {
           content: `${name} 已加入黑名單`,
           confirmText: '確定',
         });
-        navigation.reset({
+        (navigation as any).reset({
           index: 0,
           routes: [{ name: 'MemberManagement' }],
         });
@@ -140,15 +135,12 @@ const EditMemberScreen = ({ route, navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
       await openInfoDialog({
         title: '錯誤',
-        content: errorMessage,
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -164,7 +156,7 @@ const EditMemberScreen = ({ route, navigation }) => {
           content: `${name} 已移出黑名單`,
           confirmText: '確定',
         });
-        navigation.reset({
+        (navigation as any).reset({
           index: 0,
           routes: [{ name: 'MemberManagement' }],
         });
@@ -175,15 +167,12 @@ const EditMemberScreen = ({ route, navigation }) => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
       await openInfoDialog({
         title: '錯誤',
-        content: errorMessage,
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -204,7 +193,7 @@ const EditMemberScreen = ({ route, navigation }) => {
     const roleNameMap: Record<string, string> = {
       ROLE_ADMIN: '系統管理員',
       ROLE_USER: '一般會員',
-      ROLE_MANUFACTURER: '管理者',
+      ROLE_MANUFACTURER: '加盟商',
       ROLE_STORE_MANAGER: '店長',
       ROLE_BLACKLIST: '黑名單',
     };

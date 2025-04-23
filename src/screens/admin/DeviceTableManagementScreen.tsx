@@ -8,6 +8,7 @@ import Header from '@/component/Header';
 import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
+import { getErrorMessage } from '@/utils/errorUtils';
 import {
   useNavigation,
   useFocusEffect,
@@ -50,13 +51,12 @@ const DeviceTableManagementScreen = () => {
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -89,7 +89,7 @@ const DeviceTableManagementScreen = () => {
                 key={index}
                 style={styles.card}
                 onPress={() =>
-                  navigation.navigate('EnvironmentTableManagement', {
+                  (navigation as any).navigate('EnvironmentTableManagement', {
                     tableId: table.id,
                   })
                 }
@@ -106,7 +106,7 @@ const DeviceTableManagementScreen = () => {
                 <TouchableOpacity
                   style={styles.settingsButton}
                   onPress={() =>
-                    navigation.navigate('EnvironmentTableManagement', {
+                    (navigation as any).navigate('EnvironmentTableManagement', {
                       tableId: table.id,
                     })
                   }

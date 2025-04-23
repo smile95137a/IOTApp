@@ -30,6 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logOut, setAuth } from '@/store/authSlice';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const EditPersonalInfoScreen = ({ route, navigation }: any) => {
   const genderOptions = [
@@ -66,7 +67,7 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
     });
 
     if (!result.canceled) {
-      navigation.navigate('CropImage', {
+      (navigation as any).navigate('CropImage', {
         uri: result.assets[0].uri,
         aspectRatio: [1, 1],
         isCircle: true,
@@ -97,7 +98,7 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
     });
 
     if (!result.canceled) {
-      navigation.navigate('CropImage', {
+      (navigation as any).navigate('CropImage', {
         uri: result.assets[0].uri,
         aspectRatio: [1, 1],
         isCircle: true,
@@ -165,18 +166,16 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
         });
         dispatch(logOut());
       }
-      navigation.reset({
+      (navigation as any).reset({
         index: 0,
         routes: [{ name: 'MemberCenter' }],
       });
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      console.log('[Error]', error);
       await openInfoDialog({
         title: '錯誤',
-        content: '發生未知錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -197,10 +196,13 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
             setLocalUser(response.data);
           } else {
           }
-        } catch (error) {
+        } catch (error: any) {
           if (error.isAutoLogout) return;
           dispatch(hideLoading());
-          console.log('[User Info] Fetch error:', error);
+          await openInfoDialog({
+            title: '錯誤',
+            content: getErrorMessage(error),
+          });
         }
       };
 

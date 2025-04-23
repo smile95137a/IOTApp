@@ -13,7 +13,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, onRightPress }) => {
 
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <TouchableOpacity onPress={() => (navigation as any).goBack()}>
         <Icon
           name="chevron-left"
           size={28}

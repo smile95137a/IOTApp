@@ -31,7 +31,7 @@ export const fetchAllBanners = async (): Promise<ApiResponse<Banner[]>> => {
     const response = await api.get<ApiResponse<Banner[]>>(url);
     console.log(`[Banner API] Response:`, response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(`[Banner API] Error fetching banners:`, error);
     throw error;
   }

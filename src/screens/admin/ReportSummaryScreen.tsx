@@ -58,7 +58,10 @@ const ReportSummaryScreen = ({ navigation }: any) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <Header title="經營報表" onBackPress={() => navigation.goBack()} />
+          <Header
+            title="經營報表"
+            onBackPress={() => (navigation as any).goBack()}
+          />
         </View>
         <View style={styles.mainContainer}>
           {/* 日期切換區域 */}

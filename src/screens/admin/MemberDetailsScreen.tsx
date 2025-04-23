@@ -78,7 +78,9 @@ const MemberDetailsScreen = ({ route, navigation }) => {
 
           <TouchableOpacity
             style={styles.editButton}
-            onPress={() => navigation.navigate('EditMember', { member })}
+            onPress={() =>
+              (navigation as any).navigate('EditMember', { member })
+            }
           >
             <Text style={styles.editButtonText}>編輯</Text>
           </TouchableOpacity>

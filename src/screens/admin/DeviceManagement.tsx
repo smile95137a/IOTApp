@@ -33,7 +33,7 @@ const DeviceManagementScreen = ({ navigation }) => {
           <TouchableOpacity
             style={styles.card}
             onPress={() =>
-              navigation.navigate('EnvironmentManagement', { storeId })
+              (navigation as any).navigate('EnvironmentManagement', { storeId })
             }
           >
             <View style={styles.cardContent}>
@@ -52,7 +52,7 @@ const DeviceManagementScreen = ({ navigation }) => {
           <TouchableOpacity
             style={styles.card}
             onPress={() =>
-              navigation.navigate('DeviceTableManagement', { storeId })
+              (navigation as any).navigate('DeviceTableManagement', { storeId })
             }
           >
             <View style={styles.cardContent}>
@@ -70,7 +70,7 @@ const DeviceManagementScreen = ({ navigation }) => {
           <TouchableOpacity
             style={styles.card}
             onPress={() =>
-              navigation.navigate('MonitorManagement', { storeId })
+              (navigation as any).navigate('MonitorManagement', { storeId })
             }
           >
             <View style={styles.cardContent}>

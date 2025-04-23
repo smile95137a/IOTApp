@@ -21,11 +21,13 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import Feather from '@expo/vector-icons/Feather';
 import moment from 'moment';
-import { logJson } from '@/utils/logJsonUtils';
 import { setSelectedStore } from '@/store/storeSelectionSlice';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const StoreDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
 
   const { store } = route.params;
   const [tables, setTables] = useState<any[]>([]);
@@ -45,10 +47,13 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         } else {
           console.log(`API 回應失敗: 未能獲取桌台數據`);
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
-        console.log('Failed to fetch pool tables:', error);
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+        });
       }
     };
     const getTodayPricing = () => {
@@ -84,10 +89,13 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
 
   const handleShare = async () => {
     try {
+      dispatch(showLoading());
       const result = await Share.share({
         message: `店铺名称: ${store.name}\n地址: ${store.address}\n快来看看吧！`,
         url: 'https://example.com',
       });
+
+      dispatch(hideLoading());
 
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -98,9 +106,13 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
       } else if (result.action === Share.dismissedAction) {
         console.log('Share dismissed');
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
-      console.log('Error sharing: ', error);
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 
@@ -111,16 +123,19 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
       dispatch(showLoading());
 
       const supported = await Linking.canOpenURL(phoneNumber);
+      dispatch(hideLoading());
       if (supported) {
         await Linking.openURL(phoneNumber);
       } else {
         console.log('不支援撥打此電話:', phoneNumber);
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
-      console.log('發生錯誤:', err);
-    } finally {
       dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 
@@ -135,7 +150,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         <View style={styles.container}>
           <Header
             title={'門市資訊'}
-            onBackPress={() => navigation.goBack()}
+            onBackPress={() => (navigation as any).goBack()}
             isDarkMode
           />
 
@@ -227,7 +242,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
                       disabled={status === 'reserved'}
                       onPress={() => {
                         if (status === 'available') {
-                          navigation.navigate('Member', {
+                          (navigation as any).navigate('Member', {
                             screen: 'Reservation',
                             params: { tableUid: item.uid },
                           });

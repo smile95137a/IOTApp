@@ -24,6 +24,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Dimensions } from 'react-native';
 import { useDialog } from '@/context/DialogContext';
 import { logJson } from '@/utils/logJsonUtils';
+import { getErrorMessage } from '@/utils/errorUtils';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const AddNewsScreen = () => {
   const navigation = useNavigation();
@@ -59,17 +60,15 @@ const AddNewsScreen = () => {
       if (image && savedNewsId) {
         await uploadNewsImages(savedNewsId, image);
       }
-
-      navigation.goBack();
-    } catch (error) {
-      if (error.isAutoLogout) return;
-      await openInfoDialog({
-        title: '操作失敗',
-        content: '請稍後再試或聯絡管理員',
-        confirmText: '我知道了',
-      });
-    } finally {
       dispatch(hideLoading());
+      (navigation as any).goBack();
+    } catch (error: any) {
+      if (error.isAutoLogout) return;
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 

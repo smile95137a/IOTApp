@@ -9,38 +9,49 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
+import NoData from '@/component/NoData';
+import moment from 'moment';
 
 const GameHistoryScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const [transactions, setTransactions] = useState<GameTransactionRecord[]>([]);
   const { openInfoDialog, openConfirmDialog } = useDialog();
+
+  const [transactions, setTransactions] = useState<GameTransactionRecord[]>([]);
+  const [isFetched, setIsFetched] = useState(false);
+
   const loadTransactions = async () => {
     try {
       dispatch(showLoading());
       const { success, data, message } = await getBookGameList();
       dispatch(hideLoading());
+      setIsFetched(true);
       if (success) {
+        const sortedData = [...data].sort((a, b) =>
+          moment(b.startTime, 'YYYY/MM/DD HH:mm:ss').diff(
+            moment(a.startTime, 'YYYY/MM/DD HH:mm:ss')
+          )
+        );
+        setTransactions(sortedData);
+
         setTransactions(data);
       } else {
+        setTransactions([]);
         await openInfoDialog({
           title: '錯誤',
           content: message || '無法載入資訊',
           confirmText: '我知道了',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
       await openInfoDialog({
         title: '錯誤',
-        content: errorMessage,
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -58,70 +69,70 @@ const GameHistoryScreen = ({ navigation }: any) => {
     });
 
     if (confirmed) {
-      // 開台流程
-      try {
-        dispatch(showLoading());
-        const res = await bookStart({
-          gameId: item.gameId,
-          poolTableId: item.poolTableId,
-        });
-        dispatch(hideLoading());
-        if (res.success) {
-          await openInfoDialog({
-            title: '成功',
-            content: '遊戲已啟動',
-            confirmText: '我知道了',
-          });
-          loadTransactions();
-        } else {
-          await openInfoDialog({
-            title: '錯誤',
-            content: res.message || '開台失敗',
-            confirmText: '我知道了',
-          });
-        }
-      } catch (error) {
-        if (error.isAutoLogout) return;
-        dispatch(hideLoading());
-        const msg =
-          error?.response?.data?.message ||
-          (error instanceof Error ? error.message : '開台失敗');
-        await openInfoDialog({
-          title: '錯誤',
-          content: msg,
-          confirmText: '我知道了',
-        });
-      }
+      await handleBookStart(item);
     } else {
-      // 取消預約流程
-      try {
-        dispatch(showLoading());
-        const res = await cancelBook({ gameId: item.gameId });
-        dispatch(hideLoading());
-        if (res.success) {
-          await openInfoDialog({
-            title: '已取消預約',
-            content: '',
-            confirmText: '我知道了',
-          });
-          loadTransactions();
-        } else {
-          await openInfoDialog({
-            title: '錯誤',
-            content: res.message || '取消失敗',
-            confirmText: '我知道了',
-          });
-        }
-      } catch (error) {
-        if (error.isAutoLogout) return;
-        dispatch(hideLoading());
-        const msg = error instanceof Error ? error.message : '取消失敗';
+      await handleBookCancel(item);
+    }
+  };
+
+  const handleBookStart = async (item: GameTransactionRecord) => {
+    try {
+      dispatch(showLoading());
+      const res = await bookStart({
+        gameId: item.gameId,
+        poolTableId: item.poolTableId,
+      });
+      dispatch(hideLoading());
+      if (res.success) {
+        await openInfoDialog({
+          title: '成功',
+          content: '遊戲已啟動',
+          confirmText: '我知道了',
+        });
+        loadTransactions();
+      } else {
         await openInfoDialog({
           title: '錯誤',
-          content: msg,
+          content: res.message || '開台失敗',
           confirmText: '我知道了',
         });
       }
+    } catch (error: any) {
+      if (error.isAutoLogout) return;
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
+    }
+  };
+
+  const handleBookCancel = async (item: GameTransactionRecord) => {
+    try {
+      dispatch(showLoading());
+      const res = await cancelBook({ gameId: item.gameId });
+      dispatch(hideLoading());
+      if (res.success) {
+        await openInfoDialog({
+          title: '已取消預約',
+          content: '',
+          confirmText: '我知道了',
+        });
+        loadTransactions();
+      } else {
+        await openInfoDialog({
+          title: '錯誤',
+          content: res.message || '取消失敗',
+          confirmText: '我知道了',
+        });
+      }
+    } catch (error: any) {
+      if (error.isAutoLogout) return;
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
     }
   };
 
@@ -140,37 +151,39 @@ const GameHistoryScreen = ({ navigation }: any) => {
 
   return (
     <ScrollView contentContainerStyle={styles.transactionList}>
-      {transactions.map((item) => (
-        <TouchableOpacity
-          key={item.id}
-          disabled={item.status !== 'BOOK'}
-          onPress={() => handleBookAction(item)}
-        >
-          <View
-            style={[
-              styles.transactionItem,
-              item.status === 'BOOK' && { backgroundColor: '#F0F8FF' },
-            ]}
+      {isFetched && transactions.length === 0 ? (
+        <NoData text="目前尚無預約紀錄" />
+      ) : (
+        transactions.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            disabled={item.status !== 'BOOK'}
+            onPress={() => handleBookAction(item)}
           >
-            <View style={styles.transactionDetails}>
-              <Text style={styles.transactionLocation}>{item.storeName}</Text>
-              <Text style={styles.transactionInfo}>{item.poolTableName}</Text>
-              <Text style={styles.transactionInfo}>
-                {item.startTime} - {item.endTime}
-              </Text>
+            <View
+              style={[
+                styles.transactionItem,
+                item.status === 'BOOK' && { backgroundColor: '#F0F8FF' },
+              ]}
+            >
+              <View style={styles.transactionDetails}>
+                <Text style={styles.transactionLocation}>{item.storeName}</Text>
+                <Text style={styles.transactionInfo}>{item.poolTableName}</Text>
+                <Text style={styles.transactionInfo}>
+                  {item.startTime} - {item.endTime}
+                </Text>
+              </View>
+              {renderStatus(item.status)}
             </View>
-            {renderStatus(item.status)}
-          </View>
-        </TouchableOpacity>
-      ))}
+          </TouchableOpacity>
+        ))
+      )}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   transactionList: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
     paddingBottom: 32,
   },
   transactionItem: {

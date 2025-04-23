@@ -11,8 +11,15 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '@/component/Header';
 import { fetchAllNews } from '@/api/newsApi';
 import DateFormatter from '@/component/DateFormatter';
+import { useInfoDialog } from '@/hooks/useInfoDialog';
+import { hideLoading } from '@/store/loadingSlice';
+import { AppDispatch } from '@/store/store';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { useDispatch } from 'react-redux';
 
 const NotificationsScreen = ({ navigation }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
   const [notifications, setNotifications] = useState([]);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,9 +29,13 @@ const NotificationsScreen = ({ navigation }: any) => {
       try {
         const response = await fetchAllNews();
         setNotifications(response.data);
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
-        console.log('Error fetching news:', error);
+        dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+        });
       }
     };
 

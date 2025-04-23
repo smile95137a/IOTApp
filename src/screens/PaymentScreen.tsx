@@ -20,7 +20,7 @@ const PaymentScreen = ({ navigation }: any) => {
       } else {
         Alert.alert('Payment successful', 'Your transaction was successful.');
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       Alert.alert('Error', err.message);
     }
@@ -48,7 +48,7 @@ const PaymentScreen = ({ navigation }: any) => {
       } else {
         Alert.alert('LINE Pay', 'Payment failed');
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       Alert.alert('Error', err.message);
     }
@@ -76,7 +76,7 @@ const PaymentScreen = ({ navigation }: any) => {
       } else {
         Alert.alert('Jko Pay', 'Payment failed');
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       Alert.alert('Error', err.message);
     }

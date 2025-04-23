@@ -24,7 +24,7 @@ const SharedScreenLayout: React.FC<SharedScreenLayoutProps> = ({
       {/* Custom Hamburger Button */}
       <TouchableOpacity
         style={styles.hamburgerButton}
-        onPress={() => navigation.toggleDrawer()}
+        onPress={() => (navigation as any).toggleDrawer()}
       >
         <Icon name="menu" size={30} color="#000" />
       </TouchableOpacity>

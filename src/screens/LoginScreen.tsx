@@ -19,10 +19,10 @@ import Header from '@/component/Header';
 import { useDispatch } from 'react-redux';
 import { setAuth } from '@/store/authSlice';
 import { loginUser } from '@/api/authApi';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const LoginScreen = ({ route, navigation }: any) => {
   const { loginType } = route.params || { loginType: 'phone' };
@@ -40,7 +40,7 @@ const LoginScreen = ({ route, navigation }: any) => {
   ];
 
   const resetAndNavigateToMain = () => {
-    navigation.reset({
+    (navigation as any).reset({
       index: 0,
       routes: [{ name: 'Main' }],
     });
@@ -67,7 +67,7 @@ const LoginScreen = ({ route, navigation }: any) => {
       if (response.success) {
         const { accessToken, user } = response.data;
         dispatch(setAuth({ token: accessToken, user }));
-        navigation.reset({
+        (navigation as any).reset({
           index: 0,
           routes: [{ name: 'Main' }],
         });
@@ -77,18 +77,12 @@ const LoginScreen = ({ route, navigation }: any) => {
           content: response.message || '請檢查您的帳號密碼',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        '發生未知錯誤，請稍後再試';
-
-      console.log(`[Login] Error:`, error);
       await openInfoDialog({
         title: '錯誤',
-        content: errorMessage,
+        content: getErrorMessage(error),
       });
     }
   };
@@ -103,7 +97,10 @@ const LoginScreen = ({ route, navigation }: any) => {
           style={styles.gradient}
         >
           <View style={styles.container}>
-            <Header onBackPress={() => navigation.goBack()} isDarkMode />
+            <Header
+              onBackPress={() => (navigation as any).goBack()}
+              isDarkMode
+            />
 
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -188,7 +185,7 @@ const LoginScreen = ({ route, navigation }: any) => {
                 </View>
               </View>
               <TouchableOpacity
-                onPress={() => navigation.navigate('ForgotPassword')}
+                onPress={() => (navigation as any).navigate('ForgotPassword')}
               >
                 <Text style={styles.forgotPasswordText}>忘記密碼?</Text>
               </TouchableOpacity>

@@ -27,6 +27,7 @@ import HeaderBar from '@/component/admin/HeaderBar';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { logJson } from '@/utils/logJsonUtils';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -37,16 +38,20 @@ const AddBannerScreen = () => {
   const [status, setStatus] = useState(banner.status || 'AVAILABLE');
   const [newsId, setNewsId] = useState(banner?.news?.id || '');
   const [image, setImage] = useState(null);
-  const [newsList, setNewsList] = useState([]);
+  const [newsList, setNewsList] = useState<any[]>([]);
 
   useEffect(() => {
     const loadNews = async () => {
       try {
         const response = await fetchAllNews();
         setNewsList(response.data || []);
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
-        console.log('Error fetching news:', error);
+        dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+        });
       }
     };
     loadNews();
@@ -75,18 +80,15 @@ const AddBannerScreen = () => {
       if (image && savedBanner?.data?.bannerId) {
         await uploadBannerImage(savedBanner?.data?.bannerId, image);
       }
-
-      navigation.goBack();
-    } catch (error) {
+      dispatch(hideLoading());
+      (navigation as any).goBack();
+    } catch (error: any) {
       if (error.isAutoLogout) return;
-      console.log(error);
+      dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '操作失敗，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
-    } finally {
-      dispatch(hideLoading());
     }
   };
 

@@ -31,6 +31,7 @@ import * as Sharing from 'expo-sharing';
 import { useDialog } from '@/context/DialogContext';
 import { captureRef } from 'react-native-view-shot';
 import ViewShot from 'react-native-view-shot';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 type PoolTableParams = {
   poolTable?: {
@@ -79,13 +80,12 @@ const AddPoolTableScreen = () => {
             confirmText: '我知道了',
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.isAutoLogout) return;
         dispatch(hideLoading());
         await openInfoDialog({
           title: '錯誤',
-          content: '獲取店家失敗，請稍後再試',
-          confirmText: '我知道了',
+          content: getErrorMessage(error),
         });
       }
     };
@@ -128,7 +128,7 @@ const AddPoolTableScreen = () => {
             content: '桌檯資訊更新成功',
             confirmText: '確定',
           });
-          navigation.goBack();
+          (navigation as any).goBack();
         } else {
           await openInfoDialog({
             title: '錯誤',
@@ -146,7 +146,7 @@ const AddPoolTableScreen = () => {
             content: '桌檯新增成功',
             confirmText: '確定',
           });
-          navigation.goBack();
+          (navigation as any).goBack();
         } else {
           await openInfoDialog({
             title: '錯誤',
@@ -155,13 +155,12 @@ const AddPoolTableScreen = () => {
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
-        content: '發生錯誤，請稍後再試',
-        confirmText: '我知道了',
+        content: getErrorMessage(error),
       });
     }
   };
@@ -177,7 +176,9 @@ const AddPoolTableScreen = () => {
 
   const handleSaveQRCode = async () => {
     try {
+      dispatch(showLoading());
       const uri = await qrCodeRef.current.capture();
+      dispatch(hideLoading());
       const { status } = await MediaLibrary.requestPermissionsAsync();
 
       if (status !== 'granted') {
@@ -197,9 +198,9 @@ const AddPoolTableScreen = () => {
         content: '已儲存 QR Code 至相簿',
         confirmText: '我知道了',
       });
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAutoLogout) return;
-      console.error('儲存失敗', error);
+      dispatch(hideLoading());
       await openInfoDialog({
         title: '錯誤',
         content: '儲存 QR Code 時發生錯誤',
