@@ -6,21 +6,32 @@ import { useNavigation } from '@react-navigation/native';
 interface HeaderBarProps {
   title: string;
   onRightPress?: () => void;
+  showLeftButton?: boolean;
+  showRightButton?: boolean;
 }
 
-const HeaderBar: React.FC<HeaderBarProps> = ({ title, onRightPress }) => {
+const HeaderBar: React.FC<HeaderBarProps> = ({
+  title,
+  onRightPress,
+  showLeftButton = false,
+  showRightButton = false,
+}) => {
   const navigation = useNavigation();
 
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={() => (navigation as any).goBack()}>
-        <Icon
-          name="chevron-left"
-          size={28}
-          color="#FFC702"
-          style={styles.iconButton}
-        />
-      </TouchableOpacity>
+      {showLeftButton ? (
+        <TouchableOpacity onPress={() => (navigation as any).goBack()}>
+          <Icon
+            name="chevron-left"
+            size={28}
+            color="#FFC702"
+            style={styles.iconButton}
+          />
+        </TouchableOpacity>
+      ) : (
+        <View style={{ width: 28 }} /> // 占位，讓中間 logo/title 可以置中
+      )}
       <View style={styles.headerContent}>
         <Image
           source={require('@/assets/iot-logo-no-text.png')}
@@ -28,14 +39,18 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, onRightPress }) => {
         />
         <Text style={styles.header}>{title}</Text>
       </View>
-      <TouchableOpacity onPress={onRightPress}>
-        <Icon
-          name="more-vert"
-          size={28}
-          color="#FFC702"
-          style={styles.iconButton}
-        />
-      </TouchableOpacity>
+      {showRightButton ? (
+        <TouchableOpacity onPress={onRightPress}>
+          <Icon
+            name="more-vert"
+            size={28}
+            color="#FFC702"
+            style={styles.iconButton}
+          />
+        </TouchableOpacity>
+      ) : (
+        <View style={{ width: 28 }} />
+      )}
     </View>
   );
 };

@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  Alert,
   Image,
   Keyboard,
   TouchableWithoutFeedback,
@@ -14,7 +13,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
-import { Picker } from '@react-native-picker/picker';
 import { fetchAllNews, uploadNewsImages } from '@/api/admin/newsApi';
 import {
   createBanner,
@@ -24,10 +22,11 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import { getImageUrl } from '@/utils/ImageUtils';
 import HeaderBar from '@/component/admin/HeaderBar';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { logJson } from '@/utils/logJsonUtils';
 import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
+import RNPickerSelect from 'react-native-picker-select';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -58,6 +57,32 @@ const AddBannerScreen = () => {
   }, []);
 
   const handleSave = async () => {
+    if (!newsId) {
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請選擇要連結的最新消息',
+        confirmText: '我知道了',
+      });
+      return;
+    }
+
+    if (!status) {
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請選擇狀態',
+        confirmText: '我知道了',
+      });
+      return;
+    }
+
+    if (!image && !banner?.imageUrl) {
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請上傳圖片',
+        confirmText: '我知道了',
+      });
+      return;
+    }
     dispatch(showLoading());
     try {
       const bannerData = {
@@ -175,37 +200,83 @@ const AddBannerScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title={banner.bannerId ? '編輯Banner' : '新增Banner'} />
+            <HeaderBar
+              showLeftButton
+              title={banner.bannerId ? '編輯Banner' : '新增Banner'}
+            />
           </View>
           <View style={styles.contentWrapper}>
             <ScrollView style={styles.container}>
               <Text style={styles.header}>
                 {banner.bannerId ? '編輯Banner' : '新增Banner'}
               </Text>
-              <Picker
-                selectedValue={String(newsId)}
-                onValueChange={(itemValue) => setNewsId(itemValue)}
-                style={styles.picker}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  gap: 8,
+                  marginBottom: 12,
+                }}
               >
-                <Picker.Item label="選擇連結最新消息" value="" />
-                {newsList.map((news) => (
-                  <Picker.Item
-                    key={news.id}
-                    label={news.title}
-                    value={String(news.id)}
-                  /> // 轉成字串
-                ))}
-              </Picker>
-
-              <Picker
-                selectedValue={status}
-                onValueChange={(itemValue) => setStatus(itemValue)}
-                style={styles.picker}
+                <View style={{ flex: 1 }}>
+                  <RNPickerSelect
+                    value={String(newsId)}
+                    onValueChange={(itemValue) => setNewsId(itemValue)}
+                    items={newsList.map((news) => ({
+                      label: news.title,
+                      value: String(news.id),
+                      key: news.id,
+                    }))}
+                    placeholder={{ label: '選擇連結最新消息', value: '' }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
+                    }}
+                    Icon={() => (
+                      <MaterialIcons
+                        name="arrow-drop-down"
+                        size={24}
+                        color="#888"
+                      />
+                    )}
+                  />
+                </View>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  gap: 8,
+                  marginBottom: 12,
+                }}
               >
-                <Picker.Item label="啟用" value="AVAILABLE" />
-                <Picker.Item label="停用" value="UNAVAILABLE" />
-              </Picker>
-
+                <View style={{ flex: 1 }}>
+                  <RNPickerSelect
+                    value={status}
+                    onValueChange={(itemValue) => setStatus(itemValue)}
+                    items={[
+                      { label: '啟用', value: 'AVAILABLE' },
+                      { label: '停用', value: 'UNAVAILABLE' },
+                    ]}
+                    placeholder={{ label: '請選擇狀態', value: '' }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
+                    }}
+                    Icon={() => (
+                      <MaterialIcons
+                        name="arrow-drop-down"
+                        size={24}
+                        color="#888"
+                      />
+                    )}
+                  />
+                </View>
+              </View>
               <View style={styles.uploadContainer}>
                 <Text style={styles.inputLabel}>上傳照片</Text>
                 <View style={styles.uploadWrapper}>
@@ -346,6 +417,21 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 22,
     marginBottom: 5,
+  },
+  dropdownInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    fontSize: 14,
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#FFF',
+  },
+  iconContainer: {
+    top: '50%',
+    right: 10,
+    marginTop: -12,
+    position: 'absolute',
   },
 });
 

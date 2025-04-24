@@ -34,6 +34,24 @@ export const handleUnauthorizedLogout = async () => {
   try {
     const dispatch = getDispatchRef();
     dispatch(logOut());
+
+    if (navigationRef) {
+      navigationRef.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'Main',
+              state: {
+                routes: [{ name: 'Home' }],
+              },
+            },
+          ],
+        })
+      );
+    } else {
+      console.warn('[AuthUtils] navigationRef is not set!');
+    }
   } catch (error: any) {
     console.error('[Auth] handleUnauthorizedLogout error:', error);
   }

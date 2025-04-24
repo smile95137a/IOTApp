@@ -4,6 +4,7 @@ import loadingReducer from './loadingSlice';
 import registerReducer from './registerSlice';
 import userReducer from './userSlice';
 import storeSelectionReducer from './storeSelectionSlice';
+import locationReducer from './locationSlice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     register: registerReducer,
     user: userReducer,
     storeSelection: storeSelectionReducer,
+    location: locationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

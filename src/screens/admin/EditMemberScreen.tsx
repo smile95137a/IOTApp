@@ -213,7 +213,7 @@ const EditMemberScreen = ({ route, navigation }) => {
           </View>
           {/* Header */}
           <View style={styles.header}>
-            <HeaderBar title="會員管理" />
+            <HeaderBar showLeftButton title="會員管理" />
           </View>
           <View style={styles.mainContainer}>
             {/* 頭像組件 */}

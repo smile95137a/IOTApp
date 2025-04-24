@@ -25,6 +25,7 @@ import { Dimensions } from 'react-native';
 import { useDialog } from '@/context/DialogContext';
 import { logJson } from '@/utils/logJsonUtils';
 import { getErrorMessage } from '@/utils/errorUtils';
+import RNPickerSelect from 'react-native-picker-select';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const AddNewsScreen = () => {
   const navigation = useNavigation();
@@ -155,7 +156,10 @@ const AddNewsScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title={news.id ? '編輯最新消息' : '新增最新消息'} />
+            <HeaderBar
+              showLeftButton
+              title={news.id ? '編輯最新消息' : '新增最新消息'}
+            />
           </View>
           <View style={styles.contentWrapper}>
             <SafeAreaView style={styles.safeArea}>
@@ -176,15 +180,39 @@ const AddNewsScreen = () => {
                   style={styles.input}
                   multiline
                 />
-                <Picker
-                  selectedValue={status}
-                  onValueChange={(itemValue) => setStatus(itemValue)}
-                  style={styles.picker}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    gap: 8,
+                    marginBottom: 12,
+                  }}
                 >
-                  <Picker.Item label="可用" value="AVAILABLE" />
-                  <Picker.Item label="不可用" value="UNAVAILABLE" />
-                </Picker>
-
+                  <View style={{ flex: 1 }}>
+                    <RNPickerSelect
+                      value={status}
+                      onValueChange={(itemValue) => setStatus(itemValue)}
+                      items={[
+                        { label: '可用', value: 'AVAILABLE' },
+                        { label: '不可用', value: 'UNAVAILABLE' },
+                      ]}
+                      placeholder={{ label: '請選擇狀態', value: '' }}
+                      useNativeAndroidPickerStyle={false}
+                      style={{
+                        inputIOS: styles.dropdownInput,
+                        inputAndroid: styles.dropdownInput,
+                        iconContainer: styles.iconContainer,
+                      }}
+                      Icon={() => (
+                        <MaterialIcons
+                          name="arrow-drop-down"
+                          size={24}
+                          color="#888"
+                        />
+                      )}
+                    />
+                  </View>
+                </View>
                 <View style={styles.uploadContainer}>
                   <Text style={styles.inputLabel}>上傳照片</Text>
                   <View style={styles.uploadWrapper}>
@@ -331,6 +359,21 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 22,
     marginBottom: 5,
+  },
+  dropdownInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    fontSize: 14,
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#FFF',
+  },
+  iconContainer: {
+    top: '50%',
+    right: 10,
+    marginTop: -12,
+    position: 'absolute',
   },
 });
 

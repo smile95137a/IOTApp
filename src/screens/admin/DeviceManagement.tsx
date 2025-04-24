@@ -27,7 +27,7 @@ const DeviceManagementScreen = ({ navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <HeaderBar title="設備管理" />
+          <HeaderBar showLeftButton title="設備管理" />
         </View>
         <View style={styles.mainContainer}>
           <TouchableOpacity

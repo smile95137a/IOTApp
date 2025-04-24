@@ -81,7 +81,7 @@ const DeviceTableManagementScreen = () => {
           />
         </View>
         {/* Header */}
-        <HeaderBar title="後檯設備管理-桌檯管理" />
+        <HeaderBar showLeftButton title="後檯設備管理-桌檯管理" />
         <View style={styles.mainContainer}>
           <View style={styles.gridContainer}>
             {poolTables.map((table, index) => (

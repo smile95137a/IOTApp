@@ -210,7 +210,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
               bookDate: selectedDate,
               selectedTime: selected,
             },
-            totalAmount: store.deposit,
+            totalAmount: store.deposit * selected.length,
           },
         },
       });

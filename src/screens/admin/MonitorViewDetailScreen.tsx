@@ -82,7 +82,7 @@ const MonitorViewDetailScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title="攝影機管理" />
+            <HeaderBar showLeftButton title="攝影機管理" />
           </View>
 
           <View style={styles.contentWrapper}>

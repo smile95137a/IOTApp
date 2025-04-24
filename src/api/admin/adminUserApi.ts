@@ -150,3 +150,20 @@ export const removeUsersFromBlacklist = async (
     throw error;
   }
 };
+
+/**
+ * 新增獎勵金
+ */
+export const addPoint = async (pointReq: any): Promise<ApiResponse<string>> => {
+  const url = `${API_BASE_URL}${basePath}/addPoint`;
+  console.log(`[User API] Adding points: ${url}`, pointReq);
+
+  try {
+    const response = await api.post(url, pointReq);
+    console.log(`[User API] Response:`, response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log(`[User API] Error adding points:`, error);
+    throw error;
+  }
+};

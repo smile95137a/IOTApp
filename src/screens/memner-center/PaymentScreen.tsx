@@ -74,7 +74,7 @@ const PaymentScreen = ({ navigation }: any) => {
         result = await startGame({ poolTableUId: payData.uid });
       }
 
-      const { success, data, message } = result;
+      const { code, success, data, message } = result;
 
       dispatch(hideLoading());
       if (success && data) {
@@ -91,8 +91,21 @@ const PaymentScreen = ({ navigation }: any) => {
       } else {
         await openInfoDialog({
           title: '錯誤',
-          content: message || '無法載入店家資訊',
+          content: message || '處理付款時發生錯誤',
         });
+        if (code === 4064) {
+          (navigation as any).reset({
+            index: 0,
+            routes: [
+              {
+                name: 'Member',
+                state: {
+                  routes: [{ name: 'Recharge' }],
+                },
+              },
+            ],
+          });
+        }
       }
     } catch (error: any) {
       if (error.isAutoLogout) return;

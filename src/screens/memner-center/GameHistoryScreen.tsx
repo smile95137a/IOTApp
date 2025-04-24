@@ -16,6 +16,7 @@ import { useDialog } from '@/context/DialogContext';
 import moment from 'moment';
 import NoData from '@/component/NoData';
 import { getErrorMessage } from '@/utils/errorUtils';
+import { getGamePrice } from '@/api/gameApi';
 
 const GameHistoryScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -71,6 +72,41 @@ const GameHistoryScreen = ({ navigation }: any) => {
     }
   };
 
+  const handleTransactionPress = async (item: GameTransactionRecord) => {
+    console.log('[未付款紀錄]', item);
+    if (item.status !== 'NO_PAY') return;
+    try {
+      dispatch(showLoading());
+      const { success, data, message } = await getGamePrice({
+        gameId: item.gameId,
+      });
+      dispatch(hideLoading());
+
+      if (success) {
+        navigation.navigate('Payment', {
+          type: 'gameEnd',
+          payData: {
+            gameId: item.gameId,
+            poolTableId: item.poolTableId,
+          },
+          totalAmount: data.price,
+        });
+      } else {
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '無法取得金額資訊',
+        });
+      }
+    } catch (error: any) {
+      if (error.isAutoLogout) return;
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.transactionList}>
       {isFetched && transactions.length === 0 ? (
@@ -79,7 +115,10 @@ const GameHistoryScreen = ({ navigation }: any) => {
         transactions.map((item, index) => {
           const statusInfo = getStatusInfo(item.status);
           return (
-            <TouchableOpacity key={index}>
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleTransactionPress(item)}
+            >
               <View style={styles.transactionItem}>
                 <View style={styles.transactionDetails}>
                   <Text style={styles.transactionLocation}>

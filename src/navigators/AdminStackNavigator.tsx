@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -31,7 +31,7 @@ import BannerManagementScreen from '@/screens/admin/BannerManagementScreen';
 import NewsManagementScreen from '@/screens/admin/NewsManagementScreen';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { fetchAllMenus } from '@/api/admin/menuApi';
 import EquipmentManagementScreen from '@/screens/admin/EquipmentManagementScreen';
@@ -137,9 +137,11 @@ const CustomDrawerContent = (props: any) => {
     }
   };
 
-  useEffect(() => {
-    loadMenus();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadMenus();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -155,11 +157,19 @@ const CustomDrawerContent = (props: any) => {
               <TouchableOpacity
                 key={menu.id}
                 style={styles.drawerItemColumn}
-                onPress={() =>
-                  props.navigation.navigate(menuItem.stack, {
-                    screen: menuItem.screen,
-                  })
-                }
+                onPress={() => {
+                  props.navigation.reset({
+                    index: 0,
+                    routes: [
+                      {
+                        name: menuItem.stack,
+                        state: {
+                          routes: [{ name: menuItem.screen }],
+                        },
+                      },
+                    ],
+                  });
+                }}
               >
                 <Icon name={menuItem.icon} size={38} color="#333" />
                 <Text style={styles.drawerItemText}>{menuItem.label}</Text>
@@ -172,7 +182,12 @@ const CustomDrawerContent = (props: any) => {
       </DrawerContentScrollView>
       <TouchableOpacity
         style={[styles.drawerItemColumn, styles.logoutButton]}
-        onPress={() => props.navigation.navigate('Main')}
+        onPress={() => {
+          props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          });
+        }}
       >
         <Icon name="logout" size={24} color="#F44336" />
         <Text style={[styles.drawerItemText, styles.logoutText]}>回首頁</Text>

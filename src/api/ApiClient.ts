@@ -28,11 +28,12 @@ api.interceptors.response.use(
   async (error) => {
     const status = error.response?.status;
     console.log(
-      `[API Error] ${error.config?.url}:`,
+      `[API Error] ${status} ${error.config?.url}:`,
       error.response?.data || error.message
     );
 
     if (status === 401) {
+      error.isAutoLogout = true;
       await handleUnauthorizedLogout();
     }
 

@@ -13,6 +13,7 @@ import {
   SafeAreaView,
   Alert,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Menu, Provider } from 'react-native-paper';
@@ -124,7 +125,7 @@ const AdminDashboardScreen = ({ navigation }) => {
               <Text style={styles.headerTitle}>無人撞球管理系統</Text>
             </View>
 
-            <View style={styles.mainContainer}>
+            <ScrollView style={styles.mainContainer}>
               <View style={styles.reportSection}>
                 <Text style={styles.sectionTitle}>今日營運數據：</Text>
 
@@ -183,7 +184,7 @@ const AdminDashboardScreen = ({ navigation }) => {
                   </TouchableOpacity>
                 ))}
               </View>
-            </View>
+            </ScrollView>
           </View>
         </SafeAreaView>
       </SharedScreenLayout>

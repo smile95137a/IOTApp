@@ -5,5 +5,5 @@ interface ApiResponse<T> {
   success: boolean;
   message?: string;
   data: T;
-  errorCode?: number;
+  code?: number;
 }

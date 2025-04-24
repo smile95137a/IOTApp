@@ -251,7 +251,7 @@ const MonitorManagementScreen = ({ navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <HeaderBar title="後檯設備管理-攝影機管理" />
+          <HeaderBar showLeftButton title="後檯設備管理-攝影機管理" />
         </View>
         <ScrollView style={styles.mainContainer}>
           {monitors.map((monitor, index) => (

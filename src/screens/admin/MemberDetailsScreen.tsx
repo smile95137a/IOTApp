@@ -27,9 +27,8 @@ const MemberDetailsScreen = ({ route, navigation }) => {
             resizeMode="contain"
           />
         </View>
-        {/* Header */}
         <View style={styles.header}>
-          <HeaderBar title="會員管理" />
+          <HeaderBar showLeftButton title="會員管理" />
         </View>
         <View style={styles.mainContainer}>
           <View style={styles.profileContainer}>

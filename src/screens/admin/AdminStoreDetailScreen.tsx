@@ -19,24 +19,51 @@ import {
   fetchStoreEquipmentsByStoreId,
   updateStoreEquipmentStatus,
 } from '@/api/admin/equipmentApi';
-import {
-  getMonitorsByStoreId,
-  updateMonitorStatus,
-} from '@/api/admin/monitorApi';
+import { getMonitorsByStoreId } from '@/api/admin/monitorApi';
 import HeaderBar from '@/component/admin/HeaderBar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {
+  closePoolTable,
+  fetchPoolTablesByStoreId,
+  updatePoolTable,
+} from '@/api/admin/poolTableApi';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const AdminStoreDetailScreen = () => {
   const route = useRoute<any>();
   const store = route.params?.store;
   const dispatch = useDispatch();
-  const { openInfoDialog } = useDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const [storeDetail, setStoreDetail] = useState<any>(null);
   const [equipments, setEquipments] = useState<any[]>([]);
   const [monitors, setMonitors] = useState<any[]>([]);
+  const [poolTables, setPoolTables] = useState<any[]>([]);
+
   const [selectedMonitor, setSelectedMonitor] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const loadPoolTables = async () => {
+    try {
+      dispatch(showLoading());
+      const { success, data, message } = await fetchPoolTablesByStoreId(
+        store.id
+      );
+      dispatch(hideLoading());
+
+      if (success) {
+        setPoolTables(data);
+      } else {
+        openInfoDialog({
+          title: '錯誤',
+          content: message || '桌檯資料載入失敗',
+        });
+      }
+    } catch {
+      dispatch(hideLoading());
+      openInfoDialog({ title: '錯誤', content: '桌檯資料載入失敗' });
+    }
+  };
 
   const loadStoreDetail = async () => {
     try {
@@ -97,6 +124,7 @@ const AdminStoreDetailScreen = () => {
       loadStoreDetail();
       loadEquipments();
       loadMonitors();
+      loadPoolTables();
     }
   }, [store]);
 
@@ -148,7 +176,7 @@ const AdminStoreDetailScreen = () => {
     return 'tools'; // fallback 預設 icon
   };
   const getTableCounts = () => {
-    const tables = storeDetail?.poolTables ?? [];
+    const tables = poolTables;
     const total = tables.length;
     const used = tables.filter((t: any) => t.isUse).length;
     const unused = total - used;
@@ -156,6 +184,74 @@ const AdminStoreDetailScreen = () => {
   };
 
   const tableStats = getTableCounts();
+
+  const handleForceClose = async (table: any) => {
+    if (!table.isUse) {
+      await openInfoDialog({
+        title: '無法關台',
+        content: '該桌檯目前未使用中，無需關台。',
+      });
+      return;
+    }
+
+    const confirm = await openConfirmDialog({
+      title: '確認強制關台？',
+      content: `確定要強制關閉 ${table.tableName || `桌檯 ${table.id}`} 嗎？`,
+      confirmText: '確認',
+      cancelText: '取消',
+    });
+
+    if (confirm) {
+      try {
+        dispatch(showLoading());
+        await closePoolTable({ tableUId: table.uid });
+        dispatch(hideLoading());
+        await openInfoDialog({ title: '成功', content: '已強制關台' });
+        loadPoolTables(); // 重新載入狀態
+      } catch {
+        dispatch(hideLoading());
+        openInfoDialog({ title: '錯誤', content: '強制關台失敗，請稍後再試' });
+      }
+    }
+  };
+  const handleReportIssue = async (table: any) => {
+    const confirm = await openConfirmDialog({
+      title: '確認通報？',
+      content: `是否將「${
+        table.tableName || `桌檯 ${table.id}`
+      }」標記為設備故障？通報後狀態將變更為「故障」，並取消所有預約單。`,
+      confirmText: '通報',
+      cancelText: '取消',
+    });
+
+    if (!confirm) return;
+
+    try {
+      dispatch(showLoading());
+
+      await updatePoolTable(table.uid, {
+        tableNumber: table.tableNumber,
+        status: 'FAULT',
+        store: { id: table.storeId || store.id },
+        isUse: table.isUse,
+      });
+
+      dispatch(hideLoading());
+
+      await openInfoDialog({
+        title: '成功',
+        content: '已通報設備故障',
+      });
+
+      loadPoolTables();
+    } catch (error: any) {
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -193,6 +289,71 @@ const AdminStoreDetailScreen = () => {
                   <Text style={styles.statsLabel}>未使用</Text>
                   <Text style={styles.statsValue}>{tableStats.unused} 台</Text>
                 </View>
+              </View>
+              <Text style={styles.label}>營業設備</Text>
+              <View style={styles.sectionBlock}>
+                {poolTables.length === 0 ? (
+                  <Text style={{ textAlign: 'center', color: '#999' }}>
+                    尚無桌檯資料
+                  </Text>
+                ) : (
+                  poolTables.map((table) => (
+                    <View key={table.id} style={styles.poolTableCard}>
+                      <View style={styles.poolTableRow}>
+                        <Text style={styles.poolTableName}>
+                          桌檯名稱：{table.tableName || `桌檯 ${table.id}`}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.poolTableStatus,
+                            {
+                              color:
+                                table.status === 'FAULT'
+                                  ? '#FF9800'
+                                  : table.isUse
+                                  ? '#C62828'
+                                  : '#388E3C',
+                            },
+                          ]}
+                        >
+                          {table.status === 'FAULT'
+                            ? '故障'
+                            : table.isUse
+                            ? '使用中'
+                            : '空閒'}
+                        </Text>
+                      </View>
+
+                      <View style={styles.buttonRow}>
+                        <TouchableOpacity
+                          style={[
+                            styles.forceCloseButton,
+                            table.status === 'FAULT' && {
+                              backgroundColor: '#ccc',
+                            },
+                          ]}
+                          disabled={table.status === 'FAULT'}
+                          onPress={() => handleForceClose(table)}
+                        >
+                          <Text style={styles.forceCloseText}>強制關台</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={[
+                            styles.reportIssueButton,
+                            table.status === 'FAULT' && {
+                              backgroundColor: '#ccc',
+                            },
+                          ]}
+                          disabled={table.status === 'FAULT'}
+                          onPress={() => handleReportIssue(table)}
+                        >
+                          <Text style={styles.reportIssueText}>通報故障</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ))
+                )}
               </View>
 
               <Text style={styles.label}>環境設備</Text>
@@ -450,6 +611,61 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     textAlign: 'right',
     fontWeight: '600',
+  },
+  poolTableCard: {
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  poolTableRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  poolTableName: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+  },
+  poolTableStatus: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  forceCloseButton: {
+    backgroundColor: '#EF4444',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignSelf: 'flex-end',
+  },
+  forceCloseText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  reportIssueButton: {
+    backgroundColor: '#F97316', // 橘色
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  reportIssueText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 

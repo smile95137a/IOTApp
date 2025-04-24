@@ -17,13 +17,13 @@ import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
 import { createVendor, updateVendor } from '@/api/admin/vendorApi';
-import { fetchAllStores } from '@/api/admin/storeApi';
 import { fetchAllUsers } from '@/api/admin/adminUserApi';
 import { Picker } from '@react-native-picker/picker';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
-
+import RNPickerSelect from 'react-native-picker-select';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const AddVendorScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -142,7 +142,10 @@ const AddVendorScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title={vendor?.id ? '編輯廠商' : '新增廠商'} />
+            <HeaderBar
+              showLeftButton
+              title={vendor?.id ? '編輯廠商' : '新增廠商'}
+            />
           </View>
 
           <ScrollView style={styles.contentWrapper}>
@@ -151,20 +154,28 @@ const AddVendorScreen = () => {
             </Text>
 
             <Text style={styles.label}>指派使用者</Text>
-            <Picker
-              selectedValue={userId}
-              onValueChange={setUserId}
-              style={styles.picker}
-            >
-              <Picker.Item label="請選擇使用者" value="" />
-              {users.map((user) => (
-                <Picker.Item
-                  key={user.id}
-                  label={user.name}
-                  value={String(user.id)}
-                />
-              ))}
-            </Picker>
+
+            <RNPickerSelect
+              value={userId}
+              onValueChange={(value) => {
+                if (value) setUserId(value);
+              }}
+              items={users.map((user) => ({
+                label: user.name,
+                value: String(user.id),
+                key: user.id,
+              }))}
+              placeholder={{ label: '請選擇使用者', value: '' }}
+              useNativeAndroidPickerStyle={false}
+              style={{
+                inputIOS: styles.dropdownInput,
+                inputAndroid: styles.dropdownInput,
+                iconContainer: styles.iconContainer,
+              }}
+              Icon={() => (
+                <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
+              )}
+            />
 
             <Text style={styles.label}>名稱</Text>
             <TextInput
@@ -296,6 +307,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  dropdownInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    fontSize: 14,
+    alignItems: 'center',
+    padding: 12,
+  },
+  iconContainer: {
+    top: '50%',
+    right: 10,
+    marginTop: -12,
+    position: 'absolute',
   },
 });
 

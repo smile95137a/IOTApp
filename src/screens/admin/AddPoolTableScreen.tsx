@@ -32,7 +32,8 @@ import { useDialog } from '@/context/DialogContext';
 import { captureRef } from 'react-native-view-shot';
 import ViewShot from 'react-native-view-shot';
 import { getErrorMessage } from '@/utils/errorUtils';
-
+import RNPickerSelect from 'react-native-picker-select';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 type PoolTableParams = {
   poolTable?: {
     uid: string;
@@ -62,7 +63,7 @@ const AddPoolTableScreen = () => {
   const [qrCodeVal, setQrCodeVal] = useState('');
   const [showQRCode, setShowQRCode] = useState(false);
   const [stores, setStores] = useState([]);
-  const { openInfoDialog } = useDialog();
+  const { openInfoDialog, openConfirmDialog } = useDialog();
 
   useEffect(() => {
     const loadStores = async () => {
@@ -101,10 +102,18 @@ const AddPoolTableScreen = () => {
         confirmText: '我知道了',
       });
       return;
-
-      return;
     }
 
+    if (status === 'FAULT') {
+      const confirmed = await openConfirmDialog({
+        title: '提醒',
+        content: '若狀態為故障，所有預約單將被取消，確定要繼續嗎？',
+        confirmText: '確定',
+        cancelText: '取消',
+      });
+
+      if (!confirmed) return;
+    }
     const poolTableData = {
       tableNumber,
       status,
@@ -208,6 +217,9 @@ const AddPoolTableScreen = () => {
       });
     }
   };
+  const handleStatusChange = (newStatus: string) => {
+    setStatus(newStatus);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -240,14 +252,40 @@ const AddPoolTableScreen = () => {
                   value={tableNumber}
                   onChangeText={setTableNumber}
                 />
-                <Picker
-                  selectedValue={status}
-                  onValueChange={(itemValue) => setStatus(itemValue)}
-                  style={styles.picker}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    gap: 8,
+                    marginBottom: 12,
+                  }}
                 >
-                  <Picker.Item label="可用" value="AVAILABLE" />
-                  <Picker.Item label="不可用" value="UNAVAILABLE" />
-                </Picker>
+                  <View style={{ flex: 1 }}>
+                    <RNPickerSelect
+                      value={status}
+                      onValueChange={handleStatusChange}
+                      items={[
+                        { label: '啟用', value: 'AVAILABLE' },
+                        { label: '停用', value: 'UNAVAILABLE' },
+                        { label: '故障', value: 'FAULT' },
+                      ]}
+                      placeholder={{ label: '請選擇狀態', value: '' }}
+                      useNativeAndroidPickerStyle={false}
+                      style={{
+                        inputIOS: styles.dropdownInput,
+                        inputAndroid: styles.dropdownInput,
+                        iconContainer: styles.iconContainer,
+                      }}
+                      Icon={() => (
+                        <MaterialIcons
+                          name="arrow-drop-down"
+                          size={24}
+                          color="#888"
+                        />
+                      )}
+                    />
+                  </View>
+                </View>
 
                 <TouchableOpacity
                   style={styles.submitButton}
@@ -387,6 +425,21 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     marginBottom: 10,
+  },
+  dropdownInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    fontSize: 14,
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#FFF',
+  },
+  iconContainer: {
+    top: '50%',
+    right: 10,
+    marginTop: -12,
+    position: 'absolute',
   },
 });
 

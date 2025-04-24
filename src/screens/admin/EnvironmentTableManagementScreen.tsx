@@ -267,7 +267,7 @@ const EnvironmentTableManagementScreen = ({ navigation }) => {
         </View>
         {/* Header */}
         <View style={styles.header}>
-          <HeaderBar title="環境管理" />
+          <HeaderBar showLeftButton title="後檯設備管理-桌檯管理" />
         </View>
         <ScrollView style={styles.mainContainer}>
           {equipments.map((light, index) => (

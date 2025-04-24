@@ -11,8 +11,8 @@ import ImageCarousel from '@/component/ImageCarousel';
 import Header from '@/component/Header';
 import * as Location from 'expo-location';
 import { findNearestStores } from '@/utils/LocationUtils';
-import { AppDispatch } from '@/store/store';
-import { useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllStores } from '@/api/storeApi';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import HomeOptionButton from '@/component/home/HomeOptionButton';
@@ -23,23 +23,21 @@ import { useDialog } from '@/context/DialogContext';
 import Constants from 'expo-constants';
 import { logJson } from '@/utils/logJsonUtils';
 import { getErrorMessage } from '@/utils/errorUtils';
+import { setLocation } from '@/store/locationSlice';
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const locationData = useSelector((state: RootState) => state.location);
   const [stores, setStores] = useState<any[]>([]);
-  const [locationData, setLocationData] = useState<{
-    latitude?: number;
-    longitude?: number;
-  }>({});
   const [nearStores, setNearStores] = useState<any[]>([]);
   const appVersion = Constants.expoConfig?.extra?.eas?.version || 'unknown';
 
   useEffect(() => {
     loadStores();
-    getUserLocation();
+    requestAndSetLocation();
   }, []);
 
-  const getUserLocation = async () => {
+  const requestAndSetLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       console.log('錯誤', '未授予 GPS 權限');
@@ -50,7 +48,7 @@ const HomeScreen = ({ navigation }) => {
       accuracy: Location.Accuracy.High,
     });
     const { latitude, longitude } = location.coords;
-    setLocationData({ latitude, longitude });
+    dispatch(setLocation({ latitude, longitude }));
   };
 
   const loadStores = async () => {
@@ -88,19 +86,6 @@ const HomeScreen = ({ navigation }) => {
 
   const { openConfirmDialog, openInfoDialog } = useDialog();
 
-  const handleDelete = async () => {
-    await openInfoDialog({
-      title: '操作成功',
-      content: '您已成功儲值 100 元！',
-      confirmText: '我知道了',
-    });
-    const confirmed = await openConfirmDialog({
-      title: '是否刪除資料？',
-      content: '這個動作將無法還原！',
-      confirmText: '刪除',
-      cancelText: '取消',
-    });
-  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient
@@ -191,7 +176,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   rowGap: {
-    gap: 16, // 增加橘色與藍色卡片之間的間距
+    gap: 16,
   },
   card: {
     flex: 1,
@@ -232,8 +217,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   cardContentCentered: {
-    alignItems: 'center', // 致中對齊
-    justifyContent: 'center', // 垂直居中
+    alignItems: 'center',
+    justifyContent: 'center',
     flex: 1,
   },
   centerClass: {

@@ -83,7 +83,7 @@ const EquipmentManagementScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title="店家管理" />
+            <HeaderBar title="選擇店家" />
           </View>
 
           <View style={styles.contentWrapper}>

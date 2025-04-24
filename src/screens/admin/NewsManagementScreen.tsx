@@ -19,6 +19,7 @@ import { deleteNewsById, fetchAllNews } from '@/api/admin/newsApi';
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
+import { logJson } from '@/utils/logJsonUtils';
 
 const NewsManagementScreen = () => {
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
@@ -71,14 +72,23 @@ const NewsManagementScreen = () => {
 
     try {
       dispatch(showLoading());
-      await deleteNewsById(id);
+      const response = await deleteNewsById(id);
       dispatch(hideLoading());
-      await openInfoDialog({
-        title: '成功',
-        content: '最新消息已刪除',
-        confirmText: '我知道了',
-      });
-      await loadNews();
+
+      if (response.success) {
+        await openInfoDialog({
+          title: '成功',
+          content: '最新消息已刪除',
+          confirmText: '我知道了',
+        });
+        await loadNews();
+      } else {
+        await openInfoDialog({
+          title: '系統訊息',
+          content: response.message || '無法刪除最新消息',
+          confirmText: '我知道了',
+        });
+      }
     } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());

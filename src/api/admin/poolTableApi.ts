@@ -152,3 +152,23 @@ export const deletePoolTable = async (
     throw error;
   }
 };
+
+/**
+ * 關閉桌台
+ * @param poolTableReq 桌台資訊
+ */
+export const closePoolTable = async (
+  poolTableReq: any
+): Promise<ApiResponse<any>> => {
+  const url = `${API_BASE_URL}${basePath}/closeTable`;
+  console.log(`[PoolTable API] Closing pool table at: ${url}`);
+
+  try {
+    const response = await api.post(url, poolTableReq);
+    console.log(`[PoolTable API] Response from closing table:`, response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log(`[PoolTable API] Error closing pool table:`, error);
+    throw error;
+  }
+};

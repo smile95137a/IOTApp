@@ -83,7 +83,7 @@ const MonitorViewScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title="攝影店家" />
+            <HeaderBar title="選擇店家" />
           </View>
 
           <View style={styles.contentWrapper}>
