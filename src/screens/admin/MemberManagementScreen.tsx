@@ -1,5 +1,6 @@
 import { fetchAllUsers, addPoint } from '@/api/admin/adminUserApi';
 import HeaderBar from '@/component/admin/HeaderBar';
+import NumberFormatter from '@/component/NumberFormatter';
 import { useDialog } from '@/context/DialogContext';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { AppDispatch } from '@/store/store';
@@ -118,7 +119,7 @@ const MemberManagementScreen = ({ navigation }) => {
 
       const pointReq = {
         userId: userIds,
-        point: Number(pointAmount),
+        point: pointAmount,
       };
 
       const result = await addPoint(pointReq);
@@ -264,6 +265,19 @@ const MemberManagementScreen = ({ navigation }) => {
                   <Text style={styles.memberPhone}>
                     {item.countryCode}
                     {item.phoneNumber}
+                  </Text>
+                  <Text style={styles.userBalance}>
+                    儲值金額：
+                    <NumberFormatter number={item.amount ?? 0} />
+                    （消費優先扣除）
+                  </Text>
+                  <Text style={styles.userBalance}>
+                    贈送：
+                    <NumberFormatter number={item.point ?? 0} />
+                  </Text>
+                  <Text style={styles.userBalance}>
+                    可用餘額：
+                    <NumberFormatter number={item.balance ?? 0} />
                   </Text>
                 </View>
 
@@ -491,6 +505,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFF',
     fontWeight: 'bold',
+  },
+  userBalance: {
+    fontSize: 12,
+    color: '#444',
+    marginTop: 2,
   },
 });
 
