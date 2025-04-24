@@ -108,3 +108,16 @@ export const fetchMenusByRole = async (roleId: number): Promise<any> => {
     throw error;
   }
 };
+
+export const fetchUsersByRole = async (roleId: number): Promise<any> => {
+  const url = `${API_BASE_URL}${basePath}/${roleId}/users`;
+  console.log(`[Role API] Fetching users by role ID: ${roleId}`);
+
+  try {
+    const response = await api.get(url);
+    return response.data;
+  } catch (error: any) {
+    console.log(`[Role API] Error fetching users by role ID:`, error);
+    throw error;
+  }
+};

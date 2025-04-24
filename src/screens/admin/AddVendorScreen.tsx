@@ -24,6 +24,7 @@ import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
 import RNPickerSelect from 'react-native-picker-select';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { fetchUsersByRole } from '@/api/admin/roleApi';
 const AddVendorScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -52,7 +53,7 @@ const AddVendorScreen = () => {
     const loadUsers = async () => {
       try {
         dispatch(showLoading());
-        const response = await fetchAllUsers();
+        const response = await fetchUsersByRole(2);
         dispatch(hideLoading());
         if (response.success) {
           setUsers(response.data);

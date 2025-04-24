@@ -218,7 +218,7 @@ const AdminStoreDetailScreen = () => {
     const confirm = await openConfirmDialog({
       title: '確認通報？',
       content: `是否將「${
-        table.tableName || `桌檯 ${table.id}`
+        table.tableNumber || `桌檯 ${table.id}`
       }」標記為設備故障？通報後狀態將變更為「故障」，並取消所有預約單。`,
       confirmText: '通報',
       cancelText: '取消',
@@ -301,7 +301,7 @@ const AdminStoreDetailScreen = () => {
                     <View key={table.id} style={styles.poolTableCard}>
                       <View style={styles.poolTableRow}>
                         <Text style={styles.poolTableName}>
-                          桌檯名稱：{table.tableName || `桌檯 ${table.id}`}
+                          桌檯名稱：{table.tableNumber || `桌檯 ${table.id}`}
                         </Text>
                         <Text
                           style={[

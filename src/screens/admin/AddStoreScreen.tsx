@@ -34,6 +34,7 @@ import Constants from 'expo-constants';
 import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
 import RNPickerSelect from 'react-native-picker-select';
+import { fetchUsersByRole } from '@/api/admin/roleApi';
 
 const weekDays = [
   'monday',
@@ -53,6 +54,10 @@ const AddStoreScreen = () => {
 
   const store = route.params?.store || null;
   const isEditMode = !!store;
+  const [users, setUsers] = useState([]);
+  const [userId, setUserId] = useState(
+    store?.user?.id ? String(store.user.id) : ''
+  );
 
   const [name, setName] = useState(store?.name || '');
   const [address, setAddress] = useState(store?.address || '');
@@ -141,6 +146,34 @@ const AddStoreScreen = () => {
     loadVendors();
   }, []);
 
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        dispatch(showLoading());
+        const response = await fetchUsersByRole(5);
+        dispatch(hideLoading());
+
+        if (response.success) {
+          setUsers(response.data);
+        } else {
+          await openInfoDialog({
+            title: '錯誤',
+            content: '無法獲取使用者清單',
+            confirmText: '我知道了',
+          });
+        }
+      } catch (error: any) {
+        dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+        });
+      }
+    };
+
+    loadUsers();
+  }, []);
+
   const updateSchedule = (dayIndex, key, value) => {
     const updatedSchedules = [...pricingSchedules];
     updatedSchedules[dayIndex][key] = value;
@@ -159,7 +192,8 @@ const AddStoreScreen = () => {
       !address.trim() ||
       !vendorId.trim() ||
       !lat.trim() ||
-      !lon.trim()
+      !lon.trim() ||
+      !userId.trim()
     ) {
       await openInfoDialog({
         title: '錯誤',
@@ -174,6 +208,7 @@ const AddStoreScreen = () => {
       address,
       hint,
       contactPhone,
+      user: { id: userId },
       vendor: { id: parseInt(vendorId) },
       lat: parseFloat(lat),
       lon: parseFloat(lon),
@@ -265,8 +300,6 @@ const AddStoreScreen = () => {
         content: '請允許存取相機權限',
         confirmText: '我知道了',
       });
-      return;
-
       return;
     }
 
@@ -415,6 +448,42 @@ const AddStoreScreen = () => {
                       key: vendor.id,
                     }))}
                     placeholder={{ label: '請選擇加盟商', value: '' }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
+                    }}
+                    Icon={() => (
+                      <MaterialIcons
+                        name="arrow-drop-down"
+                        size={24}
+                        color="#888"
+                      />
+                    )}
+                  />
+                </View>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  gap: 8,
+                  marginBottom: 12,
+                }}
+              >
+                <View style={{ flex: 1 }}>
+                  <RNPickerSelect
+                    value={userId}
+                    onValueChange={(value) => {
+                      if (value) setUserId(value);
+                    }}
+                    items={users.map((user) => ({
+                      label: user.name,
+                      value: String(user.id),
+                      key: user.id,
+                    }))}
+                    placeholder={{ label: '請選擇使用者', value: '' }}
                     useNativeAndroidPickerStyle={false}
                     style={{
                       inputIOS: styles.dropdownInput,

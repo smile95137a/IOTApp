@@ -22,6 +22,9 @@ import { getImageUrl } from '@/utils/ImageUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useInfoDialog } from '@/hooks/useInfoDialog';
 import { getErrorMessage } from '@/utils/errorUtils';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { setLocation } from '@/store/locationSlice';
 
 const StoreScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -29,11 +32,9 @@ const StoreScreen = ({ navigation }: any) => {
 
   const [stores, setStores] = useState<any[]>([]);
   const [isLoadGps, setIsLoadGps] = useState(false);
-  const [locationData, setLocationData] = useState<{
-    latitude?: number;
-    longitude?: number;
-  }>({});
+
   const [nearStores, setNearStores] = useState<any[]>([]);
+  const locationData = useSelector((state: RootState) => state.location);
 
   useEffect(() => {
     loadStores();
@@ -51,7 +52,8 @@ const StoreScreen = ({ navigation }: any) => {
       accuracy: Location.Accuracy.High,
     });
     const { latitude, longitude } = location.coords;
-    setLocationData({ latitude, longitude });
+
+    dispatch(setLocation({ latitude, longitude }));
     setIsLoadGps(true);
   };
 
