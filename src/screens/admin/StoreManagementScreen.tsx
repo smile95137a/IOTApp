@@ -28,6 +28,9 @@ import {
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { fetchStoreListByUserId } from '@/api/admin/storeApi';
 
 const StoreManagementScreen = () => {
   const route = useRoute();
@@ -35,16 +38,28 @@ const StoreManagementScreen = () => {
   const navigation = useNavigation();
   const [stores, setStores] = useState([]);
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
+  const user = useSelector((state: RootState) => state.user);
   const vendor = route.params?.vendor;
+  const isSuperAdmin = user.user?.roles?.some((role) => role.id === 1);
 
   const { openInfoDialog, openConfirmDialog } = useDialog();
 
   const loadStores = async () => {
     try {
       dispatch(showLoading());
-      const response = vendor
-        ? await fetchStoresByVendorId(vendor.id)
-        : await fetchAllStores();
+
+      const userId = user?.user?.id;
+      if (!userId) {
+        dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: '使用者資訊取得失敗，無法載入店家列表',
+          confirmText: '我知道了',
+        });
+        return;
+      }
+
+      const response = await fetchStoreListByUserId(userId);
       dispatch(hideLoading());
 
       if (response.success) {
@@ -170,35 +185,39 @@ const StoreManagementScreen = () => {
                           }
                           contentStyle={styles.menuStyle}
                         >
-                          <Menu.Item
-                            onPress={() =>
-                              (navigation as any).navigate('AddStore', {
-                                store: item,
-                              })
-                            }
-                            title="編輯"
-                            leadingIcon="pencil-outline"
-                          />
+                          {isSuperAdmin && (
+                            <Menu.Item
+                              onPress={() =>
+                                (navigation as any).navigate('AddStore', {
+                                  store: item,
+                                })
+                              }
+                              title="編輯"
+                              leadingIcon="pencil-outline"
+                            />
+                          )}
                         </Menu>
                       </View>
                     </View>
                   </TouchableOpacity>
                 ))}
-                <TouchableOpacity
-                  style={styles.addCardWrapper}
-                  onPress={() => (navigation as any).navigate('AddStore')}
-                >
-                  <Image
-                    source={require('@/assets/iot-logo-white.png')}
-                    style={styles.cardImage}
-                  />
-                  <View style={styles.addCardFooter}>
-                    <Text style={styles.addCardText}>新增店家</Text>
-                    <View style={styles.addIconWrapper}>
-                      <Icon name="plus" size={20} color="#FFF" />
+                {isSuperAdmin && (
+                  <TouchableOpacity
+                    style={styles.addCardWrapper}
+                    onPress={() => (navigation as any).navigate('AddStore')}
+                  >
+                    <Image
+                      source={require('@/assets/iot-logo-white.png')}
+                      style={styles.cardImage}
+                    />
+                    <View style={styles.addCardFooter}>
+                      <Text style={styles.addCardText}>新增店家</Text>
+                      <View style={styles.addIconWrapper}>
+                        <Icon name="plus" size={20} color="#FFF" />
+                      </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                )}
               </View>
             </ScrollView>
           </View>

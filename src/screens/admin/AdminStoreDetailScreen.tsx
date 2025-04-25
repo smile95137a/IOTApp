@@ -14,7 +14,7 @@ import { useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '@/store/loadingSlice';
 import { useDialog } from '@/context/DialogContext';
-import { fetchStoreByUid } from '@/api/admin/storeApi';
+import { fetchStoreByUid, fetchStoreReport } from '@/api/admin/storeApi';
 import {
   fetchStoreEquipmentsByStoreId,
   updateStoreEquipmentStatus,
@@ -42,6 +42,28 @@ const AdminStoreDetailScreen = () => {
 
   const [selectedMonitor, setSelectedMonitor] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [storeReport, setStoreReport] = useState<any>(null);
+
+  const loadStoreReport = async () => {
+    try {
+      dispatch(showLoading());
+      const { success, data, message } = await fetchStoreReport(store.uid);
+      dispatch(hideLoading());
+
+      if (success) {
+        setStoreReport(data);
+      } else {
+        openInfoDialog({
+          title: '錯誤',
+          content: message || '營收資料載入失敗',
+        });
+      }
+    } catch {
+      dispatch(hideLoading());
+      openInfoDialog({ title: '錯誤', content: '營收資料載入失敗' });
+    }
+  };
 
   const loadPoolTables = async () => {
     try {
@@ -125,6 +147,7 @@ const AdminStoreDetailScreen = () => {
       loadEquipments();
       loadMonitors();
       loadPoolTables();
+      loadStoreReport();
     }
   }, [store]);
 
@@ -207,7 +230,7 @@ const AdminStoreDetailScreen = () => {
         await closePoolTable({ tableUId: table.uid });
         dispatch(hideLoading());
         await openInfoDialog({ title: '成功', content: '已強制關台' });
-        loadPoolTables(); // 重新載入狀態
+        loadPoolTables();
       } catch {
         dispatch(hideLoading());
         openInfoDialog({ title: '錯誤', content: '強制關台失敗，請稍後再試' });
@@ -290,6 +313,22 @@ const AdminStoreDetailScreen = () => {
                   <Text style={styles.statsValue}>{tableStats.unused} 台</Text>
                 </View>
               </View>
+              {storeReport && (
+                <>
+                  <Text style={styles.label}>今日營運數據</Text>
+                  <View style={styles.sectionBlock}>
+                    <Text style={styles.value}>
+                      消費金額：{storeReport.todayTotalAmount || 0} 元 /{' '}
+                      {storeReport.todayTransactionCount || 0} 筆
+                    </Text>
+                    <Text style={styles.value}>
+                      儲值金額：{storeReport.todayTopupAmount || 0} 元 /{' '}
+                      {storeReport.todayTopupCount || 0} 筆
+                    </Text>
+                  </View>
+                </>
+              )}
+
               <Text style={styles.label}>營業設備</Text>
               <View style={styles.sectionBlock}>
                 {poolTables.length === 0 ? (

@@ -35,6 +35,8 @@ import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
 import RNPickerSelect from 'react-native-picker-select';
 import { fetchUsersByRole } from '@/api/admin/roleApi';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
 
 const weekDays = [
   'monday',
@@ -51,6 +53,8 @@ const AddStoreScreen = () => {
   const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
   const { openInfoDialog, openConfirmDialog } = useDialog();
+  const loginUser = useSelector((state: RootState) => state.user);
+  const isSuperAdmin = loginUser?.user?.roles?.some((role) => role.id === 1);
 
   const store = route.params?.store || null;
   const isEditMode = !!store;
@@ -154,7 +158,27 @@ const AddStoreScreen = () => {
         dispatch(hideLoading());
 
         if (response.success) {
-          setUsers(response.data);
+          const fetchedUsers = response.data;
+
+          // 篩選 isUsed 為 false 的使用者
+          let filteredUsers = fetchedUsers.filter(
+            (user) => user.isUsed === false
+          );
+
+          // 如果是編輯模式，且目前店長不是 isUsed === false，要補進來
+          if (isEditMode) {
+            const currentUser = fetchedUsers.find(
+              (user) => String(user.id) === String(userId)
+            );
+            const alreadyIncluded = filteredUsers.some(
+              (user) => String(user.id) === String(userId)
+            );
+            if (currentUser && !alreadyIncluded) {
+              filteredUsers.push(currentUser);
+            }
+          }
+
+          setUsers(filteredUsers);
         } else {
           await openInfoDialog({
             title: '錯誤',
@@ -483,7 +507,7 @@ const AddStoreScreen = () => {
                       value: String(user.id),
                       key: user.id,
                     }))}
-                    placeholder={{ label: '請選擇使用者', value: '' }}
+                    placeholder={{ label: '請選擇店長', value: '' }}
                     useNativeAndroidPickerStyle={false}
                     style={{
                       inputIOS: styles.dropdownInput,
@@ -1031,14 +1055,16 @@ const AddStoreScreen = () => {
                   </TouchableOpacity>
                 </View>
               </View>
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={handleSubmit}
-              >
-                <Text style={styles.submitButtonText}>
-                  {isEditMode ? '更新' : '提交'}
-                </Text>
-              </TouchableOpacity>
+              {isSuperAdmin && (
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={handleSubmit}
+                >
+                  <Text style={styles.submitButtonText}>
+                    {isEditMode ? '更新' : '提交'}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </ScrollView>
           </ScrollView>
         </View>

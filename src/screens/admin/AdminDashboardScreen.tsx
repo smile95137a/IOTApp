@@ -17,7 +17,12 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Menu, Provider } from 'react-native-paper';
-import { fetchAllStores, fetchStoresByVendorId } from '@/api/admin/storeApi';
+import {
+  fetchAllStores,
+  fetchStoreListByUserId,
+  fetchStoresByUserId,
+  fetchStoresByVendorId,
+} from '@/api/admin/storeApi';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
@@ -77,7 +82,20 @@ const AdminDashboardScreen = ({ navigation }) => {
   const loadStores = async () => {
     try {
       dispatch(showLoading());
-      const response = await fetchAllStores();
+
+      // 先檢查 user 資訊是否正確載入
+      const userId = user?.user?.id;
+      if (!userId) {
+        dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: '使用者資訊取得失敗，無法載入店家列表',
+          confirmText: '我知道了',
+        });
+        return;
+      }
+
+      const response = await fetchStoreListByUserId(userId);
       dispatch(hideLoading());
 
       if (response.success) {
@@ -127,40 +145,44 @@ const AdminDashboardScreen = ({ navigation }) => {
 
             <ScrollView style={styles.mainContainer}>
               <View style={styles.reportSection}>
-                <Text style={styles.sectionTitle}>今日營運數據：</Text>
-
+                <Text style={styles.sectionGroupTitle}>今日營運數據</Text>
                 <Text style={styles.reportValue}>
-                  今日消費：
+                  消費金額：
                   <NumberFormatter number={todayTotalAmount} /> 元 /
                   <NumberFormatter number={todayTransactionCount} /> 筆
                 </Text>
-
                 {isSuperAdmin && (
                   <Text style={styles.reportValue}>
-                    今日儲值：
+                    儲值金額：
                     <NumberFormatter number={todayTopupAmount} /> 元 /
                     <NumberFormatter number={todayTopupCount} /> 筆
                   </Text>
                 )}
 
+                <View style={styles.divider} />
+
+                <Text style={styles.sectionGroupTitle}>本月累計營運</Text>
                 <Text style={styles.reportValue}>
-                  本月累計消費：
+                  消費金額：
                   <NumberFormatter number={monthTotalAmount} /> 元 /
                   <NumberFormatter number={monthTransactionCount} /> 筆
                 </Text>
 
+                <View style={styles.divider} />
+
+                <Text style={styles.sectionGroupTitle}>所有累計數據</Text>
                 <Text style={styles.reportValue}>
-                  所有消費總額：
+                  消費總額：
                   <NumberFormatter number={totalAmountAll} /> 元
                 </Text>
-
                 {isSuperAdmin && (
                   <Text style={styles.reportValue}>
-                    所有儲值總額：
+                    儲值總額：
                     <NumberFormatter number={totalTopupAmountAll} /> 元
                   </Text>
                 )}
               </View>
+
               <View style={styles.divider} />
               <View style={styles.gridWrapper}>
                 {stores.map((item) => (
@@ -300,6 +322,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 14,
+  },
+  sectionGroupTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2C3E50',
+    marginBottom: 8,
+    marginTop: 10,
   },
 });
 

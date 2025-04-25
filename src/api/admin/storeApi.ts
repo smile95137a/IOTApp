@@ -156,3 +156,70 @@ export const fetchStoresByVendorId = async (
     throw error;
   }
 };
+
+/**
+ * 取得指定店家的當日營運報表
+ * @param storeUid 店家 UID
+ */
+export const fetchStoreReport = async (
+  storeUid: string
+): Promise<ApiResponse<any>> => {
+  const url = `${API_BASE_URL}${basePath}/${storeUid}/report`;
+  console.log(
+    `[Store API] Fetching report for store UID: ${storeUid}, URL: ${url}`
+  );
+
+  try {
+    const response = await api.get(url);
+    console.log(
+      `[Store API] Report response for UID ${storeUid}:`,
+      response.data
+    );
+    return response.data;
+  } catch (error: any) {
+    console.log(
+      `[Store API] Error fetching report for store UID ${storeUid}:`,
+      error
+    );
+    throw error;
+  }
+};
+/**
+ * 根據使用者 ID 取得其所屬店家列表
+ * @param userId 使用者 ID
+ */
+export const fetchStoresByUserId = async (
+  userId: number
+): Promise<ApiResponse<Store[]>> => {
+  const url = `${API_BASE_URL}${basePath}/${userId}/stores`;
+  console.log(`[Store API] Fetching stores by user ID: ${url}`);
+
+  try {
+    const response = await api.get(url);
+    console.log(`[Store API] Response:`, response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log(`[Store API] Error fetching stores by user ID:`, error);
+    throw error;
+  }
+};
+
+/**
+ * 根據使用者 ID 取得其所屬店家列表
+ * @param userId 使用者 ID
+ */
+export const fetchStoreListByUserId = async (
+  userId: number
+): Promise<ApiResponse<Store[]>> => {
+  const url = `${API_BASE_URL}${basePath}/${userId}/storeList`;
+  console.log(`[Store API] Fetching stores by user ID: ${url}`);
+
+  try {
+    const response = await api.get(url);
+    console.log(`[Store API] Response:`, response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log(`[Store API] Error fetching stores by user ID:`, error);
+    throw error;
+  }
+};

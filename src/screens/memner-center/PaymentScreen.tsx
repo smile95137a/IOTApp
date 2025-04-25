@@ -1,4 +1,5 @@
 import { bookGame, checkoutGame, startGame } from '@/api/gameApi';
+import { checkoutGameGamePay } from '@/api/gamePayApi';
 import { topUp } from '@/api/paymentApi';
 import NumberFormatter from '@/component/NumberFormatter';
 import { useDialog } from '@/context/DialogContext';
@@ -48,6 +49,13 @@ const PaymentScreen = ({ navigation }: any) => {
           price: rechargeOption.amount,
           payType,
           point: rechargeOption.bonus,
+        });
+      } else if (type === 'payEnd') {
+        result = await checkoutGameGamePay({
+          payType,
+          gameId: payData.gameId,
+          poolUId: payData.poolUId,
+          totalPrice: payData.totalPrice,
         });
       } else if (type === 'bookGame') {
         const { poolTableUId, bookDate, selectedTime } = payData;

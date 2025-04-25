@@ -55,8 +55,31 @@ const AddVendorScreen = () => {
         dispatch(showLoading());
         const response = await fetchUsersByRole(2);
         dispatch(hideLoading());
+
         if (response.success) {
-          setUsers(response.data);
+          const fetchedUsers = response.data;
+
+          // 篩選 isUsed 為 false 的使用者
+          let filteredUsers = fetchedUsers.filter(
+            (user) => user.isUsed === false
+          );
+
+          // 如果是編輯狀態，補上目前已選擇的使用者（即使 isUsed 為 true）
+          if (vendor?.userId) {
+            const currentUser = fetchedUsers.find(
+              (user) => String(user.id) === String(vendor.userId)
+            );
+
+            const alreadyIncluded = filteredUsers.some(
+              (user) => String(user.id) === String(vendor.userId)
+            );
+
+            if (currentUser && !alreadyIncluded) {
+              filteredUsers.push(currentUser);
+            }
+          }
+
+          setUsers(filteredUsers);
         } else {
           await openInfoDialog({
             title: '錯誤',

@@ -75,36 +75,16 @@ const GameHistoryScreen = ({ navigation }: any) => {
   const handleTransactionPress = async (item: GameTransactionRecord) => {
     console.log('[未付款紀錄]', item);
     if (item.status !== 'NO_PAY') return;
-    try {
-      dispatch(showLoading());
-      const { success, data, message } = await getGamePrice({
-        gameId: item.gameId,
-      });
-      dispatch(hideLoading());
 
-      if (success) {
-        navigation.navigate('Payment', {
-          type: 'gameEnd',
-          payData: {
-            gameId: item.gameId,
-            poolTableId: item.poolTableId,
-          },
-          totalAmount: data.price,
-        });
-      } else {
-        await openInfoDialog({
-          title: '錯誤',
-          content: message || '無法取得金額資訊',
-        });
-      }
-    } catch (error: any) {
-      if (error.isAutoLogout) return;
-      dispatch(hideLoading());
-      await openInfoDialog({
-        title: '錯誤',
-        content: getErrorMessage(error),
-      });
-    }
+    navigation.navigate('Payment', {
+      type: 'payEnd',
+      payData: {
+        gameId: item.gameId,
+        poolUId: item.poolTableUid,
+        totalPrice: item.totalPrice,
+      },
+      totalAmount: item.totalPrice,
+    });
   };
 
   return (

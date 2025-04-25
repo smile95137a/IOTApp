@@ -29,18 +29,35 @@ import {
 import HeaderBar from '@/component/admin/HeaderBar';
 import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { fetchStoreListByUserId } from '@/api/admin/storeApi';
 
 const EquipmentManagementScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const [stores, setStores] = useState<Store[]>([]);
   const { openInfoDialog } = useDialog();
+  const user = useSelector((state: RootState) => state.user);
 
   const loadStores = async () => {
     try {
       dispatch(showLoading());
-      const { success, data, message } = await fetchAllStores();
+
+      const userId = user?.user?.id;
+      if (!userId) {
+        dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: '使用者資訊錯誤，無法載入店家列表',
+          confirmText: '我知道了',
+        });
+        return;
+      }
+
+      const { success, data, message } = await fetchStoreListByUserId(userId);
       dispatch(hideLoading());
+
       if (success) {
         setStores(data);
       } else {

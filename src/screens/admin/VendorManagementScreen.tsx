@@ -191,7 +191,7 @@ const VendorManagementScreen = () => {
                     style={styles.cardImage}
                   />
                   <View style={styles.addCardFooter}>
-                    <Text style={styles.addCardText}>新增店家</Text>
+                    <Text style={styles.addCardText}>新增加盟商</Text>
                     <View style={styles.addIconWrapper}>
                       <Icon name="plus" size={20} color="#FFF" />
                     </View>
