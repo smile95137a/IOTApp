@@ -25,6 +25,7 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { setLocation } from '@/store/locationSlice';
+import { logJson } from '@/utils/logJsonUtils';
 
 const StoreScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();

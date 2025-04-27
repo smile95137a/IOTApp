@@ -57,6 +57,7 @@ const AddStoreScreen = () => {
   const isSuperAdmin = loginUser?.user?.roles?.some((role) => role.id === 1);
 
   const store = route.params?.store || null;
+  logJson('zxc', store);
   const isEditMode = !!store;
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState(
@@ -100,6 +101,21 @@ const AddStoreScreen = () => {
         (schedule) => schedule.dayOfWeek.toLowerCase() === day
       );
 
+      let mergedTimeSlots = [
+        ...(existingSchedule?.regularTimeSlots || []),
+        ...(existingSchedule?.discountTimeSlots || []),
+      ].filter((slot) => slot.isDiscount);
+
+      if (mergedTimeSlots.length === 0) {
+        mergedTimeSlots = [
+          {
+            startTime: '18:00',
+            endTime: '21:00',
+            isDiscount: true,
+          },
+        ];
+      }
+
       return {
         dayOfWeek: day.toUpperCase(),
         openTime: existingSchedule?.openTime || '10:00',
@@ -110,13 +126,7 @@ const AddStoreScreen = () => {
         discountRate: existingSchedule?.discountRate
           ? String(existingSchedule.discountRate)
           : '100',
-        timeSlots: existingSchedule?.timeSlots || [
-          {
-            startTime: '18:00',
-            endTime: '21:00',
-            isDiscount: true,
-          },
-        ],
+        timeSlots: mergedTimeSlots,
       };
     })
   );
@@ -206,7 +216,10 @@ const AddStoreScreen = () => {
 
   const updateTimeSlot = (dayIndex, slotIndex, key, value) => {
     const updatedSchedules = [...pricingSchedules];
-    updatedSchedules[dayIndex].timeSlots[slotIndex][key] = value;
+    const updatedTimeSlots = [...updatedSchedules[dayIndex].timeSlots];
+    const updatedSlot = { ...updatedTimeSlots[slotIndex], [key]: value };
+    updatedTimeSlots[slotIndex] = updatedSlot;
+    updatedSchedules[dayIndex].timeSlots = updatedTimeSlots;
     setPricingSchedules(updatedSchedules);
   };
 

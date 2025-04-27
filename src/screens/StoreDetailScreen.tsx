@@ -24,6 +24,7 @@ import moment from 'moment';
 import { setSelectedStore } from '@/store/storeSelectionSlice';
 import { useInfoDialog } from '@/hooks/useInfoDialog';
 import { getErrorMessage } from '@/utils/errorUtils';
+import { logJson } from '@/utils/logJsonUtils';
 
 const StoreDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -57,29 +58,52 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
       }
     };
     const getTodayPricing = () => {
+      logJson('store', store);
+
       const today = moment().format('dddd').toUpperCase();
       const todaySchedule = store.pricingSchedules.find(
         (schedule: any) => schedule.dayOfWeek === today
       );
 
       if (!todaySchedule) return;
+
       setTodayPricing(todaySchedule);
 
       const now = moment();
+      const openTime = moment(todaySchedule.openTime, 'HH:mm');
+      const closeTime = moment(todaySchedule.closeTime, 'HH:mm');
 
-      const discountSlot = todaySchedule.discountTimeSlots.find((slot: any) => {
-        const start = moment(slot.startTime, 'HH:mm');
-        const end = moment(slot.endTime, 'HH:mm');
-        return now.isBetween(start, end);
-      });
-      const regularSlot = todaySchedule.regularTimeSlots.find((slot: any) => {
-        const start = moment(slot.startTime, 'HH:mm');
-        const end = moment(slot.endTime, 'HH:mm');
-        return now.isBetween(start, end);
-      });
+      const isOpen = now.isBetween(openTime, closeTime, undefined, '[)');
 
-      setCurrentDiscountSlot(discountSlot || null);
-      setCurrentRegularSlot(regularSlot || null);
+      if (!isOpen) {
+        setCurrentDiscountSlot(null);
+        setCurrentRegularSlot(null);
+        return;
+      }
+
+      let discountSlotNow = null;
+
+      // 折扣時段中
+      if (todaySchedule.discountTimeSlots?.length > 0) {
+        for (const slot of todaySchedule.discountTimeSlots) {
+          const start = moment(slot.startTime, 'HH:mm');
+          const end = moment(slot.endTime, 'HH:mm');
+          if (now.isBetween(start, end, undefined, '[)')) {
+            discountSlotNow = slot;
+            break;
+          }
+        }
+      }
+
+      // 因為 regularTimeSlots 沒設定，所以要人工設定一個完整的 regularSlot
+      const defaultRegularSlot = {
+        startTime: todaySchedule.openTime,
+        endTime: todaySchedule.closeTime,
+        isDiscount: false,
+      };
+
+      setCurrentDiscountSlot(discountSlotNow); // 目前是不是在優惠時段
+      setCurrentRegularSlot(defaultRegularSlot); // 永遠有一般時段
     };
 
     loadTables();
