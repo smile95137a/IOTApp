@@ -15,6 +15,8 @@ import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
 import NoData from '@/component/NoData';
 import moment from 'moment';
+import { fetchUserInfo } from '@/api/userApi';
+import { setUser } from '@/store/userSlice';
 
 const GameHistoryScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -119,6 +121,29 @@ const GameHistoryScreen = ({ navigation }: any) => {
           confirmText: '我知道了',
         });
         loadTransactions();
+        const getUserInfo = async () => {
+          try {
+            dispatch(showLoading());
+            const response = await fetchUserInfo();
+            dispatch(hideLoading());
+
+            if (response.success) {
+              console.log('[User Info] API Response:', response.data);
+              dispatch(setUser(response.data));
+            } else {
+              console.warn('[User Info] Fetch failed:', response.message);
+            }
+          } catch (error: any) {
+            if (error.isAutoLogout) return;
+            dispatch(hideLoading());
+            await openInfoDialog({
+              title: '錯誤',
+              content: getErrorMessage(error),
+            });
+          }
+        };
+
+        getUserInfo();
       } else {
         await openInfoDialog({
           title: '錯誤',
