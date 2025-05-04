@@ -23,9 +23,12 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Constants from 'expo-constants';
 import RNPickerSelect from 'react-native-picker-select';
 import { useSelector } from 'react-redux';
-import { createStore } from '@reduxjs/toolkit';
 import { fetchUsersByRole } from '../../api/admin/roleApi';
-import { updateStore, uploadStoreImages } from '../../api/admin/storeApi';
+import {
+  createStore,
+  updateStore,
+  uploadStoreImages,
+} from '../../api/admin/storeApi';
 import { fetchAllVendors } from '../../api/admin/vendorApi';
 import HeaderBar from '../../component/admin/HeaderBar';
 import { useDialog } from '../../context/DialogContext';
@@ -34,16 +37,6 @@ import { AppDispatch, RootState } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { getImageUrl } from '../../utils/ImageUtils';
 import { logJson } from '../../utils/logJsonUtils';
-
-const weekDays = [
-  'monday',
-  'tuesday',
-  'wednesday',
-  'thursday',
-  'friday',
-  'saturday',
-  'sunday',
-];
 
 const AddStoreScreen = () => {
   const navigation = useNavigation();
@@ -90,42 +83,6 @@ const AddStoreScreen = () => {
     longitude: number;
   } | null>(
     store ? { latitude: Number(store.lat), longitude: Number(store.lon) } : null
-  );
-
-  const [pricingSchedules, setPricingSchedules] = useState(
-    weekDays.map((day) => {
-      const existingSchedule = store?.pricingSchedules?.find(
-        (schedule) => schedule.dayOfWeek.toLowerCase() === day
-      );
-
-      let mergedTimeSlots = [
-        ...(existingSchedule?.regularTimeSlots || []),
-        ...(existingSchedule?.discountTimeSlots || []),
-      ].filter((slot) => slot.isDiscount);
-
-      if (mergedTimeSlots.length === 0) {
-        mergedTimeSlots = [
-          {
-            startTime: '18:00',
-            endTime: '21:00',
-            isDiscount: true,
-          },
-        ];
-      }
-
-      return {
-        dayOfWeek: day.toUpperCase(),
-        openTime: existingSchedule?.openTime || '10:00',
-        closeTime: existingSchedule?.closeTime || '23:00',
-        regularRate: existingSchedule?.regularRate
-          ? String(existingSchedule.regularRate)
-          : '100',
-        discountRate: existingSchedule?.discountRate
-          ? String(existingSchedule.discountRate)
-          : '100',
-        timeSlots: mergedTimeSlots,
-      };
-    })
   );
 
   useEffect(() => {
@@ -205,21 +162,6 @@ const AddStoreScreen = () => {
     loadUsers();
   }, []);
 
-  const updateSchedule = (dayIndex, key, value) => {
-    const updatedSchedules = [...pricingSchedules];
-    updatedSchedules[dayIndex][key] = value;
-    setPricingSchedules(updatedSchedules);
-  };
-
-  const updateTimeSlot = (dayIndex, slotIndex, key, value) => {
-    const updatedSchedules = [...pricingSchedules];
-    const updatedTimeSlots = [...updatedSchedules[dayIndex].timeSlots];
-    const updatedSlot = { ...updatedTimeSlots[slotIndex], [key]: value };
-    updatedTimeSlots[slotIndex] = updatedSlot;
-    updatedSchedules[dayIndex].timeSlots = updatedTimeSlots;
-    setPricingSchedules(updatedSchedules);
-  };
-
   const handleSubmit = async () => {
     if (
       !name.trim() ||
@@ -249,14 +191,9 @@ const AddStoreScreen = () => {
       deposit: parseFloat(deposit) || 0,
       discountRate: parseFloat(discountRate) || 0,
       regularRate: parseFloat(regularRate) || 0,
-      pricingSchedules: pricingSchedules.map((schedule) => ({
-        ...schedule,
-        regularRate: parseFloat(schedule.regularRate) || 0,
-        discountRate: parseFloat(schedule.discountRate) || 0,
-        timeSlots: schedule.timeSlots.map((slot) => ({
-          ...slot,
-        })),
-      })),
+      openTime,
+      closeTime,
+      timeSlots: timeSlots.map((slot) => ({ ...slot })),
     };
     logJson('Store Data', storeData);
     try {
@@ -364,23 +301,14 @@ const AddStoreScreen = () => {
     }
   };
 
-  const removeTimeSlot = (dayIndex, slotIndex) => {
-    const updatedSchedules = [...pricingSchedules];
-    updatedSchedules[dayIndex].timeSlots.splice(slotIndex, 1);
-    setPricingSchedules(updatedSchedules);
-  };
-
-  const confirmRemoveTimeSlot = async (dayIndex: number, slotIndex: number) => {
+  const confirmRemoveTimeSlot = async (slotIndex) => {
     const confirmed = await openConfirmDialog({
       title: '確定刪除',
       content: '你要刪除這個折扣時段嗎？',
       confirmText: '刪除',
       cancelText: '取消',
     });
-
-    if (confirmed) {
-      removeTimeSlot(dayIndex, slotIndex);
-    }
+    if (confirmed) removeTimeSlot(slotIndex);
   };
 
   const geocodeAddress = async (inputAddress: string) => {
@@ -438,19 +366,34 @@ const AddStoreScreen = () => {
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const minutes = Array.from({ length: 60 }, (_, i) => i);
 
-  const getDayOfWeekCHName = (day: string): string => {
-    const map: Record<string, string> = {
-      MONDAY: '星期一',
-      TUESDAY: '星期二',
-      WEDNESDAY: '星期三',
-      THURSDAY: '星期四',
-      FRIDAY: '星期五',
-      SATURDAY: '星期六',
-      SUNDAY: '星期日',
+  const [timeSlots, setTimeSlots] = useState(
+    store?.timeSlots?.length
+      ? store.timeSlots
+      : [
+          {
+            startTime: '00:00',
+            endTime: '23:59',
+            isDiscount: true,
+          },
+        ]
+  );
+  const [openTime, setOpenTime] = useState(store?.openTime || '00:00');
+  const [closeTime, setCloseTime] = useState(store?.closeTime || '23:59');
+
+  const updateTimeSlot = (slotIndex, key, value) => {
+    const updated = [...timeSlots];
+    updated[slotIndex] = {
+      ...updated[slotIndex],
+      [key]: value,
     };
-    return map[day.toUpperCase()] || day;
+    setTimeSlots(updated);
   };
 
+  const removeTimeSlot = (slotIndex) => {
+    const updated = [...timeSlots];
+    updated.splice(slotIndex, 1);
+    setTimeSlots(updated);
+  };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeArea}>
@@ -625,412 +568,324 @@ const AddStoreScreen = () => {
                 onChangeText={setContactPhone}
               />
               <Text style={styles.inputLabel}>費用與時段</Text>
-              {pricingSchedules.map((schedule, index) => (
-                <View key={index} style={{ marginBottom: 20 }}>
-                  <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>
-                    {getDayOfWeekCHName(schedule.dayOfWeek)}
-                  </Text>
-
-                  <Text>營業開始時間</Text>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      gap: 8,
-                      marginBottom: 12,
+              <Text style={styles.inputLabel}>營業開始時間 (Open Time)</Text>
+              <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+                <View style={{ flex: 1 }}>
+                  <RNPickerSelect
+                    value={String(splitTime(openTime).hour)}
+                    onValueChange={(hourStr) => {
+                      const hour = parseInt(hourStr, 10);
+                      const { minute } = splitTime(openTime);
+                      setOpenTime(formatTime(hour, minute));
                     }}
-                  >
-                    <View style={{ flex: 1 }}>
-                      <RNPickerSelect
-                        value={String(splitTime(schedule.openTime).hour)}
-                        onValueChange={(hourStr) => {
-                          const hour = parseInt(hourStr, 10);
-                          const { minute } = splitTime(schedule.openTime);
-                          updateSchedule(
-                            index,
-                            'openTime',
-                            formatTime(hour, minute)
-                          );
-                        }}
-                        items={hours.map((h) => ({
-                          label: `${h} 時`,
-                          value: String(h),
-                          key: h,
-                        }))}
-                        placeholder={{ label: '時', value: '' }}
-                        useNativeAndroidPickerStyle={false}
-                        style={{
-                          inputIOS: styles.dropdownInput,
-                          inputAndroid: styles.dropdownInput,
-                          iconContainer: styles.iconContainer,
-                        }}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                      />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <RNPickerSelect
-                        value={String(splitTime(schedule.openTime).minute)}
-                        onValueChange={(minStr) => {
-                          const minute = parseInt(minStr, 10);
-                          const { hour } = splitTime(schedule.openTime);
-                          updateSchedule(
-                            index,
-                            'openTime',
-                            formatTime(hour, minute)
-                          );
-                        }}
-                        items={minutes.map((h) => ({
-                          label: `${h} 分`,
-                          value: String(h),
-                          key: h,
-                        }))}
-                        placeholder={{ label: '時', value: '' }}
-                        useNativeAndroidPickerStyle={false}
-                        style={{
-                          inputIOS: styles.dropdownInput,
-                          inputAndroid: styles.dropdownInput,
-                          iconContainer: styles.iconContainer,
-                        }}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                      />
-                    </View>
-                  </View>
-
-                  <Text>營業結束時間</Text>
-                  <View
+                    items={hours.map((h) => ({
+                      label: `${h} h`,
+                      value: String(h),
+                      key: h,
+                    }))}
+                    placeholder={{ label: 'Hour', value: '' }}
+                    useNativeAndroidPickerStyle={false}
                     style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      gap: 8,
-                      marginBottom: 12,
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
                     }}
-                  >
-                    <View style={{ flex: 1 }}>
-                      <RNPickerSelect
-                        value={String(splitTime(schedule.closeTime).hour)}
-                        onValueChange={(hourStr) => {
-                          const hour = parseInt(hourStr, 10);
-                          const { minute } = splitTime(schedule.closeTime);
-                          updateSchedule(
-                            index,
-                            'closeTime',
-                            formatTime(hour, minute)
-                          );
-                        }}
-                        items={hours.map((h) => ({
-                          label: `${h} 時`,
-                          value: String(h),
-                          key: h,
-                        }))}
-                        placeholder={{ label: '時', value: '' }}
-                        useNativeAndroidPickerStyle={false}
-                        style={{
-                          inputIOS: styles.dropdownInput,
-                          inputAndroid: styles.dropdownInput,
-                          iconContainer: styles.iconContainer,
-                        }}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
+                    Icon={() => (
+                      <MaterialIcons
+                        name="arrow-drop-down"
+                        size={24}
+                        color="#888"
                       />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <RNPickerSelect
-                        value={String(splitTime(schedule.closeTime).minute)}
-                        onValueChange={(minStr) => {
-                          const minute = parseInt(minStr, 10);
-                          const { hour } = splitTime(schedule.closeTime);
-                          updateSchedule(
-                            index,
-                            'closeTime',
-                            formatTime(hour, minute)
-                          );
-                        }}
-                        items={minutes.map((m) => ({
-                          label: `${m} 分`,
-                          value: String(m),
-                          key: m,
-                        }))}
-                        placeholder={{ label: '分', value: '' }}
-                        useNativeAndroidPickerStyle={false}
-                        style={{
-                          inputIOS: styles.dropdownInput,
-                          inputAndroid: styles.dropdownInput,
-                          iconContainer: styles.iconContainer,
-                        }}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                      />
-                    </View>
-                  </View>
-
-                  <Text>一般費率</Text>
-                  <TextInput
-                    value={schedule.regularRate}
-                    onChangeText={(text) =>
-                      updateSchedule(index, 'regularRate', text)
-                    }
-                    placeholder="一般費率"
-                    keyboardType="numeric"
-                    style={styles.input}
+                    )}
                   />
-
-                  <Text>折扣費率</Text>
-                  <TextInput
-                    value={schedule.discountRate}
-                    onChangeText={(text) =>
-                      updateSchedule(index, 'discountRate', text)
-                    }
-                    placeholder="折扣費率"
-                    keyboardType="numeric"
-                    style={styles.input}
-                  />
-
-                  <Text style={{ marginTop: 8 }}>折扣時段</Text>
-                  {schedule.timeSlots.map((slot, slotIndex) => (
-                    <View key={slotIndex} style={{ marginTop: 8 }}>
-                      <Text>折扣開始</Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          gap: 8,
-                          marginBottom: 12,
-                        }}
-                      >
-                        <View style={{ flex: 1 }}>
-                          <RNPickerSelect
-                            value={String(splitTime(slot.startTime).hour)}
-                            onValueChange={(hourStr) => {
-                              const hour = parseInt(hourStr, 10);
-                              const { minute } = splitTime(slot.startTime);
-                              updateTimeSlot(
-                                index,
-                                slotIndex,
-                                'startTime',
-                                formatTime(hour, minute)
-                              );
-                            }}
-                            items={hours.map((h) => ({
-                              label: `${h} 時`,
-                              value: String(h),
-                              key: h,
-                            }))}
-                            placeholder={{ label: '時', value: '' }}
-                            useNativeAndroidPickerStyle={false}
-                            style={{
-                              inputIOS: styles.dropdownInput,
-                              inputAndroid: styles.dropdownInput,
-                              iconContainer: styles.iconContainer,
-                            }}
-                            Icon={() => (
-                              <MaterialIcons
-                                name="arrow-drop-down"
-                                size={24}
-                                color="#888"
-                              />
-                            )}
-                          />
-                        </View>
-                        <View style={{ flex: 1 }}>
-                          <RNPickerSelect
-                            value={String(splitTime(slot.startTime).minute)}
-                            onValueChange={(minStr) => {
-                              const minute = parseInt(minStr, 10);
-                              const { hour } = splitTime(slot.startTime);
-                              updateTimeSlot(
-                                index,
-                                slotIndex,
-                                'startTime',
-                                formatTime(hour, minute)
-                              );
-                            }}
-                            items={minutes.map((m) => ({
-                              label: `${m} 分`,
-                              value: String(m),
-                              key: m,
-                            }))}
-                            placeholder={{ label: '分', value: '' }}
-                            useNativeAndroidPickerStyle={false}
-                            style={{
-                              inputIOS: styles.dropdownInput,
-                              inputAndroid: styles.dropdownInput,
-                              iconContainer: styles.iconContainer,
-                            }}
-                            Icon={() => (
-                              <MaterialIcons
-                                name="arrow-drop-down"
-                                size={24}
-                                color="#888"
-                              />
-                            )}
-                          />
-                        </View>
-                      </View>
-
-                      <Text>折扣結束</Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          gap: 8,
-                          marginBottom: 12,
-                        }}
-                      >
-                        <View style={{ flex: 1 }}>
-                          <RNPickerSelect
-                            value={String(splitTime(slot.endTime).hour)}
-                            onValueChange={(hourStr) => {
-                              const hour = parseInt(hourStr, 10);
-                              const { minute } = splitTime(slot.endTime);
-                              updateTimeSlot(
-                                index,
-                                slotIndex,
-                                'endTime',
-                                formatTime(hour, minute)
-                              );
-                            }}
-                            items={hours.map((h) => ({
-                              label: `${h} 時`,
-                              value: String(h),
-                              key: h,
-                            }))}
-                            placeholder={{ label: '時', value: '' }}
-                            useNativeAndroidPickerStyle={false}
-                            style={{
-                              inputIOS: styles.dropdownInput,
-                              inputAndroid: styles.dropdownInput,
-                              iconContainer: styles.iconContainer,
-                            }}
-                            Icon={() => (
-                              <MaterialIcons
-                                name="arrow-drop-down"
-                                size={24}
-                                color="#888"
-                              />
-                            )}
-                          />
-                        </View>
-                        <View style={{ flex: 1 }}>
-                          <RNPickerSelect
-                            value={String(splitTime(slot.endTime).minute)}
-                            onValueChange={(minStr) => {
-                              const minute = parseInt(minStr, 10);
-                              const { hour } = splitTime(slot.endTime);
-                              updateTimeSlot(
-                                index,
-                                slotIndex,
-                                'endTime',
-                                formatTime(hour, minute)
-                              );
-                            }}
-                            items={minutes.map((m) => ({
-                              label: `${m} 分`,
-                              value: String(m),
-                              key: m,
-                            }))}
-                            placeholder={{ label: '分', value: '' }}
-                            useNativeAndroidPickerStyle={false}
-                            style={{
-                              inputIOS: styles.dropdownInput,
-                              inputAndroid: styles.dropdownInput,
-                              iconContainer: styles.iconContainer,
-                            }}
-                            Icon={() => (
-                              <MaterialIcons
-                                name="arrow-drop-down"
-                                size={24}
-                                color="#888"
-                              />
-                            )}
-                          />
-                        </View>
-                      </View>
-
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          marginTop: 8,
-                        }}
-                      >
-                        <Text style={{ marginRight: 10 }}>是否為折扣時段</Text>
-                        <Switch
-                          value={slot.isDiscount}
-                          onValueChange={(value) =>
-                            updateTimeSlot(
-                              index,
-                              slotIndex,
-                              'isDiscount',
-                              value
-                            )
-                          }
-                        />
-                        {slotIndex > 0 && (
-                          <TouchableOpacity
-                            onPress={() =>
-                              confirmRemoveTimeSlot(index, slotIndex)
-                            }
-                            style={{
-                              marginTop: 8,
-                              padding: 8,
-                              backgroundColor: '#ffcccc',
-                              borderRadius: 6,
-                              alignItems: 'center',
-                            }}
-                          >
-                            <Text style={{ color: '#900' }}>
-                              刪除這個折扣時段
-                            </Text>
-                          </TouchableOpacity>
-                        )}
-                      </View>
-                    </View>
-                  ))}
-
-                  <TouchableOpacity
-                    onPress={() => {
-                      const updatedSchedules = [...pricingSchedules];
-                      updatedSchedules[index].timeSlots.push({
-                        startTime: '',
-                        endTime: '',
-                        isDiscount: false,
-                      });
-                      setPricingSchedules(updatedSchedules);
-                    }}
-                    style={{
-                      marginTop: 10,
-                      backgroundColor: '#eee',
-                      padding: 10,
-                      borderRadius: 6,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text>新增折扣時段</Text>
-                  </TouchableOpacity>
                 </View>
-              ))}
+                <View style={{ flex: 1 }}>
+                  <RNPickerSelect
+                    value={String(splitTime(openTime).minute)}
+                    onValueChange={(minStr) => {
+                      const minute = parseInt(minStr, 10);
+                      const { hour } = splitTime(openTime);
+                      setOpenTime(formatTime(hour, minute));
+                    }}
+                    items={minutes.map((m) => ({
+                      label: `${m} m`,
+                      value: String(m),
+                      key: m,
+                    }))}
+                    placeholder={{ label: 'Minute', value: '' }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
+                    }}
+                    Icon={() => (
+                      <MaterialIcons
+                        name="arrow-drop-down"
+                        size={24}
+                        color="#888"
+                      />
+                    )}
+                  />
+                </View>
+              </View>
+
+              <Text style={styles.inputLabel}>營業結束時間 (Close Time)</Text>
+              <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+                <View style={{ flex: 1 }}>
+                  <RNPickerSelect
+                    value={String(splitTime(closeTime).hour)}
+                    onValueChange={(hourStr) => {
+                      const hour = parseInt(hourStr, 10);
+                      const { minute } = splitTime(closeTime);
+                      setCloseTime(formatTime(hour, minute));
+                    }}
+                    items={hours.map((h) => ({
+                      label: `${h} 時`,
+                      value: String(h),
+                      key: h,
+                    }))}
+                    placeholder={{ label: 'Hour', value: '' }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
+                    }}
+                    Icon={() => (
+                      <MaterialIcons
+                        name="arrow-drop-down"
+                        size={24}
+                        color="#888"
+                      />
+                    )}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <RNPickerSelect
+                    value={String(splitTime(closeTime).minute)}
+                    onValueChange={(minStr) => {
+                      const minute = parseInt(minStr, 10);
+                      const { hour } = splitTime(closeTime);
+                      setCloseTime(formatTime(hour, minute));
+                    }}
+                    items={minutes.map((m) => ({
+                      label: `${m} 分`,
+                      value: String(m),
+                      key: m,
+                    }))}
+                    placeholder={{ label: 'Minute', value: '' }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
+                    }}
+                    Icon={() => (
+                      <MaterialIcons
+                        name="arrow-drop-down"
+                        size={24}
+                        color="#888"
+                      />
+                    )}
+                  />
+                </View>
+              </View>
+              <View style={{ marginTop: 20 }}>
+                <Text style={styles.inputLabel}>折扣時段</Text>
+                {timeSlots.map((slot, slotIndex) => (
+                  <View
+                    key={slotIndex}
+                    style={{ marginTop: 8, marginBottom: 16 }}
+                  >
+                    <Text style={styles.inputLabel}>開始時間</Text>
+                    <View
+                      style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <RNPickerSelect
+                          value={String(splitTime(slot.startTime).hour)}
+                          onValueChange={(hourStr) => {
+                            const hour = parseInt(hourStr, 10);
+                            const { minute } = splitTime(slot.startTime);
+                            updateTimeSlot(
+                              slotIndex,
+                              'startTime',
+                              formatTime(hour, minute)
+                            );
+                          }}
+                          items={hours.map((h) => ({
+                            label: `${h} h`,
+                            value: String(h),
+                            key: h,
+                          }))}
+                          placeholder={{ label: 'Hour', value: '' }}
+                          useNativeAndroidPickerStyle={false}
+                          style={{
+                            inputIOS: styles.dropdownInput,
+                            inputAndroid: styles.dropdownInput,
+                            iconContainer: styles.iconContainer,
+                          }}
+                          Icon={() => (
+                            <MaterialIcons
+                              name="arrow-drop-down"
+                              size={24}
+                              color="#888"
+                            />
+                          )}
+                        />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <RNPickerSelect
+                          value={String(splitTime(slot.startTime).minute)}
+                          onValueChange={(minStr) => {
+                            const minute = parseInt(minStr, 10);
+                            const { hour } = splitTime(slot.startTime);
+                            updateTimeSlot(
+                              slotIndex,
+                              'startTime',
+                              formatTime(hour, minute)
+                            );
+                          }}
+                          items={minutes.map((m) => ({
+                            label: `${m} m`,
+                            value: String(m),
+                            key: m,
+                          }))}
+                          placeholder={{ label: 'Minute', value: '' }}
+                          useNativeAndroidPickerStyle={false}
+                          style={{
+                            inputIOS: styles.dropdownInput,
+                            inputAndroid: styles.dropdownInput,
+                            iconContainer: styles.iconContainer,
+                          }}
+                          Icon={() => (
+                            <MaterialIcons
+                              name="arrow-drop-down"
+                              size={24}
+                              color="#888"
+                            />
+                          )}
+                        />
+                      </View>
+                    </View>
+
+                    <Text style={styles.inputLabel}>結束時間</Text>
+                    <View
+                      style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <RNPickerSelect
+                          value={String(splitTime(slot.endTime).hour)}
+                          onValueChange={(hourStr) => {
+                            const hour = parseInt(hourStr, 10);
+                            const { minute } = splitTime(slot.endTime);
+                            updateTimeSlot(
+                              slotIndex,
+                              'endTime',
+                              formatTime(hour, minute)
+                            );
+                          }}
+                          items={hours.map((h) => ({
+                            label: `${h} h`,
+                            value: String(h),
+                            key: h,
+                          }))}
+                          placeholder={{ label: 'Hour', value: '' }}
+                          useNativeAndroidPickerStyle={false}
+                          style={{
+                            inputIOS: styles.dropdownInput,
+                            inputAndroid: styles.dropdownInput,
+                            iconContainer: styles.iconContainer,
+                          }}
+                          Icon={() => (
+                            <MaterialIcons
+                              name="arrow-drop-down"
+                              size={24}
+                              color="#888"
+                            />
+                          )}
+                        />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <RNPickerSelect
+                          value={String(splitTime(slot.endTime).minute)}
+                          onValueChange={(minStr) => {
+                            const minute = parseInt(minStr, 10);
+                            const { hour } = splitTime(slot.endTime);
+                            updateTimeSlot(
+                              slotIndex,
+                              'endTime',
+                              formatTime(hour, minute)
+                            );
+                          }}
+                          items={minutes.map((m) => ({
+                            label: `${m} m`,
+                            value: String(m),
+                            key: m,
+                          }))}
+                          placeholder={{ label: 'Minute', value: '' }}
+                          useNativeAndroidPickerStyle={false}
+                          style={{
+                            inputIOS: styles.dropdownInput,
+                            inputAndroid: styles.dropdownInput,
+                            iconContainer: styles.iconContainer,
+                          }}
+                          Icon={() => (
+                            <MaterialIcons
+                              name="arrow-drop-down"
+                              size={24}
+                              color="#888"
+                            />
+                          )}
+                        />
+                      </View>
+                    </View>
+
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
+                      <Text style={{ marginRight: 10 }}>是否為折扣時段</Text>
+                      <Switch
+                        value={slot.isDiscount}
+                        onValueChange={(value) =>
+                          updateTimeSlot(slotIndex, 'isDiscount', value)
+                        }
+                      />
+                    </View>
+
+                    <TouchableOpacity
+                      onPress={() => confirmRemoveTimeSlot(slotIndex)}
+                      style={{
+                        marginTop: 8,
+                        padding: 8,
+                        backgroundColor: '#ffcccc',
+                        borderRadius: 6,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Text style={{ color: '#900' }}>刪除這個折扣時段</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+
+                <TouchableOpacity
+                  onPress={() =>
+                    setTimeSlots([
+                      ...timeSlots,
+                      {
+                        startTime: '10:00',
+                        endTime: '13:00',
+                        isDiscount: false,
+                      },
+                    ])
+                  }
+                  style={styles.submitButton}
+                >
+                  <Text style={styles.submitButtonText}>新增折扣時段</Text>
+                </TouchableOpacity>
+              </View>
+
               <View style={styles.uploadContainer}>
                 <Text style={styles.inputLabel}>上傳照片</Text>
                 <View style={styles.uploadWrapper}>
