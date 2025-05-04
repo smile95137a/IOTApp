@@ -98,14 +98,14 @@ const BannerManagementScreen = () => {
         <View style={styles.container}>
           <View style={styles.backgroundImageWrapper}>
             <Image
-              source={require('@/assets/iot-admin-bg.png')}
+              source={require('../../assets/iot-admin-bg.png')}
               style={{ width: '100%' }}
               resizeMode="contain"
             />
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title="Banner 管理" />
+            <HeaderBar title="Banner 管理" showLeftButton />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -176,7 +176,7 @@ const BannerManagementScreen = () => {
                   onPress={() => (navigation as any).navigate('AddBanner')}
                 >
                   <Image
-                    source={require('@/assets/iot-logo-white.png')}
+                    source={require('../../assets/iot-logo-white.png')}
                     style={styles.cardImage}
                   />
                   <View style={styles.addCardFooter}>

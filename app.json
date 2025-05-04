@@ -8,14 +8,14 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
       "config": {
-        "googleMapsApiKey": "AIzaSyB6izt_B0opjB59EFe9Nz-JgQTARI4W5GI"
+        "googleMapsApiKey": "AIzaSyC4Ew3u8Dx-dPlckb6H2DnecSJmzlTsoDg"
       },
       "plugins": [
         [
@@ -41,19 +41,19 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyB6izt_B0opjB59EFe9Nz-JgQTARI4W5GI"
+          "apiKey": "AIzaSyC4Ew3u8Dx-dPlckb6H2DnecSJmzlTsoDg"
         }
       }
     },
     "extra": {
       "eas": {
-        "googleMapsApiKey": "AIzaSyB6izt_B0opjB59EFe9Nz-JgQTARI4W5GI",
+        "googleMapsApiKey": "AIzaSyC4Ew3u8Dx-dPlckb6H2DnecSJmzlTsoDg",
         "ENCRYPTION_KEY": "my_secure_encryption_key_123",
         "HASH_KEY": "MYHASHSTART",
         "HASH_VALUE": "MYHASHEND",
         "API_BASE_URL": "https://ipoolspace.tw",
         "projectId": "a9f981a8-30e0-4d5e-ba21-25e6e6512792",
-        "version": "422v1"
+        "version": "427v1"
       }
     },
     "plugins": ["expo-build-properties"]

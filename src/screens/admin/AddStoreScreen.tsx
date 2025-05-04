@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
   Switch,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
@@ -57,7 +58,7 @@ const AddStoreScreen = () => {
   const isSuperAdmin = loginUser?.user?.roles?.some((role) => role.id === 1);
 
   const store = route.params?.store || null;
-  logJson('zxc', store);
+  const mapRef = useRef<MapView>(null);
   const isEditMode = !!store;
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState(
@@ -413,6 +414,15 @@ const AddStoreScreen = () => {
           latitude: location.lat,
           longitude: location.lng,
         });
+        mapRef.current?.animateToRegion(
+          {
+            latitude: location.lat,
+            longitude: location.lng,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
+          1000
+        );
       } else {
       }
     } catch (error: any) {
@@ -448,23 +458,24 @@ const AddStoreScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <View style={styles.backgroundImageWrapper}>
-            <Image
-              source={require('@/assets/iot-admin-bg.png')}
-              style={{ width: '100%' }}
-              resizeMode="contain"
-            />
-          </View>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+          <ScrollView
+            style={styles.container}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.backgroundImageWrapper}>
+              <Image
+                source={require('../../assets/iot-admin-bg.png')}
+                style={{ width: '100%' }}
+                resizeMode="contain"
+              />
+            </View>
+            <View style={styles.headerWrapper}>
+              <HeaderBar title={isEditMode ? '編輯店家' : '新增店家'} />
+            </View>
 
-          <View style={styles.headerWrapper}>
-            <HeaderBar title={isEditMode ? '編輯店家' : '新增店家'} />
-          </View>
-          <ScrollView style={styles.contentWrapper}>
-            <ScrollView contentContainerStyle={styles.container}>
-              <Text style={styles.header}>
-                {isEditMode ? '編輯店家' : '新增店家'}
-              </Text>
+            <View style={styles.contentWrapper}>
+              <Text style={styles.inputLabel}>加盟商</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -501,6 +512,7 @@ const AddStoreScreen = () => {
                   />
                 </View>
               </View>
+              <Text style={styles.inputLabel}>店長</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -537,13 +549,14 @@ const AddStoreScreen = () => {
                   />
                 </View>
               </View>
-
+              <Text style={styles.inputLabel}>店家名稱</Text>
               <TextInput
                 style={styles.input}
                 placeholder="店家名稱"
                 value={name}
                 onChangeText={setName}
               />
+              <Text style={styles.inputLabel}>店家地址</Text>
               <TextInput
                 style={styles.input}
                 placeholder="地址"
@@ -555,9 +568,10 @@ const AddStoreScreen = () => {
                   }
                 }}
               />
-
+              <Text style={styles.inputLabel}>店家地圖</Text>
               <View style={styles.mapContainer}>
                 <MapView
+                  ref={mapRef}
                   provider={PROVIDER_DEFAULT}
                   style={styles.map}
                   initialRegion={{
@@ -567,10 +581,13 @@ const AddStoreScreen = () => {
                     longitudeDelta: 0.01,
                   }}
                   onPress={handleMapPress}
+                  onStartShouldSetResponder={() => true}
+                  onMoveShouldSetResponder={() => true}
                 >
                   {selectedLocation && <Marker coordinate={selectedLocation} />}
                 </MapView>
               </View>
+              <Text style={styles.inputLabel}>緯度 (Lat)</Text>
               <TextInput
                 style={styles.input}
                 placeholder="緯度 (Lat)"
@@ -579,6 +596,7 @@ const AddStoreScreen = () => {
                 onChangeText={setLat}
                 readOnly={true}
               />
+              <Text style={styles.inputLabel}>經度 (Lon)</Text>
               <TextInput
                 style={styles.input}
                 placeholder="經度 (Lon)"
@@ -587,6 +605,7 @@ const AddStoreScreen = () => {
                 onChangeText={setLon}
                 readOnly={true}
               />
+              <Text style={styles.inputLabel}>開台押金</Text>
               <TextInput
                 style={styles.input}
                 placeholder="開台押金"
@@ -594,6 +613,7 @@ const AddStoreScreen = () => {
                 value={deposit}
                 onChangeText={setDeposit}
               />
+              <Text style={styles.inputLabel}>溫馨提示</Text>
               <TextInput
                 style={styles.input}
                 placeholder="溫馨提示"
@@ -601,12 +621,14 @@ const AddStoreScreen = () => {
                 onChangeText={setHint}
                 multiline
               />
+              <Text style={styles.inputLabel}>電話</Text>
               <TextInput
                 style={styles.input}
                 placeholder="電話"
                 value={contactPhone}
                 onChangeText={setContactPhone}
               />
+              <Text style={styles.inputLabel}>費用與時段</Text>
               {pricingSchedules.map((schedule, index) => (
                 <View key={index} style={{ marginBottom: 20 }}>
                   <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>
@@ -1013,7 +1035,6 @@ const AddStoreScreen = () => {
                   </TouchableOpacity>
                 </View>
               ))}
-
               <View style={styles.uploadContainer}>
                 <Text style={styles.inputLabel}>上傳照片</Text>
                 <View style={styles.uploadWrapper}>
@@ -1078,9 +1099,9 @@ const AddStoreScreen = () => {
                   </Text>
                 </TouchableOpacity>
               )}
-            </ScrollView>
+            </View>
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -1229,8 +1250,10 @@ const styles = StyleSheet.create({
     zIndex: 1, // 確保圖片在最上層
   },
   inputLabel: {
-    fontSize: 22,
-    marginBottom: 5,
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 6,
+    color: '#333',
   },
   dropdownInput: {
     borderWidth: 1,

@@ -21,13 +21,15 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import Feather from '@expo/vector-icons/Feather';
 import moment from 'moment';
-import { logJson } from '@/utils/logJsonUtils';
+import { setSelectedStore } from '@/store/storeSelectionSlice';
 import { useInfoDialog } from '@/hooks/useInfoDialog';
 import { getErrorMessage } from '@/utils/errorUtils';
+import { logJson } from '@/utils/logJsonUtils';
 
 const StoreDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const { openInfoDialog } = useInfoDialog();
+
   const { store } = route.params;
   const [tables, setTables] = useState<any[]>([]);
   const [todayPricing, setTodayPricing] = useState<any>(null);
@@ -62,27 +64,47 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
       );
 
       if (!todaySchedule) return;
+
       setTodayPricing(todaySchedule);
 
       const now = moment();
+      const openTime = moment(todaySchedule.openTime, 'HH:mm');
+      const closeTime = moment(todaySchedule.closeTime, 'HH:mm');
 
-      const discountSlot = todaySchedule.discountTimeSlots.find((slot: any) => {
-        const start = moment(slot.startTime, 'HH:mm');
-        const end = moment(slot.endTime, 'HH:mm');
-        return now.isBetween(start, end);
-      });
-      const regularSlot = todaySchedule.regularTimeSlots.find((slot: any) => {
-        const start = moment(slot.startTime, 'HH:mm');
-        const end = moment(slot.endTime, 'HH:mm');
-        return now.isBetween(start, end);
-      });
+      const discountSlots = todaySchedule.discountTimeSlots || [];
 
-      setCurrentDiscountSlot(discountSlot || null);
-      setCurrentRegularSlot(regularSlot || null);
+      // 取最早開始時間與最晚結束時間
+      if (discountSlots.length > 0) {
+        const sortedByStart = [...discountSlots].sort((a, b) =>
+          moment(a.startTime, 'HH:mm').diff(moment(b.startTime, 'HH:mm'))
+        );
+        const sortedByEnd = [...discountSlots].sort((a, b) =>
+          moment(b.endTime, 'HH:mm').diff(moment(a.endTime, 'HH:mm'))
+        );
+
+        const discountSlotRange = {
+          startTime: sortedByStart[0].startTime,
+          endTime: sortedByEnd[0].endTime,
+          isDiscount: true,
+        };
+
+        setCurrentDiscountSlot(discountSlotRange);
+      } else {
+        setCurrentDiscountSlot(null);
+      }
+
+      const defaultRegularSlot = {
+        startTime: todaySchedule.openTime,
+        endTime: todaySchedule.closeTime,
+        isDiscount: false,
+      };
+
+      setCurrentRegularSlot(defaultRegularSlot);
     };
 
     loadTables();
     getTodayPricing();
+    dispatch(setSelectedStore(store));
   }, [store.uid]);
 
   const handleShare = async () => {
@@ -92,6 +114,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         message: `店铺名称: ${store.name}\n地址: ${store.address}\n快来看看吧！`,
         url: 'https://example.com',
       });
+
       dispatch(hideLoading());
 
       if (result.action === Share.sharedAction) {
@@ -118,6 +141,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
 
     try {
       dispatch(showLoading());
+
       const supported = await Linking.canOpenURL(phoneNumber);
       dispatch(hideLoading());
       if (supported) {
@@ -177,14 +201,14 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
               </View>
               <TouchableOpacity style={styles.pricingCard}>
                 <Text style={styles.pricingAmount}>
-                  <NumberFormatter number={~~todayPricing.regularRate} />
+                  <NumberFormatter number={~~todayPricing.regularRate * 60} />
                   元/小時
                 </Text>
                 <Text style={styles.pricingDetails}>一般時段</Text>
                 <Text style={styles.pricingDetails}>
                   {currentRegularSlot ? (
                     <Text style={styles.pricingDetails}>
-                      目前時段：{currentRegularSlot.startTime} -{' '}
+                      {currentRegularSlot.startTime} -
                       {currentRegularSlot.endTime}
                     </Text>
                   ) : (
@@ -194,14 +218,14 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.pricingCard}>
                 <Text style={styles.pricingAmount}>
-                  <NumberFormatter number={~~todayPricing.discountRate} />
+                  <NumberFormatter number={~~todayPricing.discountRate * 60} />
                   元/小時
                 </Text>
                 <Text style={styles.pricingDetails}>優惠時段</Text>
                 <Text style={styles.pricingDetails}>
                   {currentDiscountSlot ? (
                     <Text style={styles.pricingDetails}>
-                      目前時段：{currentDiscountSlot.startTime} -{' '}
+                      {currentDiscountSlot.startTime} -
                       {currentDiscountSlot.endTime}
                     </Text>
                   ) : (
@@ -243,7 +267,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
                       }}
                     >
                       <Image
-                        source={require('@/assets/iot-table-enable.png')}
+                        source={require('../assets/iot-table-enable.png')}
                         style={[styles.tableImage, styles.tableImageAvailable]}
                       />
                       <View
@@ -284,7 +308,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
   storeDetails: {
     flexDirection: 'row',
     marginHorizontal: 20,

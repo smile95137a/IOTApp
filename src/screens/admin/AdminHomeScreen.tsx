@@ -6,7 +6,7 @@ const AdminHomeScreen = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('@/assets/iot-logo-white.png')}
+        source={require('../../assets/iot-logo-white.png')}
         style={styles.logo}
         resizeMode="contain"
       />

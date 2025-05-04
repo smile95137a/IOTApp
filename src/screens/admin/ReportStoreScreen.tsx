@@ -76,7 +76,7 @@ const ReportStoreScreen = () => {
         <View style={styles.container}>
           <View style={styles.backgroundImageWrapper}>
             <Image
-              source={require('@/assets/iot-admin-bg.png')}
+              source={require('../../assets/iot-admin-bg.png')}
               style={{ width: '100%' }}
               resizeMode="contain"
             />
@@ -101,7 +101,7 @@ const ReportStoreScreen = () => {
                     }
                   >
                     <Image
-                      source={require('@/assets/iot-logo-black.png')}
+                      source={require('../../assets/iot-logo-black.png')}
                       style={styles.cardImage}
                     />
                     <View style={styles.cardFooter}>

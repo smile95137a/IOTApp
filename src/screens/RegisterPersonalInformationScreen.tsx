@@ -32,7 +32,6 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   const genderOptions = [
     { label: '男', value: 'male' },
     { label: '女', value: 'female' },
-    { label: '其他', value: 'other' },
   ];
 
   const dispatch = useDispatch();
@@ -285,15 +284,15 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
                 </View>
               </View>
 
-              {/* 匿名 ID */}
+              {/* 暱稱 */}
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>匿名 ID</Text>
+                <Text style={styles.inputLabel}>暱稱</Text>
                 <View
                   style={[styles.inputWrapper, styles.disabledInputWrapper]}
                 >
                   <TextInput
                     style={styles.input}
-                    placeholder="請輸入匿名ID"
+                    placeholder="請輸入暱稱"
                     value={anonymousId}
                     onChangeText={setAnonymousId}
                   />

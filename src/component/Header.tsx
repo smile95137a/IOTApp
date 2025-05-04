@@ -6,6 +6,7 @@ interface HeaderProps {
   title?: string;
   onBackPress?: () => void;
   rightIcon?: string;
+  rightText?: string;
   onRightPress?: () => void;
   isDarkMode?: boolean;
 }
@@ -14,6 +15,7 @@ const Header = ({
   title = '',
   onBackPress,
   rightIcon,
+  rightText,
   onRightPress,
   isDarkMode = false,
 }: HeaderProps) => {
@@ -34,8 +36,8 @@ const Header = ({
           <Image
             source={
               isDarkMode
-                ? require('@/assets/iot-logo-no-text.png') // 白色模式 Logo
-                : require('@/assets/iot-logo-black.png') // 黑色模式 Logo
+                ? require('../assets/iot-logo-no-text.png') // 白色模式 Logo
+                : require('../assets/iot-logo-black.png') // 黑色模式 Logo
             }
             style={styles.logo}
           />
@@ -48,12 +50,19 @@ const Header = ({
       </View>
 
       {/* 右侧按钮 */}
-      {onRightPress && rightIcon ? (
+      {/* 右側：不可點的文字 or 可點的 icon */}
+      {rightText ? (
+        <View>
+          <Text style={[styles.rightText, { color: iconColor }]}>
+            {rightText}
+          </Text>
+        </View>
+      ) : onRightPress && rightIcon ? (
         <TouchableOpacity onPress={onRightPress}>
           <Icon name={rightIcon} size={48} color={iconColor} />
         </TouchableOpacity>
       ) : (
-        <View style={{ width: 48 }} /> // 占位符，确保标题居中
+        <View style={{ width: 48 }} />
       )}
     </View>
   );
@@ -90,6 +99,11 @@ const styles = StyleSheet.create({
     width: 63,
     height: 72,
     resizeMode: 'contain',
+  },
+  rightText: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginRight: 4,
   },
 });
 

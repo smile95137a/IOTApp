@@ -115,14 +115,14 @@ const VendorManagementScreen = () => {
         <View style={styles.container}>
           <View style={styles.backgroundImageWrapper}>
             <Image
-              source={require('@/assets/iot-admin-bg.png')}
+              source={require('../../assets/iot-admin-bg.png')}
               style={{ width: '100%' }}
               resizeMode="contain"
             />
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title="加盟商管理" />
+            <HeaderBar title="加盟商管理" showLeftButton />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -140,7 +140,7 @@ const VendorManagementScreen = () => {
                     }}
                   >
                     <Image
-                      source={require('@/assets/iot-logo-black.png')}
+                      source={require('../../assets/iot-logo-black.png')}
                       style={styles.cardImage}
                     />
                     <View style={styles.cardFooter}>
@@ -187,7 +187,7 @@ const VendorManagementScreen = () => {
                   onPress={() => (navigation as any).navigate('AddVendor')}
                 >
                   <Image
-                    source={require('@/assets/iot-logo-white.png')}
+                    source={require('../../assets/iot-logo-white.png')}
                     style={styles.cardImage}
                   />
                   <View style={styles.addCardFooter}>

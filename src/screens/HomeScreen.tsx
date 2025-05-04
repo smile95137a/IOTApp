@@ -95,7 +95,7 @@ const HomeScreen = ({ navigation }) => {
         style={styles.gradient}
       >
         <View style={styles.container}>
-          <Header title={appVersion} isDarkMode />
+          <Header rightText={appVersion} isDarkMode />
           <ScrollView contentContainerStyle={styles.content}>
             <ImageCarousel />
             <HomeOptionButton

@@ -1,5 +1,4 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useEffect } from 'react';
 import DatePickerComponent from '@/component/DatePickerComponent';
 import MonthPicker from './MonthPicker';
 import WeekPicker from './WeekPicker';
@@ -22,10 +21,18 @@ const DynamicDatePicker = ({
   setEndDate,
   style,
 }: Props) => {
+  useEffect(() => {
+    if (periodType === 'WEEK') {
+      const autoEnd = new Date(startDate);
+      autoEnd.setDate(startDate.getDate() + 7);
+      setEndDate(autoEnd);
+    }
+  }, [periodType, startDate]);
+
   if (periodType === 'WEEK') {
     return (
-      <WeekPicker
-        label="週次"
+      <DatePickerComponent
+        label="開始日期"
         date={startDate}
         setDate={setStartDate}
         style={style}
@@ -55,7 +62,6 @@ const DynamicDatePicker = ({
     );
   }
 
-  // 預設：日報
   return (
     <>
       <DatePickerComponent

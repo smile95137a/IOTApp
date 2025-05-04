@@ -116,8 +116,8 @@ const GameHistoryScreen = ({ navigation }: any) => {
       dispatch(hideLoading());
       if (res.success) {
         await openInfoDialog({
-          title: '已取消預約',
-          content: '',
+          title: `已取消預約`,
+          content: '球桌租金已退回至蹭送金額，請確認。',
           confirmText: '我知道了',
         });
         loadTransactions();

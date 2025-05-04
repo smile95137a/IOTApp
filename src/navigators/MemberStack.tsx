@@ -210,12 +210,12 @@ const MainLayout = ({ children }) => {
                   />
                 ) : localUser?.gender === 'female' ? (
                   <Image
-                    source={require('@/assets/iot-girl.png')}
+                    source={require('../assets/iot-girl.png')}
                     style={styles.avatar}
                   />
                 ) : (
                   <Image
-                    source={require('@/assets/iot-boy.png')}
+                    source={require('../assets/iot-boy.png')}
                     style={styles.avatar}
                   />
                 )}

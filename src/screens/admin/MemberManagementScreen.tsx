@@ -21,6 +21,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
+import CheckBox from 'expo-checkbox';
 
 const MemberManagementScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,16 +32,22 @@ const MemberManagementScreen = ({ navigation }) => {
   const [pointAmount, setPointAmount] = useState('');
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
+  const [isBlacklistOnly, setIsBlacklistOnly] = useState(false);
 
   const filteredMembers = userList.filter((member) => {
     const keyword = searchText.toLowerCase();
-    return (
+    const matchesKeyword =
       member.name?.toLowerCase().includes(keyword) ||
       member.email?.toLowerCase().includes(keyword) ||
       member.anonymousId?.toLowerCase().includes(keyword) ||
       member.uid?.toLowerCase().includes(keyword) ||
-      member.phoneNumber?.includes(keyword)
+      member.phoneNumber?.includes(keyword);
+
+    const isBlacklist = member.roles?.some(
+      (role) => role.roleName === 'ROLE_BLACKLIST'
     );
+
+    return matchesKeyword && (!isBlacklistOnly || isBlacklist);
   });
 
   const loadMembers = async () => {
@@ -166,14 +173,14 @@ const MemberManagementScreen = ({ navigation }) => {
       <View style={styles.container}>
         <View style={styles.fixedImageContainer}>
           <Image
-            source={require('@/assets/iot-admin-bg.png')}
+            source={require('../../assets/iot-admin-bg.png')}
             resizeMode="contain"
           />
         </View>
 
         {/* Header */}
         <View style={styles.header}>
-          <HeaderBar title="會員管理" />
+          <HeaderBar title="會員管理" showLeftButton />
         </View>
 
         {/* Main Content */}
@@ -188,6 +195,19 @@ const MemberManagementScreen = ({ navigation }) => {
 
             {isSelectionMode ? (
               <View style={styles.selectionToolbar}>
+                <TouchableOpacity
+                  style={[
+                    styles.toolbarButton,
+                    isBlacklistOnly && styles.activeBlacklistButton,
+                  ]}
+                  onPress={() => setIsBlacklistOnly(!isBlacklistOnly)}
+                >
+                  <Icon
+                    name="block"
+                    size={24}
+                    color={isBlacklistOnly ? '#FFFFFF' : '#F44336'}
+                  />
+                </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.toolbarButton}
                   onPress={handleOpenPointModal}
@@ -245,21 +265,34 @@ const MemberManagementScreen = ({ navigation }) => {
                     />
                   </View>
                 )}
+                {item?.userImg ? (
+                  <Image
+                    source={{ uri: getImageUrl(item.userImg) }}
+                    style={styles.memberImage}
+                  />
+                ) : item?.gender === 'female' ? (
+                  <Image
+                    source={require('../../assets/iot-girl.png')}
+                    style={styles.memberImage}
+                  />
+                ) : item?.gender === 'male' ? (
+                  <Image
+                    source={require('../../assets/iot-boy.png')}
+                    style={styles.memberImage}
+                  />
+                ) : (
+                  <Image
+                    source={require('../../assets/iot-user-logo.jpg')}
+                    style={styles.memberImage}
+                  />
+                )}
 
-                <Image
-                  source={
-                    item?.userImg
-                      ? { uri: getImageUrl(item.userImg) }
-                      : require('@/assets/iot-user-logo.jpg')
-                  }
-                  style={styles.memberImage}
-                />
                 <View style={styles.memberInfo}>
                   <Text style={styles.memberName}>{item.name}</Text>
                   <Text style={styles.memberId}>UUID：{item.uid}</Text>
                   {item.anonymousId && (
                     <Text style={styles.memberId}>
-                      匿名 ID：{item.anonymousId}
+                      暱稱：{item.anonymousId}
                     </Text>
                   )}
                   <Text style={styles.memberPhone}>
@@ -510,6 +543,39 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#444',
     marginTop: 2,
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderColor: '#ccc',
+    borderWidth: 1,
+  },
+
+  filterLabel: {
+    marginLeft: 10,
+    fontSize: 15,
+    color: '#333',
+    fontWeight: '500',
+  },
+  blacklistToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 6,
+  },
+
+  blacklistLabel: {
+    marginLeft: 6,
+    fontSize: 14,
+    color: '#333',
+  },
+  activeBlacklistButton: {
+    backgroundColor: '#F44336', // 紅色代表「啟用黑名單過濾」
+    borderColor: '#F44336',
   },
 });
 

@@ -34,7 +34,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
       )}
       <View style={styles.headerContent}>
         <Image
-          source={require('@/assets/iot-logo-no-text.png')}
+          source={require('../../assets/iot-logo-no-text.png')}
           style={styles.logo}
         />
         <Text style={styles.header}>{title}</Text>

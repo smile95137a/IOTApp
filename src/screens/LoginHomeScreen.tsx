@@ -124,7 +124,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
         <View style={styles.container}>
           {/* Logo */}
           <Image
-            source={require('@/assets/iot-logo-no-text.png')}
+            source={require('../assets/iot-logo-no-text.png')}
             style={styles.logo}
           />
 
@@ -179,7 +179,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
               onPress={handleGoogleLogin}
             >
               <Image
-                source={require('@/assets/iot-google.png')}
+                source={require('../assets/iot-google.png')}
                 style={styles.socialIcon}
               />
               <View style={styles.socialButtonTextContainer}>
@@ -191,7 +191,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
               onPress={handleAppleLogin}
             >
               <Image
-                source={require('@/assets/iot-apple.png')}
+                source={require('../assets/iot-apple.png')}
                 style={styles.socialIcon}
               />
               <View style={styles.socialButtonTextContainer}>
@@ -203,7 +203,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
               onPress={handleFacebookLogin}
             >
               <Image
-                source={require('@/assets/iot-fb.png')}
+                source={require('../assets/iot-fb.png')}
                 style={styles.socialIcon}
               />
               <View style={styles.socialButtonTextContainer}>

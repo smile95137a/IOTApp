@@ -130,7 +130,7 @@ const PaymentScreen = ({ navigation }: any) => {
       label: '儲值金結帳',
       detail: '',
       icon: 'account-balance-wallet',
-      image: require('@/assets/iot-pay1.png'),
+      image: require('../../assets/iot-pay1.png'),
       payType: 1,
     },
     {
@@ -143,21 +143,21 @@ const PaymentScreen = ({ navigation }: any) => {
       label: 'LINE PAY',
       detail: '',
       icon: 'payment',
-      image: require('@/assets/iot-line-pay.png'),
+      image: require('../../assets/iot-line-pay.png'),
       payType: 3,
     },
     {
       label: '街口支付',
       detail: '',
       icon: 'store',
-      image: require('@/assets/iot-l-pay.png'),
+      image: require('../../assets/iot-l-pay.png'),
       payType: 4,
     },
     {
       label: 'Apple Pay',
       detail: '',
       icon: 'apple',
-      image: require('@/assets/iot-apple-pay.png'),
+      image: require('../../assets/iot-apple-pay.png'),
       payType: 5,
     },
   ];
@@ -216,7 +216,7 @@ const PaymentScreen = ({ navigation }: any) => {
                   <Icon name="chevron-right" size={32} color="#000" />
                 </View>
                 <Image
-                  source={require('@/assets/iot-pay-bg.png')}
+                  source={require('../../assets/iot-pay-bg.png')}
                   style={styles.absoluteImage}
                   resizeMode="contain"
                 />

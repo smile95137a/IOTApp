@@ -76,7 +76,7 @@ const DeviceTableManagementScreen = () => {
       <View style={styles.container}>
         <View style={styles.fixedImageContainer}>
           <Image
-            source={require('@/assets/iot-admin-bg.png')}
+            source={require('../../assets/iot-admin-bg.png')}
             resizeMode="contain"
           />
         </View>
@@ -97,7 +97,7 @@ const DeviceTableManagementScreen = () => {
                 <View style={styles.row}>
                   {/* 圖標和桌台名稱在同一行 */}
                   <Image
-                    source={require('@/assets/iot-home1.png')} // 替換為桌台圖標路徑
+                    source={require('../../assets/iot-home1.png')} // 替換為桌台圖標路徑
                     style={styles.cardIcon}
                   />
                   <Text style={styles.cardTitle}>{table.tableNumber}</Text>

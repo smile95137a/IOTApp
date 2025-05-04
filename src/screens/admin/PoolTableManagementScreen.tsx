@@ -79,7 +79,7 @@ const PoolTableManagementScreen = () => {
       <View style={styles.container}>
         <View style={styles.fixedImageContainer}>
           <Image
-            source={require('@/assets/iot-admin-bg.png')}
+            source={require('../../assets/iot-admin-bg.png')}
             resizeMode="contain"
           />
         </View>
@@ -102,7 +102,7 @@ const PoolTableManagementScreen = () => {
                   }
                 >
                   <Image
-                    source={require('@/assets/iot-table-enable.png')}
+                    source={require('../../assets/iot-table-enable.png')}
                     style={styles.cardImg}
                   />
                   <View style={styles.cardFooter}>
@@ -124,7 +124,7 @@ const PoolTableManagementScreen = () => {
                 }
               >
                 <Image
-                  source={require('@/assets/iot-table-enable.png')}
+                  source={require('../../assets/iot-table-enable.png')}
                   style={styles.addTableButtonImg}
                 />
                 <View style={styles.addTableButtonFooter}>

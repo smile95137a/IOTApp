@@ -33,12 +33,6 @@ import { useDialog } from '@/context/DialogContext';
 import { getErrorMessage } from '@/utils/errorUtils';
 
 const EditPersonalInfoScreen = ({ route, navigation }: any) => {
-  const genderOptions = [
-    { label: '男', value: 'male' },
-    { label: '女', value: 'female' },
-    { label: '其他', value: 'other' },
-  ];
-
   const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -235,11 +229,11 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
           </View>
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>匿名 ID *</Text>
+          <Text style={styles.inputLabel}>暱稱 *</Text>
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder="請輸入匿名 ID"
+              placeholder="請輸入暱稱"
               value={anonymousId}
               onChangeText={setAnonymousId}
             />

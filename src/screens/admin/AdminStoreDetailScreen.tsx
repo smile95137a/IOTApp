@@ -281,7 +281,7 @@ const AdminStoreDetailScreen = () => {
       <View style={styles.container}>
         <View style={styles.fixedImageContainer}>
           <Image
-            source={require('@/assets/iot-admin-bg.png')}
+            source={require('../../assets/iot-admin-bg.png')}
             resizeMode="contain"
           />
         </View>
@@ -291,197 +291,228 @@ const AdminStoreDetailScreen = () => {
         </View>
 
         <ScrollView contentContainerStyle={styles.containers}>
-          {storeDetail ? (
-            <View style={styles.detailBlock}>
-              <Text style={styles.label}>店家名稱</Text>
-              <Text style={styles.value}>{storeDetail.name}</Text>
-
-              <Text style={styles.label}>桌檯統計</Text>
-              <View style={styles.tableStatsRow}>
-                <View style={styles.statsBlockFull}>
-                  <Text style={styles.statsLabel}>總數</Text>
-                  <Text style={styles.statsValue}>{tableStats.total} 台</Text>
+          <View style={styles.detailBlock}>
+            {storeDetail && (
+              <>
+                <Text style={styles.label}>店家名稱</Text>
+                <Text style={styles.value}>{storeDetail.name}</Text>
+              </>
+            )}
+            {storeReport && (
+              <>
+                <Text style={styles.label}>今日營運數據</Text>
+                <View style={styles.sectionBlock}>
+                  <Text style={styles.value}>
+                    消費金額：{storeReport.todayTotalAmount || 0} 元 /
+                    {storeReport.todayTransactionCount || 0} 筆
+                  </Text>
+                  <Text style={styles.value}>
+                    儲值金額：{storeReport.todayTopupAmount || 0} 元 /
+                    {storeReport.todayTopupCount || 0} 筆
+                  </Text>
                 </View>
+              </>
+            )}
+            <Text style={styles.label}>監控裝置</Text>
+            <View style={styles.sectionBlock}>
+              <View style={styles.gridRow}>
+                {monitors.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={[
+                      styles.gridItemColumn,
+                      !item.enabled && styles.monitorAbnormalBorder,
+                    ]}
+                    onPress={() => item.enabled && openMonitorDetail(item)}
+                  >
+                    <View>
+                      <Text style={styles.deviceItem}>{item.name}</Text>
+                      {!item.enabled && (
+                        <Text style={styles.abnormalText}>異常狀態</Text>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))}
               </View>
-              <View style={styles.tableStatsRow}>
-                <View style={styles.statsBlockHalf}>
-                  <Text style={styles.statsLabel}>使用中</Text>
-                  <Text style={styles.statsValue}>{tableStats.used} 台</Text>
+            </View>
+            {storeDetail ? (
+              <>
+                <Text style={styles.label}>桌台設備統計</Text>
+                <View style={styles.tableStatsRow}>
+                  <View style={styles.statsBlockFull}>
+                    <Text style={styles.statsLabel}>總數</Text>
+                    <Text style={styles.statsValue}>{tableStats.total} 台</Text>
+                  </View>
                 </View>
-                <View style={styles.statsBlockHalf}>
-                  <Text style={styles.statsLabel}>未使用</Text>
-                  <Text style={styles.statsValue}>{tableStats.unused} 台</Text>
-                </View>
-              </View>
-              {storeReport && (
-                <>
-                  <Text style={styles.label}>今日營運數據</Text>
-                  <View style={styles.sectionBlock}>
-                    <Text style={styles.value}>
-                      消費金額：{storeReport.todayTotalAmount || 0} 元 /{' '}
-                      {storeReport.todayTransactionCount || 0} 筆
-                    </Text>
-                    <Text style={styles.value}>
-                      儲值金額：{storeReport.todayTopupAmount || 0} 元 /{' '}
-                      {storeReport.todayTopupCount || 0} 筆
+                <View style={styles.tableStatsRow}>
+                  <View style={styles.statsBlockHalf}>
+                    <Text style={styles.statsLabel}>使用中</Text>
+                    <Text style={styles.statsValue}>{tableStats.used} 台</Text>
+                  </View>
+                  <View style={styles.statsBlockHalf}>
+                    <Text style={styles.statsLabel}>未使用</Text>
+                    <Text style={styles.statsValue}>
+                      {tableStats.unused} 台
                     </Text>
                   </View>
-                </>
-              )}
+                </View>
+                <Text style={styles.label}>桌台設備</Text>
+                <View style={styles.sectionBlock}>
+                  {poolTables.length === 0 ? (
+                    <Text style={{ textAlign: 'center', color: '#999' }}>
+                      尚無桌檯資料
+                    </Text>
+                  ) : (
+                    poolTables.map((table) => (
+                      <View key={table.id} style={styles.poolTableCard}>
+                        <View style={styles.poolTableRow}>
+                          <Text style={styles.poolTableName}>
+                            桌檯名稱：{table.tableNumber || `桌檯 ${table.id}`}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.poolTableStatus,
+                              {
+                                color:
+                                  table.status === 'FAULT'
+                                    ? '#FF9800'
+                                    : table.isUse
+                                    ? '#C62828'
+                                    : '#388E3C',
+                              },
+                            ]}
+                          >
+                            {table.status === 'FAULT'
+                              ? '故障'
+                              : table.isUse
+                              ? '使用中'
+                              : '空閒'}
+                          </Text>
+                        </View>
 
-              <Text style={styles.label}>營業設備</Text>
-              <View style={styles.sectionBlock}>
-                {poolTables.length === 0 ? (
-                  <Text style={{ textAlign: 'center', color: '#999' }}>
-                    尚無桌檯資料
-                  </Text>
-                ) : (
-                  poolTables.map((table) => (
-                    <View key={table.id} style={styles.poolTableCard}>
-                      <View style={styles.poolTableRow}>
-                        <Text style={styles.poolTableName}>
-                          桌檯名稱：{table.tableNumber || `桌檯 ${table.id}`}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.poolTableStatus,
-                            {
-                              color:
-                                table.status === 'FAULT'
-                                  ? '#FF9800'
-                                  : table.isUse
-                                  ? '#C62828'
-                                  : '#388E3C',
-                            },
-                          ]}
-                        >
-                          {table.status === 'FAULT'
-                            ? '故障'
-                            : table.isUse
-                            ? '使用中'
-                            : '空閒'}
-                        </Text>
+                        <View style={styles.buttonRow}>
+                          <TouchableOpacity
+                            style={[
+                              styles.forceCloseButton,
+                              table.status === 'FAULT' && {
+                                backgroundColor: '#ccc',
+                              },
+                            ]}
+                            disabled={table.status === 'FAULT'}
+                            onPress={() => handleForceClose(table)}
+                          >
+                            <Text style={styles.forceCloseText}>強制關台</Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            style={[
+                              styles.reportIssueButton,
+                              table.status === 'FAULT' && {
+                                backgroundColor: '#ccc',
+                              },
+                            ]}
+                            disabled={table.status === 'FAULT'}
+                            onPress={() => handleReportIssue(table)}
+                          >
+                            <Text style={styles.reportIssueText}>通報故障</Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
-
-                      <View style={styles.buttonRow}>
-                        <TouchableOpacity
-                          style={[
-                            styles.forceCloseButton,
-                            table.status === 'FAULT' && {
-                              backgroundColor: '#ccc',
-                            },
-                          ]}
-                          disabled={table.status === 'FAULT'}
-                          onPress={() => handleForceClose(table)}
-                        >
-                          <Text style={styles.forceCloseText}>強制關台</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={[
-                            styles.reportIssueButton,
-                            table.status === 'FAULT' && {
-                              backgroundColor: '#ccc',
-                            },
-                          ]}
-                          disabled={table.status === 'FAULT'}
-                          onPress={() => handleReportIssue(table)}
-                        >
-                          <Text style={styles.reportIssueText}>通報故障</Text>
-                        </TouchableOpacity>
+                    ))
+                  )}
+                </View>
+                <Text style={styles.label}>環境設備統計</Text>
+                {equipments.length > 0 && (
+                  <>
+                    <View style={styles.tableStatsRow}>
+                      <View style={styles.statsBlockFull}>
+                        <Text style={styles.statsLabel}>總數</Text>
+                        <Text style={styles.statsValue}>
+                          {equipments.length} 台
+                        </Text>
                       </View>
                     </View>
-                  ))
+                    <View style={styles.tableStatsRow}>
+                      <View style={styles.statsBlockHalf}>
+                        <Text style={styles.statsLabel}>啟用中</Text>
+                        <Text style={styles.statsValue}>
+                          {equipments.filter((e) => e.enabled).length} 台
+                        </Text>
+                      </View>
+                      <View style={styles.statsBlockHalf}>
+                        <Text style={styles.statsLabel}>未啟用</Text>
+                        <Text style={styles.statsValue}>
+                          {equipments.filter((e) => !e.enabled).length} 台
+                        </Text>
+                      </View>
+                    </View>
+                  </>
                 )}
-              </View>
+                <Text style={styles.label}>環境設備</Text>
+                <View style={styles.sectionBlock}>
+                  <View style={styles.gridRow}>
+                    {equipments.map((item, index) => (
+                      <View key={item.id} style={styles.gridItemColumn}>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginBottom: 8,
+                          }}
+                        >
+                          <MaterialCommunityIcons
+                            name={getIconName(item.name)}
+                            size={28}
+                            color={item.enabled ? '#22C55E' : '#A1A1AA'}
+                            style={{ marginRight: 10 }}
+                          />
+                          <Text style={styles.deviceItem}>{item.name}</Text>
+                        </View>
+                        <View style={{ alignItems: 'flex-end' }}>
+                          <Switch
+                            value={item.enabled}
+                            onValueChange={() => toggleEquipmentSwitch(index)}
+                          />
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              </>
+            ) : (
+              <Text>載入中...</Text>
+            )}
 
-              <Text style={styles.label}>環境設備</Text>
-              <View style={styles.sectionBlock}>
-                <View style={styles.gridRow}>
-                  {equipments.map((item, index) => (
-                    <View key={item.id} style={styles.gridItemColumn}>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          marginBottom: 8,
-                        }}
-                      >
-                        <MaterialCommunityIcons
-                          name={getIconName(item.name)}
-                          size={28}
-                          color={item.enabled ? '#22C55E' : '#A1A1AA'}
-                          style={{ marginRight: 10 }}
-                        />
-                        <Text style={styles.deviceItem}>{item.name}</Text>
-                      </View>
-                      <View style={{ alignItems: 'flex-end' }}>
-                        <Switch
-                          value={item.enabled}
-                          onValueChange={() => toggleEquipmentSwitch(index)}
-                        />
-                      </View>
-                    </View>
-                  ))}
+            <Modal
+              visible={modalVisible}
+              animationType="slide"
+              transparent={true}
+              onRequestClose={closeMonitorDetail}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>監控裝置詳情</Text>
+                  <Text style={styles.modalItem}>
+                    名稱：{selectedMonitor?.name}
+                  </Text>
+                  <Text style={styles.modalItem}>監控畫面：</Text>
+                  <Image
+                    source={require('../../assets/iot-mom.jpg')}
+                    style={{
+                      width: '100%',
+                      height: 200,
+                      marginTop: 10,
+                      borderRadius: 8,
+                    }}
+                    resizeMode="cover"
+                  />
+                  <Text style={styles.modalClose} onPress={closeMonitorDetail}>
+                    關閉
+                  </Text>
                 </View>
               </View>
-
-              <Text style={styles.label}>監控裝置</Text>
-              <View style={styles.sectionBlock}>
-                <View style={styles.gridRow}>
-                  {monitors.map((item) => (
-                    <TouchableOpacity
-                      key={item.id}
-                      style={[
-                        styles.gridItemColumn,
-                        !item.enabled && styles.monitorAbnormalBorder,
-                      ]}
-                      onPress={() => item.enabled && openMonitorDetail(item)}
-                    >
-                      <View>
-                        <Text style={styles.deviceItem}>{item.name}</Text>
-                        {!item.enabled && (
-                          <Text style={styles.abnormalText}>異常狀態</Text>
-                        )}
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-            </View>
-          ) : (
-            <Text>載入中...</Text>
-          )}
-
-          <Modal
-            visible={modalVisible}
-            animationType="slide"
-            transparent={true}
-            onRequestClose={closeMonitorDetail}
-          >
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>監控裝置詳情</Text>
-                <Text style={styles.modalItem}>
-                  名稱：{selectedMonitor?.name}
-                </Text>
-                <Text style={styles.modalItem}>監控畫面：</Text>
-                <Image
-                  source={require('@/assets/iot-mom.jpg')}
-                  style={{
-                    width: '100%',
-                    height: 200,
-                    marginTop: 10,
-                    borderRadius: 8,
-                  }}
-                  resizeMode="cover"
-                />
-                <Text style={styles.modalClose} onPress={closeMonitorDetail}>
-                  關閉
-                </Text>
-              </View>
-            </View>
-          </Modal>
+            </Modal>
+          </View>
         </ScrollView>
       </View>
     </SafeAreaView>

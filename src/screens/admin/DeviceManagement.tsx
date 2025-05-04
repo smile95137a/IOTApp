@@ -21,7 +21,7 @@ const DeviceManagementScreen = ({ navigation }) => {
       <View style={styles.container}>
         <View style={styles.fixedImageContainer}>
           <Image
-            source={require('@/assets/iot-admin-bg.png')}
+            source={require('../../assets/iot-admin-bg.png')}
             resizeMode="contain"
           />
         </View>
@@ -38,7 +38,7 @@ const DeviceManagementScreen = ({ navigation }) => {
           >
             <View style={styles.cardContent}>
               <Image
-                source={require('@/assets/iot-switch.png')}
+                source={require('../../assets/iot-switch.png')}
                 style={styles.cardIcon}
               />
               <Text style={styles.cardText}>環境管理</Text>
@@ -57,7 +57,7 @@ const DeviceManagementScreen = ({ navigation }) => {
           >
             <View style={styles.cardContent}>
               <Image
-                source={require('@/assets/iot-table-enable.png')}
+                source={require('../../assets/iot-table-enable.png')}
                 style={styles.cardIcon}
               />
               <Text style={styles.cardText}>桌檯管理</Text>
@@ -75,7 +75,7 @@ const DeviceManagementScreen = ({ navigation }) => {
           >
             <View style={styles.cardContent}>
               <Image
-                source={require('@/assets/iot-mo-logo.png')}
+                source={require('../../assets/iot-mo-logo.png')}
                 style={styles.cardIcon}
               />
               <Text style={styles.cardText}>攝影機管理</Text>

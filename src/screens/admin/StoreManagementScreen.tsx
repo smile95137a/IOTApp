@@ -136,14 +136,14 @@ const StoreManagementScreen = () => {
         <View style={styles.container}>
           <View style={styles.backgroundImageWrapper}>
             <Image
-              source={require('@/assets/iot-admin-bg.png')}
+              source={require('../../assets/iot-admin-bg.png')}
               style={{ width: '100%' }}
               resizeMode="contain"
             />
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title="店家管理" />
+            <HeaderBar title="店家管理" showLeftButton />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -158,7 +158,7 @@ const StoreManagementScreen = () => {
                     }
                   >
                     <Image
-                      source={require('@/assets/iot-logo-black.png')}
+                      source={require('../../assets/iot-logo-black.png')}
                       style={styles.cardImage}
                     />
                     <View style={styles.cardFooter}>
@@ -207,7 +207,7 @@ const StoreManagementScreen = () => {
                     onPress={() => (navigation as any).navigate('AddStore')}
                   >
                     <Image
-                      source={require('@/assets/iot-logo-white.png')}
+                      source={require('../../assets/iot-logo-white.png')}
                       style={styles.cardImage}
                     />
                     <View style={styles.addCardFooter}>

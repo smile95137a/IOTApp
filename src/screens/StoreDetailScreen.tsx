@@ -115,20 +115,20 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
     try {
       dispatch(showLoading());
       const result = await Share.share({
-        message: `店铺名称: ${store.name}\n地址: ${store.address}\n快来看看吧！`,
-        url: 'https://example.com',
+        title: '店家資訊分享',
+        message: `店鋪名稱：${store.name}\n地址：${store.address}\n聯絡電話：${store.contactPhone}\n快來看看`,
       });
 
       dispatch(hideLoading());
 
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
-          console.log('Shared with activity type: ', result.activityType);
+          console.log('已透過指定應用程式分享: ', result.activityType);
         } else {
-          console.log('Shared successfully');
+          console.log('分享成功');
         }
       } else if (result.action === Share.dismissedAction) {
-        console.log('Share dismissed');
+        console.log('使用者取消分享');
       }
     } catch (error: any) {
       if (error.isAutoLogout) return;
@@ -205,14 +205,14 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
               </View>
               <TouchableOpacity style={styles.pricingCard}>
                 <Text style={styles.pricingAmount}>
-                  <NumberFormatter number={~~todayPricing.regularRate} />
+                  <NumberFormatter number={~~todayPricing.regularRate * 60} />
                   元/小時
                 </Text>
                 <Text style={styles.pricingDetails}>一般時段</Text>
                 <Text style={styles.pricingDetails}>
                   {currentRegularSlot ? (
                     <Text style={styles.pricingDetails}>
-                      目前時段：{currentRegularSlot.startTime} -{' '}
+                      {currentRegularSlot.startTime} -
                       {currentRegularSlot.endTime}
                     </Text>
                   ) : (
@@ -222,14 +222,14 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.pricingCard}>
                 <Text style={styles.pricingAmount}>
-                  <NumberFormatter number={~~todayPricing.discountRate} />
+                  <NumberFormatter number={~~todayPricing.discountRate * 60} />
                   元/小時
                 </Text>
                 <Text style={styles.pricingDetails}>優惠時段</Text>
                 <Text style={styles.pricingDetails}>
                   {currentDiscountSlot ? (
                     <Text style={styles.pricingDetails}>
-                      目前時段：{currentDiscountSlot.startTime} -{' '}
+                      {currentDiscountSlot.startTime} -
                       {currentDiscountSlot.endTime}
                     </Text>
                   ) : (
@@ -276,8 +276,8 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
                       <Image
                         source={
                           status === 'available'
-                            ? require('@/assets/iot-table-enable.png')
-                            : require('@/assets/iot-table-disable.png')
+                            ? require('../assets/iot-table-enable.png')
+                            : require('../assets/iot-table-disable.png')
                         }
                         style={[
                           styles.tableImage,

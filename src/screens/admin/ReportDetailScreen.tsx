@@ -164,7 +164,7 @@ const ReportDetailScreen = () => {
     ],
     ConsumptionCount: [
       { key: 'dateTime', label: '日期' },
-      { key: 'amount', label: '金額' },
+      { key: 'amount', label: '筆數' },
     ],
     StoreRevenue: [
       { key: 'dateTime', label: '日期' },
@@ -225,14 +225,14 @@ const ReportDetailScreen = () => {
         <View style={styles.container}>
           <View style={styles.backgroundImageWrapper}>
             <Image
-              source={require('@/assets/iot-admin-bg.png')}
+              source={require('../../assets/iot-admin-bg.png')}
               style={{ width: '100%' }}
               resizeMode="contain"
             />
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title="報表管理" />
+            <HeaderBar title="報表管理" showLeftButton />
           </View>
           <View style={styles.contentWrapper}>
             <KeyboardAvoidingView

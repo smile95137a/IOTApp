@@ -23,7 +23,7 @@ const MemberDetailsScreen = ({ route, navigation }) => {
       <View style={styles.container}>
         <View style={styles.fixedImageContainer}>
           <Image
-            source={require('@/assets/iot-admin-bg.png')}
+            source={require('../../assets/iot-admin-bg.png')}
             resizeMode="contain"
           />
         </View>
@@ -32,20 +32,34 @@ const MemberDetailsScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.mainContainer}>
           <View style={styles.profileContainer}>
-            <Image
-              source={
-                member?.userImg
-                  ? { uri: getImageUrl(member.userImg) }
-                  : require('@/assets/iot-user-logo.jpg')
-              }
-              style={styles.profileImage}
-            />
+            {member?.userImg ? (
+              <Image
+                source={{ uri: getImageUrl(member.userImg) }}
+                style={styles.profileImage}
+              />
+            ) : member?.gender === 'female' ? (
+              <Image
+                source={require('../../assets/iot-girl.png')}
+                style={styles.profileImage}
+              />
+            ) : member?.gender === 'male' ? (
+              <Image
+                source={require('../../assets/iot-boy.png')}
+                style={styles.profileImage}
+              />
+            ) : (
+              <Image
+                source={require('../../assets/iot-user-logo.jpg')}
+                style={styles.profileImage}
+              />
+            )}
+
             <Text style={styles.memberName}>{member.name}</Text>
           </View>
           <Text style={styles.memberInfo}>UUID：{member.uid}</Text>
-          {/* 新增：匿名 ID */}
+          {/* 新增：暱稱 */}
           <Text style={styles.memberInfo}>
-            匿名 ID：{member.anonymousId || '—'}
+            暱稱：{member.anonymousId || ''}
           </Text>
 
           <Text style={styles.memberInfo}>

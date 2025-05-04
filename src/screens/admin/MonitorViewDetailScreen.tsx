@@ -75,7 +75,7 @@ const MonitorViewDetailScreen = () => {
         <View style={styles.container}>
           <View style={styles.backgroundImageWrapper}>
             <Image
-              source={require('@/assets/iot-admin-bg.png')}
+              source={require('../../assets/iot-admin-bg.png')}
               style={{ width: '100%' }}
               resizeMode="contain"
             />
@@ -97,7 +97,7 @@ const MonitorViewDetailScreen = () => {
                   <TouchableOpacity key={item.uid} style={styles.card}>
                     <View style={styles.row}>
                       <Image
-                        source={require('@/assets/iot-camera-logo.png')}
+                        source={require('../../assets/iot-camera-logo.png')}
                         style={styles.cardIcon}
                       />
                       <View style={{ flex: 1, flexDirection: 'column' }}>
@@ -105,7 +105,7 @@ const MonitorViewDetailScreen = () => {
                       </View>
                     </View>
                     <Image
-                      source={require('@/assets/iot-m.jpg')}
+                      source={require('../../assets/iot-m.jpg')}
                       style={styles.cameraImage}
                     />
                   </TouchableOpacity>

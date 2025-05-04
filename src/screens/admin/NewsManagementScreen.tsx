@@ -105,14 +105,14 @@ const NewsManagementScreen = () => {
         <View style={styles.container}>
           <View style={styles.backgroundImageWrapper}>
             <Image
-              source={require('@/assets/iot-admin-bg.png')}
+              source={require('../../assets/iot-admin-bg.png')}
               style={{ width: '100%' }}
               resizeMode="contain"
             />
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title="最新消息管理" />
+            <HeaderBar title="最新消息管理" showLeftButton />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -179,7 +179,7 @@ const NewsManagementScreen = () => {
                   onPress={() => (navigation as any).navigate('AddNews')}
                 >
                   <Image
-                    source={require('@/assets/iot-logo-white.png')}
+                    source={require('../../assets/iot-logo-white.png')}
                     style={styles.cardImage}
                   />
                   <View style={styles.addCardFooter}>
