@@ -1,0 +1,257 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useDispatch } from 'react-redux';
+import { LinearGradient } from 'expo-linear-gradient';
+import { resetPassword } from '../api/userApi';
+import { useInfoDialog } from '../hooks/useInfoDialog';
+import { hideLoading } from '../store/loadingSlice';
+import { AppDispatch } from '../store/store';
+import { getErrorMessage } from '../utils/errorUtils';
+import Header from '../component/Header';
+
+const ResetPasswordScreen = ({ navigation }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog } = useInfoDialog();
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isOldPasswordVisible, setIsOldPasswordVisible] = useState(false);
+  const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState(false);
+
+  const handleResetPassword = async () => {
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請輸入完整資訊',
+        confirmText: '我知道了',
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      await openInfoDialog({
+        title: '錯誤',
+        content: '新密碼與確認密碼不匹配',
+        confirmText: '我知道了',
+      });
+      return;
+    }
+
+    try {
+      const response = await resetPassword({
+        oldPassword,
+        newPassword,
+      });
+
+      if (response.success) {
+        await openInfoDialog({
+          title: '成功',
+          content: '您的密碼已更新，請使用新密碼登入',
+          confirmText: '前往登入',
+        });
+        (navigation as any).reset({ index: 0, routes: [{ name: 'Login' }] });
+      } else {
+        await openInfoDialog({
+          title: '錯誤',
+          content: response.message || '請檢查您的舊密碼',
+          confirmText: '我知道了',
+        });
+      }
+    } catch (error: any) {
+      if (error.isAutoLogout) return;
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
+    }
+  };
+
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.safeArea}>
+        <LinearGradient
+          colors={['#1D1640', '#4067A4']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          <View style={styles.container}>
+            <Header
+              onBackPress={() => (navigation as any).goBack()}
+              isDarkMode
+            />
+
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.container}
+            >
+              <Text style={styles.title}>重設密碼</Text>
+
+              {/* 舊密碼 */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>舊密碼</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="輸入舊密碼"
+                    secureTextEntry={!isOldPasswordVisible}
+                    value={oldPassword}
+                    onChangeText={setOldPassword}
+                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      setIsOldPasswordVisible(!isOldPasswordVisible)
+                    }
+                  >
+                    <MaterialIcons
+                      name={
+                        isOldPasswordVisible ? 'visibility' : 'visibility-off'
+                      }
+                      size={24}
+                      color="#ccc"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* 新密碼 */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>新密碼</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="輸入新密碼"
+                    secureTextEntry={!isNewPasswordVisible}
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      setIsNewPasswordVisible(!isNewPasswordVisible)
+                    }
+                  >
+                    <MaterialIcons
+                      name={
+                        isNewPasswordVisible ? 'visibility' : 'visibility-off'
+                      }
+                      size={24}
+                      color="#ccc"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* 確認新密碼 */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>確認新密碼</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="請再次輸入新密碼"
+                    secureTextEntry={!isConfirmPasswordVisible}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
+                    }
+                  >
+                    <MaterialIcons
+                      name={
+                        isConfirmPasswordVisible
+                          ? 'visibility'
+                          : 'visibility-off'
+                      }
+                      size={24}
+                      color="#ccc"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* 提交按鈕 */}
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleResetPassword}
+              >
+                <Text style={styles.buttonText}>重設密碼</Text>
+              </TouchableOpacity>
+            </KeyboardAvoidingView>
+          </View>
+        </LinearGradient>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
+  );
+};
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+    paddingBottom: 16,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#00BFFF',
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 14,
+    marginBottom: 8,
+    color: '#00BFFF',
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    backgroundColor: '#F7F7F7',
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    fontSize: 14,
+    paddingHorizontal: 10,
+  },
+  button: {
+    backgroundColor: '#FFC702',
+    borderRadius: 50,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 16,
+  },
+});
+
+export default ResetPasswordScreen;

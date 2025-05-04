@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "iiot",
+    "slug": "iiot",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyC4Ew3u8Dx-dPlckb6H2DnecSJmzlTsoDg"
+      },
+      "plugins": [
+        [
+          "expo-build-properties",
+          {
+            "ios": {
+              "useFrameworks": "static"
+            }
+          }
+        ]
+      ]
+    },
+    "android": {
+      "package": "com.jim081728.iiot",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "buildProperties": {
+        "androidManifest": {
+          "usesCleartextTraffic": true
+        }
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyC4Ew3u8Dx-dPlckb6H2DnecSJmzlTsoDg"
+        }
+      }
+    },
+    "extra": {
+      "eas": {
+        "googleMapsApiKey": "AIzaSyC4Ew3u8Dx-dPlckb6H2DnecSJmzlTsoDg",
+        "ENCRYPTION_KEY": "my_secure_encryption_key_123",
+        "HASH_KEY": "MYHASHSTART",
+        "HASH_VALUE": "MYHASHEND",
+        "API_BASE_URL": "https://ipoolspace.tw",
+        "projectId": "a9f981a8-30e0-4d5e-ba21-25e6e6512792",
+        "version": "427v1"
+      }
+    },
+    "plugins": ["expo-build-properties"]
+  }
+}
