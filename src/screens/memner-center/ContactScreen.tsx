@@ -18,6 +18,7 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { logJson } from '../../utils/logJsonUtils';
 
 const ContactScreen = ({ navigation, route }) => {
   const { openConfirmDialog, openInfoDialog } = useDialog();
@@ -81,7 +82,7 @@ const ContactScreen = ({ navigation, route }) => {
   };
 
   const handleCall = async () => {
-    const phoneNumber = transaction?.vendor?.contactInfo;
+    const phoneNumber = transaction?.contactInfo;
     if (phoneNumber) {
       const confirmed = await openConfirmDialog({
         title: '撥打電話',

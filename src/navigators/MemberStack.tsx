@@ -28,7 +28,6 @@ import RechargeScreen from '../screens/memner-center/RechargeScreen';
 import RechargeSuccess from '../screens/memner-center/RechargeSuccess';
 import ReservationScreen from '../screens/memner-center/ReservationScreen';
 import TransactionHistoryScreen from '../screens/memner-center/TransactionHistoryScreen';
-import PaymentScreen from '../screens/PaymentScreen';
 import { showLoading, hideLoading } from '../store/loadingSlice';
 import { RootState } from '../store/store';
 import { setUser, clearUser } from '../store/userSlice';
@@ -36,6 +35,7 @@ import { getErrorMessage } from '../utils/errorUtils';
 import { getImageUrl } from '../utils/ImageUtils';
 import * as ImagePicker from 'expo-image-picker';
 import Header from '../component/Header';
+import PaymentScreen from '../screens/memner-center/PaymentScreen';
 const Stack = createStackNavigator();
 
 const MainLayout = ({ children }) => {
