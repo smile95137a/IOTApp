@@ -47,7 +47,8 @@ const AddStoreScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog, openConfirmDialog } = useDialog();
+  const { openInfoDialog, openConfirmDialog, openMultiDateSpecialDialog } =
+    useDialog();
   const loginUser = useSelector((state: RootState) => state.user);
   const isSuperAdmin = loginUser?.user?.roles?.some((role) => role.id === 1);
   const [showMultiDateModal, setShowMultiDateModal] = useState(false);
@@ -86,28 +87,7 @@ const AddStoreScreen = () => {
   const [openTime, setOpenTime] = useState(store?.openTime || '00:00');
   const [closeTime, setCloseTime] = useState(store?.closeTime || '23:59');
 
-  const [specialDates, setSpecialDates] = useState([
-    {
-      date: '2025-05-10',
-      openTime: '',
-      closeTime: '',
-      regularRate: 180,
-      timeSlots: [
-        {
-          startTime: '10:00',
-          endTime: '13:00',
-          isDiscount: true,
-          price: 140,
-        },
-        {
-          startTime: '15:00',
-          endTime: '16:00',
-          isDiscount: false,
-          price: 180,
-        },
-      ],
-    },
-  ]);
+  const [specialDates, setSpecialDates] = useState([]);
 
   const [image, setImage] = useState<any>(null);
   const [selectedLocation, setSelectedLocation] = useState<{
@@ -116,22 +96,6 @@ const AddStoreScreen = () => {
   } | null>(
     store ? { latitude: Number(store.lat), longitude: Number(store.lon) } : null
   );
-
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
-  const [selectedDatesMap, setSelectedDatesMap] = useState<
-    Record<string, boolean>
-  >({});
-  const [tempOpenTime, setTempOpenTime] = useState('10:00');
-  const [tempCloseTime, setTempCloseTime] = useState('22:00');
-  const [tempRegularRate, setTempRegularRate] = useState('180');
-  const [tempTimeSlots, setTempTimeSlots] = useState([
-    {
-      startTime: '10:00',
-      endTime: '13:00',
-      isDiscount: true,
-      price: 140,
-    },
-  ]);
 
   useEffect(() => {
     const loadVendors = async () => {
@@ -507,6 +471,14 @@ const AddStoreScreen = () => {
     inputIOS: styles.dropdownInput,
     inputAndroid: styles.dropdownInput,
     iconContainer: styles.iconContainer,
+  };
+
+  const handlOpenMultiDateSpecialDialog = async () => {
+    const result = await openMultiDateSpecialDialog({});
+
+    if (!result || !Array.isArray(result)) return;
+
+    setSpecialDates((prev) => [...prev, ...result]);
   };
 
   return (
@@ -1018,44 +990,10 @@ const AddStoreScreen = () => {
               </View>
               <TouchableOpacity
                 style={styles.submitButton}
-                onPress={() => setDatePickerVisible(true)}
+                onPress={handlOpenMultiDateSpecialDialog}
               >
                 <Text style={styles.submitButtonText}>選擇特殊日期</Text>
               </TouchableOpacity>
-              {datePickerVisible && (
-                <MultiDateSpecialModal
-                  selectedDatesMap={selectedDatesMap}
-                  setSelectedDatesMap={setSelectedDatesMap}
-                  tempOpenTime={tempOpenTime}
-                  setTempOpenTime={setTempOpenTime}
-                  tempCloseTime={tempCloseTime}
-                  setTempCloseTime={setTempCloseTime}
-                  tempRegularRate={tempRegularRate}
-                  setTempRegularRate={setTempRegularRate}
-                  tempTimeSlots={tempTimeSlots}
-                  setTempTimeSlots={setTempTimeSlots}
-                  splitTime={splitTime}
-                  formatTime={formatTime}
-                  hours={hours}
-                  minutes={minutes}
-                  pickerStyle={pickerStyle}
-                  onCancel={() => setDatePickerVisible(false)}
-                  onConfirm={() => {
-                    const newSpecials = Object.keys(selectedDatesMap)
-                      .filter((d) => selectedDatesMap[d])
-                      .map((date) => ({
-                        date,
-                        openTime: tempOpenTime,
-                        closeTime: tempCloseTime,
-                        regularRate: parseFloat(tempRegularRate),
-                        timeSlots: [...tempTimeSlots],
-                      }));
-                    setSpecialDates([...specialDates, ...newSpecials]);
-                    setDatePickerVisible(false);
-                    setSelectedDatesMap({});
-                  }}
-                />
-              )}
 
               <View style={styles.uploadContainer}>
                 <Text style={styles.inputLabel}>上傳照片</Text>
