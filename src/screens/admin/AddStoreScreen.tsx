@@ -25,6 +25,7 @@ import { useSelector } from 'react-redux';
 import { fetchUsersByRole } from '../../api/admin/roleApi';
 import {
   createStore,
+  fetchStoreByUid,
   updateStore,
   uploadStoreImages,
 } from '../../api/admin/storeApi';
@@ -53,38 +54,28 @@ const AddStoreScreen = () => {
   const mapRef = useRef<MapView>(null);
   const isEditMode = !!store;
   const [users, setUsers] = useState([]);
-  const [userId, setUserId] = useState(
-    store?.user?.id ? String(store.user.id) : ''
-  );
-
-  const [name, setName] = useState(store?.name || '');
-  const [address, setAddress] = useState(store?.address || '');
-  const [vendorId, setVendorId] = useState(
-    store?.vendor?.id ? String(store.vendor.id) : ''
-  );
-  const [lat, setLat] = useState(store?.lat ? String(store.lat) : '');
-  const [lon, setLon] = useState(store?.lon ? String(store.lon) : '');
-  const [deposit, setDeposit] = useState(
-    store?.deposit ? String(store.deposit) : ''
-  );
-  const [discountRate, setDiscountRate] = useState(
-    store?.discountRate ? String(store.discountRate) : ''
-  );
-  const [regularRate, setRegularRate] = useState(
-    store?.regularRate ? String(store.regularRate) : ''
-  );
-
-  const [hint, setHint] = useState(store?.hint ? String(store.hint) : '');
-  const [contactPhone, setContactPhone] = useState(
-    store?.contactPhone ? String(store.contactPhone) : ''
-  );
-
-  const [vendors, setVendors] = useState([]);
-  const [openTime, setOpenTime] = useState(store?.openTime || '00:00');
-  const [closeTime, setCloseTime] = useState(store?.closeTime || '23:59');
-
+  const [userId, setUserId] = useState('');
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [vendorId, setVendorId] = useState('');
+  const [lat, setLat] = useState('');
+  const [lon, setLon] = useState('');
+  const [deposit, setDeposit] = useState('');
+  const [regularRate, setRegularRate] = useState('');
+  const [discountRate, setDiscountRate] = useState('');
+  const [hint, setHint] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [openTime, setOpenTime] = useState('00:00');
+  const [closeTime, setCloseTime] = useState('23:59');
   const [specialDates, setSpecialDates] = useState<any[]>([]);
-
+  const [timeSlots, setTimeSlots] = useState([
+    {
+      startTime: '00:00',
+      endTime: '23:59',
+      isDiscount: true,
+    },
+  ]);
+  const [vendors, setVendors] = useState([]);
   const [image, setImage] = useState<any>(null);
   const [selectedLocation, setSelectedLocation] = useState<{
     latitude: number;
@@ -92,6 +83,100 @@ const AddStoreScreen = () => {
   } | null>(
     store ? { latitude: Number(store.lat), longitude: Number(store.lon) } : null
   );
+  useEffect(() => {
+    const initFromUid = async () => {
+      const uid = route.params?.store?.uid;
+      let fetchedUserId = '';
+
+      try {
+        dispatch(showLoading());
+
+        // 如果是編輯模式，先取店家資料
+        if (uid) {
+          const storeRes = await fetchStoreByUid(uid);
+          if (storeRes.success && storeRes.data) {
+            const storeData = storeRes.data;
+            setStore(storeData);
+            setName(storeData.name || '');
+            setAddress(storeData.address || '');
+            setVendorId(
+              storeData.vendor?.id ? String(storeData.vendor.id) : ''
+            );
+            fetchedUserId = storeData.user?.id ? String(storeData.user.id) : '';
+            setUserId(fetchedUserId);
+            setLat(storeData.lat ? String(storeData.lat) : '');
+            setLon(storeData.lon ? String(storeData.lon) : '');
+            setDeposit(storeData.deposit ? String(storeData.deposit) : '');
+            setRegularRate(
+              storeData.regularRate ? String(storeData.regularRate) : ''
+            );
+            setDiscountRate(
+              storeData.discountRate ? String(storeData.discountRate) : ''
+            );
+            setHint(storeData.hint || '');
+            setContactPhone(storeData.contactPhone || '');
+            setOpenTime(storeData.openTime || '00:00');
+            setCloseTime(storeData.closeTime || '23:59');
+            setTimeSlots(storeData.timeSlots || []);
+            setSpecialDates(storeData.specialDates || []);
+            logJson('data', storeData.specialDates);
+
+            if (storeData.lat && storeData.lon) {
+              setSelectedLocation({
+                latitude: Number(storeData.lat),
+                longitude: Number(storeData.lon),
+              });
+            }
+          } else {
+            await openInfoDialog({
+              title: '錯誤',
+              content: storeRes.message || '查無此店家資料',
+              confirmText: '我知道了',
+            });
+          }
+        }
+
+        // 無論新增或編輯都要抓店長清單
+        const usersRes = await fetchUsersByRole(5);
+        if (usersRes.success) {
+          const fetchedUsers = usersRes.data;
+          let filteredUsers = fetchedUsers.filter(
+            (user) => user.isUsed === false
+          );
+
+          if (isEditMode && fetchedUserId) {
+            const currentUser = fetchedUsers.find(
+              (u) => String(u.id) === fetchedUserId
+            );
+            const alreadyIncluded = filteredUsers.some(
+              (u) => String(u.id) === fetchedUserId
+            );
+            if (currentUser && !alreadyIncluded) {
+              filteredUsers.push(currentUser);
+            }
+          }
+
+          setUsers(filteredUsers);
+        } else {
+          await openInfoDialog({
+            title: '錯誤',
+            content: '無法獲取使用者清單',
+            confirmText: '我知道了',
+          });
+        }
+      } catch (error: any) {
+        if (error.isAutoLogout) return;
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+        });
+      } finally {
+        dispatch(hideLoading());
+      }
+    };
+
+    initFromUid();
+  }, [route.params?.store?.uid]);
 
   useEffect(() => {
     const loadVendors = async () => {
@@ -120,54 +205,6 @@ const AddStoreScreen = () => {
     };
 
     loadVendors();
-  }, []);
-
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        dispatch(showLoading());
-        const response = await fetchUsersByRole(5);
-        dispatch(hideLoading());
-
-        if (response.success) {
-          const fetchedUsers = response.data;
-
-          // 篩選 isUsed 為 false 的使用者
-          let filteredUsers = fetchedUsers.filter(
-            (user) => user.isUsed === false
-          );
-
-          // 如果是編輯模式，且目前店長不是 isUsed === false，要補進來
-          if (isEditMode) {
-            const currentUser = fetchedUsers.find(
-              (user) => String(user.id) === String(userId)
-            );
-            const alreadyIncluded = filteredUsers.some(
-              (user) => String(user.id) === String(userId)
-            );
-            if (currentUser && !alreadyIncluded) {
-              filteredUsers.push(currentUser);
-            }
-          }
-
-          setUsers(filteredUsers);
-        } else {
-          await openInfoDialog({
-            title: '錯誤',
-            content: '無法獲取使用者清單',
-            confirmText: '我知道了',
-          });
-        }
-      } catch (error: any) {
-        dispatch(hideLoading());
-        await openInfoDialog({
-          title: '錯誤',
-          content: getErrorMessage(error),
-        });
-      }
-    };
-
-    loadUsers();
   }, []);
 
   const handleSubmit = async () => {
@@ -393,18 +430,6 @@ const AddStoreScreen = () => {
       if (error.isAutoLogout) return;
     }
   };
-
-  const [timeSlots, setTimeSlots] = useState(
-    store?.timeSlots?.length
-      ? store.timeSlots
-      : [
-          {
-            startTime: '00:00',
-            endTime: '23:59',
-            isDiscount: true,
-          },
-        ]
-  );
 
   const updateTimeSlot = (slotIndex, key, value) => {
     const updated = [...timeSlots];
@@ -643,7 +668,6 @@ const AddStoreScreen = () => {
                   />
                 </View>
               </View>
-
               <Text style={styles.inputLabel}>店家地圖</Text>
               <View style={styles.mapContainer}>
                 <MapView
@@ -708,7 +732,6 @@ const AddStoreScreen = () => {
                   />
                 </View>
               </View>
-
               <Text style={styles.inputLabel}>溫馨提示</Text>
               <TextInput
                 style={styles.input}
@@ -717,8 +740,19 @@ const AddStoreScreen = () => {
                 onChangeText={setHint}
                 multiline
               />
-
               <Text style={styles.inputLabel}>費用與時段</Text>
+              <View style={styles.twoColumnRow}>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>一般費率</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="一般費率"
+                    keyboardType="numeric"
+                    value={regularRate}
+                    onChangeText={setRegularRate}
+                  />
+                </View>
+              </View>
               <Text style={styles.inputLabel}>營業開始時間 (Open Time)</Text>
               <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
                 <View style={{ flex: 1 }}>
@@ -780,7 +814,6 @@ const AddStoreScreen = () => {
                   />
                 </View>
               </View>
-
               <Text style={styles.inputLabel}>營業結束時間 (Close Time)</Text>
               <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
                 <View style={{ flex: 1 }}>
@@ -1036,7 +1069,6 @@ const AddStoreScreen = () => {
                   <Text style={styles.submitButtonText}>新增折扣時段</Text>
                 </TouchableOpacity>
               </View>
-
               <View style={{ marginTop: 20 }}>
                 <Text style={styles.inputLabel}>特殊日期設定</Text>
                 <TouchableOpacity
@@ -1055,7 +1087,6 @@ const AddStoreScreen = () => {
                   removeSpecialDate={removeSpecialDate}
                 />
               </View>
-
               <View style={styles.uploadContainer}>
                 <Text style={styles.inputLabel}>上傳照片</Text>
                 <View style={styles.uploadWrapper}>

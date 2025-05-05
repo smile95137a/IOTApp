@@ -175,11 +175,7 @@ const SpecialDateList = ({
                       keyboardType="numeric"
                       value={String(item.regularRate)}
                       onChangeText={(val) =>
-                        updateSpecialDate(
-                          globalIndex,
-                          'regularRate',
-                          parseFloat(val)
-                        )
+                        updateSpecialDate(globalIndex, 'regularRate', ~~val)
                       }
                     />
 
@@ -320,7 +316,7 @@ const SpecialDateList = ({
                               globalIndex,
                               slotIndex,
                               'price',
-                              parseFloat(val)
+                              ~~val
                             )
                           }
                           style={{
@@ -467,7 +463,7 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     backgroundColor: '#fff',
-    width: '48%',
+    width: '100%',
     borderRadius: 20,
     padding: 14,
     marginBottom: 8,

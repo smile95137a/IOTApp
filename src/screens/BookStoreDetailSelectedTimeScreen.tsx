@@ -25,6 +25,7 @@ import { getErrorMessage } from '../utils/errorUtils';
 import { getImageUrl } from '../utils/ImageUtils';
 import { genRandom } from '../utils/RandomUtils';
 import Header from '../component/Header';
+import { fetchStoreByUid } from '../api/storeApi';
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -75,53 +76,63 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
         });
       }
     };
-    const getTodayPricing = () => {
-      const today = moment().format('dddd').toUpperCase();
-      const todaySchedule = store.pricingSchedules.find(
-        (schedule: any) => schedule.dayOfWeek === today
-      );
+    const loadData = async () => {
+      try {
+        dispatch(showLoading());
 
-      if (!todaySchedule) return;
+        const storeRes = await fetchStoreByUid(store.uid);
+        const todayRes = storeRes.data.todayRes;
+        if (todayRes) {
+          const now = moment();
+          const open = moment(todayRes.openTime, 'HH:mm');
+          const close = moment(todayRes.closeTime, 'HH:mm');
 
-      setTodayPricing(todaySchedule);
+          const inBusinessHours = now.isBetween(open, close, null, '[)');
 
-      const now = moment();
-      const openTime = moment(todaySchedule.openTime, 'HH:mm');
-      const closeTime = moment(todaySchedule.closeTime, 'HH:mm');
+          const currentSlot = todayRes.timeSlots.find((slot) => {
+            const start = moment(slot.startTime, 'HH:mm');
+            const end = moment(slot.endTime, 'HH:mm');
+            return now.isBetween(start, end, null, '[)');
+          });
 
-      const discountSlots = todaySchedule.discountTimeSlots || [];
+          setTodayPricing({
+            regularRate: todayRes.regularRate,
+            discountRate: currentSlot?.regularRate ?? todayRes.regularRate,
+          });
 
-      // 取最早開始時間與最晚結束時間
-      if (discountSlots.length > 0) {
-        const sortedByStart = [...discountSlots].sort((a, b) =>
-          moment(a.startTime, 'HH:mm').diff(moment(b.startTime, 'HH:mm'))
-        );
-        const sortedByEnd = [...discountSlots].sort((a, b) =>
-          moment(b.endTime, 'HH:mm').diff(moment(a.endTime, 'HH:mm'))
-        );
+          setCurrentDiscountSlot(
+            currentSlot
+              ? {
+                  startTime: currentSlot.startTime,
+                  endTime: currentSlot.endTime,
+                }
+              : null
+          );
 
-        const discountSlotRange = {
-          startTime: sortedByStart[0].startTime,
-          endTime: sortedByEnd[0].endTime,
-          isDiscount: true,
-        };
+          setCurrentRegularSlot(
+            inBusinessHours
+              ? {
+                  startTime: todayRes.openTime,
+                  endTime: todayRes.closeTime,
+                }
+              : null
+          );
+        }
 
-        setCurrentDiscountSlot(discountSlotRange);
-      } else {
-        setCurrentDiscountSlot(null);
+        dispatch(hideLoading());
+      } catch (error: any) {
+        if (error.isAutoLogout) return;
+        dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+        });
       }
-
-      const defaultRegularSlot = {
-        startTime: todaySchedule.openTime,
-        endTime: todaySchedule.closeTime,
-        isDiscount: false,
-      };
-
-      setCurrentRegularSlot(defaultRegularSlot);
     };
 
+    loadData();
+
     loadTables();
-    getTodayPricing();
   }, [store.uid]);
 
   const handleShare = async () => {

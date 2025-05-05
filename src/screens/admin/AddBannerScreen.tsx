@@ -20,12 +20,12 @@ import {
   createBanner,
   uploadBannerImage,
 } from '../../api/admin/BannerApi';
-import { fetchAllNews } from '../../api/newsApi';
 import HeaderBar from '../../component/admin/HeaderBar';
 import { useDialog } from '../../context/DialogContext';
 import { hideLoading, showLoading } from '../../store/loadingSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { getImageUrl } from '../../utils/ImageUtils';
+import { fetchAllNews } from '../../api/admin/newsApi';
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();

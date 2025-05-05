@@ -23,8 +23,7 @@ import {
   closePoolTable,
   updatePoolTable,
 } from '../../api/admin/poolTableApi';
-import { fetchStoreReport } from '../../api/admin/storeApi';
-import { fetchStoreByUid } from '../../api/storeApi';
+import { fetchStoreByUid, fetchStoreReport } from '../../api/admin/storeApi';
 import HeaderBar from '../../component/admin/HeaderBar';
 import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';

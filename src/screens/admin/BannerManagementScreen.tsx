@@ -17,8 +17,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Menu, Provider } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { deleteBanner } from '../../api/admin/BannerApi';
-import { fetchAllBanners } from '../../api/bannerApi';
+import { deleteBanner, fetchAllBanners } from '../../api/admin/BannerApi';
 import HeaderBar from '../../component/admin/HeaderBar';
 import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';

@@ -25,8 +25,12 @@ import { getErrorMessage } from '../utils/errorUtils';
 import { getImageUrl } from '../utils/ImageUtils';
 import { logJson } from '../utils/logJsonUtils';
 import Header from '../component/Header';
+import { fetchStoreByUid } from '../api/storeApi';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const StoreDetailScreen = ({ route, navigation }: any) => {
+const StoreDetailScreen = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
   const { openInfoDialog } = useInfoDialog();
 
@@ -57,57 +61,63 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         });
       }
     };
-    const getTodayPricing = () => {
-      logJson('store', store);
 
-      const today = moment().format('dddd').toUpperCase();
-      const todaySchedule = store.pricingSchedules.find(
-        (schedule: any) => schedule.dayOfWeek === today
-      );
+    const loadData = async () => {
+      try {
+        dispatch(showLoading());
 
-      if (!todaySchedule) return;
+        const storeRes = await fetchStoreByUid(store.uid);
+        const todayRes = storeRes.data.todayRes;
+        if (todayRes) {
+          const now = moment();
+          const open = moment(todayRes.openTime, 'HH:mm');
+          const close = moment(todayRes.closeTime, 'HH:mm');
 
-      setTodayPricing(todaySchedule);
+          const inBusinessHours = now.isBetween(open, close, null, '[)');
 
-      const now = moment();
-      const openTime = moment(todaySchedule.openTime, 'HH:mm');
-      const closeTime = moment(todaySchedule.closeTime, 'HH:mm');
+          const currentSlot = todayRes.timeSlots.find((slot) => {
+            const start = moment(slot.startTime, 'HH:mm');
+            const end = moment(slot.endTime, 'HH:mm');
+            return now.isBetween(start, end, null, '[)');
+          });
 
-      const isOpen = now.isBetween(openTime, closeTime, undefined, '[)');
+          setTodayPricing({
+            regularRate: todayRes.regularRate,
+            discountRate: currentSlot?.regularRate ?? todayRes.regularRate,
+          });
 
-      if (!isOpen) {
-        setCurrentDiscountSlot(null);
-        setCurrentRegularSlot(null);
-        return;
-      }
+          setCurrentDiscountSlot(
+            currentSlot
+              ? {
+                  startTime: currentSlot.startTime,
+                  endTime: currentSlot.endTime,
+                }
+              : null
+          );
 
-      let discountSlotNow = null;
-
-      // 折扣時段中
-      if (todaySchedule.discountTimeSlots?.length > 0) {
-        for (const slot of todaySchedule.discountTimeSlots) {
-          const start = moment(slot.startTime, 'HH:mm');
-          const end = moment(slot.endTime, 'HH:mm');
-          if (now.isBetween(start, end, undefined, '[)')) {
-            discountSlotNow = slot;
-            break;
-          }
+          setCurrentRegularSlot(
+            inBusinessHours
+              ? {
+                  startTime: todayRes.openTime,
+                  endTime: todayRes.closeTime,
+                }
+              : null
+          );
         }
+
+        dispatch(hideLoading());
+      } catch (error: any) {
+        if (error.isAutoLogout) return;
+        dispatch(hideLoading());
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+        });
       }
-
-      // 因為 regularTimeSlots 沒設定，所以要人工設定一個完整的 regularSlot
-      const defaultRegularSlot = {
-        startTime: todaySchedule.openTime,
-        endTime: todaySchedule.closeTime,
-        isDiscount: false,
-      };
-
-      setCurrentDiscountSlot(discountSlotNow); // 目前是不是在優惠時段
-      setCurrentRegularSlot(defaultRegularSlot); // 永遠有一般時段
     };
 
+    loadData();
     loadTables();
-    getTodayPricing();
     dispatch(setSelectedStore(store));
   }, [store.uid]);
 
@@ -161,6 +171,36 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         content: getErrorMessage(error),
       });
     }
+  };
+  const calculateTotalCost = (specialDate) => {
+    const toMinutes = (timeStr) => {
+      const [h, m] = timeStr.split(':').map(Number);
+      return h * 60 + m;
+    };
+
+    const totalOpenMinutes =
+      toMinutes(specialDate.closeTime) - toMinutes(specialDate.openTime);
+    let discountMinutes = 0;
+    let discountCost = 0;
+
+    for (const slot of specialDate.timeSlots) {
+      const duration = toMinutes(slot.endTime) - toMinutes(slot.startTime);
+      discountMinutes += duration;
+      discountCost += duration * slot.price;
+    }
+
+    const regularMinutes = totalOpenMinutes - discountMinutes;
+    const regularCost = regularMinutes * specialDate.regularRate;
+    const totalCost = discountCost + regularCost;
+
+    return {
+      totalCost,
+      discountCost,
+      regularCost,
+      discountMinutes,
+      regularMinutes,
+      totalMinutes: totalOpenMinutes,
+    };
   };
 
   return (

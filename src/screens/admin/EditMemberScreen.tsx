@@ -20,8 +20,8 @@ import { getImageUrl } from '../../utils/ImageUtils';
 import {
   addUsersToBlacklist,
   removeUsersFromBlacklist,
+  updateUser,
 } from '../../api/admin/adminUserApi';
-import { updateUser } from '../../api/userApi';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 

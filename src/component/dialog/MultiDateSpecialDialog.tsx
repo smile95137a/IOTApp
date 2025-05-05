@@ -98,7 +98,7 @@ const MultiDateSpecialDialog: React.FC<any> = ({
       date,
       openTime,
       closeTime,
-      regularRate: parseFloat(regularRate),
+      regularRate: ~~regularRate,
       timeSlots: [...timeSlots],
     }));
 
@@ -362,7 +362,7 @@ const MultiDateSpecialDialog: React.FC<any> = ({
                 value={String(slot.price)}
                 onChangeText={(val) => {
                   const updated = [...timeSlots];
-                  updated[index].price = parseFloat(val) || 0;
+                  updated[index].price = ~~val || 0;
                   setTimeSlots(updated);
                 }}
                 style={styles.input}
