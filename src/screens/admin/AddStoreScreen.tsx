@@ -211,7 +211,6 @@ const AddStoreScreen = () => {
     };
 
     logJson('Store Data', storeData);
-    return;
     try {
       dispatch(showLoading());
 
@@ -706,7 +705,7 @@ const AddStoreScreen = () => {
                       setOpenTime(formatTime(hour, minute));
                     }}
                     items={hours.map((h) => ({
-                      label: `${h} h`,
+                      label: `${h} 時`,
                       value: String(h),
                       key: h,
                     }))}
@@ -735,7 +734,7 @@ const AddStoreScreen = () => {
                       setOpenTime(formatTime(hour, minute));
                     }}
                     items={minutes.map((m) => ({
-                      label: `${m} m`,
+                      label: `${m} 分`,
                       value: String(m),
                       key: m,
                     }))}
@@ -842,7 +841,7 @@ const AddStoreScreen = () => {
                             );
                           }}
                           items={hours.map((h) => ({
-                            label: `${h} h`,
+                            label: `${h} 時`,
                             value: String(h),
                             key: h,
                           }))}
@@ -875,7 +874,7 @@ const AddStoreScreen = () => {
                             );
                           }}
                           items={minutes.map((m) => ({
-                            label: `${m} m`,
+                            label: `${m} 分`,
                             value: String(m),
                             key: m,
                           }))}
@@ -914,7 +913,7 @@ const AddStoreScreen = () => {
                             );
                           }}
                           items={hours.map((h) => ({
-                            label: `${h} h`,
+                            label: `${h} 時`,
                             value: String(h),
                             key: h,
                           }))}
@@ -947,7 +946,7 @@ const AddStoreScreen = () => {
                             );
                           }}
                           items={minutes.map((m) => ({
-                            label: `${m} m`,
+                            label: `${m} 分`,
                             value: String(m),
                             key: m,
                           }))}
