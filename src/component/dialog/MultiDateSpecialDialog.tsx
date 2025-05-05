@@ -8,23 +8,22 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import RNPickerSelect from 'react-native-picker-select';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {
+  splitTime,
+  formatTime,
+  hours,
+  minutes,
+  isValidTime,
+} from '../../utils/timeUtils';
+import { useDialog } from '../../context/DialogContext';
 
 const { width, height } = Dimensions.get('window');
-
-const hours = Array.from({ length: 24 }, (_, i) => i);
-const minutes = Array.from({ length: 60 }, (_, i) => i);
-
-const splitTime = (timeStr) => {
-  const [hour, minute] = timeStr.split(':');
-  return { hour: parseInt(hour, 10), minute: parseInt(minute, 10) };
-};
-
-const formatTime = (hour, minute) =>
-  `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 
 const MultiDateSpecialDialog: React.FC<any> = ({
   isOpen,
@@ -36,13 +35,13 @@ const MultiDateSpecialDialog: React.FC<any> = ({
   cancelText = '結束',
 }) => {
   if (!isOpen) return null;
-
+  const { openInfoDialog } = useDialog();
   const [selectedDatesMap, setSelectedDatesMap] = useState({});
-  const [openTime, setOpenTime] = useState('10:00');
-  const [closeTime, setCloseTime] = useState('22:00');
-  const [regularRate, setRegularRate] = useState('180');
+  const [openTime, setOpenTime] = useState('00:00');
+  const [closeTime, setCloseTime] = useState('23:59');
+  const [regularRate, setRegularRate] = useState('100');
   const [timeSlots, setTimeSlots] = useState([
-    { startTime: '10:00', endTime: '13:00', isDiscount: true, price: 140 },
+    { startTime: '00:00', endTime: '13:00', isDiscount: true, price: 100 },
   ]);
 
   if (!isOpen) return null;
@@ -53,18 +52,55 @@ const MultiDateSpecialDialog: React.FC<any> = ({
     iconContainer: styles.iconContainer,
   };
 
-  const handleConfirm = () => {
-    const specialDates = Object.keys(selectedDatesMap)
-      .filter((d) => selectedDatesMap[d])
-      .map((date) => ({
-        date,
-        openTime,
-        closeTime,
-        regularRate: parseFloat(regularRate),
-        timeSlots: [...timeSlots],
-      }));
+  const handleConfirm = async () => {
+    const selectedDates = Object.keys(selectedDatesMap).filter(
+      (d) => selectedDatesMap[d]
+    );
 
-    console.log(specialDates);
+    if (selectedDates.length === 0) {
+      await openInfoDialog({
+        title: '請選擇日期',
+        content: '請至少選擇一個日期進行設定',
+      });
+      return;
+    }
+
+    if (
+      !isValidTime(openTime) ||
+      !isValidTime(closeTime) ||
+      !regularRate ||
+      isNaN(+regularRate)
+    ) {
+      await openInfoDialog({
+        title: '一般時段錯誤',
+        content: '請填寫正確的一般時段時間與費用',
+      });
+      return;
+    }
+
+    for (let i = 0; i < timeSlots.length; i++) {
+      const slot = timeSlots[i];
+      if (
+        !isValidTime(slot.startTime) ||
+        !isValidTime(slot.endTime) ||
+        slot.price === '' ||
+        isNaN(+slot.price)
+      ) {
+        await openInfoDialog({
+          title: `第 ${i + 1} 組資料錯誤`,
+          content: '優惠時段的開始/結束時間與價格皆為必填，請檢查是否填寫完整',
+        });
+        return;
+      }
+    }
+
+    const specialDates = selectedDates.map((date) => ({
+      date,
+      openTime,
+      closeTime,
+      regularRate: parseFloat(regularRate),
+      timeSlots: [...timeSlots],
+    }));
 
     onConfirm(specialDates);
     onClose();
@@ -72,7 +108,10 @@ const MultiDateSpecialDialog: React.FC<any> = ({
 
   return (
     <View style={styles.overlay}>
-      <View style={styles.dialog}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.dialog}
+      >
         <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
           <Text style={styles.title}>選擇多個日期</Text>
           <Calendar
@@ -382,7 +421,7 @@ const MultiDateSpecialDialog: React.FC<any> = ({
             <Text style={styles.cancelButtonText}>取消</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </View>
   );
 };

@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -37,11 +36,8 @@ import { AppDispatch, RootState } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { getImageUrl } from '../../utils/ImageUtils';
 import { logJson } from '../../utils/logJsonUtils';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import moment from 'moment';
-import { Calendar } from 'react-native-calendars';
-import MultiDateSpecialModal from './MultiDateSpecialModal';
 import SpecialDateList from './SpecialDateList';
+import { splitTime, formatTime, hours, minutes } from '../../utils/timeUtils';
 
 const AddStoreScreen = () => {
   const navigation = useNavigation();
@@ -87,7 +83,7 @@ const AddStoreScreen = () => {
   const [openTime, setOpenTime] = useState(store?.openTime || '00:00');
   const [closeTime, setCloseTime] = useState(store?.closeTime || '23:59');
 
-  const [specialDates, setSpecialDates] = useState([]);
+  const [specialDates, setSpecialDates] = useState<any[]>([]);
 
   const [image, setImage] = useState<any>(null);
   const [selectedLocation, setSelectedLocation] = useState<{
@@ -373,18 +369,6 @@ const AddStoreScreen = () => {
       if (error.isAutoLogout) return;
     }
   };
-  const splitTime = (timeStr) => {
-    const [hour, minute] = timeStr.split(':');
-    return {
-      hour: parseInt(hour, 10),
-      minute: parseInt(minute, 10),
-    };
-  };
-
-  const formatTime = (hour, minute) =>
-    `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  const minutes = Array.from({ length: 60 }, (_, i) => i);
 
   const [timeSlots, setTimeSlots] = useState(
     store?.timeSlots?.length
@@ -434,51 +418,102 @@ const AddStoreScreen = () => {
   };
 
   const updateSpecialDate = (index, key, value) => {
-    const updated = [...specialDates];
-    updated[index][key] = value;
-    setSpecialDates(updated);
+    setSpecialDates((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [key]: value } : item))
+    );
   };
 
   const updateSpecialTimeSlot = (dateIndex, slotIndex, key, value) => {
-    const updated = [...specialDates];
-    updated[dateIndex].timeSlots[slotIndex][key] = value;
-    setSpecialDates(updated);
+    setSpecialDates((prev) =>
+      prev.map((date, i) =>
+        i === dateIndex
+          ? {
+              ...date,
+              timeSlots: date.timeSlots.map((slot, j) =>
+                j === slotIndex ? { ...slot, [key]: value } : slot
+              ),
+            }
+          : date
+      )
+    );
   };
 
   const addSpecialTimeSlot = (dateIndex) => {
-    const updated = [...specialDates];
-    updated[dateIndex].timeSlots.push({
-      startTime: '10:00',
-      endTime: '11:00',
-      isDiscount: false,
-      price: 0,
-    });
-    setSpecialDates(updated);
+    setSpecialDates((prev) =>
+      prev.map((date, i) =>
+        i === dateIndex
+          ? {
+              ...date,
+              timeSlots: [
+                ...date.timeSlots,
+                {
+                  startTime: '10:00',
+                  endTime: '11:00',
+                  isDiscount: false,
+                  price: 0,
+                },
+              ],
+            }
+          : date
+      )
+    );
   };
 
   const removeSpecialTimeSlot = (dateIndex, slotIndex) => {
-    const updated = [...specialDates];
-    updated[dateIndex].timeSlots.splice(slotIndex, 1);
-    setSpecialDates(updated);
+    setSpecialDates((prev) =>
+      prev.map((date, i) =>
+        i === dateIndex
+          ? {
+              ...date,
+              timeSlots: date.timeSlots.filter((_, j) => j !== slotIndex),
+            }
+          : date
+      )
+    );
   };
 
-  const removeSpecialDate = (index) => {
-    const updated = [...specialDates];
-    updated.splice(index, 1);
-    setSpecialDates(updated);
-  };
-  const pickerStyle = {
-    inputIOS: styles.dropdownInput,
-    inputAndroid: styles.dropdownInput,
-    iconContainer: styles.iconContainer,
+  const removeSpecialDate = async (index) => {
+    const confirmed = await openConfirmDialog({
+      title: '確定刪除',
+      content: '你要刪除這個特殊日期嗎？',
+      confirmText: '刪除',
+      cancelText: '取消',
+    });
+
+    if (confirmed) {
+      setSpecialDates((prev) => prev.filter((_, i) => i !== index));
+    }
   };
 
   const handlOpenMultiDateSpecialDialog = async () => {
     const result = await openMultiDateSpecialDialog({});
-
     if (!result || !Array.isArray(result)) return;
 
-    setSpecialDates((prev) => [...prev, ...result]);
+    const existingDates = specialDates.map((d) => d.date);
+    const duplicateDates = result.filter((d) => existingDates.includes(d.date));
+    const newDates = result.filter((d) => !existingDates.includes(d.date));
+
+    if (duplicateDates.length > 0) {
+      const confirmed = await openConfirmDialog({
+        title: '日期重複',
+        content: `以下日期已存在：\n${duplicateDates
+          .map((d) => d.date)
+          .join(', ')}\n\n是否要覆蓋？`,
+        confirmText: '覆蓋',
+        cancelText: '跳過',
+      });
+
+      if (confirmed) {
+        const updated = specialDates.filter(
+          (d) => !duplicateDates.some((dup) => dup.date === d.date)
+        );
+        setSpecialDates([...updated, ...duplicateDates, ...newDates]);
+      } else {
+        setSpecialDates((prev) => [...prev, ...newDates]);
+      }
+    } else {
+      setSpecialDates((prev) => [...prev, ...result]);
+    }
   };
 
   return (
@@ -501,16 +536,9 @@ const AddStoreScreen = () => {
             </View>
 
             <View style={styles.contentWrapper}>
-              <Text style={styles.inputLabel}>加盟商</Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  gap: 8,
-                  marginBottom: 12,
-                }}
-              >
-                <View style={{ flex: 1 }}>
+              <View style={styles.twoColumnRow}>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>加盟商</Text>
                   <RNPickerSelect
                     value={vendorId}
                     onValueChange={(value) => {
@@ -537,17 +565,8 @@ const AddStoreScreen = () => {
                     )}
                   />
                 </View>
-              </View>
-              <Text style={styles.inputLabel}>店長</Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  gap: 8,
-                  marginBottom: 12,
-                }}
-              >
-                <View style={{ flex: 1 }}>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>店長</Text>
                   <RNPickerSelect
                     value={userId}
                     onValueChange={(value) => {
@@ -575,25 +594,32 @@ const AddStoreScreen = () => {
                   />
                 </View>
               </View>
-              <Text style={styles.inputLabel}>店家名稱</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="店家名稱"
-                value={name}
-                onChangeText={setName}
-              />
-              <Text style={styles.inputLabel}>店家地址</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="地址"
-                value={address}
-                onChangeText={setAddress}
-                onBlur={() => {
-                  if (address.trim()) {
-                    geocodeAddress(address);
-                  }
-                }}
-              />
+              <View style={styles.twoColumnRow}>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>店家名稱</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="店家名稱"
+                    value={name}
+                    onChangeText={setName}
+                  />
+                </View>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>店家地址</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="地址"
+                    value={address}
+                    onChangeText={setAddress}
+                    onBlur={() => {
+                      if (address.trim()) {
+                        geocodeAddress(address);
+                      }
+                    }}
+                  />
+                </View>
+              </View>
+
               <Text style={styles.inputLabel}>店家地圖</Text>
               <View style={styles.mapContainer}>
                 <MapView
@@ -613,32 +639,52 @@ const AddStoreScreen = () => {
                   {selectedLocation && <Marker coordinate={selectedLocation} />}
                 </MapView>
               </View>
-              <Text style={styles.inputLabel}>緯度 (Lat)</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="緯度 (Lat)"
-                keyboardType="numeric"
-                value={lat}
-                onChangeText={setLat}
-                readOnly={true}
-              />
-              <Text style={styles.inputLabel}>經度 (Lon)</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="經度 (Lon)"
-                keyboardType="numeric"
-                value={lon}
-                onChangeText={setLon}
-                readOnly={true}
-              />
-              <Text style={styles.inputLabel}>開台押金</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="開台押金"
-                keyboardType="numeric"
-                value={deposit}
-                onChangeText={setDeposit}
-              />
+              <View style={styles.twoColumnRow}>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>緯度 (Lat)</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="緯度 (Lat)"
+                    keyboardType="numeric"
+                    value={lat}
+                    onChangeText={setLat}
+                    readOnly={true}
+                  />
+                </View>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>經度 (Lon)</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="經度 (Lon)"
+                    keyboardType="numeric"
+                    value={lon}
+                    onChangeText={setLon}
+                    readOnly={true}
+                  />
+                </View>
+              </View>
+              <View style={styles.twoColumnRow}>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>開台押金</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="開台押金"
+                    keyboardType="numeric"
+                    value={deposit}
+                    onChangeText={setDeposit}
+                  />
+                </View>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>電話</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="電話"
+                    value={contactPhone}
+                    onChangeText={setContactPhone}
+                  />
+                </View>
+              </View>
+
               <Text style={styles.inputLabel}>溫馨提示</Text>
               <TextInput
                 style={styles.input}
@@ -647,13 +693,7 @@ const AddStoreScreen = () => {
                 onChangeText={setHint}
                 multiline
               />
-              <Text style={styles.inputLabel}>電話</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="電話"
-                value={contactPhone}
-                onChangeText={setContactPhone}
-              />
+
               <Text style={styles.inputLabel}>費用與時段</Text>
               <Text style={styles.inputLabel}>營業開始時間 (Open Time)</Text>
               <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
@@ -972,8 +1012,16 @@ const AddStoreScreen = () => {
                   <Text style={styles.submitButtonText}>新增折扣時段</Text>
                 </TouchableOpacity>
               </View>
+
               <View style={{ marginTop: 20 }}>
                 <Text style={styles.inputLabel}>特殊日期設定</Text>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={handlOpenMultiDateSpecialDialog}
+                >
+                  <MaterialIcons name="event" size={20} color="#fff" />
+                  <Text style={styles.actionButtonText}>設定特殊日期</Text>
+                </TouchableOpacity>
                 <SpecialDateList
                   specialDates={specialDates}
                   updateSpecialDate={updateSpecialDate}
@@ -981,19 +1029,8 @@ const AddStoreScreen = () => {
                   addSpecialTimeSlot={addSpecialTimeSlot}
                   removeSpecialTimeSlot={removeSpecialTimeSlot}
                   removeSpecialDate={removeSpecialDate}
-                  hours={hours}
-                  minutes={minutes}
-                  splitTime={splitTime}
-                  formatTime={formatTime}
-                  pickerStyle={pickerStyle}
                 />
               </View>
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={handlOpenMultiDateSpecialDialog}
-              >
-                <Text style={styles.submitButtonText}>選擇特殊日期</Text>
-              </TouchableOpacity>
 
               <View style={styles.uploadContainer}>
                 <Text style={styles.inputLabel}>上傳照片</Text>
@@ -1081,14 +1118,6 @@ const styles = StyleSheet.create({
   headerWrapper: { backgroundColor: '#FFFFFF' },
   contentWrapper: { flex: 1, padding: 20 },
 
-  header: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
-  },
-
   label: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -1102,7 +1131,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    marginBottom: 12,
     backgroundColor: '#f9f9f9',
   },
 
@@ -1110,7 +1138,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
-    marginBottom: 12,
     backgroundColor: '#f9f9f9',
   },
 
@@ -1165,7 +1192,7 @@ const styles = StyleSheet.create({
   uploadButtonText: { color: '#fff', fontSize: 18 },
   mapContainer: {
     width: '100%',
-    height: 300,
+    height: 200,
     borderRadius: 8,
     overflow: 'hidden',
     marginBottom: 15,
@@ -1229,6 +1256,30 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  twoColumnRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginBottom: 16,
+  },
+  twoColumnItem: { flex: 1 },
+  actionButton: {
+    backgroundColor: '#28a745',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 6,
+    alignSelf: 'flex-start', // 按鈕不撐滿整行
+    marginTop: 12,
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
   },
 });
 
