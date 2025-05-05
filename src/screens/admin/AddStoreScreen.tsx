@@ -40,6 +40,8 @@ import { logJson } from '../../utils/logJsonUtils';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import { Calendar } from 'react-native-calendars';
+import MultiDateSpecialModal from './MultiDateSpecialModal';
+import SpecialDateList from './SpecialDateList';
 
 const AddStoreScreen = () => {
   const navigation = useNavigation();
@@ -224,7 +226,6 @@ const AddStoreScreen = () => {
       });
       return;
     }
-
     const storeData = {
       name,
       address,
@@ -240,8 +241,17 @@ const AddStoreScreen = () => {
       openTime,
       closeTime,
       timeSlots: timeSlots.map((slot) => ({ ...slot })),
+      specialDates: specialDates.map((date) => ({
+        date: date.date,
+        openTime: date.openTime,
+        closeTime: date.closeTime,
+        regularRate: date.regularRate,
+        timeSlots: date.timeSlots.map((slot) => ({ ...slot })),
+      })),
     };
+
     logJson('Store Data', storeData);
+    return;
     try {
       dispatch(showLoading());
 
@@ -992,266 +1002,19 @@ const AddStoreScreen = () => {
               </View>
               <View style={{ marginTop: 20 }}>
                 <Text style={styles.inputLabel}>特殊日期設定</Text>
-                {specialDates.map((item, dateIndex) => (
-                  <View
-                    key={dateIndex}
-                    style={{
-                      marginBottom: 20,
-                      padding: 12,
-                      borderWidth: 1,
-                      borderColor: '#ccc',
-                      borderRadius: 8,
-                    }}
-                  >
-                    <TextInput
-                      style={styles.input}
-                      placeholder="日期（YYYY-MM-DD）"
-                      value={item.date}
-                      onChangeText={(val) =>
-                        updateSpecialDate(dateIndex, 'date', val)
-                      }
-                    />
-                    <Text style={styles.inputLabel}>營業時間</Text>
-                    <View
-                      style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}
-                    >
-                      <View style={{ flex: 1 }}>
-                        <RNPickerSelect
-                          value={String(
-                            splitTime(item.openTime || '00:00').hour
-                          )}
-                          onValueChange={(hourStr) => {
-                            const hour = parseInt(hourStr, 10);
-                            const { minute } = splitTime(
-                              item.openTime || '00:00'
-                            );
-                            updateSpecialDate(
-                              dateIndex,
-                              'openTime',
-                              formatTime(hour, minute)
-                            );
-                          }}
-                          items={hours.map((h) => ({
-                            label: `${h} 時`,
-                            value: String(h),
-                          }))}
-                          placeholder={{ label: '時', value: '' }}
-                          style={pickerStyle}
-                          Icon={() => (
-                            <MaterialIcons
-                              name="arrow-drop-down"
-                              size={24}
-                              color="#888"
-                            />
-                          )}
-                        />
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <RNPickerSelect
-                          value={String(
-                            splitTime(item.openTime || '00:00').minute
-                          )}
-                          onValueChange={(minStr) => {
-                            const minute = parseInt(minStr, 10);
-                            const { hour } = splitTime(
-                              item.openTime || '00:00'
-                            );
-                            updateSpecialDate(
-                              dateIndex,
-                              'openTime',
-                              formatTime(hour, minute)
-                            );
-                          }}
-                          items={minutes.map((m) => ({
-                            label: `${m} 分`,
-                            value: String(m),
-                          }))}
-                          placeholder={{ label: '分', value: '' }}
-                          style={pickerStyle}
-                          Icon={() => (
-                            <MaterialIcons
-                              name="arrow-drop-down"
-                              size={24}
-                              color="#888"
-                            />
-                          )}
-                        />
-                      </View>
-                    </View>
-
-                    <Text style={styles.inputLabel}>結束時間</Text>
-                    <View
-                      style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}
-                    >
-                      <View style={{ flex: 1 }}>
-                        <RNPickerSelect
-                          value={String(
-                            splitTime(item.closeTime || '00:00').hour
-                          )}
-                          onValueChange={(hourStr) => {
-                            const hour = parseInt(hourStr, 10);
-                            const { minute } = splitTime(
-                              item.closeTime || '00:00'
-                            );
-                            updateSpecialDate(
-                              dateIndex,
-                              'closeTime',
-                              formatTime(hour, minute)
-                            );
-                          }}
-                          items={hours.map((h) => ({
-                            label: `${h} 時`,
-                            value: String(h),
-                          }))}
-                          placeholder={{ label: '時', value: '' }}
-                          style={pickerStyle}
-                          Icon={() => (
-                            <MaterialIcons
-                              name="arrow-drop-down"
-                              size={24}
-                              color="#888"
-                            />
-                          )}
-                        />
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <RNPickerSelect
-                          value={String(
-                            splitTime(item.closeTime || '00:00').minute
-                          )}
-                          onValueChange={(minStr) => {
-                            const minute = parseInt(minStr, 10);
-                            const { hour } = splitTime(
-                              item.closeTime || '00:00'
-                            );
-                            updateSpecialDate(
-                              dateIndex,
-                              'closeTime',
-                              formatTime(hour, minute)
-                            );
-                          }}
-                          items={minutes.map((m) => ({
-                            label: `${m} 分`,
-                            value: String(m),
-                          }))}
-                          placeholder={{ label: '分', value: '' }}
-                          style={pickerStyle}
-                          Icon={() => (
-                            <MaterialIcons
-                              name="arrow-drop-down"
-                              size={24}
-                              color="#888"
-                            />
-                          )}
-                        />
-                      </View>
-                    </View>
-
-                    <Text style={styles.inputLabel}>一般費用</Text>
-                    <TextInput
-                      style={styles.input}
-                      keyboardType="numeric"
-                      value={String(item.regularRate)}
-                      onChangeText={(val) =>
-                        updateSpecialDate(
-                          dateIndex,
-                          'regularRate',
-                          parseFloat(val)
-                        )
-                      }
-                    />
-
-                    <Text style={styles.inputLabel}>特殊時段設定</Text>
-                    {item.timeSlots.map((slot, slotIndex) => (
-                      <View key={slotIndex} style={{ marginBottom: 12 }}>
-                        <TextInput
-                          style={styles.input}
-                          placeholder="開始時間 (HH:mm)"
-                          value={slot.startTime}
-                          onChangeText={(val) =>
-                            updateSpecialTimeSlot(
-                              dateIndex,
-                              slotIndex,
-                              'startTime',
-                              val
-                            )
-                          }
-                        />
-                        <TextInput
-                          style={styles.input}
-                          placeholder="結束時間 (HH:mm)"
-                          value={slot.endTime}
-                          onChangeText={(val) =>
-                            updateSpecialTimeSlot(
-                              dateIndex,
-                              slotIndex,
-                              'endTime',
-                              val
-                            )
-                          }
-                        />
-                        <TextInput
-                          style={styles.input}
-                          placeholder="價格"
-                          keyboardType="numeric"
-                          value={String(slot.price)}
-                          onChangeText={(val) =>
-                            updateSpecialTimeSlot(
-                              dateIndex,
-                              slotIndex,
-                              'price',
-                              parseFloat(val)
-                            )
-                          }
-                        />
-                        <View
-                          style={{ flexDirection: 'row', alignItems: 'center' }}
-                        >
-                          <Text style={{ marginRight: 8 }}>是否折扣</Text>
-                          <Switch
-                            value={slot.isDiscount}
-                            onValueChange={(val) =>
-                              updateSpecialTimeSlot(
-                                dateIndex,
-                                slotIndex,
-                                'isDiscount',
-                                val
-                              )
-                            }
-                          />
-                        </View>
-                        <TouchableOpacity
-                          onPress={() =>
-                            removeSpecialTimeSlot(dateIndex, slotIndex)
-                          }
-                        >
-                          <Text style={{ color: 'red', marginTop: 6 }}>
-                            刪除此時段
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    ))}
-                    <TouchableOpacity
-                      onPress={() => addSpecialTimeSlot(dateIndex)}
-                    >
-                      <Text style={{ color: '#007bff' }}>新增折扣時段</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => removeSpecialDate(dateIndex)}
-                    >
-                      <Text style={{ color: '#900', marginTop: 8 }}>
-                        刪除此特殊日期
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-                <TouchableOpacity
-                  onPress={addSpecialDate}
-                  style={styles.submitButton}
-                >
-                  <Text style={styles.submitButtonText}>新增特殊日期</Text>
-                </TouchableOpacity>
+                <SpecialDateList
+                  specialDates={specialDates}
+                  updateSpecialDate={updateSpecialDate}
+                  updateSpecialTimeSlot={updateSpecialTimeSlot}
+                  addSpecialTimeSlot={addSpecialTimeSlot}
+                  removeSpecialTimeSlot={removeSpecialTimeSlot}
+                  removeSpecialDate={removeSpecialDate}
+                  hours={hours}
+                  minutes={minutes}
+                  splitTime={splitTime}
+                  formatTime={formatTime}
+                  pickerStyle={pickerStyle}
+                />
               </View>
               <TouchableOpacity
                 style={styles.submitButton}
@@ -1260,359 +1023,38 @@ const AddStoreScreen = () => {
                 <Text style={styles.submitButtonText}>選擇特殊日期</Text>
               </TouchableOpacity>
               {datePickerVisible && (
-                <View style={{ padding: 20, backgroundColor: 'white' }}>
-                  <Text style={styles.inputLabel}>選擇多個日期</Text>
-                  <Calendar
-                    markedDates={Object.keys(selectedDatesMap).reduce(
-                      (acc, date) => {
-                        acc[date] = {
-                          selected: true,
-                          marked: true,
-                          selectedColor: '#00adf5',
-                        };
-                        return acc;
-                      },
-                      {} as Record<string, any>
-                    )}
-                    onDayPress={(day) => {
-                      const dateStr = day.dateString;
-                      setSelectedDatesMap((prev) => ({
-                        ...prev,
-                        [dateStr]: !prev[dateStr],
+                <MultiDateSpecialModal
+                  selectedDatesMap={selectedDatesMap}
+                  setSelectedDatesMap={setSelectedDatesMap}
+                  tempOpenTime={tempOpenTime}
+                  setTempOpenTime={setTempOpenTime}
+                  tempCloseTime={tempCloseTime}
+                  setTempCloseTime={setTempCloseTime}
+                  tempRegularRate={tempRegularRate}
+                  setTempRegularRate={setTempRegularRate}
+                  tempTimeSlots={tempTimeSlots}
+                  setTempTimeSlots={setTempTimeSlots}
+                  splitTime={splitTime}
+                  formatTime={formatTime}
+                  hours={hours}
+                  minutes={minutes}
+                  pickerStyle={pickerStyle}
+                  onCancel={() => setDatePickerVisible(false)}
+                  onConfirm={() => {
+                    const newSpecials = Object.keys(selectedDatesMap)
+                      .filter((d) => selectedDatesMap[d])
+                      .map((date) => ({
+                        date,
+                        openTime: tempOpenTime,
+                        closeTime: tempCloseTime,
+                        regularRate: parseFloat(tempRegularRate),
+                        timeSlots: [...tempTimeSlots],
                       }));
-                    }}
-                  />
-
-                  <Text style={styles.inputLabel}>開始時間</Text>
-                  <View
-                    style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}
-                  >
-                    <View style={{ flex: 1 }}>
-                      <RNPickerSelect
-                        value={String(splitTime(tempOpenTime).hour)}
-                        onValueChange={(hourStr) => {
-                          const hour = parseInt(hourStr, 10);
-                          const { minute } = splitTime(tempOpenTime);
-                          setTempOpenTime(formatTime(hour, minute));
-                        }}
-                        items={hours.map((h) => ({
-                          label: `${h} 時`,
-                          value: String(h),
-                        }))}
-                        placeholder={{ label: '時', value: '' }}
-                        style={pickerStyle}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                      />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <RNPickerSelect
-                        value={String(splitTime(tempOpenTime).minute)}
-                        onValueChange={(minStr) => {
-                          const minute = parseInt(minStr, 10);
-                          const { hour } = splitTime(tempOpenTime);
-                          setTempOpenTime(formatTime(hour, minute));
-                        }}
-                        items={minutes.map((m) => ({
-                          label: `${m} 分`,
-                          value: String(m),
-                        }))}
-                        placeholder={{ label: '分', value: '' }}
-                        style={pickerStyle}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                      />
-                    </View>
-                  </View>
-
-                  <Text style={styles.inputLabel}>結束時間</Text>
-                  <View
-                    style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}
-                  >
-                    <View style={{ flex: 1 }}>
-                      <RNPickerSelect
-                        value={String(splitTime(tempCloseTime).hour)}
-                        onValueChange={(hourStr) => {
-                          const hour = parseInt(hourStr, 10);
-                          const { minute } = splitTime(tempCloseTime);
-                          setTempCloseTime(formatTime(hour, minute));
-                        }}
-                        items={hours.map((h) => ({
-                          label: `${h} 時`,
-                          value: String(h),
-                        }))}
-                        placeholder={{ label: '時', value: '' }}
-                        style={pickerStyle}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                      />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <RNPickerSelect
-                        value={String(splitTime(tempCloseTime).minute)}
-                        onValueChange={(minStr) => {
-                          const minute = parseInt(minStr, 10);
-                          const { hour } = splitTime(tempCloseTime);
-                          setTempCloseTime(formatTime(hour, minute));
-                        }}
-                        items={minutes.map((m) => ({
-                          label: `${m} 分`,
-                          value: String(m),
-                        }))}
-                        placeholder={{ label: '分', value: '' }}
-                        style={pickerStyle}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                      />
-                    </View>
-                  </View>
-
-                  <Text style={styles.inputLabel}>一般費用</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={tempRegularRate}
-                    onChangeText={setTempRegularRate}
-                    keyboardType="numeric"
-                  />
-                  <Text style={styles.inputLabel}>新增優惠時段</Text>
-                  {tempTimeSlots.map((slot, index) => (
-                    <View key={index} style={{ marginBottom: 12 }}>
-                      <Text style={styles.inputLabel}>開始時間</Text>
-                      <View style={{ flexDirection: 'row', gap: 8 }}>
-                        <View style={{ flex: 1 }}>
-                          <RNPickerSelect
-                            value={String(splitTime(slot.startTime).hour)}
-                            onValueChange={(hourStr) => {
-                              const hour = parseInt(hourStr, 10);
-                              const { minute } = splitTime(slot.startTime);
-                              const updated = [...tempTimeSlots];
-                              updated[index].startTime = formatTime(
-                                hour,
-                                minute
-                              );
-                              setTempTimeSlots(updated);
-                            }}
-                            items={hours.map((h) => ({
-                              label: `${h} 時`,
-                              value: String(h),
-                            }))}
-                            style={pickerStyle}
-                            placeholder={{ label: '時', value: '' }}
-                            Icon={() => (
-                              <MaterialIcons
-                                name="arrow-drop-down"
-                                size={24}
-                                color="#888"
-                              />
-                            )}
-                          />
-                        </View>
-                        <View style={{ flex: 1 }}>
-                          <RNPickerSelect
-                            value={String(splitTime(slot.startTime).minute)}
-                            onValueChange={(minStr) => {
-                              const minute = parseInt(minStr, 10);
-                              const { hour } = splitTime(slot.startTime);
-                              const updated = [...tempTimeSlots];
-                              updated[index].startTime = formatTime(
-                                hour,
-                                minute
-                              );
-                              setTempTimeSlots(updated);
-                            }}
-                            items={minutes.map((m) => ({
-                              label: `${m} 分`,
-                              value: String(m),
-                            }))}
-                            style={pickerStyle}
-                            placeholder={{ label: '分', value: '' }}
-                            Icon={() => (
-                              <MaterialIcons
-                                name="arrow-drop-down"
-                                size={24}
-                                color="#888"
-                              />
-                            )}
-                          />
-                        </View>
-                      </View>
-
-                      <Text style={styles.inputLabel}>結束時間</Text>
-                      <View style={{ flexDirection: 'row', gap: 8 }}>
-                        <View style={{ flex: 1 }}>
-                          <RNPickerSelect
-                            value={String(splitTime(slot.endTime).hour)}
-                            onValueChange={(hourStr) => {
-                              const hour = parseInt(hourStr, 10);
-                              const { minute } = splitTime(slot.endTime);
-                              const updated = [...tempTimeSlots];
-                              updated[index].endTime = formatTime(hour, minute);
-                              setTempTimeSlots(updated);
-                            }}
-                            items={hours.map((h) => ({
-                              label: `${h} 時`,
-                              value: String(h),
-                            }))}
-                            style={pickerStyle}
-                            placeholder={{ label: '時', value: '' }}
-                            Icon={() => (
-                              <MaterialIcons
-                                name="arrow-drop-down"
-                                size={24}
-                                color="#888"
-                              />
-                            )}
-                          />
-                        </View>
-                        <View style={{ flex: 1 }}>
-                          <RNPickerSelect
-                            value={String(splitTime(slot.endTime).minute)}
-                            onValueChange={(minStr) => {
-                              const minute = parseInt(minStr, 10);
-                              const { hour } = splitTime(slot.endTime);
-                              const updated = [...tempTimeSlots];
-                              updated[index].endTime = formatTime(hour, minute);
-                              setTempTimeSlots(updated);
-                            }}
-                            items={minutes.map((m) => ({
-                              label: `${m} 分`,
-                              value: String(m),
-                            }))}
-                            style={pickerStyle}
-                            placeholder={{ label: '分', value: '' }}
-                            Icon={() => (
-                              <MaterialIcons
-                                name="arrow-drop-down"
-                                size={24}
-                                color="#888"
-                              />
-                            )}
-                          />
-                        </View>
-                      </View>
-
-                      <Text style={styles.inputLabel}>價格</Text>
-                      <TextInput
-                        style={styles.input}
-                        keyboardType="numeric"
-                        value={String(slot.price)}
-                        onChangeText={(val) => {
-                          const updated = [...tempTimeSlots];
-                          updated[index].price = parseFloat(val);
-                          setTempTimeSlots(updated);
-                        }}
-                      />
-
-                      <View
-                        style={{ flexDirection: 'row', alignItems: 'center' }}
-                      >
-                        <Text style={{ marginRight: 8 }}>是否折扣</Text>
-                        <Switch
-                          value={slot.isDiscount}
-                          onValueChange={(val) => {
-                            const updated = [...tempTimeSlots];
-                            updated[index].isDiscount = val;
-                            setTempTimeSlots(updated);
-                          }}
-                        />
-                      </View>
-
-                      <TouchableOpacity
-                        onPress={() => {
-                          const updated = [...tempTimeSlots];
-                          updated.splice(index, 1);
-                          setTempTimeSlots(updated);
-                        }}
-                      >
-                        <Text style={{ color: 'red', marginTop: 6 }}>
-                          刪除此時段
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  ))}
-
-                  <TouchableOpacity
-                    onPress={() =>
-                      setTempTimeSlots([
-                        ...tempTimeSlots,
-                        {
-                          startTime: '10:00',
-                          endTime: '13:00',
-                          isDiscount: false,
-                          price: 0,
-                        },
-                      ])
-                    }
-                  >
-                    <Text style={{ color: '#007bff' }}>新增一組優惠時段</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() =>
-                      setTempTimeSlots([
-                        ...tempTimeSlots,
-                        {
-                          startTime: '10:00',
-                          endTime: '13:00',
-                          isDiscount: false,
-                          price: 0,
-                        },
-                      ])
-                    }
-                  >
-                    <Text style={{ color: '#007bff' }}>新增一組優惠時段</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.submitButton}
-                    onPress={() => {
-                      const newSpecials = Object.keys(selectedDatesMap)
-                        .filter((d) => selectedDatesMap[d])
-                        .map((date) => ({
-                          date,
-                          openTime: tempOpenTime,
-                          closeTime: tempCloseTime,
-                          regularRate: parseFloat(tempRegularRate),
-                          timeSlots: [...tempTimeSlots],
-                        }));
-
-                      setSpecialDates([...specialDates, ...newSpecials]);
-                      setDatePickerVisible(false);
-                      setSelectedDatesMap({});
-                    }}
-                  >
-                    <Text style={styles.submitButtonText}>
-                      確定新增這些日期
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={{ marginTop: 10 }}
-                    onPress={() => setDatePickerVisible(false)}
-                  >
-                    <Text style={{ color: '#888' }}>取消</Text>
-                  </TouchableOpacity>
-                </View>
+                    setSpecialDates([...specialDates, ...newSpecials]);
+                    setDatePickerVisible(false);
+                    setSelectedDatesMap({});
+                  }}
+                />
               )}
 
               <View style={styles.uploadContainer}>
