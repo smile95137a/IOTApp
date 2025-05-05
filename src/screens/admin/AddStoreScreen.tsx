@@ -49,7 +49,7 @@ const AddStoreScreen = () => {
   const isSuperAdmin = loginUser?.user?.roles?.some((role) => role.id === 1);
   const [showMultiDateModal, setShowMultiDateModal] = useState(false);
 
-  const store = route.params?.store || null;
+  const [store, setStore] = useState(route.params?.store || null);
   const mapRef = useRef<MapView>(null);
   const isEditMode = !!store;
   const [users, setUsers] = useState([]);
@@ -252,6 +252,7 @@ const AddStoreScreen = () => {
     }
   };
 
+  // 拍照
   const handleUploadPhoto = async () => {
     let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
@@ -261,19 +262,26 @@ const AddStoreScreen = () => {
         confirmText: '我知道了',
       });
       return;
-
-      return;
     }
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      (navigation as any).navigate('CropImage', {
+        uri: result.assets[0].uri,
+        aspectRatio: [1, 1],
+        isCircle: true,
+        from: {
+          tab: 'Admin',
+          stack: 'StoreManagementStack',
+          screen: 'AddStore',
+        },
+        store,
+      });
     }
   };
 
@@ -290,15 +298,32 @@ const AddStoreScreen = () => {
     }
 
     let result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      (navigation as any).navigate('CropImage', {
+        uri: result.assets[0].uri,
+        aspectRatio: [1, 1],
+        isCircle: true,
+        from: {
+          tab: 'Admin',
+          stack: 'StoreManagementStack',
+          screen: 'AddStore',
+        },
+        store,
+      });
     }
   };
+  useEffect(() => {
+    if (route.params?.croppedImageUri) {
+      setImage(route.params.croppedImageUri);
+    }
+    if (route.params?.store) {
+      setStore(route.params.store);
+    }
+  }, [route.params]);
 
   const handleMapPress = async (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
