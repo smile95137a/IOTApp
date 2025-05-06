@@ -119,10 +119,11 @@ const MultiDateSpecialDialog: React.FC<any> = ({
             }, {})}
             onDayPress={(day) => {
               const dateStr = day.dateString;
-              setSelectedDatesMap((prev) => ({
-                ...prev,
-                [dateStr]: !prev[dateStr],
-              }));
+              setSelectedDatesMap((prev) => {
+                const updated = { ...prev, [dateStr]: !prev[dateStr] };
+                if (!updated[dateStr]) delete updated[dateStr];
+                return updated;
+              });
             }}
           />
 
