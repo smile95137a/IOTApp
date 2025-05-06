@@ -127,7 +127,7 @@ const MultiDateSpecialDialog: React.FC<any> = ({
             }}
           />
 
-          <Text style={styles.label}>開始時間</Text>
+          <Text style={styles.label}>營業時間</Text>
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
               <RNPickerSelect
@@ -256,7 +256,7 @@ const MultiDateSpecialDialog: React.FC<any> = ({
           <Text style={styles.label}>優惠時段</Text>
           {timeSlots.map((slot, index) => (
             <View key={index} style={styles.slotBlock}>
-              <Text style={styles.label}>開始時間</Text>
+              <Text style={styles.label}>營業時間</Text>
               <View style={styles.row}>
                 <View style={{ flex: 1 }}>
                   <RNPickerSelect
