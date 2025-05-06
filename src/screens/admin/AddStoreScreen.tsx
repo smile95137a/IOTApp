@@ -752,6 +752,16 @@ const AddStoreScreen = () => {
                     onChangeText={setRegularRate}
                   />
                 </View>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>優惠費率</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="優惠費率"
+                    keyboardType="numeric"
+                    value={discountRate}
+                    onChangeText={setDiscountRate}
+                  />
+                </View>
               </View>
               <Text style={styles.inputLabel}>營業開始時間 (Open Time)</Text>
               <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>

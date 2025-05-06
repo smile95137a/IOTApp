@@ -19,6 +19,7 @@ import { showLoading, hideLoading } from '../store/loadingSlice';
 import { AppDispatch } from '../store/store';
 import { decryptData } from '../utils/cryptoUtils';
 import { getErrorMessage } from '../utils/errorUtils';
+import { logJson } from '../utils/logJsonUtils';
 
 const { width, height } = Dimensions.get('window');
 const SCAN_BOX_SIZE = 250;
@@ -78,9 +79,11 @@ const CameraScreen = () => {
 
       const response = await fetchPoolTableByUid(tableUid);
       if (response.success) {
+        const storeName = response.data.storeName || '未知店家';
+        const tableName = response.data.name || '未知桌台';
         if (response.data.gameId) {
           const confirm = await openConfirmDialog({
-            title: '已掃描到',
+            title: `已掃描到 ${storeName}・${tableName}`,
             content: '是否前往付款？',
           });
 
@@ -117,7 +120,7 @@ const CameraScreen = () => {
           }
         } else {
           const confirm = await openConfirmDialog({
-            title: '已掃描到',
+            title: `已掃描到 ${storeName}・${tableName}`,
             content: '前往開台？',
           });
 

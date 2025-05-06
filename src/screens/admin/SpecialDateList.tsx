@@ -337,6 +337,9 @@ const SpecialDateList = ({
                         </View>
 
                         {/* 費用 */}
+                        <Text style={{ fontWeight: 'bold', marginTop: 10 }}>
+                          優惠費用
+                        </Text>
                         <TextInput
                           placeholder="價格"
                           keyboardType="numeric"

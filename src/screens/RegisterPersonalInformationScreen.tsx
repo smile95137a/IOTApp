@@ -186,6 +186,7 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
       console.log('[Login] 登入成功:', loginResult.data.user);
       const { accessToken, user } = loginResult.data;
       dispatch(setAuth({ token: accessToken, user }));
+      dispatch(hideLoading());
       await openInfoDialog({
         title: '註冊成功',
         content: '歡迎加入！',
@@ -196,8 +197,6 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
         index: 0,
         routes: [{ name: 'Main' }],
       });
-
-      dispatch(hideLoading());
     } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
