@@ -117,7 +117,7 @@ const menuItems = {
     stack: 'RechargeStack',
     screen: 'RechargeManagement',
     icon: 'cash-multiple',
-    label: 'Recharge',
+    label: '儲值金管理',
   },
 };
 

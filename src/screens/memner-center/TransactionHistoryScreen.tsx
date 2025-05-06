@@ -56,7 +56,7 @@ const TransactionHistoryScreen = ({ navigation }: any) => {
   return (
     <ScrollView contentContainerStyle={styles.transactionList}>
       {isFetched && transactions.length === 0 ? (
-        <NoData text="目前尚無儲值紀錄" />
+        <NoData text="目前尚無消費紀錄" />
       ) : (
         transactions.map((item) => (
           <View key={item.id} style={styles.transactionItem}>

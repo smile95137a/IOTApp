@@ -296,14 +296,24 @@ const StoreDetailScreen = () => {
             >
               <View style={styles.tableGrid}>
                 {tables.map((item) => {
-                  const status = item.isUse ? 'reserved' : 'available';
-                  const label = item.isUse ? '已預訂' : '立即開台';
+                  const isReserved = item.isUse;
+                  const isFault = item.status === 'FAULT';
+                  const status = isFault
+                    ? 'fault'
+                    : isReserved
+                    ? 'reserved'
+                    : 'available';
+                  const label = isFault
+                    ? '設備維護中'
+                    : isReserved
+                    ? '已預訂'
+                    : '立即開台';
 
                   return (
                     <TouchableOpacity
                       key={item.id}
                       style={styles.tableItem}
-                      disabled={status === 'reserved'}
+                      disabled={status !== 'available'}
                       onPress={() => {
                         if (status === 'available') {
                           (navigation as any).navigate('Member', {
