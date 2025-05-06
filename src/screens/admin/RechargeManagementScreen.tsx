@@ -177,7 +177,11 @@ const RechargeSettingManagementScreen = () => {
                         />
                         <Menu.Item
                           onPress={() =>
-                            handleDelete('standard', item.id, item.name)
+                            handleDelete(
+                              'standard',
+                              item.id,
+                              item.name || '此項目'
+                            )
                           }
                           title="刪除"
                           leadingIcon="trash-can-outline"
