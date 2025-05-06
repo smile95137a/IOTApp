@@ -147,11 +147,13 @@ const MemberCenterScreen = ({ navigation }: any) => {
                   (navigation as any).navigate('Explore', {
                     screen: 'BookStore',
                   });
-                } else {
+                } else if (item.screen === 'Admin') {
                   (navigation as any).reset({
                     index: 0,
-                    routes: [{ name: item.screen }],
+                    routes: [{ name: 'Admin' }],
                   });
+                } else {
+                  (navigation as any).navigate(item.screen);
                 }
               }}
             >

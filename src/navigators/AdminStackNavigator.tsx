@@ -46,6 +46,9 @@ import VendorManagementScreen from '../screens/admin/VendorManagementScreen';
 import { showLoading, hideLoading } from '../store/loadingSlice';
 import { AppDispatch, RootState } from '../store/store';
 import { getErrorMessage } from '../utils/errorUtils';
+import RechargeManagementScreen from '../screens/admin/RechargeManagementScreen';
+import AddRechargePromotion from '../screens/admin/AddRechargePromotion';
+import AddRechargeStandard from '../screens/admin/AddRechargeStandard';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -109,6 +112,12 @@ const menuItems = {
     screen: 'MonitorManagement',
     icon: 'video-outline',
     label: '攝影機',
+  },
+  recharge: {
+    stack: 'RechargeStack',
+    screen: 'RechargeManagement',
+    icon: 'cash-multiple',
+    label: 'Recharge',
   },
 };
 
@@ -297,6 +306,11 @@ const AdminDrawerNavigator = () => {
         name="MonitorStack"
         component={MonitorStack}
         options={{ headerShown: false, title: '攝影機管理' }}
+      />
+      <Drawer.Screen
+        name="RechargeStack"
+        component={RechargeStack}
+        options={{ headerShown: false, title: '儲值優惠管理' }}
       />
     </Drawer.Navigator>
   );
@@ -495,6 +509,28 @@ const ReportStack = () => {
         name="ReportDetail"
         component={ReportDetailScreen}
         options={{ title: '報表詳情', headerShown: false }} // 讓返回按鈕可用
+      />
+    </Stack.Navigator>
+  );
+};
+
+const RechargeStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="RechargeManagement"
+        component={RechargeManagementScreen}
+        options={{ title: '儲值設定管理', headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddRechargePromotion"
+        component={AddRechargePromotion}
+        options={{ title: '新增/編輯 儲值優惠', headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddRechargeStandard"
+        component={AddRechargeStandard}
+        options={{ title: '新增/編輯 儲值標準', headerShown: false }}
       />
     </Stack.Navigator>
   );

@@ -264,7 +264,6 @@ const MemberStack = () => {
 
     return () => {
       console.log('[MemberStack] Unmounting, clearing user data');
-      dispatch(clearUser());
     };
   }, [isLoggedIn, navigation, dispatch]);
 

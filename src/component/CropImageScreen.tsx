@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -18,7 +18,11 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import { captureRef } from 'react-native-view-shot';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -47,22 +51,27 @@ const CropImageScreen = () => {
     height: CROP_HEIGHT,
   });
 
-  useEffect(() => {
-    if (imageUri) {
-      Image.getSize(imageUri, (w, h) => {
-        const ratio = Math.min(CROP_WIDTH / w, CROP_HEIGHT / h);
-        const scaledWidth = w * ratio;
-        const scaledHeight = h * ratio;
+  useFocusEffect(
+    useCallback(() => {
+      if (imageUri) {
+        Image.getSize(imageUri, (w, h) => {
+          const ratio = Math.min(CROP_WIDTH / w, CROP_HEIGHT / h);
+          const scaledWidth = w * ratio;
+          const scaledHeight = h * ratio;
 
-        setImageSize({ width: scaledWidth, height: scaledHeight });
+          setImageSize({ width: scaledWidth, height: scaledHeight });
 
-        translateX.value = (CROP_WIDTH - scaledWidth) / 2;
-        translateY.value = (CROP_HEIGHT - scaledHeight) / 2;
-        lastTranslateX.value = translateX.value;
-        lastTranslateY.value = translateY.value;
-      });
-    }
-  }, [imageUri]);
+          translateX.value = (CROP_WIDTH - scaledWidth) / 2;
+          translateY.value = (CROP_HEIGHT - scaledHeight) / 2;
+          scale.value = 1;
+
+          lastTranslateX.value = translateX.value;
+          lastTranslateY.value = translateY.value;
+          lastScale.value = 1;
+        });
+      }
+    }, [imageUri])
+  );
 
   const pinchGesture = useAnimatedGestureHandler({
     onStart: () => {
