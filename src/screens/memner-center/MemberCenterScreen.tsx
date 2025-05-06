@@ -148,7 +148,10 @@ const MemberCenterScreen = ({ navigation }: any) => {
                     screen: 'BookStore',
                   });
                 } else {
-                  (navigation as any).navigate(item.screen);
+                  (navigation as any).reset({
+                    index: 0,
+                    routes: [{ name: item.screen }],
+                  });
                 }
               }}
             >
