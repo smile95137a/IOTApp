@@ -46,12 +46,6 @@ const MultiDateSpecialDialog: React.FC<any> = ({
 
   if (!isOpen) return null;
 
-  const pickerStyle = {
-    inputIOS: styles.dropdownInput,
-    inputAndroid: styles.dropdownInput,
-    iconContainer: styles.iconContainer,
-  };
-
   const handleConfirm = async () => {
     const selectedDates = Object.keys(selectedDatesMap).filter(
       (d) => selectedDatesMap[d]
@@ -146,7 +140,11 @@ const MultiDateSpecialDialog: React.FC<any> = ({
                   label: `${h} 時`,
                   value: String(h),
                 }))}
-                style={pickerStyle}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  inputAndroid: styles.dropdownInput,
+                  iconContainer: styles.iconContainer,
+                }}
                 placeholder={{ label: '時', value: '' }}
                 Icon={() => (
                   <MaterialIcons
@@ -169,7 +167,11 @@ const MultiDateSpecialDialog: React.FC<any> = ({
                   label: `${m} 分`,
                   value: String(m),
                 }))}
-                style={pickerStyle}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  inputAndroid: styles.dropdownInput,
+                  iconContainer: styles.iconContainer,
+                }}
                 placeholder={{ label: '分', value: '' }}
                 Icon={() => (
                   <MaterialIcons
@@ -196,7 +198,12 @@ const MultiDateSpecialDialog: React.FC<any> = ({
                   label: `${h} 時`,
                   value: String(h),
                 }))}
-                style={pickerStyle}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  inputIOS: styles.dropdownInput,
+                  inputAndroid: styles.dropdownInput,
+                  iconContainer: styles.iconContainer,
+                }}
                 placeholder={{ label: '時', value: '' }}
                 Icon={() => (
                   <MaterialIcons
@@ -219,7 +226,12 @@ const MultiDateSpecialDialog: React.FC<any> = ({
                   label: `${m} 分`,
                   value: String(m),
                 }))}
-                style={pickerStyle}
+                useNativeAndroidPickerStyle={false}
+                style={{
+                  inputIOS: styles.dropdownInput,
+                  inputAndroid: styles.dropdownInput,
+                  iconContainer: styles.iconContainer,
+                }}
                 placeholder={{ label: '分', value: '' }}
                 Icon={() => (
                   <MaterialIcons
@@ -260,7 +272,12 @@ const MultiDateSpecialDialog: React.FC<any> = ({
                       label: `${h} 時`,
                       value: String(h),
                     }))}
-                    style={pickerStyle}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
+                    }}
                     placeholder={{ label: '時', value: '' }}
                     Icon={() => (
                       <MaterialIcons
@@ -286,7 +303,12 @@ const MultiDateSpecialDialog: React.FC<any> = ({
                       label: `${m} 分`,
                       value: String(m),
                     }))}
-                    style={pickerStyle}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
+                    }}
                     placeholder={{ label: '分', value: '' }}
                     Icon={() => (
                       <MaterialIcons
@@ -316,7 +338,12 @@ const MultiDateSpecialDialog: React.FC<any> = ({
                       label: `${h} 時`,
                       value: String(h),
                     }))}
-                    style={pickerStyle}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
+                    }}
                     placeholder={{ label: '時', value: '' }}
                     Icon={() => (
                       <MaterialIcons
@@ -342,7 +369,12 @@ const MultiDateSpecialDialog: React.FC<any> = ({
                       label: `${m} 分`,
                       value: String(m),
                     }))}
-                    style={pickerStyle}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      inputIOS: styles.dropdownInput,
+                      inputAndroid: styles.dropdownInput,
+                      iconContainer: styles.iconContainer,
+                    }}
                     placeholder={{ label: '分', value: '' }}
                     Icon={() => (
                       <MaterialIcons
@@ -504,6 +536,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     fontSize: 14,
+    alignItems: 'center',
     padding: 12,
     backgroundColor: '#FFF',
   },

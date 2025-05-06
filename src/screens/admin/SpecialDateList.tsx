@@ -115,7 +115,12 @@ const SpecialDateList = ({
                                 label: `${h} 時`,
                                 value: String(h),
                               }))}
-                              style={pickerStyle}
+                              useNativeAndroidPickerStyle={false}
+                              style={{
+                                inputIOS: styles.dropdownInput,
+                                inputAndroid: styles.dropdownInput,
+                                iconContainer: styles.iconContainer,
+                              }}
                               placeholder={{ label: '時', value: '' }}
                               Icon={() => (
                                 <MaterialIcons
@@ -146,7 +151,12 @@ const SpecialDateList = ({
                                 label: `${m} 分`,
                                 value: String(m),
                               }))}
-                              style={pickerStyle}
+                              useNativeAndroidPickerStyle={false}
+                              style={{
+                                inputIOS: styles.dropdownInput,
+                                inputAndroid: styles.dropdownInput,
+                                iconContainer: styles.iconContainer,
+                              }}
                               placeholder={{ label: '分', value: '' }}
                               Icon={() => (
                                 <MaterialIcons
@@ -203,7 +213,12 @@ const SpecialDateList = ({
                                 label: `${h} 時`,
                                 value: String(h),
                               }))}
-                              style={pickerStyle}
+                              useNativeAndroidPickerStyle={false}
+                              style={{
+                                inputIOS: styles.dropdownInput,
+                                inputAndroid: styles.dropdownInput,
+                                iconContainer: styles.iconContainer,
+                              }}
                               placeholder={{ label: '時', value: '' }}
                               Icon={() => (
                                 <MaterialIcons
@@ -231,7 +246,12 @@ const SpecialDateList = ({
                                 label: `${m} 分`,
                                 value: String(m),
                               }))}
-                              style={pickerStyle}
+                              useNativeAndroidPickerStyle={false}
+                              style={{
+                                inputIOS: styles.dropdownInput,
+                                inputAndroid: styles.dropdownInput,
+                                iconContainer: styles.iconContainer,
+                              }}
                               placeholder={{ label: '分', value: '' }}
                               Icon={() => (
                                 <MaterialIcons
@@ -265,7 +285,12 @@ const SpecialDateList = ({
                                 label: `${h} 時`,
                                 value: String(h),
                               }))}
-                              style={pickerStyle}
+                              useNativeAndroidPickerStyle={false}
+                              style={{
+                                inputIOS: styles.dropdownInput,
+                                inputAndroid: styles.dropdownInput,
+                                iconContainer: styles.iconContainer,
+                              }}
                               placeholder={{ label: '時', value: '' }}
                               Icon={() => (
                                 <MaterialIcons
@@ -293,7 +318,12 @@ const SpecialDateList = ({
                                 label: `${m} 分`,
                                 value: String(m),
                               }))}
-                              style={pickerStyle}
+                              useNativeAndroidPickerStyle={false}
+                              style={{
+                                inputIOS: styles.dropdownInput,
+                                inputAndroid: styles.dropdownInput,
+                                iconContainer: styles.iconContainer,
+                              }}
                               placeholder={{ label: '分', value: '' }}
                               Icon={() => (
                                 <MaterialIcons
@@ -470,9 +500,5 @@ const styles = StyleSheet.create({
     marginHorizontal: '1%',
   },
 });
-const pickerStyle = {
-  inputIOS: styles.dropdownInput,
-  inputAndroid: styles.dropdownInput,
-  iconContainer: styles.iconContainer,
-};
+
 export default SpecialDateList;

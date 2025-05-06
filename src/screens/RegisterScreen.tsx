@@ -11,8 +11,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select'; // Import picker select
-import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons
+import RNPickerSelect from 'react-native-picker-select';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
 import { setRegisterData } from '../store/registerSlice';

@@ -325,6 +325,10 @@ const styles = StyleSheet.create({
   },
   registerLink: {
     marginTop: 20,
+    alignSelf: 'center', // 確保置中
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 20,
   },
   registerText: {
     color: '#FF0000',
