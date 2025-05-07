@@ -306,7 +306,7 @@ const StoreDetailScreen = () => {
                   const label = isFault
                     ? '設備維護中'
                     : isReserved
-                    ? '已預訂'
+                    ? '開局進行中'
                     : '立即開台';
 
                   return (

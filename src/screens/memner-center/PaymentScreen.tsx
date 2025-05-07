@@ -35,7 +35,7 @@ const PaymentScreen = ({ navigation }: any) => {
       let result;
 
       if (type === 'game') {
-        result = await startGame({ poolTableUId: payData.uid });
+        result = await startGame({ poolTableUId: payData.uid, payType });
       } else if (type === 'gameEnd') {
         result = await checkoutGame({
           payType,

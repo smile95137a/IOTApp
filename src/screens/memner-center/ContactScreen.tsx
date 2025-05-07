@@ -28,6 +28,7 @@ const ContactScreen = ({ navigation, route }) => {
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     if (transaction?.startTime) {
+      logJson('transaction.startTime', transaction.startTime);
       const startTime = moment(transaction.startTime, 'YYYY/MM/DD HH:mm:ss');
 
       const updateTimer = () => {
@@ -82,7 +83,7 @@ const ContactScreen = ({ navigation, route }) => {
   };
 
   const handleCall = async () => {
-    const phoneNumber = transaction?.contactInfo;
+    const phoneNumber = transaction?.storePhone;
     if (phoneNumber) {
       const confirmed = await openConfirmDialog({
         title: '撥打電話',
@@ -166,7 +167,7 @@ const ContactScreen = ({ navigation, route }) => {
               機台操作問題，請聯繫{transaction?.vendorName}店長！
             </Text>
             <Text style={styles.contactSubtitle}>
-              聯絡資訊{transaction?.contactInfo}
+              聯絡資訊{transaction?.storePhone}
             </Text>
           </View>
         </View>
