@@ -8,6 +8,7 @@ import {
   ScrollView,
   SafeAreaView,
   Image,
+  Modal,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import HeaderBar from '../../component/admin/HeaderBar';
@@ -23,7 +24,10 @@ import { getErrorMessage } from '../../utils/errorUtils';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import RNPickerSelect from 'react-native-picker-select';
 import { logJson } from '../../utils/logJsonUtils';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
+import moment from 'moment';
+import { Platform } from 'react-native';
+import { Calendar } from 'react-native-calendars';
 const currentYear = new Date().getFullYear();
 const generateYearDateOptions = () => {
   const options = [];
@@ -60,10 +64,19 @@ const AddRechargePromotion = () => {
   const [details, setDetails] = useState(
     promotion?.details || [{ rechargeAmount: '', bonusAmount: '' }]
   );
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
 
   const handleSubmit = async () => {
     if (!name.trim() || !startDate.trim() || !endDate.trim()) {
       await openInfoDialog({ title: '錯誤', content: '請填寫完整欄位' });
+      return;
+    }
+    if (moment(endDate).isBefore(startDate)) {
+      await openInfoDialog({
+        title: '錯誤',
+        content: '結束日期不能早於開始日期',
+      });
       return;
     }
 
@@ -113,35 +126,27 @@ const AddRechargePromotion = () => {
           onChangeText={setName}
         />
 
-        <Text style={styles.inputLabel}>開始日期 yyyy-MM-dd</Text>
-        <RNPickerSelect
-          value={startDate}
-          onValueChange={setStartDate}
-          items={generateYearDateOptions()}
-          placeholder={{ label: '選擇開始日期', value: '' }}
-          useNativeAndroidPickerStyle={false}
-          style={{
-            inputIOS: styles.dropdownInput,
-            inputAndroid: styles.dropdownInput,
-            iconContainer: styles.iconContainer,
-          }}
-          Icon={() => <Icon name="arrow-drop-down" size={24} color="#888" />}
-        />
+        <Text style={styles.inputLabel}>開始日期</Text>
+        <TouchableOpacity
+          style={styles.dateInputWrapper}
+          onPress={() => setShowStartPicker(true)}
+        >
+          <Text style={startDate ? styles.dateText : styles.datePlaceholder}>
+            {startDate || '請選擇開始日期'}
+          </Text>
+          <Icon name="calendar-today" size={20} color="#888" />
+        </TouchableOpacity>
 
-        <Text style={styles.inputLabel}>結束日期 yyyy-MM-dd</Text>
-        <RNPickerSelect
-          value={endDate}
-          onValueChange={setEndDate}
-          items={generateYearDateOptions()}
-          placeholder={{ label: '選擇結束日期', value: '' }}
-          useNativeAndroidPickerStyle={false}
-          style={{
-            inputIOS: styles.dropdownInput,
-            inputAndroid: styles.dropdownInput,
-            iconContainer: styles.iconContainer,
-          }}
-          Icon={() => <Icon name="arrow-drop-down" size={24} color="#888" />}
-        />
+        <Text style={styles.inputLabel}>結束日期</Text>
+        <TouchableOpacity
+          style={styles.dateInputWrapper}
+          onPress={() => setShowEndPicker(true)}
+        >
+          <Text style={endDate ? styles.dateText : styles.datePlaceholder}>
+            {endDate || '請選擇結束日期'}
+          </Text>
+          <Icon name="calendar-today" size={20} color="#888" />
+        </TouchableOpacity>
 
         <Text style={styles.inputLabel}>優惠條件</Text>
         {details.map((d, idx) => (
@@ -192,6 +197,47 @@ const AddRechargePromotion = () => {
           <Text style={styles.submitButtonText}>儲存</Text>
         </TouchableOpacity>
       </ScrollView>
+      <Modal
+        visible={showStartPicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowStartPicker(false)}
+      >
+        <View style={styles.calendarModal}>
+          <View style={styles.calendarContainer}>
+            <Calendar
+              onDayPress={(day) => {
+                setStartDate(day.dateString);
+                setShowStartPicker(false);
+              }}
+              markedDates={{
+                [startDate]: { selected: true, selectedColor: '#FFC702' },
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={showEndPicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowEndPicker(false)}
+      >
+        <View style={styles.calendarModal}>
+          <View style={styles.calendarContainer}>
+            <Calendar
+              onDayPress={(day) => {
+                setEndDate(day.dateString);
+                setShowEndPicker(false);
+              }}
+              markedDates={{
+                [endDate]: { selected: true, selectedColor: '#FFC702' },
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -265,6 +311,59 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  dateInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: '#FFF',
+    marginBottom: 12,
+  },
+  clearDateButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 12,
+  },
+  clearDateText: {
+    fontSize: 13,
+    color: '#007AFF',
+  },
+  calendarModal: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  calendarContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    width: '90%',
+    elevation: 5,
+  },
+
+  dateInputWrapper: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    backgroundColor: '#FFF',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  dateText: {
+    fontSize: 16,
+    color: '#000',
+  },
+
+  datePlaceholder: {
+    fontSize: 16,
+    color: '#999',
   },
 });
 

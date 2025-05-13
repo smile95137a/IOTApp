@@ -12,6 +12,8 @@ import {
   Image,
   Keyboard,
   TouchableWithoutFeedback,
+  TouchableOpacity,
+  Modal,
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -27,6 +29,9 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { logJson } from '../../utils/logJsonUtils';
+import moment from 'moment';
+import { Calendar } from 'react-native-calendars';
 
 const ReportDetailScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -47,6 +52,20 @@ const ReportDetailScreen = () => {
     'ConsumptionAmount',
   ]);
   const [periodType, setPeriodType] = useState('DAY');
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
+  const currentYear = new Date().getFullYear();
+  const monthOptions = Array.from({ length: 12 }, (_, i) => {
+    const month = i + 1;
+    return {
+      label: `${currentYear}-${String(month).padStart(2, '0')}`,
+      value: `${currentYear}-${String(month).padStart(2, '0')}`,
+    };
+  });
+  const yearOptions = Array.from({ length: 5 }, (_, i) => {
+    const year = currentYear - i;
+    return { label: `${year}`, value: `${year}` };
+  });
 
   const reportTypeOptions = [
     { label: '儲值金額', value: 'DepositAmount' },
@@ -54,7 +73,7 @@ const ReportDetailScreen = () => {
     { label: '消費金額', value: 'ConsumptionAmount' },
     { label: '消費筆數', value: 'ConsumptionCount' },
     { label: '單店營業額', value: 'StoreRevenue' },
-    { label: '廠商營業額', value: 'VendorRevenue' },
+    { label: '加盟商營業額', value: 'VendorRevenue' },
     { label: '剩餘儲值金金額', value: 'RemainingBalance' },
     { label: '會員數量', value: 'UserCount' },
   ];
@@ -73,6 +92,14 @@ const ReportDetailScreen = () => {
       const allResults = [];
 
       for (const type of selectedReportTypes) {
+        logJson('fetchReportData', {
+          reportType: type,
+          startDate,
+          endDate,
+          storeId,
+          vendorId,
+          periodType,
+        });
         const { success, data } = await fetchReportData({
           reportType: type,
           startDate,
@@ -216,6 +243,40 @@ const ReportDetailScreen = () => {
     );
   };
 
+  useEffect(() => {
+    if (periodType === 'WEEK') {
+      const newEndDate = new Date(startDate);
+      newEndDate.setDate(newEndDate.getDate() + 7);
+      setEndDate(newEndDate);
+    }
+  }, [periodType, startDate]);
+
+  useEffect(() => {
+    if (periodType === 'WEEK') {
+      const newEnd = new Date(startDate);
+      newEnd.setDate(newEnd.getDate() + 6);
+      setEndDate(newEnd);
+    } else if (periodType === 'MONTH') {
+      const firstDay = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        1
+      );
+      const lastDay = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth() + 1,
+        0
+      );
+      setStartDate(firstDay);
+      setEndDate(lastDay);
+    } else if (periodType === 'YEARS') {
+      const firstDay = new Date(startDate.getFullYear(), 0, 1);
+      const lastDay = new Date(startDate.getFullYear(), 11, 31);
+      setStartDate(firstDay);
+      setEndDate(lastDay);
+    }
+  }, [periodType]);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeArea}>
@@ -243,7 +304,7 @@ const ReportDetailScreen = () => {
                 <View style={styles.filterContainer}>
                   <View style={styles.row}>
                     <View style={styles.flexOne}>
-                      <Text style={styles.label}>廠商</Text>
+                      <Text style={styles.label}>加盟商</Text>
                       <RNPickerSelect
                         value={vendorId}
                         onValueChange={(value) => setVendorId(value)}
@@ -351,16 +412,118 @@ const ReportDetailScreen = () => {
                     </View>
                   </View>
 
-                  <View style={styles.row}>
-                    <DynamicDatePicker
-                      periodType={periodType}
-                      startDate={startDate}
-                      endDate={endDate}
-                      setStartDate={setStartDate}
-                      setEndDate={setEndDate}
-                      style={styles.flexOne}
-                    />
-                  </View>
+                  {periodType === 'DAY' || periodType === 'WEEK' ? (
+                    <View style={styles.row}>
+                      <View style={styles.flexOne}>
+                        <Text style={styles.label}>開始日期</Text>
+                        <TouchableOpacity
+                          style={styles.dateInputWrapper}
+                          onPress={() => setShowStartPicker(true)}
+                        >
+                          <Text
+                            style={
+                              startDate
+                                ? styles.dateText
+                                : styles.datePlaceholder
+                            }
+                          >
+                            {moment(startDate).format('YYYY-MM-DD')}
+                          </Text>
+                          <MaterialIcons
+                            name="calendar-today"
+                            size={20}
+                            color="#888"
+                          />
+                        </TouchableOpacity>
+                      </View>
+
+                      <View style={styles.flexOne}>
+                        <Text style={styles.label}>結束日期</Text>
+                        <TouchableOpacity
+                          style={[
+                            styles.dateInputWrapper,
+                            periodType === 'WEEK' && {
+                              backgroundColor: '#f0f0f0',
+                            },
+                          ]}
+                          disabled={periodType === 'WEEK'}
+                          onPress={() => setShowEndPicker(true)}
+                        >
+                          <Text
+                            style={
+                              endDate ? styles.dateText : styles.datePlaceholder
+                            }
+                          >
+                            {moment(endDate).format('YYYY-MM-DD')}
+                          </Text>
+                          <MaterialIcons
+                            name="calendar-today"
+                            size={20}
+                            color="#888"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ) : periodType === 'MONTH' ? (
+                    <View>
+                      <Text style={styles.label}>選擇月份</Text>
+                      <RNPickerSelect
+                        value={moment(startDate).format('YYYY-MM')}
+                        onValueChange={(value) => {
+                          const [year, month] = value.split('-');
+                          const date = new Date(
+                            Number(year),
+                            Number(month) - 1,
+                            1
+                          );
+                          setStartDate(date);
+                          setEndDate(
+                            new Date(date.getFullYear(), date.getMonth() + 1, 0)
+                          ); // 當月最後一天
+                        }}
+                        items={monthOptions}
+                        style={{
+                          inputIOS: styles.dropdownInput,
+                          inputAndroid: styles.dropdownInput,
+                          iconContainer: styles.iconContainer,
+                        }}
+                        Icon={() => (
+                          <MaterialIcons
+                            name="arrow-drop-down"
+                            size={24}
+                            color="#888"
+                          />
+                        )}
+                        placeholder={{ label: '請選擇月份', value: '' }}
+                      />
+                    </View>
+                  ) : (
+                    <View>
+                      <Text style={styles.label}>選擇年份</Text>
+                      <RNPickerSelect
+                        value={moment(startDate).format('YYYY')}
+                        onValueChange={(value) => {
+                          const date = new Date(Number(value), 0, 1);
+                          setStartDate(date);
+                          setEndDate(new Date(Number(value), 11, 31));
+                        }}
+                        items={yearOptions}
+                        style={{
+                          inputIOS: styles.dropdownInput,
+                          inputAndroid: styles.dropdownInput,
+                          iconContainer: styles.iconContainer,
+                        }}
+                        Icon={() => (
+                          <MaterialIcons
+                            name="arrow-drop-down"
+                            size={24}
+                            color="#888"
+                          />
+                        )}
+                        placeholder={{ label: '請選擇年份', value: '' }}
+                      />
+                    </View>
+                  )}
 
                   <Pressable style={styles.searchButton} onPress={handleSearch}>
                     <Text style={styles.searchButtonText}>查詢</Text>
@@ -395,6 +558,55 @@ const ReportDetailScreen = () => {
             </KeyboardAvoidingView>
           </View>
         </View>
+        <Modal
+          visible={showStartPicker}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setShowStartPicker(false)}
+        >
+          <View style={styles.calendarModal}>
+            <View style={styles.calendarContainer}>
+              <Calendar
+                onDayPress={(day) => {
+                  const selectedDate = new Date(day.dateString);
+                  setStartDate(selectedDate);
+
+                  if (periodType === 'WEEK') {
+                    const newEndDate = new Date(selectedDate);
+                    newEndDate.setDate(newEndDate.getDate() + 6);
+                    setEndDate(newEndDate);
+                  }
+
+                  setShowStartPicker(false);
+                }}
+              />
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+          visible={showEndPicker}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setShowEndPicker(false)}
+        >
+          <View style={styles.calendarModal}>
+            <View style={styles.calendarContainer}>
+              <Calendar
+                onDayPress={(day) => {
+                  setEndDate(new Date(day.dateString));
+                  setShowEndPicker(false);
+                }}
+                markedDates={{
+                  [moment(endDate).format('YYYY-MM-DD')]: {
+                    selected: true,
+                    selectedColor: '#FFC702',
+                  },
+                }}
+              />
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -507,6 +719,39 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#C43D00',
+  },
+  dateInputWrapper: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    backgroundColor: '#FFF',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  datePlaceholder: {
+    fontSize: 16,
+    color: '#999',
+  },
+  calendarModal: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  calendarContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    width: '90%',
+    elevation: 5,
   },
 });
 

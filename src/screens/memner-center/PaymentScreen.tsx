@@ -21,6 +21,7 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { logJson } from '../../utils/logJsonUtils';
 
 const PaymentScreen = ({ navigation }: any) => {
   const route = useRoute();
@@ -160,6 +161,36 @@ const PaymentScreen = ({ navigation }: any) => {
     },
   ];
 
+  const formatNumber = (num: number) => num.toLocaleString();
+
+  const getOrderDetailText = () => {
+    if (type === 'gameEnd' && payData?.gameData) {
+      const {
+        deposit = 0,
+        discountPrice = 0,
+        regularPrice = 0,
+        totalPrice = 0,
+        totalDiscountMinutes = 0,
+        totalRegularMinutes = 0,
+      } = payData.gameData;
+
+      return (
+        `・押金：${formatNumber(deposit)} 元\n` +
+        (totalDiscountMinutes > 0
+          ? `・優惠時段 ${totalDiscountMinutes} 分鐘：${formatNumber(
+              discountPrice
+            )} 元\n`
+          : '') +
+        (totalRegularMinutes > 0
+          ? `・一般時段 ${totalRegularMinutes} 分鐘：${formatNumber(
+              regularPrice
+            )} 元\n`
+          : '')
+      );
+    }
+    return '';
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -170,9 +201,10 @@ const PaymentScreen = ({ navigation }: any) => {
         <View style={styles.orderDetails}>
           <Text style={styles.orderItem}>訂單內容：</Text>
           <Text style={styles.orderDetail}>
+            {getOrderDetailText()}
             {type === 'recharge'
-              ? '- 儲值金額 '
-              : `- 球桌${
+              ? '・ 儲值金額 '
+              : `・ 球桌${
                   type === 'game' || type === 'bookGame' ? '租金' : '費用'
                 } `}
             <NumberFormatter number={totalAmount} />

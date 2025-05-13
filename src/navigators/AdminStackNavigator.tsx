@@ -326,7 +326,7 @@ const VendorStack = () => {
       <Stack.Screen
         name="AddVendor"
         component={AddVendorScreen}
-        options={{ title: '新增廠商', headerShown: false }} // 讓返回按鈕可用
+        options={{ title: '新增加盟商', headerShown: false }} // 讓返回按鈕可用
       />
     </Stack.Navigator>
   );

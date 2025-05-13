@@ -132,7 +132,7 @@ const AddVendorScreen = () => {
       if (response.success) {
         await openInfoDialog({
           title: '成功',
-          content: vendor?.id ? '廠商更新成功' : '廠商新增成功',
+          content: vendor?.id ? '加盟商更新成功' : '加盟商新增成功',
           confirmText: '確定',
         });
         (navigation as any).goBack();
@@ -168,7 +168,7 @@ const AddVendorScreen = () => {
           <View style={styles.headerWrapper}>
             <HeaderBar
               showLeftButton
-              title={vendor?.id ? '編輯廠商' : '新增廠商'}
+              title={vendor?.id ? '編輯加盟商' : '新增加盟商'}
             />
           </View>
           <KeyboardAvoidingView
@@ -178,7 +178,7 @@ const AddVendorScreen = () => {
           >
             <ScrollView style={styles.contentWrapper}>
               <Text style={styles.header}>
-                {vendor?.id ? '編輯廠商' : '新增廠商'}
+                {vendor?.id ? '編輯加盟商' : '新增加盟商'}
               </Text>
 
               <Text style={styles.label}>指派使用者</Text>

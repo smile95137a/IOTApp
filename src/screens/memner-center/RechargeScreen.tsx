@@ -11,6 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { fetchRechargeStandards } from '../../api/rechargeApi';
 import NumberFormatter from '../../component/NumberFormatter';
 import { useDialog } from '../../context/DialogContext';
+import { logJson } from '../../utils/logJsonUtils';
 
 const RechargeScreen = ({ navigation }) => {
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
@@ -22,9 +23,10 @@ const RechargeScreen = ({ navigation }) => {
     const loadData = async () => {
       try {
         const data = await fetchRechargeStandards();
-        const availableOptions = (data || []).filter(
-          (item) => item.status === 'AVAILABLE'
-        );
+        logJson('', data);
+        const availableOptions = (data || [])
+          .filter((item) => item.status === 'AVAILABLE')
+          .sort((a, b) => a.rechargeAmount - b.rechargeAmount); // 加入這行排序
         setRechargeOptions(availableOptions);
       } catch (err) {
         await openInfoDialog({
@@ -35,6 +37,7 @@ const RechargeScreen = ({ navigation }) => {
         setLoading(false);
       }
     };
+
     loadData();
   }, []);
 
@@ -116,9 +119,20 @@ const RechargeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center' },
-  optionContainer: { padding: 16 },
+  container: {
+    flex: 1,
+    width: '100%', // 加這行讓內層能套滿整個螢幕
+    backgroundColor: '#fff',
+  },
+
+  optionContainer: {
+    width: '100%',
+    padding: 16,
+    flexGrow: 1,
+  },
+
   optionGrid: {
+    width: '100%',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
@@ -160,11 +174,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#F67943',
     borderRadius: 25,
     paddingVertical: 12,
+    paddingHorizontal: 64,
     alignItems: 'center',
-    marginHorizontal: 16,
+    alignSelf: 'center',
     marginBottom: 16,
-    minWidth: 168,
   },
+
   rechargeButtonText: {
     fontSize: 18,
     fontWeight: 'bold',

@@ -187,27 +187,28 @@ const MemberManagementScreen = ({ navigation }) => {
         <View style={styles.mainContainer}>
           <View style={styles.toolbarContainer}>
             <TextInput
-              style={[styles.searchInput, isSelectionMode && { width: '70%' }]}
+              style={[styles.searchInput]}
               placeholder="搜尋姓名、手機或電子郵件"
               value={searchText}
               onChangeText={setSearchText}
             />
 
+            <TouchableOpacity
+              style={[
+                styles.selectModeButton,
+                isBlacklistOnly && styles.activeBlacklistButton,
+              ]}
+              onPress={() => setIsBlacklistOnly(!isBlacklistOnly)}
+            >
+              <Icon
+                name="block"
+                size={24}
+                color={isBlacklistOnly ? '#FFFFFF' : '#F44336'}
+              />
+            </TouchableOpacity>
+
             {isSelectionMode ? (
               <View style={styles.selectionToolbar}>
-                <TouchableOpacity
-                  style={[
-                    styles.toolbarButton,
-                    isBlacklistOnly && styles.activeBlacklistButton,
-                  ]}
-                  onPress={() => setIsBlacklistOnly(!isBlacklistOnly)}
-                >
-                  <Icon
-                    name="block"
-                    size={24}
-                    color={isBlacklistOnly ? '#FFFFFF' : '#F44336'}
-                  />
-                </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.toolbarButton}
                   onPress={handleOpenPointModal}

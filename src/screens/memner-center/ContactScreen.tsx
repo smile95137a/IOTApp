@@ -55,6 +55,7 @@ const ContactScreen = ({ navigation, route }) => {
       const { success, data, message } = await getGamePrice({
         gameId: transaction.gameId,
       });
+      logJson('gameEnd', data);
       dispatch(hideLoading());
 
       if (success) {
@@ -63,8 +64,9 @@ const ContactScreen = ({ navigation, route }) => {
           payData: {
             gameId: transaction.gameId,
             poolTableId: transaction.poolTableId,
+            gameData: data,
           },
-          totalAmount: data.price,
+          totalAmount: data.totalPrice,
         });
       } else {
         openInfoDialog({

@@ -72,7 +72,7 @@ const VendorManagementScreen = () => {
   const handleDelete = async (uid, vendorName) => {
     const confirmed = await openConfirmDialog({
       title: '確認刪除',
-      content: `確定要刪除廠商「${vendorName}」嗎？`,
+      content: `確定要刪除加盟商「${vendorName}」嗎？`,
       confirmText: '刪除',
       cancelText: '取消',
     });
@@ -86,7 +86,7 @@ const VendorManagementScreen = () => {
       if (response.success) {
         await openInfoDialog({
           title: '成功',
-          content: '廠商已刪除',
+          content: '加盟商已刪除',
           confirmText: '我知道了',
         });
         loadVendors();

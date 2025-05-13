@@ -15,6 +15,7 @@ import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { setUser } from '../../store/userSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { logJson } from '../../utils/logJsonUtils';
 
 const PaymentSuccessScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -51,6 +52,7 @@ const PaymentSuccessScreen = ({ navigation }: any) => {
     }, [])
   );
   const handleStartGame = () => {
+    logJson('transaction', data.gameRecord);
     (navigation as any).navigate('Contact', { transaction: data.gameRecord });
   };
 
@@ -72,7 +74,7 @@ const PaymentSuccessScreen = ({ navigation }: any) => {
           style={styles.startGameButton}
           onPress={handleStartGame}
         >
-          <Text style={styles.startGameText}>開始球局</Text>
+          <Text style={styles.startGameText}>前往球局</Text>
         </TouchableOpacity>
       )}
     </SafeAreaView>
