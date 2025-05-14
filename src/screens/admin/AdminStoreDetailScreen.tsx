@@ -44,6 +44,9 @@ const AdminStoreDetailScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [storeReport, setStoreReport] = useState<any>(null);
+  const [monitorExpandedMap, setMonitorExpandedMap] = useState<{
+    [id: number]: boolean;
+  }>({});
 
   const loadStoreReport = async () => {
     try {
@@ -275,6 +278,12 @@ const AdminStoreDetailScreen = () => {
       });
     }
   };
+  const toggleMonitorExpand = (id: number) => {
+    setMonitorExpandedMap((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -316,34 +325,62 @@ const AdminStoreDetailScreen = () => {
             <Text style={styles.label}>監控裝置</Text>
             <View style={styles.sectionBlock}>
               <View style={styles.gridRow}>
-                {monitors.map((item) => (
-                  <TouchableOpacity
-                    key={item.id}
-                    style={[
-                      styles.gridItemColumn,
-                      !item.enabled && styles.monitorAbnormalBorder,
-                    ]}
-                    onPress={() => item.enabled && openMonitorDetail(item)}
-                  >
-                    <View>
-                      <Text style={styles.deviceItem}>{item.name}</Text>
+                {monitors.map((item) => {
+                  const isExpanded = monitorExpandedMap[item.id];
+
+                  return (
+                    <TouchableOpacity
+                      onPress={() => toggleMonitorExpand(item.id)}
+                      key={item.id}
+                      style={[
+                        styles.gridItemColumn,
+                        !item.enabled && styles.monitorAbnormalBorder,
+                      ]}
+                    >
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Text style={styles.deviceItem}>{item.name}</Text>
+                        {item.enabled && (
+                          <MaterialCommunityIcons
+                            name={
+                              isExpanded
+                                ? 'minus-circle-outline'
+                                : 'plus-circle-outline'
+                            }
+                            size={24}
+                            color="#888"
+                          />
+                        )}
+                      </View>
+
                       {item.enabled ? (
-                        <Image
-                          source={require('../../assets/iot-mom.jpg')} // 實際開發中可改為 item.imageUri
-                          style={{
-                            width: '100%',
-                            height: 100,
-                            marginTop: 10,
-                            borderRadius: 8,
-                          }}
-                          resizeMode="cover"
-                        />
+                        isExpanded && (
+                          <View style={{ marginTop: 8 }}>
+                            <Text style={styles.modalItem}>監控畫面：</Text>
+                            <Image
+                              source={require('../../assets/iot-mom.jpg')}
+                              style={{
+                                width: '100%',
+                                height: 150,
+                                borderRadius: 8,
+                                marginTop: 6,
+                              }}
+                              resizeMode="cover"
+                            />
+                            <Text style={styles.modalItem}>狀態：正常</Text>
+                          </View>
+                        )
                       ) : (
                         <Text style={styles.abnormalText}>異常狀態</Text>
                       )}
-                    </View>
-                  </TouchableOpacity>
-                ))}
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             </View>
 
@@ -625,7 +662,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   gridItemColumn: {
-    width: '48%',
+    width: '100%',
     backgroundColor: '#FFFFFF',
     padding: 16,
     marginBottom: 16,
