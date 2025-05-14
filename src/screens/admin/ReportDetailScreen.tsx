@@ -92,18 +92,10 @@ const ReportDetailScreen = () => {
       const allResults = [];
 
       for (const type of selectedReportTypes) {
-        logJson('fetchReportData', {
-          reportType: type,
-          startDate,
-          endDate,
-          storeId,
-          vendorId,
-          periodType,
-        });
         const { success, data } = await fetchReportData({
           reportType: type,
-          startDate,
-          endDate,
+          startDate: moment(startDate).format('YYYY-MM-DD'),
+          endDate: moment(endDate).format('YYYY-MM-DD'),
           storeId,
           vendorId,
           periodType,
