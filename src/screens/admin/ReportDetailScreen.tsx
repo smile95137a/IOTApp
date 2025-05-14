@@ -467,6 +467,7 @@ const ReportDetailScreen = () => {
                   ) : periodType === 'MONTH' ? (
                     <View>
                       <Text style={styles.label}>選擇月份</Text>
+
                       <RNPickerSelect
                         value={moment(startDate).format('YYYY-MM')}
                         onValueChange={(value) => {
@@ -495,6 +496,7 @@ const ReportDetailScreen = () => {
                           />
                         )}
                         placeholder={{ label: '請選擇月份', value: '' }}
+                        useNativeAndroidPickerStyle={false}
                       />
                     </View>
                   ) : (
@@ -521,6 +523,7 @@ const ReportDetailScreen = () => {
                           />
                         )}
                         placeholder={{ label: '請選擇年份', value: '' }}
+                        useNativeAndroidPickerStyle={false}
                       />
                     </View>
                   )}
