@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import NumberFormatter from '../NumberFormatter';
 
 type TimeSlotStatus = 'selected' | 'available' | 'booked';
 
@@ -55,7 +56,10 @@ const TimeSlotSelector: React.FC<TimeSlot> = ({
           <View style={[styles.slotContainer, styles.available]}>
             <Text style={styles.availableText}>{`${start}~${end}`}</Text>
             <View style={styles.priceTag}>
-              <Text style={styles.priceText}>{rate}元/小時</Text>
+              <Text style={styles.priceText}>
+                <NumberFormatter number={rate} />
+                元/小時
+              </Text>
             </View>
             <Feather name="check" size={20} color="#ccc" />
           </View>

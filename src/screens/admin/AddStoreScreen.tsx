@@ -213,8 +213,7 @@ const AddStoreScreen = () => {
       !address.trim() ||
       !vendorId.trim() ||
       !lat.trim() ||
-      !lon.trim() ||
-      !userId.trim()
+      !lon.trim()
     ) {
       await openInfoDialog({
         title: '錯誤',

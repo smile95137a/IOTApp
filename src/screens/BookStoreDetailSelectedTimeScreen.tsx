@@ -26,6 +26,7 @@ import { getImageUrl } from '../utils/ImageUtils';
 import { genRandom } from '../utils/RandomUtils';
 import Header from '../component/Header';
 import { fetchStoreByUid } from '../api/storeApi';
+import { logJson } from '../utils/logJsonUtils';
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -47,7 +48,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const [currentDiscountSlot, setCurrentDiscountSlot] = useState<any>(null);
 
   useEffect(() => {
-    const loadTables = async () => {
+    const loadTimes = async () => {
       try {
         dispatch(showLoading());
         const { success, data } = await getAvailableTimes(
@@ -62,7 +63,9 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
             data[tableItem.id]?.map((x) => ({
               ...x,
               id: genRandom(32),
+              rate: x.rate * 60,
             })) || [];
+          logJson('asd', slots);
           setTimeSlots(slots);
         } else {
           console.log(`API 回應失敗: 未能獲取桌台數據`);
@@ -132,7 +135,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
 
     loadData();
 
-    loadTables();
+    loadTimes();
   }, [store.uid]);
 
   const handleShare = async () => {

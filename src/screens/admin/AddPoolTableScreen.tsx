@@ -230,7 +230,10 @@ const AddPoolTableScreen = () => {
           </View>
 
           <View style={styles.headerWrapper}>
-            <HeaderBar title={isEditMode ? '編輯桌檯' : '新增桌檯'} />
+            <HeaderBar
+              showLeftButton
+              title={isEditMode ? '編輯桌檯' : '新增桌檯'}
+            />
           </View>
           <View style={styles.contentWrapper}>
             <KeyboardAvoidingView

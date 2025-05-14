@@ -82,7 +82,7 @@ const PoolTableManagementScreen = () => {
         </View>
 
         <View style={styles.header}>
-          <HeaderBar title="桌檯管理" />
+          <HeaderBar showLeftButton title="桌檯管理" />
         </View>
         <View style={styles.mainContainer}>
           <ScrollView contentContainerStyle={styles.listContainer}>

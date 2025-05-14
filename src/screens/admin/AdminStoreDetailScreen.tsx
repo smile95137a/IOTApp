@@ -287,7 +287,7 @@ const AdminStoreDetailScreen = () => {
         </View>
 
         <View style={styles.header}>
-          <HeaderBar title="店家詳細資料" />
+          <HeaderBar showLeftButton title="店家詳細資料" />
         </View>
 
         <ScrollView contentContainerStyle={styles.containers}>
@@ -327,7 +327,18 @@ const AdminStoreDetailScreen = () => {
                   >
                     <View>
                       <Text style={styles.deviceItem}>{item.name}</Text>
-                      {!item.enabled && (
+                      {item.enabled ? (
+                        <Image
+                          source={require('../../assets/iot-mom.jpg')} // 實際開發中可改為 item.imageUri
+                          style={{
+                            width: '100%',
+                            height: 100,
+                            marginTop: 10,
+                            borderRadius: 8,
+                          }}
+                          resizeMode="cover"
+                        />
+                      ) : (
                         <Text style={styles.abnormalText}>異常狀態</Text>
                       )}
                     </View>
@@ -335,6 +346,7 @@ const AdminStoreDetailScreen = () => {
                 ))}
               </View>
             </View>
+
             {storeDetail ? (
               <>
                 <Text style={styles.label}>桌台設備統計</Text>
