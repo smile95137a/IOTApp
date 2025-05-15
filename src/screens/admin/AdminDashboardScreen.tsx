@@ -53,8 +53,8 @@ const AdminDashboardScreen = ({ navigation }) => {
           setTodayTopupCount(data.todayTopupCount);
           setMonthTotalAmount(data.monthTotalAmount);
           setMonthTransactionCount(data.monthTransactionCount);
-          setTotalAmountAll(data.totalAmountAll);
-          setTotalTopupAmountAll(data.totalTopupAmountAll);
+          setTotalAmountAll(data.totalDepositAmount);
+          setTotalTopupAmountAll(data.totalConsumptionAmount);
         }
       } else {
         await openInfoDialog({

@@ -227,7 +227,7 @@ const AddStoreScreen = () => {
       address,
       hint,
       contactPhone,
-      user: { id: userId },
+      user: userId ? { id: userId } : null,
       vendor: { id: parseInt(vendorId) },
       lat: parseFloat(lat),
       lon: parseFloat(lon),
