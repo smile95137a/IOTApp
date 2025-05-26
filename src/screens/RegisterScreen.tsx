@@ -134,33 +134,6 @@ const RegisterScreen = ({ route, navigation }: any) => {
                 </View>
               </View>
 
-              {/* Send Code Button */}
-              <View>
-                <TouchableOpacity
-                  style={[
-                    styles.sendButton,
-                    isCodeSent ? styles.disabledButton : null,
-                  ]}
-                  onPress={handleSendCode}
-                  disabled={isCodeSent}
-                >
-                  <Text
-                    style={[
-                      styles.sendButtonText,
-                      timer > 0 ? styles.disabledText : null, // 文字變灰
-                    ]}
-                  >
-                    {isCodeSent ? `等待重新發送驗證碼` : '發送驗證碼'}
-                  </Text>
-                  <MaterialIcons
-                    name="send"
-                    size={16}
-                    color={isCodeSent ? '#aaa' : '#007BFF'}
-                    style={styles.sendIcon}
-                  />
-                </TouchableOpacity>
-              </View>
-
               {/* Verification Code Field */}
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>驗證碼</Text>
@@ -175,11 +148,31 @@ const RegisterScreen = ({ route, navigation }: any) => {
                 </View>
               </View>
 
-              <TouchableOpacity onPress={handleResendCode} disabled={timer > 0}>
-                <Text style={styles.resendText}>
-                  沒收到驗證信?重寄({timer}S)
-                </Text>
-              </TouchableOpacity>
+              <View>
+                <TouchableOpacity
+                  style={[
+                    styles.sendButton,
+                    isCodeSent ? styles.disabledButton : null,
+                  ]}
+                  onPress={isCodeSent ? handleResendCode : handleSendCode}
+                  disabled={timer > 0}
+                >
+                  <MaterialIcons
+                    name="send"
+                    size={16}
+                    color={timer > 0 ? '#aaa' : '#007BFF'}
+                    style={styles.sendIcon}
+                  />
+                  <Text
+                    style={[
+                      styles.sendButtonText,
+                      timer > 0 && styles.disabledText,
+                    ]}
+                  >
+                    {isCodeSent ? `重寄驗證碼 (${timer}s)` : '發送驗證碼'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
               {/* Bottom Buttons */}
               <View style={styles.bottomContainer}>

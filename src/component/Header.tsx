@@ -36,8 +36,8 @@ const Header = ({
           <Image
             source={
               isDarkMode
-                ? require('../assets/iot-logo-no-text.png') // 白色模式 Logo
-                : require('../assets/iot-logo-black.png') // 黑色模式 Logo
+                ? require('../assets/i-Pool_logo_RGB_2.png') // 白色模式 Logo
+                : require('../assets/i-Pool_logo_RGB_1.png') // 黑色模式 Logo
             }
             style={styles.logo}
           />

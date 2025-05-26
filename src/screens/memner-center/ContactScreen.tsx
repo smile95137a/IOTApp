@@ -28,7 +28,7 @@ const ContactScreen = ({ navigation, route }) => {
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     if (transaction?.startTime) {
-      logJson('transaction.startTime', transaction.startTime);
+      logJson('transaction.sta rtTi me', transaction);
       const startTime = moment(transaction.startTime, 'YYYY/MM/DD HH:mm:ss');
 
       const updateTimer = () => {
@@ -152,24 +152,22 @@ const ContactScreen = ({ navigation, route }) => {
             <Text style={styles.timerColon}>秒</Text>
           </View>
         </View>
-
         <View style={styles.contactContainer}>
-          <TouchableOpacity onPress={handleCall}>
-            <FontAwesome
-              name="phone"
-              size={24}
-              color="#424242"
-              style={styles.contactIcon}
-            />
-          </TouchableOpacity>
+          <View style={styles.iconWrapper}>
+            <TouchableOpacity onPress={handleCall} style={styles.iconTouchable}>
+              <View style={styles.iconCircle}>
+                <FontAwesome name="phone" size={26} color="#FFFFFF" />
+              </View>
+              <Text style={styles.contactTitle}>聯絡加盟商</Text>
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.textContainer}>
-            <Text style={styles.contactTitle}>聯絡店長</Text>
             <Text style={styles.contactSubtitle}>
-              機台操作問題，請聯繫{transaction?.vendorName}店長！
+              機台操作問題，請聯繫 {transaction?.vendorName} 加盟商！
             </Text>
             <Text style={styles.contactSubtitle}>
-              聯絡資訊{transaction?.storePhone}
+              聯絡資訊 {transaction?.storePhone}
             </Text>
           </View>
         </View>
@@ -308,6 +306,29 @@ const styles = StyleSheet.create({
   rateBox: {
     flex: 1,
     paddingHorizontal: 4,
+  },
+  iconWrapper: {
+    alignItems: 'center',
+    marginRight: 16,
+  },
+
+  iconTouchable: {
+    alignItems: 'center',
+  },
+
+  iconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: '50%',
+    backgroundColor: '#000000',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 

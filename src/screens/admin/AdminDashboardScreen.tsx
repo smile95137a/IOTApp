@@ -131,7 +131,7 @@ const AdminDashboardScreen = ({ navigation }) => {
             {/* Header */}
             <View style={styles.header}>
               <Image
-                source={require('../../assets/iot-logo-no-text.png')}
+                source={require('../../assets/i-Pool_logo_RGB_2.png')}
                 style={styles.headerIcon}
               />
               <Text style={styles.headerTitle}>無人撞球管理系統</Text>
@@ -191,7 +191,7 @@ const AdminDashboardScreen = ({ navigation }) => {
                     }}
                   >
                     <Image
-                      source={require('../../assets/iot-logo-black.png')}
+                      source={require('../../assets/i-Pool_logo_RGB_1.png')}
                       style={styles.cardImage}
                     />
                     <View style={styles.cardFooter}>

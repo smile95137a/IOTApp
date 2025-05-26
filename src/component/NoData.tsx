@@ -11,7 +11,7 @@ const NoData: React.FC<NoDataProps> = ({
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/iot-logo-black.png')}
+        source={require('../assets/i-Pool_logo_RGB_1.png')}
         style={styles.image}
       />
       <Text style={styles.text}>{text}</Text>

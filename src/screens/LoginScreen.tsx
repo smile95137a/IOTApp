@@ -184,10 +184,18 @@ const LoginScreen = ({ route, navigation }: any) => {
                   </TouchableOpacity>
                 </View>
               </View>
+
               <TouchableOpacity
+                style={[styles.sendButton]}
                 onPress={() => (navigation as any).navigate('ForgotPassword')}
               >
                 <Text style={styles.forgotPasswordText}>忘記密碼?</Text>
+                <MaterialIcons
+                  name="send"
+                  size={16}
+                  color={'#007BFF'}
+                  style={styles.sendIcon}
+                />
               </TouchableOpacity>
 
               {/* Login Button */}
@@ -314,7 +322,7 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     textAlign: 'center',
-    color: '#E21A1C',
+    color: '#007BFF',
   },
   bottomContainer: {
     position: 'absolute',
@@ -358,6 +366,26 @@ const styles = StyleSheet.create({
   pickerText: {
     fontSize: 16,
     color: '#000',
+  },
+  sendButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: '#007BFF',
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  sendIcon: {
+    marginLeft: 5,
+  },
+  sendButtonText: {
+    color: '#007BFF',
+    fontSize: 14,
   },
 });
 

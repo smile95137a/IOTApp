@@ -172,7 +172,7 @@ const ReportDetailScreen = () => {
     ],
     DepositCount: [
       { key: 'dateTime', label: '日期' },
-      { key: 'amount', label: '金額' },
+      { key: 'amount', label: '數量' },
     ],
     ConsumptionAmount: [
       { key: 'dateTime', label: '日期' },

@@ -103,23 +103,15 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
             discountRate: currentSlot?.regularRate ?? todayRes.regularRate,
           });
 
-          setCurrentDiscountSlot(
-            currentSlot
-              ? {
-                  startTime: currentSlot.startTime,
-                  endTime: currentSlot.endTime,
-                }
-              : null
-          );
+          setCurrentDiscountSlot({
+            startTime: currentSlot.startTime,
+            endTime: currentSlot.endTime,
+          });
 
-          setCurrentRegularSlot(
-            inBusinessHours
-              ? {
-                  startTime: todayRes.openTime,
-                  endTime: todayRes.closeTime,
-                }
-              : null
-          );
+          setCurrentRegularSlot({
+            startTime: todayRes.openTime,
+            endTime: todayRes.closeTime,
+          });
         }
 
         dispatch(hideLoading());
@@ -299,14 +291,9 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
                 </Text>
                 <Text style={styles.pricingDetails}>一般時段</Text>
                 <Text style={styles.pricingDetails}>
-                  {currentRegularSlot ? (
-                    <Text style={styles.pricingDetails}>
-                      {currentRegularSlot.startTime} -
-                      {currentRegularSlot.endTime}
-                    </Text>
-                  ) : (
-                    <Text style={styles.pricingDetails}>目前不在一般時段</Text>
-                  )}
+                  <Text style={styles.pricingDetails}>
+                    {currentRegularSlot.startTime} -{currentRegularSlot.endTime}
+                  </Text>
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.pricingCard}>
@@ -316,14 +303,10 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
                 </Text>
                 <Text style={styles.pricingDetails}>優惠時段</Text>
                 <Text style={styles.pricingDetails}>
-                  {currentDiscountSlot ? (
-                    <Text style={styles.pricingDetails}>
-                      {currentDiscountSlot.startTime} -
-                      {currentDiscountSlot.endTime}
-                    </Text>
-                  ) : (
-                    <Text style={styles.pricingDetails}>目前不在優惠時段</Text>
-                  )}
+                  <Text style={styles.pricingDetails}>
+                    {currentDiscountSlot.startTime} -
+                    {currentDiscountSlot.endTime}
+                  </Text>
                 </Text>
               </TouchableOpacity>
             </View>

@@ -123,7 +123,7 @@ const LoginHomeScreen = ({ navigation }: any) => {
         <View style={styles.container}>
           {/* Logo */}
           <Image
-            source={require('../assets/iot-logo-no-text.png')}
+            source={require('../assets/i-Pool_logo_RGB_2.png')}
             style={styles.logo}
           />
 
@@ -212,12 +212,23 @@ const LoginHomeScreen = ({ navigation }: any) => {
           </View>
 
           {/* Register Link */}
-          <TouchableOpacity
-            style={styles.registerLink}
-            onPress={() => (navigation as any).navigate('Register')}
-          >
-            <Text style={styles.registerText}>註冊</Text>
-          </TouchableOpacity>
+          <TouchableOpacity style={styles.registerLink}></TouchableOpacity>
+
+          <View>
+            <TouchableOpacity
+              style={[styles.sendButton]}
+              onPress={() => (navigation as any).navigate('Register')}
+            >
+              <Text style={styles.registerText}>註冊</Text>
+              <MaterialIcons
+                name="send"
+                size={16}
+                color={'#007BFF'}
+                style={styles.sendIcon}
+              />
+            </TouchableOpacity>
+          </View>
+
           <TouchableOpacity
             style={styles.homeButton}
             onPress={resetAndNavigateToMain}
@@ -331,7 +342,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   registerText: {
-    color: '#FF0000',
+    color: '#007BFF',
     fontSize: 16,
   },
   homeButton: {
@@ -350,6 +361,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000',
     marginLeft: 6,
+  },
+  sendButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: '#007BFF',
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  sendIcon: {
+    marginLeft: 5,
+  },
+  sendButtonText: {
+    color: '#007BFF',
+    fontSize: 14,
   },
 });
 

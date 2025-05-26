@@ -138,7 +138,7 @@ const VendorManagementScreen = () => {
                     }}
                   >
                     <Image
-                      source={require('../../assets/iot-logo-black.png')}
+                      source={require('../../assets/i-Pool_logo_RGB_1.png')}
                       style={styles.cardImage}
                     />
                     <View style={styles.cardFooter}>

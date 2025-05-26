@@ -28,6 +28,7 @@ import HeaderBar from '../../component/admin/HeaderBar';
 import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { logJson } from '../../utils/logJsonUtils';
 
 const AdminStoreDetailScreen = () => {
   const route = useRoute<any>();
@@ -112,11 +113,14 @@ const AdminStoreDetailScreen = () => {
       const response = await fetchStoreEquipmentsByStoreId(store.id);
       dispatch(hideLoading());
       if (response.success) {
+        logJson(',', response.data);
         const formatted = response.data.map((item: any) => ({
           id: item.id,
           name: item.equipmentName,
           enabled: !!item.status,
+          status: item.status,
         }));
+
         setEquipments(formatted);
       }
     } catch {
@@ -202,11 +206,13 @@ const AdminStoreDetailScreen = () => {
     return 'tools'; // fallback 預設 icon
   };
   const getTableCounts = () => {
-    const tables = poolTables;
-    const total = tables.length;
-    const used = tables.filter((t: any) => t.isUse).length;
-    const unused = total - used;
-    return { total, used, unused };
+    const total = poolTables.length;
+    const used = poolTables.filter((t: any) => t.isUse).length;
+    const unused = poolTables.filter(
+      (t: any) => !t.isUse && t.status !== 'FAULT'
+    ).length;
+    const fault = poolTables.filter((t: any) => t.status === 'FAULT').length;
+    return { total, used, unused, fault };
   };
 
   const tableStats = getTableCounts();
@@ -325,62 +331,35 @@ const AdminStoreDetailScreen = () => {
             <Text style={styles.label}>監控裝置</Text>
             <View style={styles.sectionBlock}>
               <View style={styles.gridRow}>
-                {monitors.map((item) => {
-                  const isExpanded = monitorExpandedMap[item.id];
-
-                  return (
-                    <TouchableOpacity
-                      onPress={() => toggleMonitorExpand(item.id)}
-                      key={item.id}
-                      style={[
-                        styles.gridItemColumn,
-                        !item.enabled && styles.monitorAbnormalBorder,
-                      ]}
-                    >
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Text style={styles.deviceItem}>{item.name}</Text>
-                        {item.enabled && (
-                          <MaterialCommunityIcons
-                            name={
-                              isExpanded
-                                ? 'minus-circle-outline'
-                                : 'plus-circle-outline'
-                            }
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                      </View>
-
-                      {item.enabled ? (
-                        isExpanded && (
-                          <View style={{ marginTop: 8 }}>
-                            <Text style={styles.modalItem}>監控畫面：</Text>
-                            <Image
-                              source={require('../../assets/iot-mom.jpg')}
-                              style={{
-                                width: '100%',
-                                height: 150,
-                                borderRadius: 8,
-                                marginTop: 6,
-                              }}
-                              resizeMode="cover"
-                            />
-                            <Text style={styles.modalItem}>狀態：正常</Text>
-                          </View>
-                        )
-                      ) : (
-                        <Text style={styles.abnormalText}>異常狀態</Text>
-                      )}
+                {monitors.map((item) => (
+                  <View
+                    key={item.id}
+                    style={[
+                      styles.gridItemHalf,
+                      !item.enabled && styles.monitorAbnormalBorder,
+                    ]}
+                  >
+                    <TouchableOpacity onPress={() => openMonitorDetail(item)}>
+                      <Image
+                        source={require('../../assets/iot-mom.jpg')}
+                        style={styles.monitorImage}
+                        resizeMode="cover"
+                      />
                     </TouchableOpacity>
-                  );
-                })}
+
+                    <View style={{ marginTop: 10, alignItems: 'center' }}>
+                      <Text style={styles.deviceItem}>{item.name}</Text>
+                      <Text
+                        style={[
+                          styles.monitorStatusText,
+                          { color: item.enabled ? '#4CAF50' : '#FF3B30' },
+                        ]}
+                      >
+                        {item.enabled ? '正常' : '異常'}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
               </View>
             </View>
 
@@ -405,6 +384,13 @@ const AdminStoreDetailScreen = () => {
                     </Text>
                   </View>
                 </View>
+                <View style={styles.tableStatsRow}>
+                  <View style={styles.statsBlockHalf}>
+                    <Text style={styles.statsLabel}>故障數量</Text>
+                    <Text style={styles.statsValue}>{tableStats.fault} 台</Text>
+                  </View>
+                </View>
+
                 <Text style={styles.label}>桌台設備</Text>
                 <View style={styles.sectionBlock}>
                   {poolTables.length === 0 ? (
@@ -785,6 +771,34 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  gridItemHalf: {
+    width: '48%',
+    backgroundColor: '#FFFFFF',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    alignItems: 'stretch',
+  },
+
+  monitorImage: {
+    width: '100%',
+    height: 120,
+    borderRadius: 10,
+    backgroundColor: 'lightgray',
+  },
+
+  monitorStatusText: {
+    marginTop: 6,
+    fontWeight: 'bold',
+    fontSize: 13,
   },
 });
 

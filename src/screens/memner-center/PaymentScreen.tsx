@@ -34,6 +34,13 @@ const PaymentScreen = ({ navigation }: any) => {
       dispatch(showLoading());
 
       let result;
+      if (type === 'gameEnd' && totalAmount < 0) {
+        await openInfoDialog({
+          title: '提醒',
+          content: `您好：\n因結帳金額未達球檯租金\n將返還至會員儲值金額帳戶內，提供下次使用。\n如需申請電子支付退款，請洽門店店長。感謝！`,
+          confirmText: '我知道了',
+        });
+      }
 
       if (type === 'game') {
         result = await startGame({ poolTableUId: payData.uid, payType });
@@ -172,21 +179,31 @@ const PaymentScreen = ({ navigation }: any) => {
         totalPrice = 0,
         totalDiscountMinutes = 0,
         totalRegularMinutes = 0,
+        discountHourlyRate,
+        regularHourlyRate,
       } = payData.gameData;
 
-      return (
-        `・押金：${formatNumber(deposit)} 元\n` +
-        (totalDiscountMinutes > 0
-          ? `・優惠時段 ${totalDiscountMinutes} 分鐘：${formatNumber(
-              discountPrice
-            )} 元\n`
-          : '') +
-        (totalRegularMinutes > 0
-          ? `・一般時段 ${totalRegularMinutes} 分鐘：${formatNumber(
-              regularPrice
-            )} 元\n`
-          : '')
-      );
+      let detail = `・球台租金: -${formatNumber(deposit)} 元(已支付)\n`;
+
+      if (totalRegularMinutes > 0) {
+        detail += `      一般時段(${
+          regularHourlyRate || '-'
+        }元/小時):${totalRegularMinutes} 分鐘，計 ${formatNumber(
+          regularPrice
+        )} 元\n`;
+      }
+
+      if (totalDiscountMinutes > 0) {
+        detail += `      優惠時段(${
+          discountHourlyRate || '-'
+        }元/小時):${totalDiscountMinutes} 分鐘，計 ${formatNumber(
+          discountPrice
+        )} 元\n`;
+      }
+
+      detail += `・共計: ${formatNumber(totalPrice)} 元\n`;
+
+      return detail;
     }
     return '';
   };
@@ -200,15 +217,17 @@ const PaymentScreen = ({ navigation }: any) => {
         {/* Order Details */}
         <View style={styles.orderDetails}>
           <Text style={styles.orderItem}>訂單內容：</Text>
-          <Text style={styles.orderDetail}>
-            {getOrderDetailText()}
-            {type === 'recharge'
-              ? '・ 儲值金額 '
-              : `・ 球桌${
-                  type === 'game' || type === 'bookGame' ? '租金' : '費用'
-                } `}
-            <NumberFormatter number={totalAmount} />
-          </Text>
+          <Text style={styles.orderDetail}>{getOrderDetailText()}</Text>
+          {type !== 'gameEnd' && (
+            <Text style={styles.orderDetail}>
+              {type === 'recharge'
+                ? '・ 儲值金額 '
+                : `・ 球桌${
+                    type === 'game' || type === 'bookGame' ? '租金' : '費用'
+                  } `}
+              <NumberFormatter number={totalAmount} />
+            </Text>
+          )}
 
           <View style={styles.totalContainer}>
             <Text style={styles.totalAmount}>
@@ -216,6 +235,19 @@ const PaymentScreen = ({ navigation }: any) => {
               <NumberFormatter number={totalAmount} />元
             </Text>
           </View>
+
+          {type === 'gameEnd' && totalAmount < 0 && (
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text
+                style={[
+                  styles.orderDetail,
+                  { color: '#C62828', fontWeight: '600', marginTop: 4 },
+                ]}
+              >
+                未達球台租金，請點選任意結帳方式。
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Payment Methods */}

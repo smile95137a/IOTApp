@@ -26,7 +26,7 @@ const RechargeScreen = ({ navigation }) => {
         logJson('', data);
         const availableOptions = (data || [])
           .filter((item) => item.status === 'AVAILABLE')
-          .sort((a, b) => a.rechargeAmount - b.rechargeAmount); // 加入這行排序
+          .sort((a, b) => b.rechargeAmount - a.rechargeAmount);
         setRechargeOptions(availableOptions);
       } catch (err) {
         await openInfoDialog({
