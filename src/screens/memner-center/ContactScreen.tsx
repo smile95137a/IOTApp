@@ -31,24 +31,21 @@ const ContactScreen = ({ navigation, route }) => {
   useEffect(() => {
     if (transaction?.startTime && transaction?.timeSlots) {
       const startTime = moment(transaction.startTime, 'YYYY/MM/DD HH:mm:ss');
-      const now = moment();
 
-      // 找出當前時間所屬的時段
-      const matchedSlot = transaction.timeSlots.find((slot) => {
-        const start = moment(slot.startTime, 'HH:mm:ss');
-        const end = moment(slot.endTime, 'HH:mm:ss');
-        return now.isBetween(start, end, null, '[)');
-      });
-
-      if (matchedSlot) {
-        setCurrentSlot(matchedSlot);
-      }
-
-      // 啟動計時器
       const updateTimer = () => {
         const now = moment();
         setElapsedTime(now.diff(startTime, 'seconds'));
+
+        // 每秒重新判斷目前的時段
+        const matchedSlot = transaction.timeSlots.find((slot) => {
+          const start = moment(slot.startTime, 'HH:mm:ss');
+          const end = moment(slot.endTime, 'HH:mm:ss');
+          return now.isBetween(start, end, null, '[)');
+        });
+
+        setCurrentSlot(matchedSlot || null);
       };
+
       updateTimer(); // 初始更新
       const timer = setInterval(updateTimer, 1000);
 

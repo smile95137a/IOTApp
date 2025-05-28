@@ -52,9 +52,13 @@ const PaymentSuccessScreen = ({ navigation }: any) => {
     }, [])
   );
   const handleStartGame = () => {
-    logJson('transaction', data.gameRecord);
+    logJson('transaction', data);
     (navigation as any).navigate('Contact', {
-      transaction: { ...data.gameRecord, storePhone: data.storePhone },
+      transaction: {
+        ...data.gameRecord,
+        storePhone: data.storePhone,
+        timeSlots: data.timeSlots,
+      },
     });
   };
 
