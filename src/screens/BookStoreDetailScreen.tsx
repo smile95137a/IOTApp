@@ -69,13 +69,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
           const open = moment(todayRes.openTime, 'HH:mm');
           const close = moment(todayRes.closeTime, 'HH:mm');
 
-          const inBusinessHours = now.isBetween(open, close, null, '[)');
-
-          const currentSlot = todayRes.timeSlots.find((slot) => {
-            const start = moment(slot.startTime, 'HH:mm');
-            const end = moment(slot.endTime, 'HH:mm');
-            return now.isBetween(start, end, null, '[)');
-          });
+          const currentSlot = todayRes.timeSlots[0];
 
           setTodayPricing({
             regularRate: todayRes.regularRate,
@@ -208,7 +202,8 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
                 <Text style={styles.pricingDetails}>一般時段</Text>
                 <Text style={styles.pricingDetails}>
                   <Text style={styles.pricingDetails}>
-                    {currentRegularSlot.startTime} -{currentRegularSlot.endTime}
+                    {currentRegularSlot?.startTime} -
+                    {currentRegularSlot?.endTime}
                   </Text>
                 </Text>
               </TouchableOpacity>
@@ -220,8 +215,8 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
                 <Text style={styles.pricingDetails}>優惠時段</Text>
                 <Text style={styles.pricingDetails}>
                   <Text style={styles.pricingDetails}>
-                    {currentDiscountSlot.startTime} -
-                    {currentDiscountSlot.endTime}
+                    {currentDiscountSlot?.startTime} -
+                    {currentDiscountSlot?.endTime}
                   </Text>
                 </Text>
               </TouchableOpacity>

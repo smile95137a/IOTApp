@@ -116,18 +116,13 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
           const open = moment(todayRes.openTime, 'HH:mm');
           const close = moment(todayRes.closeTime, 'HH:mm');
 
-          const inBusinessHours = now.isBetween(open, close, null, '[)');
-
-          const currentSlot = todayRes.timeSlots.find((slot) => {
-            const start = moment(slot.startTime, 'HH:mm');
-            const end = moment(slot.endTime, 'HH:mm');
-            return now.isBetween(start, end, null, '[)');
-          });
+          const currentSlot = todayRes.timeSlots[0];
 
           setTodayPricing({
             regularRate: todayRes.regularRate,
             discountRate: currentSlot?.regularRate ?? todayRes.regularRate,
           });
+
           setCurrentDiscountSlot({
             startTime: currentSlot.startTime,
             endTime: currentSlot.endTime,

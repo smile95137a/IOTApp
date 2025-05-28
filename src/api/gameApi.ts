@@ -143,3 +143,15 @@ export const getGamePrice = async (gameReq: any): Promise<ApiResponse<any>> => {
     throw error;
   }
 };
+export const checkIsUse = async (): Promise<ApiResponse<any>> => {
+  const url = `${API_BASE_URL}${basePath}/isUse`;
+  console.log(`[Game API] checkIsUse req`);
+  try {
+    const response = await api.get(url);
+    console.log(`[Game API] checkIsUse res:`, response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log(`[Game API] checkIsUse error:`, error);
+    throw error;
+  }
+};

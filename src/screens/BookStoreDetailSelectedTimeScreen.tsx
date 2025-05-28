@@ -15,7 +15,7 @@ import {
 import Feather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
-import { getAvailableTimes } from '../api/gameApi';
+import { checkIsUse, getAvailableTimes } from '../api/gameApi';
 import TimeSlotSelector from '../component/book/TimeSlotSelector';
 import NumberFormatter from '../component/NumberFormatter';
 import { useDialog } from '../context/DialogContext';
@@ -90,13 +90,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
           const open = moment(todayRes.openTime, 'HH:mm');
           const close = moment(todayRes.closeTime, 'HH:mm');
 
-          const inBusinessHours = now.isBetween(open, close, null, '[)');
-
-          const currentSlot = todayRes.timeSlots.find((slot) => {
-            const start = moment(slot.startTime, 'HH:mm');
-            const end = moment(slot.endTime, 'HH:mm');
-            return now.isBetween(start, end, null, '[)');
-          });
+          const currentSlot = todayRes.timeSlots[0];
 
           setTodayPricing({
             regularRate: todayRes.regularRate,
@@ -209,7 +203,23 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
       });
       return;
     }
-
+    try {
+      const { success, data, message } = await checkIsUse();
+      if (!success) {
+        await openInfoDialog({
+          title: '預約限制',
+          content: message || '今天已經有開放球局，不能預約當天',
+        });
+        return;
+      }
+    } catch (error: any) {
+      if (error.isAutoLogout) return;
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
+      return;
+    }
     const confirmText = selected.map((s) => `${s.start} - ${s.end}`).join('\n');
 
     const confirmed = await openConfirmDialog({

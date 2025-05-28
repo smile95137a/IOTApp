@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import moment from 'moment';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -26,21 +26,23 @@ import { logJson } from '../../utils/logJsonUtils';
 const PaymentScreen = ({ navigation }: any) => {
   const route = useRoute();
   const { type, payData, totalAmount, rechargeOption } = route.params || {};
+  const [finalAmount, setFinalAmount] = useState<number>(totalAmount ?? 0);
+
   const dispatch = useDispatch<AppDispatch>();
   const { openInfoDialog } = useDialog();
 
   const handlePaymentPress = async (method: string, payType: number) => {
     try {
-      dispatch(showLoading());
-
-      let result;
-      if (type === 'gameEnd' && totalAmount < 0) {
+      if (type === 'gameEnd' && finalAmount < 0) {
         await openInfoDialog({
           title: '提醒',
           content: `您好：\n因結帳金額未達球檯租金\n將返還至會員儲值金額帳戶內，提供下次使用。\n如需申請電子支付退款，請洽門店店長。感謝！`,
           confirmText: '我知道了',
         });
       }
+      dispatch(showLoading());
+
+      let result;
 
       if (type === 'game') {
         result = await startGame({ poolTableUId: payData.uid, payType });
@@ -93,12 +95,14 @@ const PaymentScreen = ({ navigation }: any) => {
       dispatch(hideLoading());
       if (success && data) {
         if (type === 'recharge') {
-          (navigation as any).navigate('RechargeSuccess', { totalAmount });
+          (navigation as any).navigate('RechargeSuccess', {
+            totalAmount: finalAmount,
+          });
         } else {
           (navigation as any).navigate('PaymentSuccess', {
             type,
             showStartGame: type === 'game',
-            totalAmount,
+            finalAmount,
             data,
           });
         }
@@ -172,6 +176,7 @@ const PaymentScreen = ({ navigation }: any) => {
 
   const getOrderDetailText = () => {
     if (type === 'gameEnd' && payData?.gameData) {
+      logJson('zxc', payData.gameData);
       const {
         deposit = 0,
         discountPrice = 0,
@@ -202,11 +207,17 @@ const PaymentScreen = ({ navigation }: any) => {
       }
 
       detail += `・共計: ${formatNumber(totalPrice)} 元\n`;
-
       return detail;
     }
     return '';
   };
+
+  useEffect(() => {
+    if (type === 'gameEnd' && payData?.gameData) {
+      const { finalAmount = 0 } = payData.gameData;
+      setFinalAmount(finalAmount);
+    }
+  }, [type, payData]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -225,18 +236,18 @@ const PaymentScreen = ({ navigation }: any) => {
                 : `・ 球桌${
                     type === 'game' || type === 'bookGame' ? '租金' : '費用'
                   } `}
-              <NumberFormatter number={totalAmount} />
+              <NumberFormatter number={finalAmount} />
             </Text>
           )}
 
           <View style={styles.totalContainer}>
             <Text style={styles.totalAmount}>
               總金額：
-              <NumberFormatter number={totalAmount} />元
+              <NumberFormatter number={finalAmount} />元
             </Text>
           </View>
 
-          {type === 'gameEnd' && totalAmount < 0 && (
+          {type === 'gameEnd' && finalAmount < 0 && (
             <View style={{ alignItems: 'flex-end' }}>
               <Text
                 style={[

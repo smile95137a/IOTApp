@@ -25,18 +25,31 @@ const ContactScreen = ({ navigation, route }) => {
 
   const { transaction } = route.params || {};
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [currentSlot, setCurrentSlot] = useState<any>(null);
+
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
-    if (transaction?.startTime) {
-      logJson('transaction.sta rtTi me', transaction);
+    if (transaction?.startTime && transaction?.timeSlots) {
       const startTime = moment(transaction.startTime, 'YYYY/MM/DD HH:mm:ss');
+      const now = moment();
 
+      // 找出當前時間所屬的時段
+      const matchedSlot = transaction.timeSlots.find((slot) => {
+        const start = moment(slot.startTime, 'HH:mm:ss');
+        const end = moment(slot.endTime, 'HH:mm:ss');
+        return now.isBetween(start, end, null, '[)');
+      });
+
+      if (matchedSlot) {
+        setCurrentSlot(matchedSlot);
+      }
+
+      // 啟動計時器
       const updateTimer = () => {
         const now = moment();
         setElapsedTime(now.diff(startTime, 'seconds'));
       };
-
-      updateTimer(); // 立即更新一次
+      updateTimer(); // 初始更新
       const timer = setInterval(updateTimer, 1000);
 
       return () => clearInterval(timer);
@@ -108,27 +121,25 @@ const ContactScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
-        <View style={styles.timerSection}>
-          <View style={styles.timerTopRow}>
-            <View style={styles.rateBox}>
-              <Text style={styles.price}>
-                一般時段：
-                <NumberFormatter
-                  number={60 * ~~transaction?.regularRateAmount}
-                />
-                元/小時
-              </Text>
+        <View
+          style={[
+            styles.timerSection,
+            {
+              backgroundColor: currentSlot?.isDiscount ? '#F67943' : '#00BFFF',
+            },
+          ]}
+        >
+          {currentSlot && (
+            <View style={styles.timerTopRow}>
+              <View style={styles.rateBox}>
+                <Text style={styles.price}>
+                  {currentSlot.isDiscount ? '優惠時段：' : '一般時段：'}
+                  <NumberFormatter number={60 * ~~currentSlot.rate} />
+                  元/小時
+                </Text>
+              </View>
             </View>
-            <View style={styles.rateBox}>
-              <Text style={styles.price}>
-                優惠時段：
-                <NumberFormatter
-                  number={60 * ~~transaction?.discountRateAmount}
-                />
-                元/小時
-              </Text>
-            </View>
-          </View>
+          )}
 
           <View style={styles.timerTimeContainer}>
             <Text style={styles.timerText}>球局已進行</Text>
@@ -304,7 +315,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   rateBox: {
-    flex: 1,
     paddingHorizontal: 4,
   },
   iconWrapper: {
