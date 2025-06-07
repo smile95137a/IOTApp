@@ -29,6 +29,7 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { logJson } from '../../utils/logJsonUtils';
+import { useCameraSnapshots } from '../../hooks/useCameraSnapshots';
 
 const AdminStoreDetailScreen = () => {
   const route = useRoute<any>();
@@ -48,6 +49,12 @@ const AdminStoreDetailScreen = () => {
   const [monitorExpandedMap, setMonitorExpandedMap] = useState<{
     [id: number]: boolean;
   }>({});
+  const { snapshots, error: cameraError } = useCameraSnapshots(
+    'http://192.168.1.107'
+  );
+  const [selectedSnapshotId, setSelectedSnapshotId] = useState<number | null>(
+    null
+  );
 
   const loadStoreReport = async () => {
     try {
@@ -290,6 +297,9 @@ const AdminStoreDetailScreen = () => {
       [id]: !prev[id],
     }));
   };
+  const selectedSnapshot = snapshots.find(
+    (s) => Number(s.id) === selectedSnapshotId
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -331,35 +341,52 @@ const AdminStoreDetailScreen = () => {
             <Text style={styles.label}>監控裝置</Text>
             <View style={styles.sectionBlock}>
               <View style={styles.gridRow}>
-                {monitors.map((item) => (
-                  <View
-                    key={item.id}
-                    style={[
-                      styles.gridItemHalf,
-                      !item.enabled && styles.monitorAbnormalBorder,
-                    ]}
-                  >
-                    <TouchableOpacity onPress={() => openMonitorDetail(item)}>
-                      <Image
-                        source={require('../../assets/iot-mom.jpg')}
-                        style={styles.monitorImage}
-                        resizeMode="cover"
-                      />
-                    </TouchableOpacity>
+                {monitors.map((monitor) => {
+                  const snapshot = snapshots.find(
+                    (s) => ~~s.id === ~~monitor.name
+                  );
 
-                    <View style={{ marginTop: 10, alignItems: 'center' }}>
-                      <Text style={styles.deviceItem}>{item.name}</Text>
-                      <Text
-                        style={[
-                          styles.monitorStatusText,
-                          { color: item.enabled ? '#4CAF50' : '#FF3B30' },
-                        ]}
-                      >
-                        {item.enabled ? '正常' : '異常'}
-                      </Text>
-                    </View>
-                  </View>
-                ))}
+                  return (
+                    <TouchableOpacity
+                      key={monitor.id}
+                      style={styles.gridItemHalf}
+                      onPress={() =>
+                        snapshot && setSelectedSnapshotId(Number(snapshot.id))
+                      }
+                      disabled={!snapshot}
+                    >
+                      {snapshot ? (
+                        <Image
+                          source={{ uri: snapshot.image }}
+                          style={styles.monitorImage}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <View
+                          style={[
+                            styles.monitorImage,
+                            { justifyContent: 'center', alignItems: 'center' },
+                          ]}
+                        >
+                          <Text style={{ color: '#888', fontSize: 14 }}>
+                            無畫面
+                          </Text>
+                        </View>
+                      )}
+                      <View style={{ marginTop: 10, alignItems: 'center' }}>
+                        <Text style={styles.deviceItem}>{monitor.name}</Text>
+                        <Text
+                          style={[
+                            styles.monitorStatusText,
+                            { color: snapshot ? '#4CAF50' : '#999' },
+                          ]}
+                        >
+                          {snapshot ? '正常' : '離線/未連線'}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             </View>
 
@@ -517,31 +544,32 @@ const AdminStoreDetailScreen = () => {
             ) : (
               <Text>載入中...</Text>
             )}
-
             <Modal
-              visible={modalVisible}
-              animationType="slide"
-              transparent={true}
-              onRequestClose={closeMonitorDetail}
+              visible={!!selectedSnapshotId}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setSelectedSnapshotId(null)}
             >
               <View style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>監控裝置詳情</Text>
-                  <Text style={styles.modalItem}>
-                    名稱：{selectedMonitor?.name}
+                  <Text style={styles.modalTitle}>
+                    {selectedSnapshot?.name || '監控畫面'} - 放大預覽
                   </Text>
-                  <Text style={styles.modalItem}>監控畫面：</Text>
                   <Image
-                    source={require('../../assets/iot-mom.jpg')}
+                    source={{ uri: selectedSnapshot?.image }}
                     style={{
                       width: '100%',
-                      height: 200,
-                      marginTop: 10,
+                      height: 220,
                       borderRadius: 8,
+                      marginTop: 12,
+                      backgroundColor: '#ccc',
                     }}
-                    resizeMode="cover"
+                    resizeMode="contain"
                   />
-                  <Text style={styles.modalClose} onPress={closeMonitorDetail}>
+                  <Text
+                    style={styles.modalClose}
+                    onPress={() => setSelectedSnapshotId(null)}
+                  >
                     關閉
                   </Text>
                 </View>
