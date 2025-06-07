@@ -1,0 +1,216 @@
+$root-block-name: '.register';
+
+#{$root-block-name} {
+  $p: &;
+  $p__text: #{$p}__text;
+  $p__btn: #{$p}__btn;
+  @include flex(center, center);
+  height: 100%;
+  padding: 0 0 64px 0;
+  max-width: 1280px;
+  margin: 0 auto;
+
+  @include screen(lg) {
+    margin: 0 24px;
+  }
+
+  &__container {
+    @include w_h(100%, 100%);
+    @include flex(center, null, column);
+    padding: 64px;
+    flex: 1;
+    @include screen(md) {
+      padding: 32px 8px;
+    }
+  }
+  &__main {
+    @include flex(null, center);
+    width: 100%;
+    min-height: 450px;
+    gap: 120px;
+    position: relative;
+    @include screen(md) {
+      @include flex(center, null, column);
+      gap: 20px;
+    }
+  }
+
+  &__form {
+    width: 100%;
+    max-width: 340px;
+    @include flex(null, null, column);
+    &-inputs {
+      &--addr {
+        @include flex(end);
+        gap: 24px;
+      }
+    }
+    #{$p__text} {
+      min-height: 22px;
+      color: #212121;
+      margin-bottom: 4px;
+      @include flex(end);
+
+      &--required {
+        &::after {
+          content: '*';
+          color: #fe4206;
+          display: block;
+          margin-left: 4px;
+        }
+      }
+    }
+
+    &-input {
+      @include w_h(100%, 50px);
+      padding: 14px 20px;
+      border-radius: 8px;
+      border: 1px solid #d4d4d4;
+      &--error {
+        border: 1px solid #fe4206;
+      }
+    }
+  }
+
+  &__input {
+    &-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  &__input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .register__form-input--select {
+      max-width: 100px;
+    }
+  }
+
+  &__form-input--error {
+    border-color: #fe4206;
+  }
+
+  &__icon-btn {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &__divider {
+    @include abs-center;
+    height: 95%;
+    width: 1px;
+    background: #7c7c7c;
+    @include screen(md) {
+      display: none;
+    }
+    &-line {
+      width: 100%;
+      height: 100%;
+      background: #7c7c7c;
+    }
+
+    &-text {
+      @include abs-center;
+      color: #949494;
+      background-color: #fee7cc;
+      padding: 0 24px;
+      font-family: Noto Sans TC;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 21.72px;
+    }
+  }
+
+  &__other {
+    margin-top: 24px;
+
+    #{$p__text} {
+      font-size: 16px;
+      font-weight: 400;
+    }
+    &-btn {
+      margin-top: 24px;
+      @include flex(null, center);
+      #{$p__btn} {
+        width: 100%;
+        max-width: 338px;
+      }
+    }
+  }
+
+  &__btn {
+    @include flex(center, center);
+    @include w_h(100%, 48px);
+    border-radius: 90px;
+    background: #2a88cb;
+    color: #fff;
+
+    font-size: 20px;
+    text-align: center;
+  }
+
+  &__text {
+    &--error {
+      color: #fe4206 !important;
+    }
+  }
+
+  &__notice {
+    display: flex;
+    img {
+      width: 100%;
+    }
+    @include screen(md) {
+      display: none;
+    }
+    &--m {
+      display: none;
+      @include screen(md) {
+        display: flex;
+      }
+    }
+  }
+  &__input {
+    &-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px; // 新增：讓 input 與按鈕間有空隙
+
+      input {
+        flex: 1;
+      }
+
+      .register__send-code-btn {
+        padding: 8px 12px;
+        font-size: 14px;
+        background-color: #2a88cb;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: #1976b2;
+        }
+
+        &:disabled {
+          background-color: #ccc;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}

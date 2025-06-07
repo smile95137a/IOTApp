@@ -1,0 +1,70 @@
+$root-block-name: '.profileEditInvoiceForm';
+
+#{$root-block-name} {
+  $p: &;
+  $p__text: #{$p}__text;
+
+  padding: 32px 16px;
+  position: relative;
+  &__title {
+    @include screen(md) {
+      @include flex(null, center);
+    }
+    #{$p__text} {
+      font-size: 24px;
+      font-weight: 900;
+    }
+  }
+
+  &__main {
+    @include flex(null);
+    @include screen(md) {
+      @include flex(null, null, column);
+    }
+  }
+
+  &__form {
+    &__inputs {
+      flex: 1;
+    }
+    #{$p__text} {
+      min-height: 22px;
+      color: #212121;
+      margin-bottom: 4px;
+      @include flex(end);
+      &--required {
+        &::after {
+          content: '*';
+          color: #fe4206;
+          display: block;
+          margin-left: 4px;
+        }
+      }
+    }
+
+    &-input {
+      @include w_h(100%, 50px);
+      padding: 14px 20px;
+      border-radius: 8px;
+      border: 1px solid #d4d4d4;
+    }
+  }
+
+  &__btns {
+    margin: 48px 0 0 0;
+    @include flex(center, center);
+  }
+  &__btn {
+    @include flex(center, center);
+    width: 100%;
+    max-width: 226px;
+    height: 48px;
+    border-radius: 90px;
+    background: #2a88cb;
+    #{$p__text} {
+      font-size: 20px;
+      font-weight: 900;
+      color: #fff;
+    }
+  }
+}

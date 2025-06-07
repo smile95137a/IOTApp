@@ -1,0 +1,76 @@
+$root-block-name: '.bheader';
+
+#{$root-block-name} {
+  $p: &;
+  $p__text: #{$p}__text;
+
+  @include flex(center, space-between, row);
+
+  height: 72px;
+  z-index: 2;
+  box-shadow: 0 4px 12px hsla(270, 30%, 3%, 0.2);
+  padding: 0 8px;
+  &__logo {
+    width: 100px;
+    @include flex(center, center, row);
+    color: #2a88cb;
+
+    &-img {
+      width: 100%;
+    }
+  }
+
+  &__options {
+    width: 320px;
+    column-gap: 4px;
+    @include flex(center, end, row);
+  }
+
+  &__others {
+    @include flex(center, center, row);
+  }
+
+  &__other {
+    &-icon {
+      @include w_h(36px, 36px);
+      padding: 8px;
+      color: #2a88cb;
+    }
+  }
+  &__user {
+    @include w_h(auto, 38px);
+    @include flex(center, null, row);
+    column-gap: 4px;
+    &-info {
+      flex: 1;
+      @include flex(end, null, column);
+      font-size: 14px;
+      color: #2a88cb;
+      #{$p__text} {
+      }
+    }
+    &-logo {
+      @include w_h(38px, 100%);
+      @include flex(center, center, column);
+      border-radius: 50%;
+      color: #2a88cb;
+      background: hsla(270, 30%, 95%, 0.4);
+      cursor: pointer;
+    }
+  }
+
+  &__logout {
+    &-btn {
+      min-width: 60px;
+      height: 24px;
+      background: #fff;
+      border: 1px solid #6b9fd2;
+      outline: none;
+      border-radius: 4px;
+      color: #6b9fd2;
+      font-weight: bold;
+      letter-spacing: 2px;
+      cursor: pointer;
+    }
+  }
+}

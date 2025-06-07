@@ -1,0 +1,51 @@
+$breakpoint-xxsmall: 400px;
+$breakpoint-xsmall: 576px;
+$breakpoint-small: 820px;
+$breakpoint-medium: 999px;
+$breakpoint-large: 1199px;
+$breakpoint-extra-large: 1400px;
+$breakpoint-xxlarge: 1600px;
+$breakpoint-hd: 1920px;
+$breakpoint-uhd: 2560px;
+
+$breakpoints: (
+  xxs: (
+    max-width: $breakpoint-xxsmall,
+  ),
+  xs: (
+    max-width: $breakpoint-xsmall,
+  ),
+  sm: (
+    max-width: $breakpoint-small,
+  ),
+  md: (
+    max-width: $breakpoint-medium,
+  ),
+  lg: (
+    max-width: $breakpoint-large,
+  ),
+  xl: (
+    min-width: $breakpoint-extra-large,
+  ),
+  xxl: (
+    min-width: $breakpoint-xxlarge,
+  ),
+  hd: (
+    min-width: $breakpoint-hd,
+  ),
+  uhd: (
+    min-width: $breakpoint-uhd,
+  ),
+) !default;
+
+@mixin screen($sizes...) {
+  @each $value in $sizes {
+    @if map-has-key($breakpoints, $value) {
+      @media #{inspect(map-get($breakpoints, $value))} {
+        @content;
+      }
+    } @else {
+      @warn "Unknown value `#{$value}`.";
+    }
+  }
+}

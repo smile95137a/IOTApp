@@ -1,0 +1,585 @@
+$root-block-name: '.memberCenter';
+
+#{$root-block-name} {
+  $p: &;
+  $p__text: #{$p}__text;
+  $p__btn: #{$p}__btn;
+  $p__coins-icon: #{$p}__coins-icon;
+  @include flex;
+  height: 100%;
+  padding: 0 0 64px 0;
+  max-width: 1280px;
+  margin: 0 auto;
+
+  @include screen(lg) {
+    margin: 0 24px;
+  }
+
+  @include screen(md) {
+    @include flex(null, null, column);
+  }
+  &__profileEdit,
+  &__rewards,
+  &__orderHistory,
+  &__purchaseHistory {
+    padding: 32px;
+    width: 100%;
+    margin: 0 auto;
+    @include screen(md) {
+      padding: 64px;
+    }
+  }
+
+  &__nav {
+    @include flex(null, null, column);
+    gap: 24px;
+    width: 210px;
+    margin-right: 64px;
+
+    @include screen(md) {
+      @include flex(null, null, row);
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    &-item {
+      @include flex(null, null);
+      width: 100%;
+      height: 58px;
+      border-bottom: 1px solid #2a88cb;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.02);
+      }
+
+      @include screen(md) {
+        width: auto;
+        flex: calc(50% - 24px);
+        height: 40px;
+      }
+
+      #{$p__text} {
+        font-size: 24px;
+        font-weight: 400;
+        transition: color 0.3s ease; // 平滑文字顏色變化
+
+        &:hover {
+          color: #1d5e91; // 懸停時文字變深藍色
+        }
+
+        @include screen(md) {
+          font-size: 18px;
+        }
+        @include screen(xs) {
+          font-size: 12px;
+        }
+      }
+    }
+
+    &-link {
+      @include flex;
+      transition: color 0.3s ease, transform 0.3s ease; // 添加過渡效果
+
+      &:hover {
+        color: #1d5e91; // 懸停時變深藍色
+        transform: scale(1.05); // 輕微放大效果
+      }
+
+      &--active {
+        #{$p__text} {
+          color: #2a88cb;
+        }
+      }
+    }
+
+    &-icon {
+      color: #2a88cb;
+      font-size: 24px;
+      margin-right: 20px;
+      transition: color 0.3s ease, transform 0.3s ease;
+
+      &:hover {
+        color: #1d5e91;
+        transform: scale(1.1);
+      }
+
+      @include screen(md) {
+        font-size: 25px;
+      }
+      @include screen(xs) {
+        font-size: 18px;
+      }
+    }
+  }
+
+  &__main {
+    flex: 1;
+  }
+
+  &__coins {
+    @include flex(null, center);
+    gap: 24px;
+    position: relative;
+    margin: 48px 0;
+    @include screen(sm) {
+      @include flex(center, center, column);
+      gap: 24px;
+    }
+    &-item {
+      width: 33.3%;
+      max-width: 360px;
+      @include flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      @include screen(sm) {
+        flex-direction: row;
+        width: 100%;
+      }
+      &--gold {
+        color: #fbbc05;
+        #{$p__coins-icon} {
+          background: #fbbc05;
+        }
+      }
+      &--sliver {
+        color: #aeaeb2;
+        #{ $p__coins-icon} {
+          background: #aeaeb2;
+        }
+      }
+      &--bonus {
+        color: #fe4206;
+        #{ $p__coins-icon} {
+          background: #fe4206;
+        }
+      }
+    }
+
+    &-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 30px;
+      opacity: 0px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 36px;
+      @include screen(xs) {
+        font-size: 20px;
+      }
+      @include screen(md) {
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    &-info {
+      @include flex(center);
+      gap: 8px;
+      @include screen(sm) {
+        min-width: 120px;
+      }
+    }
+
+    &-title {
+      #{$p__text} {
+        font-size: 20px;
+        font-weight: 400;
+        @include screen(xs) {
+          font-size: 12px;
+        }
+      }
+    }
+
+    &-num {
+      @include screen(sm) {
+        flex: 1;
+      }
+      #{$p__text} {
+        font-size: 24px;
+        font-weight: 900;
+        @include screen(md) {
+          font-size: 20px;
+        }
+        @include screen(xs) {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  //
+  &__rewards {
+    &Consume {
+      padding: 42px 0;
+      position: relative;
+      &-title {
+        @include screen(md) {
+          @include flex(null, center);
+        }
+        #{$p__text} {
+          font-size: 24px;
+          font-weight: 900;
+          @include screen(md) {
+            font-size: 18px;
+            font-weight: 900;
+          }
+        }
+      }
+
+      &-subTitle {
+        margin: 24px 0;
+        #{$p__text} {
+          font-size: 18px;
+          font-weight: 400;
+        }
+      }
+
+      &-info {
+        width: 100%;
+        max-width: 590px;
+        #{$p__text} {
+          font-size: 18px;
+          font-weight: 400;
+        }
+      }
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background: #7c7c7c;
+      }
+    }
+
+    &Account {
+      position: relative;
+      padding: 24px 0;
+      #{$p__text} {
+        font-size: 24px;
+        font-weight: 700;
+
+        &--red {
+          color: #eb4335;
+        }
+      }
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background: #7c7c7c;
+      }
+    }
+
+    &Coins {
+      position: relative;
+      padding: 32px;
+      @include flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      &-item {
+        flex: calc(25% - 32px);
+        max-width: 150px;
+        @include flex(center, null, column);
+        @include screen(md) {
+          flex: calc(50% - 32px);
+          max-width: none;
+        }
+      }
+
+      &-icon {
+        width: 100%;
+        height: 100%;
+        max-width: 80px;
+        max-height: 80px;
+        @include flex(center, center);
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+
+      &-title {
+        @include flex(null, center);
+        margin-top: 8px;
+        #{$p__text} {
+          font-size: 18px;
+          font-weight: 400;
+
+          &--red {
+            font-weight: 700;
+            color: #eb4335;
+          }
+        }
+      }
+
+      &-subTitle {
+        @include flex(null, center);
+        margin-top: 8px;
+        #{$p__text} {
+          font-size: 18px;
+          font-weight: 400;
+
+          &--red {
+            color: #eb4335;
+            font-family: Noto Sans TC;
+            font-weight: 700;
+          }
+        }
+      }
+      &-btns {
+        margin-top: 8px;
+        @include flex(null, center);
+      }
+      &-btn {
+        @include flex(center, center);
+        width: 94px;
+        height: 25px;
+        border-radius: 12px;
+        color: #fff;
+        background: #2a88cb;
+        font-size: 14px;
+        font-weight: 400;
+      }
+    }
+  }
+
+  //
+
+  &__orderHistory {
+    &-btn {
+      border: 1px solid #2a88cb;
+      background: #fff;
+      color: #2a88cb;
+      font-size: 14px;
+    }
+  }
+  &__orderHistoryForm {
+    padding: 32px 16px;
+    position: relative;
+    &-title {
+      @include screen(md) {
+        @include flex(null, center);
+      }
+      #{$p__text} {
+        font-size: 24px;
+        font-weight: 900;
+      }
+    }
+
+    &-main {
+      @include flex(null);
+      gap: 24px;
+      @include screen(md) {
+        @include flex(null, null, column);
+      }
+    }
+
+    &-box {
+      width: 100%;
+      @include flex(end);
+      max-width: 342px;
+      @include screen(md) {
+        max-width: none;
+      }
+      &--btns {
+        max-width: 92px;
+        @include screen(md) {
+          max-width: none;
+          justify-content: center;
+        }
+      }
+    }
+
+    &-form {
+      @include screen(md) {
+        flex: 100%;
+        max-width: none;
+      }
+      &--other {
+        margin-left: 80px;
+        @include screen(md) {
+          margin-left: 0;
+        }
+      }
+      &-inputs {
+        width: 100%;
+      }
+      #{$p__text} {
+        min-height: 22px;
+        color: #212121;
+        @include flex(end);
+        margin-bottom: 4px;
+        &--required {
+          &::after {
+            content: '*';
+            color: #fe4206;
+            display: block;
+            margin-left: 4px;
+          }
+        }
+      }
+
+      &-input {
+        @include w_h(100%, 50px);
+        padding: 14px 20px;
+        border-radius: 8px;
+        border: 1px solid #d4d4d4;
+      }
+    }
+
+    &-btns {
+      width: 100%;
+      @include flex(center, center);
+      @include screen(md) {
+        max-width: 92px;
+      }
+    }
+    &-btn {
+      @include flex(center, center);
+      width: 100%;
+      max-width: 226px;
+      height: 48px;
+      border-radius: 90px;
+      background: #2a88cb;
+      #{$p__text} {
+        font-size: 20px;
+        font-weight: 900;
+        color: #fff;
+      }
+    }
+  }
+
+  &__purchaseHistory {
+    padding: 32px 16px;
+    position: relative;
+    &-title {
+      @include screen(md) {
+        @include flex(null, center);
+      }
+      #{$p__text} {
+        font-size: 24px;
+        font-weight: 900;
+      }
+    }
+
+    &-main {
+      @include flex(null);
+      gap: 24px;
+      @include screen(md) {
+        @include flex(null, null, column);
+      }
+    }
+
+    &-box {
+      width: 100%;
+      @include flex(end);
+      max-width: 342px;
+      @include screen(md) {
+        max-width: none;
+      }
+      &--btns {
+        max-width: 92px;
+        @include screen(md) {
+          max-width: none;
+          justify-content: center;
+        }
+      }
+    }
+
+    &-form {
+      @include screen(md) {
+        flex: 100%;
+        max-width: none;
+      }
+      &--other {
+        margin-left: 80px;
+        @include screen(md) {
+          margin-left: 0;
+        }
+      }
+      &-inputs {
+        width: 100%;
+      }
+      #{$p__text} {
+        min-height: 22px;
+        color: #212121;
+        @include flex(end);
+        margin-bottom: 4px;
+
+        &--required {
+          &::after {
+            content: '*';
+            color: #fe4206;
+            display: block;
+            margin-left: 4px;
+          }
+        }
+      }
+
+      &-input {
+        @include w_h(100%, 50px);
+        padding: 13px 20px 0px 20px;
+        border-radius: 8px;
+        border: 1px solid #d4d4d4;
+      }
+    }
+
+    &-btns {
+      width: 100%;
+      @include flex(center, center);
+      @include screen(md) {
+        max-width: 92px;
+      }
+    }
+    &-btn {
+      @include flex(center, center);
+      width: 100%;
+      max-width: 226px;
+      height: 48px;
+      border-radius: 90px;
+      background: #2a88cb;
+      #{$p__text} {
+        font-size: 20px;
+        font-weight: 900;
+        color: #fff;
+      }
+    }
+  }
+
+  &__table {
+    overflow: auto;
+    @include flex(null, null, column);
+    gap: 12px;
+    overflow-x: auto;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      table-layout: fixed;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      height: 40px;
+    }
+    th {
+      border-bottom: 1px solid #7c7c7c;
+      text-align: left;
+    }
+    td {
+    }
+  }
+}
