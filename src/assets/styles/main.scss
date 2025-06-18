@@ -700,26 +700,6 @@ input[type='text'] {
     margin-right: 12px;
     background-size: contain;
     background-repeat: no-repeat;
-
-    &--wallet {
-      background-image: url('@/assets/iot-pay1.png');
-    }
-
-    &--credit-card {
-      background-image: url('@/assets/iot-card.png');
-    }
-
-    &--line {
-      background-image: url('@/assets/iot-line-pay.png');
-    }
-
-    &--lpay {
-      background-image: url('@/assets/iot-l-pay.png');
-    }
-
-    &--apple {
-      background-image: url('@/assets/iot-apple-pay.png');
-    }
   }
 }
 .reservation {
