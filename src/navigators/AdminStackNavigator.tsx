@@ -49,6 +49,7 @@ import { getErrorMessage } from '../utils/errorUtils';
 import RechargeManagementScreen from '../screens/admin/RechargeManagementScreen';
 import AddRechargePromotion from '../screens/admin/AddRechargePromotion';
 import AddRechargeStandard from '../screens/admin/AddRechargeStandard';
+import RouterManagementScreen from '../screens/admin/RouterManagementScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -483,6 +484,11 @@ const EquipmentStack = () => {
       <Stack.Screen
         name="MonitorManagement"
         component={MonitorManagementScreen}
+        options={{ title: '店家設備管理', headerShown: false }}
+      />
+      <Stack.Screen
+        name="RouterManagement"
+        component={RouterManagementScreen}
         options={{ title: '店家設備管理', headerShown: false }}
       />
       <Stack.Screen

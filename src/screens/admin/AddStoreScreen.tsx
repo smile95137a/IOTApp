@@ -92,6 +92,7 @@ const AddStoreScreen = () => {
     discountRate: 120,
     timeSlots: [],
   });
+  const [storeIP, setStoreIP] = useState('');
 
   useEffect(() => {
     const initFromUid = async () => {
@@ -129,7 +130,7 @@ const AddStoreScreen = () => {
             setCloseTime(storeData.closeTime || '23:59');
             setTimeSlots(storeData.timeSlots || []);
             setSpecialDates(storeData.specialDates || []);
-            logJson('data', storeData.specialDates);
+            setStoreIP(storeData.storeIP || '');
 
             if (storeData.lat && storeData.lon) {
               setSelectedLocation({
@@ -260,6 +261,7 @@ const AddStoreScreen = () => {
         timeSlots: date.timeSlots.map((slot) => ({ ...slot })),
       })),
       weekendSchedule,
+      storeIP,
     };
 
     logJson('Store Data', storeData);
@@ -750,6 +752,18 @@ const AddStoreScreen = () => {
                   />
                 </View>
               </View>
+              <View style={styles.twoColumnRow}>
+                <View style={styles.twoColumnItem}>
+                  <Text style={styles.inputLabel}>設備 IP</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={storeIP}
+                    onChangeText={setStoreIP}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+
               <Text style={styles.inputLabel}>溫馨提示</Text>
               <TextInput
                 style={styles.input}

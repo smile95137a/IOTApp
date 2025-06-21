@@ -20,6 +20,8 @@ import {
   updateUser,
   uploadProfileImage,
   fetchUserInfo,
+  uploadFaceImage,
+  createFaceRecognitionMember,
 } from '../../api/userApi';
 import { useDialog } from '../../context/DialogContext';
 import { logOut } from '../../store/authSlice';
@@ -206,6 +208,71 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
     }
   }, [route.params?.croppedImageUri]);
 
+  const handleCreateFaceRecognition = async () => {
+    try {
+      if (!localUser?.id) {
+        await openInfoDialog({
+          title: '錯誤',
+          content: '找不到使用者資訊，請重新登入',
+        });
+        return;
+      }
+
+      dispatch(showLoading());
+      const { success, message } = await createFaceRecognitionMember(
+        localUser.id
+      );
+      dispatch(hideLoading());
+
+      if (success) {
+        await openInfoDialog({
+          title: '成功',
+          content: '已建立人臉辨識會員',
+        });
+      } else {
+        await openInfoDialog({
+          title: '錯誤',
+          content: message || '建立失敗，請稍後再試',
+        });
+      }
+    } catch (error: any) {
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
+    }
+  };
+
+  const handleUploadFaceToDevice = async () => {
+    if (!profileImage) {
+      await openInfoDialog({
+        title: '錯誤',
+        content: '請先選擇並裁切頭像照片',
+      });
+      return;
+    }
+
+    try {
+      dispatch(showLoading());
+      const { success, message } = await uploadFaceImage(profileImage);
+      dispatch(hideLoading());
+
+      await openInfoDialog({
+        title: success ? '成功' : '失敗',
+        content:
+          message ||
+          (success ? '人臉已成功上傳至設備' : '上傳失敗，請稍後再試'),
+      });
+    } catch (error: any) {
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScrollView style={styles.container}>
@@ -270,15 +337,32 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
             </TouchableOpacity>
           </View>
         </View>
+        <TouchableOpacity
+          style={[
+            styles.completeButton,
+            { backgroundColor: '#4CAF50', marginBottom: 10 },
+          ]}
+          onPress={handleCreateFaceRecognition}
+        >
+          <Text style={styles.completeButtonText}>建立人臉辨識會員</Text>
+        </TouchableOpacity>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.completeButton}
-            onPress={handleNextStep}
-          >
-            <Text style={styles.completeButtonText}>完成</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={[
+            styles.completeButton,
+            { backgroundColor: '#2196F3', marginBottom: 10 },
+          ]}
+          onPress={handleUploadFaceToDevice}
+        >
+          <Text style={styles.completeButtonText}>上傳人臉至設備</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.completeButton}
+          onPress={handleNextStep}
+        >
+          <Text style={styles.completeButtonText}>完成</Text>
+        </TouchableOpacity>
       </ScrollView>
     </TouchableWithoutFeedback>
   );

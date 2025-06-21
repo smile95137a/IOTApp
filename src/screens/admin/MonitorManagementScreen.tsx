@@ -39,6 +39,7 @@ const MonitorManagementScreen = ({ navigation }) => {
   const [monitorId, setMonitorId] = useState(null);
   const [monitorName, setMonitorName] = useState('');
   const [monitorStatus, setMonitorStatus] = useState(false);
+  const [monitorNumber, setMonitorNumber] = useState('');
   const [editingMonitorIndex, setEditingMonitorIndex] = useState(null);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -66,6 +67,8 @@ const MonitorManagementScreen = ({ navigation }) => {
     setMonitorId(monitor.uid);
     setMonitorName(monitor.name);
     setMonitorStatus(monitor.status);
+    setMonitorNumber(monitor.number ? String(monitor.number) : '');
+
     setEditingMonitorIndex(index);
     showModal();
   };
@@ -87,11 +90,13 @@ const MonitorManagementScreen = ({ navigation }) => {
         response = await createMonitor({
           name: monitorName,
           storeId: storeId,
+          number: ~~monitorNumber,
         });
       } else {
         response = await updateMonitor({
           name: monitorName,
           uid: monitorId,
+          number: ~~monitorNumber,
           status: monitorStatus,
           storeId: storeId,
         });
@@ -176,6 +181,7 @@ const MonitorManagementScreen = ({ navigation }) => {
           ...item,
           id: item.id,
           name: item.name,
+          number: item.number,
           status: !!item.status,
         }));
 
@@ -290,6 +296,14 @@ const MonitorManagementScreen = ({ navigation }) => {
                 placeholder="輸入設備名稱"
                 value={monitorName}
                 onChangeText={setMonitorName}
+              />
+              <Text style={styles.modalLabel}>頻道號碼</Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="輸入頻道號碼"
+                value={monitorNumber}
+                onChangeText={setMonitorNumber}
+                keyboardType="numeric"
               />
 
               <View style={styles.modalButtonContainer}>

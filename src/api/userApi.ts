@@ -126,3 +126,94 @@ export const uploadProfileImage = async (
     return false;
   }
 };
+
+/**
+ * 建立人臉辨識會員
+ */
+export const createFaceRecognitionMember = async (
+  userId: number
+): Promise<ApiResponse<any>> => {
+  const url = `${API_BASE_URL}${basePath}/create-face-recognition/${userId}`;
+  console.log(
+    `[User API] Creating face recognition member for user: ${userId}`
+  );
+
+  try {
+    const response = await api.post(url);
+    console.log(
+      `[User API] Face Recognition Member Creation Success:`,
+      response.data
+    );
+    return response.data;
+  } catch (error: any) {
+    console.log(`[User API] Error creating face recognition member:`, error);
+    throw error;
+  }
+};
+
+/**
+ * 查詢人臉辨識會員
+ */
+export const searchFaceRecognitionMember = async (
+  userId: number
+): Promise<ApiResponse<any>> => {
+  const url = `${API_BASE_URL}${basePath}/search-face-recognition/${userId}`;
+  console.log(
+    `[User API] Searching face recognition member for user: ${userId}`
+  );
+
+  try {
+    const response = await api.get(url);
+    console.log(`[User API] Face Recognition Search Result:`, response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log(`[User API] Error searching face recognition member:`, error);
+    throw error;
+  }
+};
+
+/**
+ * 上傳人臉圖片到設備
+ */
+export const uploadFaceImage = async (
+  imageUri: string
+): Promise<ApiResponse<string>> => {
+  const url = `${API_BASE_URL}${basePath}/upload`;
+  console.log(`[User API] Uploading face image to: ${url}`);
+
+  try {
+    const formData = new FormData();
+    formData.append('file', {
+      uri: imageUri,
+      name: `face_upload.jpg`,
+      type: 'image/jpeg',
+    } as any);
+
+    const response = await api.post(url, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    console.log(`[User API] Face Image Upload Success:`, response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log(`[User API] Error uploading face image:`, error);
+    throw error;
+  }
+};
+
+/**
+ * 開門操作
+ */
+export const openDoor = async (): Promise<ApiResponse<string>> => {
+  const url = `${API_BASE_URL}${basePath}/openDoor`;
+  console.log(`[User API] Requesting to open door at: ${url}`);
+
+  try {
+    const response = await api.put(url);
+    console.log(`[User API] Open Door Success:`, response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log(`[User API] Error opening door:`, error);
+    throw error;
+  }
+};

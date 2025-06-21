@@ -49,9 +49,10 @@ const AdminStoreDetailScreen = () => {
   const [monitorExpandedMap, setMonitorExpandedMap] = useState<{
     [id: number]: boolean;
   }>({});
-  const { snapshots, error: cameraError } = useCameraSnapshots(
-    'http://192.168.1.107'
-  );
+  const [storeIp, setStoreIp] = useState('');
+
+  const { snapshots, error: cameraError } = useCameraSnapshots(storeIp);
+
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<number | null>(
     null
   );
@@ -291,15 +292,16 @@ const AdminStoreDetailScreen = () => {
       });
     }
   };
-  const toggleMonitorExpand = (id: number) => {
-    setMonitorExpandedMap((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+
   const selectedSnapshot = snapshots.find(
     (s) => Number(s.id) === selectedSnapshotId
   );
+
+  useEffect(() => {
+    if (storeDetail?.storeIp) {
+      setStoreIp(storeDetail.storeIp);
+    }
+  }, [storeDetail]);
 
   return (
     <SafeAreaView style={styles.safeArea}>

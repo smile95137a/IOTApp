@@ -83,6 +83,24 @@ const DeviceManagementScreen = ({ navigation }) => {
               <Icon name="chevron-right" size={20} color="#fff" />
             </View>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() =>
+              (navigation as any).navigate('RouterManagement', { storeId })
+            }
+          >
+            <View style={styles.cardContent}>
+              <Image
+                source={require('../../assets/iot-mo-logo.png')}
+                style={styles.cardIcon}
+              />
+              <Text style={styles.cardText}>Router 管理</Text>
+            </View>
+            <View style={styles.cardBtn}>
+              <Icon name="chevron-right" size={20} color="#fff" />
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
