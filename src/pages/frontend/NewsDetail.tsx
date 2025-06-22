@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import DateFormatter from '@/components/common/DateFormatter';
-import {
-  getNewsById,
-  getNewsByIdNoUser,
-} from '@/services/frontend/newsService';
+import { getNewsByIdNoUser } from '@/services/frontend/newsService';
 import { getImageUrl } from '@/utils/ImageUtils';
+import { MdShare } from 'react-icons/md';
 
 const NewsDetail: React.FC = () => {
   const { newsUid } = useParams<{ newsUid: string }>();
@@ -30,38 +28,38 @@ const NewsDetail: React.FC = () => {
     }
   }, [newsUid]);
 
+  if (!newsItem) return <p className="news-detail__loading">Loading...</p>;
+
   return (
-    <div className="newsDetail">
-      {newsItem ? (
-        <>
-          <div className="newsDetail__title">
-            <div className="newsDetail__title-title">
-              <p className="newsDetail__text">{newsItem.title}</p>
-            </div>
-          </div>
-          <div className="news__item-img">
-            <img src={getImageUrl(newsItem.imageUrl)} />
-          </div>
-          <p className="newsDetail__text">
-            <DateFormatter
-              date={newsItem.createdDate}
-              format="YYYY/MM/DD HH:mm:ss"
-            />
+    <div className="news-detail">
+      <div className="news-detail__header">
+        <div>
+          <h1 className="news-detail__title">{newsItem.title}</h1>
+          <p className="news-detail__date">
+            <DateFormatter date={newsItem.createdDate} format="YYYY.MM.DD" />
           </p>
-          <hr className="m-t-24" />
-          <div className="newsDetail__content"></div>
+        </div>
+      </div>
+
+      <div className="news-detail__card">
+        <img
+          className="news-detail__image"
+          src={getImageUrl(newsItem.imageUrl)}
+          alt={newsItem.title}
+        />
+        {newsItem.preview && (
           <div
-            className="newsDetail__preview"
+            className="news-detail__preview"
             dangerouslySetInnerHTML={{ __html: newsItem.preview }}
-          ></div>
+          />
+        )}
+        {newsItem.content && (
           <div
-            className="newsDetail__fullContent"
+            className="news-detail__content"
             dangerouslySetInnerHTML={{ __html: newsItem.content }}
-          ></div>
-        </>
-      ) : (
-        <p>Loading...</p>
-      )}
+          />
+        )}
+      </div>
     </div>
   );
 };
