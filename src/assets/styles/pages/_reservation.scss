@@ -1,0 +1,92 @@
+.reservation {
+  max-width: 1080px;
+  margin: 32px auto;
+  padding: 4rem 2rem;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  &__title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    text-align: center;
+    color: #222;
+  }
+
+  &__order {
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    margin-bottom: 24px;
+
+    & > p {
+      margin: 8px 0;
+    }
+  }
+
+  &__label {
+    font-size: 16px;
+    color: #555;
+  }
+
+  &__amount {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  &__total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    border-top: 1px solid #ddd;
+    padding-top: 12px;
+
+    &-label {
+      font-size: 16px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    &-amount {
+      font-size: 20px;
+      font-weight: bold;
+      color: #e53935;
+    }
+  }
+
+  &__confirm {
+    margin-top: 32px;
+    text-align: center;
+
+    &-button {
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #fbbc04;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+
+      &:hover {
+        background-color: #ffa000;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    &__title {
+      font-size: 20px;
+    }
+
+    &__confirm-button {
+      width: 100%;
+    }
+  }
+}

@@ -1,75 +1,61 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
-import tableDisableImg from '@/assets/image/iot-table-disable.png';
+import { getImageUrl } from '@/utils/ImageUtils';
 import tableEnableImg from '@/assets/image/iot-table-enable.png';
-import { useDialog } from '@/context/DialogContext';
-import { useLoading } from '@/context/frontend/LoadingContext';
+import tableDisableImg from '@/assets/image/iot-table-disable.png';
+import NumberFormatter from '@/components/common/NumberFormatter';
 import { fetchPoolTablesByStoreUid } from '@/services/frontend/poolTableService';
 import { fetchStoreByUid } from '@/services/frontend/storeService';
 
 const StoreDetailScreen: React.FC = () => {
-  const { storeId } = useParams<{ storeId: string }>();
+  const { storeId } = useParams();
   const navigate = useNavigate();
-  const { openConfirmDialog, openInfoDialog } = useDialog();
-  const { setLoading } = useLoading();
-
   const [store, setStore] = useState<any>(null);
   const [tables, setTables] = useState<any[]>([]);
   const [todayPricing, setTodayPricing] = useState<any>(null);
   const [currentSlot, setCurrentSlot] = useState<any>(null);
 
   useEffect(() => {
-    loadStore();
-    loadTables();
+    if (storeId) {
+      loadStore();
+      loadTables();
+    }
   }, [storeId]);
 
   const loadStore = async () => {
-    try {
-      setLoading(true);
-      const res = await fetchStoreByUid(storeId);
-      setStore(res.data);
+    const res = await fetchStoreByUid(storeId!);
+    const storeData = res.data;
+    setStore(storeData);
 
-      const today = res.data.todayRes;
-      if (today) {
-        const now = moment();
-        const slot = today.timeSlots.find((t) =>
-          now.isBetween(
-            moment(t.startTime, 'HH:mm'),
-            moment(t.endTime, 'HH:mm')
-          )
-        );
-        setTodayPricing(today);
-        setCurrentSlot(slot);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    const today = storeData.todayRes;
+    if (today) {
+      const now = moment();
+      const slot = today.timeSlots.find((t: any) =>
+        now.isBetween(moment(t.startTime, 'HH:mm'), moment(t.endTime, 'HH:mm'))
+      );
+      setTodayPricing(today);
+      setCurrentSlot(slot);
     }
   };
 
   const loadTables = async () => {
-    try {
-      setLoading(true);
-      const { data } = await fetchPoolTablesByStoreUid(storeId);
-      setTables(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    const res = await fetchPoolTablesByStoreUid(storeId!);
+    setTables(res.data);
   };
 
   if (!store) return null;
 
-  const total = tables.length;
-  const available = tables.filter((t) => t.status === 'available').length;
+  const available = tables.filter((t) => !t.isUse).length;
 
   return (
     <div className="store-detail">
       <div className="store-detail__header">
-        <img className="store-detail__logo" src={tableDisableImg} alt="Logo" />
+        <img
+          className="store-detail__logo"
+          src={getImageUrl(store.imgUrl)}
+          alt="store"
+        />
         <div className="store-detail__info">
           <h2 className="store-detail__title">{store.name}</h2>
           <p className="store-detail__address">{store.address}</p>
@@ -77,61 +63,87 @@ const StoreDetailScreen: React.FC = () => {
       </div>
 
       <div className="store-detail__card">
-        <div className="store-detail__pricing">
-          <div className="store-detail__pricing-block">
-            <p className="store-detail__label">時段計費</p>
-            <div className="store-detail__pricing-detail">
-              {todayPricing?.timeSlots?.map((slot: any, index: number) => (
-                <div key={index}>
-                  <p className="store-detail__price">{slot.price}元/小時</p>
-                  <p className="store-detail__type">
-                    {slot.isDiscount ? '優惠時段' : '一般時段'}
-                  </p>
-                  <p className="store-detail__time">
-                    {moment(slot.startTime, 'HH:mm').format('HH:mm')}~
-                    {moment(slot.endTime, 'HH:mm').format('HH:mm')}
-                  </p>
-                </div>
-              ))}
+        <div className="store-detail__price">
+          <div className="store-detail__price-block">
+            <p className="store-detail__price-label">時段計費</p>
+            <div className="store-detail__price-detail">
+              <div>
+                <p className="store-detail__price-main">
+                  <NumberFormatter number={todayPricing?.regularRate * 60} />
+                  元/小時
+                </p>
+                <p className="store-detail__price-sub">一般時段</p>
+                <p className="store-detail__price-time">
+                  {todayPricing?.openTime} - {todayPricing?.closeTime}
+                </p>
+              </div>
+              <div>
+                <p className="store-detail__price-main">
+                  <NumberFormatter number={currentSlot?.price * 60 ?? 0} />
+                  元/小時
+                </p>
+                <p className="store-detail__price-sub">優惠時段</p>
+                <p className="store-detail__price-time">
+                  {currentSlot
+                    ? `${currentSlot.startTime} - ${currentSlot.endTime}`
+                    : '目前無優惠時段'}
+                </p>
+              </div>
             </div>
-          </div>
-
-          <div className="store-detail__buttons">
-            <button className="store-detail__button">📢 {store.name}</button>
-            <button className="store-detail__button store-detail__button--secondary">
-              最新消息
-            </button>
           </div>
         </div>
 
         <hr className="store-detail__divider" />
 
         <div className="store-detail__table-summary">
-          <p className="store-detail__count">桌數：{total} 桌</p>
-          <p className="store-detail__available">可用桌數：{available} 桌</p>
+          <p>桌數：{tables.length}桌</p>
+          <p className="store__table-available">可用桌數：{available}桌</p>
         </div>
 
         <div className="store-detail__table-grid">
-          {tables.map((t) => (
-            <div key={t.id} className="store-detail__table-item">
-              <img
-                src={
-                  t.status === 'available' ? tableEnableImg : tableDisableImg
-                }
-                alt={t.name}
-                className="store-detail__table-img"
-              />
+          {tables.map((table) => {
+            const status =
+              table.status === 'FAULT'
+                ? 'fault'
+                : table.isUse
+                ? 'reserved'
+                : 'available';
+            const label =
+              status === 'fault'
+                ? '設備維護中'
+                : status === 'reserved'
+                ? '開局進行中'
+                : '立即開台';
+
+            return (
               <div
-                className={`store-detail__table-btn ${
-                  t.status === 'available'
-                    ? 'store-detail__table-btn--yellow'
-                    : 'store-detail__table-btn--gray'
-                }`}
+                key={table.id}
+                className="store-detail__table-item"
+                onClick={() => {
+                  if (status === 'available') {
+                    navigate(`/reservation?tableUid=${table.uid}`);
+                  }
+                }}
               >
-                {t.name} {t.status === 'available' ? '立即開台' : '已預訂'}
+                <img
+                  src={
+                    status === 'available' ? tableEnableImg : tableDisableImg
+                  }
+                  alt={table.name}
+                  className="store-detail__table-img"
+                />
+                <div
+                  className={`store-detail__table-btn ${
+                    status === 'available'
+                      ? 'store-detail__table-btn--yellow'
+                      : 'store-detail__table-btn--gray'
+                  }`}
+                >
+                  {table.tableNumber} {label}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
