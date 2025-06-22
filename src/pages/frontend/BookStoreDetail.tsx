@@ -4,6 +4,7 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import {
+  resetBooking,
   setStep,
   setStore,
   setTable,
@@ -33,6 +34,7 @@ const StoreDetailScreen: React.FC = () => {
 
   useEffect(() => {
     if (storeId) {
+      dispatch(resetBooking());
       loadStore();
       loadTables();
     }

@@ -6,7 +6,6 @@ import {
   setTable,
 } from '@/store/slices/frontend/bookingStepSlice';
 import tableEnableImg from '@/assets/image/iot-table-enable.png';
-import tableDisableImg from '@/assets/image/iot-table-disable.png';
 
 interface Props {
   store: any;
@@ -26,43 +25,25 @@ const Step1SelectTable: React.FC<Props> = ({ store, tables }) => {
 
       <div className="store-detail__table-grid">
         {tables.map((table) => {
-          const status =
-            table.status === 'FAULT'
-              ? 'fault'
-              : table.isUse
-              ? 'reserved'
-              : 'available';
-
-          const label =
-            status === 'fault'
-              ? '設備維護中'
-              : status === 'reserved'
-              ? '開局進行中'
-              : '立即開台';
+          const label = '預約開台';
 
           return (
             <div
               key={table.id}
               className="store-detail__table-item"
               onClick={() => {
-                if (status === 'available') {
-                  dispatch(setStore(store));
-                  dispatch(setTable(table));
-                  dispatch(setStep(2));
-                }
+                dispatch(setStore(store));
+                dispatch(setTable(table));
+                dispatch(setStep(2));
               }}
             >
               <img
-                src={status === 'available' ? tableEnableImg : tableDisableImg}
+                src={tableEnableImg}
                 alt={table.name}
                 className="store-detail__table-img"
               />
               <div
-                className={`store-detail__table-btn ${
-                  status === 'available'
-                    ? 'store-detail__table-btn--yellow'
-                    : 'store-detail__table-btn--gray'
-                }`}
+                className={`store-detail__table-btn store-detail__table-btn--yellow`}
               >
                 {table.tableNumber} {label}
               </div>

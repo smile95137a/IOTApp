@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
 
 import { useLoading } from '@/context/frontend/LoadingContext';
 import { getErrorMessage } from '@/utils/errorUtils';
 import { getAvailableTimes, checkIsUse } from '@/services/frontend/gameService';
-import { getImageUrl } from '@/utils/ImageUtils';
-import TimeSlotSelector from '@/components/frontend/TimeSlotSelector';
 import { useDialog } from '@/context/DialogContext';
-import { useDispatch, useSelector } from 'react-redux';
+import TimeSlotSelector from '@/components/frontend/TimeSlotSelector';
+import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 
 const Step3SelectTime: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { openConfirmDialog, openInfoDialog } = useDialog();
   const { setLoading } = useLoading();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const store = useSelector(
     (state: RootState) => state.frontend.bookingStep.store
@@ -25,40 +21,26 @@ const Step3SelectTime: React.FC = () => {
   const table = useSelector(
     (state: RootState) => state.frontend.bookingStep.table
   );
-  const selectedDate = useSelector((state: RootState) => {
-    const raw = state.frontend.bookingStep.date;
-    return raw ? new Date(raw) : new Date();
-  });
+  const selectedDateStr = useSelector(
+    (state: RootState) => state.frontend.bookingStep.selectedDate
+  );
+  const selectedDate = selectedDateStr ? new Date(selectedDateStr) : new Date();
 
-  const [todayPricing, setTodayPricing] = useState<any>(null);
-  const [currentSlot, setCurrentSlot] = useState<any>(null);
   const [timeSlots, setTimeSlots] = useState<any[]>([]);
   const [activeTimeSlots, setActiveTimeSlots] = useState<string[]>([]);
 
   useEffect(() => {
-    if (store?.todayRes) {
-      const today = store.todayRes;
-      const now = moment();
-      const slot = today.timeSlots.find((t: any) =>
-        now.isBetween(moment(t.startTime, 'HH:mm'), moment(t.endTime, 'HH:mm'))
-      );
-      setTodayPricing(today);
-      setCurrentSlot(slot);
-    }
-  }, [store]);
-
-  useEffect(() => {
-    if (selectedDate && store?.encryptId && table?.id) {
+    if (store?.id && table?.id && selectedDateStr) {
       loadTimeSlots();
     }
-  }, [selectedDate]);
+  }, [store, table, selectedDateStr]);
 
   const loadTimeSlots = async () => {
     try {
       setLoading(true);
       const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
       const { success, data } = await getAvailableTimes(
-        store.encryptId,
+        store.id,
         formattedDate,
         table.id
       );
@@ -161,36 +143,6 @@ const Step3SelectTime: React.FC = () => {
   return (
     <div className="store-detail">
       <div className="store-detail__container">
-        <div className="store-detail__header">
-          <img
-            src={getImageUrl(store.imgUrl)}
-            alt=""
-            className="store-detail__avatar"
-          />
-          <div className="store-detail__info">
-            <h2 className="store-detail__name">{store.name}</h2>
-            <p className="store-detail__address">{store.address}</p>
-          </div>
-        </div>
-
-        <div className="store-detail__pricing">
-          <div className="store-detail__pricing-box">
-            <p className="store-detail__pricing-label">一般時段</p>
-            <p className="store-detail__pricing-value">
-              {todayPricing?.regularRate * 60} 元/小時
-            </p>
-          </div>
-          <div className="store-detail__pricing-box">
-            <p className="store-detail__pricing-label">優惠時段</p>
-            <p className="store-detail__pricing-value">
-              {currentSlot
-                ? currentSlot.price * 60
-                : todayPricing?.regularRate * 60}{' '}
-              元/小時
-            </p>
-          </div>
-        </div>
-
         <div className="store-detail__slots">
           <h3 className="store-detail__slots-title">可預約時段</h3>
           {timeSlots.length === 0 ? (

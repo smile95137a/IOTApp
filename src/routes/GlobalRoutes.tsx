@@ -27,8 +27,6 @@ import Contact from '@/pages/frontend/memberCenter/Contact';
 import MyBookHistory from '@/pages/frontend/memberCenter/MyBookHistory';
 import BookStore from '@/pages/frontend/BookStore';
 import BookStoreDetail from '@/pages/frontend/BookStoreDetail';
-import BookStoreDetailDate from '@/pages/frontend/BookStoreDetailDate';
-import BookStoreDetailTime from '@/pages/frontend/BookStoreDetailTime';
 import { DialogProvider } from '@/context/DialogContext';
 import GameHistory from '@/pages/frontend/memberCenter/GameHistory';
 import Notifications from '@/pages/frontend/memberCenter/Notifications';
@@ -61,15 +59,6 @@ const FrontendRoutes: RouteObject[] = [
       { path: 'reservation', element: <Reservation /> },
       { path: 'book-store', element: <BookStore /> },
       { path: 'book-store-detail/:storeId', element: <BookStoreDetail /> },
-      {
-        path: 'book-store-detail-date/:storeId/:sId/:tableId/:tableUid',
-        element: <BookStoreDetailDate />,
-      },
-      {
-        path: 'book-store-detail-time/:storeId/:sId/:tableId/:tableUid/:sdate',
-        element: <BookStoreDetailTime />,
-      },
-
       {
         path: 'member-center',
         element: <MemberCenter />,
