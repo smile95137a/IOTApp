@@ -49,9 +49,8 @@ const AdminStoreDetailScreen = () => {
   const [monitorExpandedMap, setMonitorExpandedMap] = useState<{
     [id: number]: boolean;
   }>({});
-  const [storeIp, setStoreIp] = useState('');
 
-  const { snapshots, error: cameraError } = useCameraSnapshots(storeIp);
+  const { snapshots, error: cameraError } = useCameraSnapshots(store.storeIP);
 
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<number | null>(
     null
@@ -147,6 +146,7 @@ const AdminStoreDetailScreen = () => {
           id: item.id,
           name: item.name,
           enabled: !!item.status,
+          number: item.number,
         }));
         setMonitors(formatted);
       }
@@ -297,12 +297,6 @@ const AdminStoreDetailScreen = () => {
     (s) => Number(s.id) === selectedSnapshotId
   );
 
-  useEffect(() => {
-    if (storeDetail?.storeIp) {
-      setStoreIp(storeDetail.storeIp);
-    }
-  }, [storeDetail]);
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -345,7 +339,7 @@ const AdminStoreDetailScreen = () => {
               <View style={styles.gridRow}>
                 {monitors.map((monitor) => {
                   const snapshot = snapshots.find(
-                    (s) => ~~s.id === ~~monitor.name
+                    (s) => ~~s.id === ~~monitor.number
                   );
 
                   return (
