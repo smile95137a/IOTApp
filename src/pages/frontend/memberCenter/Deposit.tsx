@@ -56,40 +56,46 @@ const RechargeScreen: React.FC = () => {
       },
     });
   };
-
   return (
     <div className="recharge">
-      <h2 className="recharge__title">選擇儲值方案</h2>
+      <div className="recharge__container">
+        <h2 className="recharge__title">選擇儲值方案</h2>
 
-      {loading ? (
-        <div className="recharge__loading">載入中...</div>
-      ) : (
-        <div className="recharge__grid">
-          {rechargeOptions.map((item) => (
-            <div
-              key={item.id}
-              className={`recharge__option ${
-                selectedOptionId === item.id ? 'recharge__option--selected' : ''
-              }`}
-              onClick={() => handleSelect(item.id)}
-            >
-              <span className="recharge__option-amount">
-                儲值 <NumberFormatter number={~~item.rechargeAmount} /> 元
-              </span>
-              <span className="recharge__option-bonus">
-                送 <NumberFormatter number={~~item.bonusAmount} /> 元
-              </span>
-              {selectedOptionId === item.id && (
-                <span className="recharge__option-check">✓</span>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+        {loading ? (
+          <div className="recharge__loading">載入中...</div>
+        ) : (
+          <div className="recharge__grid">
+            {rechargeOptions.map((item) => {
+              const isSelected = selectedOptionId === item.id;
+              return (
+                <div
+                  key={item.id}
+                  className={`recharge__card ${
+                    isSelected ? 'recharge__card--selected' : ''
+                  }`}
+                  onClick={() => handleSelect(item.id)}
+                >
+                  <div className="recharge__card-content">
+                    <div className="recharge__option-amount">
+                      儲值 <NumberFormatter number={~~item.rechargeAmount} /> 元
+                    </div>
+                    <div className="recharge__option-bonus">
+                      送 <NumberFormatter number={~~item.bonusAmount} /> 元
+                    </div>
+                    {isSelected && (
+                      <div className="recharge__card-check">✓</div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
-      <button className="recharge__submit" onClick={handleRecharge}>
-        儲值
-      </button>
+        <button className="recharge__submit" onClick={handleRecharge}>
+          儲值
+        </button>
+      </div>
     </div>
   );
 };

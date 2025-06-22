@@ -57,6 +57,8 @@
 @import 'pages/store-picker';
 @import 'pages/reservation';
 @import 'pages/payment';
+@import 'pages/payment-success';
+@import 'pages/recharge';
 // themes
 // ec6ab1 f29bcb f8cde5
 //
@@ -398,149 +400,6 @@
 }
 
 //
-
-.recharge {
-  width: 100%;
-  padding: 1rem;
-  background-color: #fff;
-
-  &__grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  &__option {
-    width: calc(50% - 0.5rem);
-    min-height: 108px;
-    border: 1px solid #f67943;
-    border-radius: 8px;
-    padding: 1rem 0.5rem;
-    text-align: center;
-    position: relative;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-
-    &-amount {
-      font-size: 16px;
-      font-weight: bold;
-      color: #f67943;
-    }
-
-    &-bonus {
-      font-size: 14px;
-      margin-top: 0.5rem;
-      color: #f67943;
-    }
-
-    &--selected {
-      background-color: #f67943;
-      border-color: #f67943;
-
-      .recharge__option-amount,
-      .recharge__option-bonus {
-        color: #fff;
-      }
-    }
-
-    &-checkmark {
-      position: absolute;
-      bottom: 8px;
-      right: 8px;
-      font-size: 20px;
-      color: #fff;
-    }
-  }
-
-  &__submit {
-    margin: 2rem auto 1rem;
-    padding: 0.75rem 3rem;
-    background-color: #f67943;
-    border-radius: 25px;
-    color: #fff;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-    border: none;
-    cursor: pointer;
-    display: block;
-
-    &:hover {
-      background-color: #d75c2f;
-    }
-
-    &:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-  }
-
-  &__loading {
-    margin-top: 3rem;
-    text-align: center;
-  }
-}
-
-.payment-success {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 40px 16px;
-  min-height: 100vh;
-  box-sizing: border-box;
-
-  &__message {
-    width: 100%;
-    text-align: center;
-  }
-
-  &__success-text {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 8px;
-  }
-
-  &__divider {
-    width: 100%;
-    height: 2px;
-    background-color: #000;
-    margin-bottom: 16px;
-  }
-
-  &__total {
-    font-size: 20px;
-    font-weight: bold;
-    color: #c8545f;
-    margin-top: 8px;
-
-    &-label {
-      font-size: 16px;
-      color: #666;
-      font-weight: normal;
-      margin-right: 4px;
-    }
-  }
-
-  &__start-button {
-    background-color: #ffc702;
-    border-radius: 30px;
-    padding: 12px 40px;
-    font-size: 18px;
-    font-weight: bold;
-    color: #000;
-    border: none;
-    cursor: pointer;
-    margin-top: 32px;
-    transition: background-color 0.3s;
-
-    &:hover {
-      background-color: #e6b801;
-    }
-  }
-}
 
 .game-ongoing {
   padding: 0 16px 32px;

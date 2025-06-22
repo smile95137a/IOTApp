@@ -22,7 +22,6 @@ import DepositHistory from '@/pages/frontend/memberCenter/DepositHistory';
 import TransactionHistory from '@/pages/frontend/memberCenter/TransactionHistory';
 import Payment from '@/pages/frontend/Payment';
 import Reservation from '@/pages/frontend/Reservation';
-import PaymentSuccess from '@/pages/PaymentSuccess';
 import GameOngoing from '@/pages/frontend/memberCenter/GameOngoing';
 import Contact from '@/pages/frontend/memberCenter/Contact';
 import MyBookHistory from '@/pages/frontend/memberCenter/MyBookHistory';
@@ -33,6 +32,7 @@ import BookStoreDetailTime from '@/pages/frontend/BookStoreDetailTime';
 import { DialogProvider } from '@/context/DialogContext';
 import GameHistory from '@/pages/frontend/memberCenter/GameHistory';
 import Notifications from '@/pages/frontend/memberCenter/Notifications';
+import PaymentSuccess from '@/pages/frontend/PaymentSuccess';
 
 const FrontendRoutes: RouteObject[] = [
   {

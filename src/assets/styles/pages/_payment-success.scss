@@ -1,0 +1,90 @@
+.payment-success {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__message {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    padding: 32px;
+    text-align: center;
+    max-width: 480px;
+    width: 100%;
+  }
+
+  &__title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #f67943; // 主色橘
+    margin-bottom: 16px;
+  }
+
+  &__divider {
+    height: 2px;
+    width: 60px;
+    background-color: #f67943;
+    margin: 0 auto 20px;
+  }
+
+  &__amount {
+    font-size: 20px;
+    color: #444;
+    font-weight: 500;
+  }
+
+  &__amount-label {
+    font-weight: bold;
+    color: #999;
+    margin-right: 4px;
+  }
+
+  &__action {
+    margin-top: 32px;
+    text-align: center;
+  }
+
+  &__start-button {
+    padding: 12px 32px;
+    background-color: #f67943;
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+
+    &:hover {
+      background-color: #ec6a2a; // 比主色稍深但不暗
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+
+    &__message {
+      padding: 24px;
+    }
+
+    &__title {
+      font-size: 22px;
+    }
+
+    &__amount {
+      font-size: 18px;
+    }
+
+    &__start-button {
+      width: 100%;
+      padding: 14px 0;
+    }
+  }
+}
