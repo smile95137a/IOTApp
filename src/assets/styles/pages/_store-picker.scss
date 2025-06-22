@@ -1,0 +1,193 @@
+.store-picker {
+  padding: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  &__image {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__name {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  &__address {
+    font-size: 14px;
+    color: #666;
+  }
+
+  &__share {
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &__card {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  }
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  &__table-label {
+    background-color: #28a745;
+    color: white;
+    border-radius: 24px;
+    padding: 6px 16px;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  &__pricing {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__pricing-title {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  &__price-main {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  &__price-time {
+    font-size: 13px;
+    color: #555;
+  }
+
+  &__divider {
+    margin: 24px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+  }
+
+  &__calendar-wrapper {
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); // 💡 新增陰影
+    border-radius: 16px;
+    padding: 16px;
+    background-color: #fff;
+    margin: 0 auto;
+    max-width: 400px;
+  }
+
+  &__calendar-label {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  &__calendar {
+    border: none;
+    border-radius: 16px;
+    background-color: #fff;
+    padding: 12px;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+
+    .react-calendar__tile {
+      border-radius: 8px;
+      padding: 10px 0;
+      font-size: 14px;
+      color: #333;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: #fff3ea; // 淡橘米色
+      }
+    }
+
+    .react-calendar__tile--now {
+      background: #ffe3d0;
+      font-weight: bold;
+      border: 1px solid #ff924f;
+      color: #ff924f;
+    }
+
+    // 選中日期樣式
+    .react-calendar__tile--active {
+      background: #ff924f !important;
+      color: white !important;
+      font-weight: bold;
+    }
+
+    // 月份選擇上方區塊
+    .react-calendar__navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+
+      button {
+        font-size: 16px;
+        font-weight: bold;
+        color: #222;
+        background: none;
+        border: none;
+        cursor: pointer;
+
+        &:hover {
+          color: #ff924f;
+        }
+      }
+    }
+
+    // 星期標頭
+    .react-calendar__month-view__weekdays {
+      text-align: center;
+      text-transform: capitalize;
+      font-weight: 500;
+      color: #666;
+      font-size: 13px;
+
+      abbr {
+        text-decoration: none;
+      }
+    }
+
+    // 每一列間距
+    .react-calendar__month-view__days {
+      row-gap: 6px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    &__top {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &__calendar {
+      width: 100%;
+    }
+  }
+}

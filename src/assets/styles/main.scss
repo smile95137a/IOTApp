@@ -51,6 +51,9 @@
 @import 'pages/login';
 @import 'pages/register';
 @import 'pages/news';
+@import 'pages/store';
+@import 'pages/store-detail';
+@import 'pages/store-picker';
 // themes
 // ec6ab1 f29bcb f8cde5
 //
@@ -340,102 +343,6 @@
     min-height: 100vh;
   }
 }
-
-.error-text {
-  color: #fe4206 !important;
-}
-.editor-container .ck-editor__editable_inline {
-  min-height: 200px;
-}
-/* 确保分页点位于滑块下方 */
-.swiper-pagination {
-  position: absolute;
-  bottom: 0 !important; /* 根据需要调整负值的大小 */
-}
-
-/* 设置分页点的样式 */
-.swiper-pagination-bullet {
-  background-color: #a6a6a6;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-/* 当前激活的分页点样式 */
-.swiper-pagination-bullet-active {
-  width: 10px;
-  height: 10px;
-  background-color: #00ffff;
-}
-img {
-  user-select: none;
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE10+ */
-}
-
-//
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.phone-input-group {
-  display: flex;
-  gap: 8px;
-}
-
-.phone-input-group select,
-input[type='tel'],
-input[type='text'] {
-  flex: 1;
-  padding: 8px;
-  font-size: 14px;
-}
-
-.send-code-btn {
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  font-size: 14px;
-  border: none;
-  border-radius: 5px;
-  margin-bottom: 16px;
-  cursor: pointer;
-}
-
-.send-code-btn.disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.home-btn,
-.next-btn {
-  flex: 1;
-  padding: 10px;
-  font-size: 14px;
-  border: none;
-  border-radius: 5px;
-}
-
-.home-btn {
-  background-color: #f0f0f0;
-  color: #000;
-}
-
-.next-btn {
-  background-color: #ffc702;
-  color: #000;
-}
-
-//
 
 //
 
@@ -1060,100 +967,7 @@ input[type='text'] {
 }
 
 //
-.store {
-  padding: 16px;
 
-  &__list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  &__item {
-    display: flex;
-    background-color: #00bfff;
-    border-radius: 10px;
-    overflow: hidden;
-    height: 106px;
-    cursor: pointer;
-  }
-
-  &__img-wrap {
-    width: 70px;
-    height: 70px;
-    margin: auto 8px;
-    border-radius: 50%;
-    background-color: #000a30;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  &__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  &__info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-left: 10px;
-  }
-
-  &__name {
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  &__address {
-    font-size: 14px;
-  }
-
-  &__distance {
-    font-size: 12px;
-    margin-top: 5px;
-  }
-
-  &__status {
-    min-width: 78px;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    &-text {
-      font-size: 10px;
-    }
-
-    &-count {
-      font-size: 32px;
-      font-weight: bold;
-    }
-
-    &-view {
-      display: flex;
-      align-items: center;
-      font-size: 12px;
-
-      .material-icons {
-        font-size: 18px;
-      }
-    }
-
-    &--yellow {
-      background-color: #ffc702;
-    }
-
-    &--gray {
-      background-color: #808080;
-    }
-  }
-}
 //
 
 .store-detail {

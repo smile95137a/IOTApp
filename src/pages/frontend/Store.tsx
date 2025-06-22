@@ -9,9 +9,7 @@ import { useDialog } from '@/context/DialogContext';
 import { useLoading } from '@/context/frontend/LoadingContext';
 
 const StoreScreen: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { openConfirmDialog, openInfoDialog } = useDialog();
   const { setLoading } = useLoading();
 
   const [stores, setStores] = useState<any[]>([]);

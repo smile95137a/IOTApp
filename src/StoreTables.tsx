@@ -4,9 +4,9 @@ import moment from 'moment';
 import tableDisableImg from '@/assets/image/iot-table-disable.png';
 import tableEnableImg from '@/assets/image/iot-table-enable.png';
 import { useDialog } from '@/context/DialogContext';
-import { useLoading } from '@/context/frontend/LoadingContext';
-import { fetchPoolTablesByStoreUid } from '@/services/frontend/poolTableService';
-import { fetchStoreByUid } from '@/services/frontend/storeService';
+import { useLoading } from './context/frontend/LoadingContext';
+import { fetchPoolTablesByStoreUid } from './services/frontend/poolTableService';
+import { fetchStoreByUid } from './services/frontend/storeService';
 
 const StoreDetailScreen: React.FC = () => {
   const { storeId } = useParams<{ storeId: string }>();

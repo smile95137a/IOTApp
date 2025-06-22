@@ -1,0 +1,164 @@
+.member {
+  padding: 24px;
+
+  &__title {
+    text-align: center;
+    font-size: 24px;
+    color: #00c3ff;
+    margin-bottom: 16px;
+  }
+
+  &__card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 1024px;
+    margin: 0 auto;
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+
+  &__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  &__profile {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__name {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  &__balance {
+    font-size: 14px;
+    color: #444;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  &__sidebar {
+    width: 160px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-right: 1px solid #ccc;
+    padding-right: 16px;
+  }
+
+  &__menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  &__menu-icon {
+    font-size: 18px;
+  }
+
+  &__records {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__record {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 8px;
+  }
+
+  &__record-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__record-date {
+    font-size: 12px;
+    color: #999;
+  }
+
+  &__record-store {
+    font-size: 14px;
+  }
+
+  &__record-table {
+    font-size: 14px;
+  }
+
+  &__record-status {
+    font-size: 14px;
+    font-weight: bold;
+
+    &--end {
+      color: red;
+    }
+
+    &--cancel {
+      color: gray;
+    }
+  }
+
+  // 🔽 RWD for mobile
+  @media (max-width: 768px) {
+    &__top {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &__body {
+      flex-direction: column;
+    }
+
+    &__sidebar {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-right: none;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 12px;
+      padding-right: 0;
+    }
+
+    &__menu-item {
+      font-size: 14px;
+      gap: 4px;
+    }
+
+    &__records {
+      padding-top: 12px;
+    }
+
+    &__record {
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    &__record-status {
+      align-self: flex-end;
+    }
+  }
+}
