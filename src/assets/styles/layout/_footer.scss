@@ -8,12 +8,20 @@ $root-block-name: '.footer';
   @include w_h(100%, 100%);
 
   &__container {
+    border-top: 1px solid #4285f4;
     @include w_h(100%, 100%);
-    max-width: 780px;
+    width: 100%;
+    max-width: 1280px;
     margin: 0 auto;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: 0 24px;
+
+    @include screen(md) {
+      flex-direction: column;
+      gap: 24px;
+    }
   }
 
   &__content {
@@ -124,6 +132,7 @@ $root-block-name: '.footer';
 
   &__footer {
     text-align: center;
+    color: #fff;
   }
   &__link {
     @include screen(md) {

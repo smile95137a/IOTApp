@@ -83,18 +83,22 @@ const Main = () => {
       )}
 
       <div className="home__options">
-        <HomeOptionButton
-          icon={<MdStorefront size={36} color="black" />}
-          title="門市探索"
-          description="查看附近的營業門市"
-          onClick={() => navigate('/store')}
-        />
-        <HomeOptionButton
-          icon={<MdAccessTime size={36} color="black" />}
-          title="預約開台"
-          description="選擇門市預約開台"
-          onClick={() => navigate('/book-store')}
-        />
+        <div className="home-option-button">
+          <HomeOptionButton
+            icon={<MdStorefront size={36} color="black" />}
+            title="門市探索"
+            description="查看附近的營業門市"
+            onClick={() => navigate('/store')}
+          />
+        </div>
+        <div className="home-option-button">
+          <HomeOptionButton
+            icon={<MdAccessTime size={36} color="black" />}
+            title="預約開台"
+            description="選擇門市預約開台"
+            onClick={() => navigate('/book-store')}
+          />
+        </div>
       </div>
     </div>
   );

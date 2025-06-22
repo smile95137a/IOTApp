@@ -437,62 +437,6 @@ input[type='text'] {
 
 //
 
-.home-option {
-  background-color: #01003c;
-  border-radius: 10px;
-  padding: 10px 40px;
-  margin-bottom: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.home-option__button {
-  margin: 10px 0;
-  display: flex;
-  align-items: center;
-  width: 80%;
-  background-color: #ffc702;
-  padding: 6px 15px;
-  border-radius: 40px;
-  justify-content: space-between;
-  border: none;
-  cursor: pointer;
-}
-
-.home-option__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.home-option__content {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin-left: 10px;
-  flex: 1;
-}
-
-.home-option__title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #000;
-  margin-right: 10px;
-}
-
-.home-option__arrow {
-  color: #000;
-}
-
-.home-option__description {
-  color: #02c3ed;
-  font-size: 14px;
-  margin-top: 6px;
-  text-align: center;
-}
-
 //
 
 .deposit-history {

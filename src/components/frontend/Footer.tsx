@@ -13,7 +13,9 @@ const Footer = () => {
           </div>
         </div>
         <div className="footer__footer">
-          <p className="footer__text">@{new Date().getFullYear()} 版權所有</p>
+          <p className="footer__text">
+            @2025 iPool All rights reserved 享撞球 版權所有
+          </p>
         </div>
       </div>
     </div>

@@ -25,13 +25,116 @@
 
   &__options {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 16px;
 
     .home-option-button {
-      width: 100%;
-      max-width: 360px;
+      flex: 1 1 50%;
+      max-width: 520px;
+      height: 342px;
+      display: flex;
+      box-sizing: border-box;
     }
+  }
+
+  @media (max-width: 768px) {
+    &__options {
+      flex-direction: column;
+      align-items: center;
+
+      .home-option-button {
+        flex: 1 1 100%;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+        width: 100%;
+      }
+    }
+  }
+}
+.home-option {
+  width: 100%;
+  background-color: #01003c;
+  border-radius: 10px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+  box-sizing: border-box;
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__button {
+    width: 100%;
+    max-width: 435px;
+    height: 138px;
+    background-color: #ffc702;
+    border-radius: 120px;
+    padding: 6px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__title {
+    font-family: Noto Sans TC;
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: 1px;
+    color: #000;
+    margin-left: 10px;
+
+    @media (max-width: 768px) {
+      font-size: 22px;
+    }
+  }
+
+  &__arrow {
+    color: #000;
+    margin-left: auto;
+    font-size: 24px;
+
+    @media (max-width: 768px) {
+      font-size: 20px;
+    }
+  }
+
+  &__description-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__description {
+    border-top: 1px solid #4285f4;
+    color: #fff;
+    font-size: 18px;
+    margin-top: 4px;
+    text-align: center;
+    width: 100%;
+    padding-top: 32px;
   }
 }

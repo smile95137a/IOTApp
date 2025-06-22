@@ -28,33 +28,21 @@ const navItems = [
     to: '/main',
     icon: <FaHome />,
     label: '首頁',
-    class: 'blue',
-    isSwing: false,
-    isSameIconColor: false,
   },
   {
     to: '/store',
     icon: <FaMapMarkerAlt />,
     label: '門市探索',
-    class: 'blue',
-    isSwing: false,
-    isSameIconColor: false,
   },
   {
     to: '/news',
     icon: <FaRegNewspaper />,
     label: '最新消息',
-    class: 'red',
-    isSwing: false,
-    isSameIconColor: false,
   },
   {
     to: '/deposit',
     icon: <FaWallet />,
     label: '儲值',
-    class: 'oblue',
-    isSwing: false,
-    isSameIconColor: true,
   },
 ];
 const Header = () => {
@@ -124,9 +112,7 @@ const Header = () => {
             {navItems.map((item, index) => (
               <Link
                 key={index}
-                className={`fheader__nav-item ${
-                  item.isSwing ? 'fheader__nav-item--animated' : ''
-                } fheader__nav-item--${item.class}`}
+                className={`fheader__nav-item `}
                 to={item.to}
                 onClick={(e) => {
                   if (window.location.pathname === item.to) {
@@ -135,20 +121,8 @@ const Header = () => {
                   }
                 }}
               >
-                <div
-                  className={`fheader__nav-item-icon fheader__nav-item-icon--${item.class}`}
-                >
-                  {item.icon}
-                </div>
-                <span
-                  className={`fheader__nav-item-text ${
-                    item.isSameIconColor
-                      ? `fheader__nav-item-text--${item.class}`
-                      : ''
-                  }`}
-                >
-                  {item.label}
-                </span>
+                <div className={`fheader__nav-item-icon `}>{item.icon}</div>
+                <span className={`fheader__nav-item-text`}>{item.label}</span>
               </Link>
             ))}
 

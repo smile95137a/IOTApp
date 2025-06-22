@@ -8,8 +8,8 @@ $root-block-name: '.fheader';
   $p__nav-item-icon: #{$p}__nav-item-icon;
 
   width: 100%;
-
   &__main {
+    border-bottom: 1px solid #01befe;
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
@@ -169,18 +169,8 @@ $root-block-name: '.fheader';
       &-icon {
         @include flex(center);
         font-size: 26px;
-        &--blue {
-          color: #4285f4;
-        }
-        &--red {
-          color: #eb4335;
-        }
-        &--orange {
-          color: #ff7f35;
-        }
-        &--oblue {
-          color: #8d5524;
-        }
+        color: #fbbc04;
+
         @include screen(lg) {
           font-size: 22px;
         }
