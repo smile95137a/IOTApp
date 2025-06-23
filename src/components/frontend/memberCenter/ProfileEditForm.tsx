@@ -12,6 +12,7 @@ const EditPersonalInfo: React.FC = () => {
   const [email, setEmail] = useState('');
   const [anonymousId, setAnonymousId] = useState('');
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [faceImage, setFaceImage] = useState<string | null>(null);
   const [localUser, setLocalUser] = useState<any>(null);
   const { openInfoDialog } = useDialog();
 
@@ -33,10 +34,18 @@ const EditPersonalInfo: React.FC = () => {
     fetchUserInfo();
   }, []);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: 'profile' | 'face'
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
-      setProfileImage(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      if (type === 'profile') {
+        setProfileImage(url);
+      } else {
+        setFaceImage(url);
+      }
     }
   };
 
@@ -105,7 +114,7 @@ const EditPersonalInfo: React.FC = () => {
         {profileImage && (
           <img className="edit-info__avatar" src={profileImage} alt="頭像" />
         )}
-        <input type="file" onChange={handleImageUpload} />
+        <input type="file" onChange={(e) => handleImageUpload(e, 'profile')} />
       </div>
 
       <div className="edit-info__actions">

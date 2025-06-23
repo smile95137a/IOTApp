@@ -11,6 +11,7 @@ import DateFormatter from '@/components/common/DateFormatter';
 import NumberFormatter from '@/components/common/NumberFormatter';
 import { useLoading } from '@/context/frontend/LoadingContext';
 import { useDialog } from '@/context/DialogContext';
+import NoData from '@/components/frontend/NoData';
 
 const TransactionHistory: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -36,12 +37,20 @@ const TransactionHistory: React.FC = () => {
           setTransactions(sortedData);
         } else {
           setTransactions([]);
-          await openInfoDialog('錯誤', message || '無法載入資訊');
+          await openInfoDialog({
+            title: '錯誤',
+            content: message || '無法載入資訊',
+            confirmText: '我知道了',
+          });
         }
       } catch (error: any) {
         if (error.isAutoLogout) return;
         setLoading(false);
-        await openInfoDialog('錯誤', getErrorMessage(error));
+        await openInfoDialog({
+          title: '錯誤',
+          content: getErrorMessage(error),
+          confirmText: '我知道了',
+        });
       }
     };
 
