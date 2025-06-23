@@ -36,6 +36,7 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
   const [localUser, setLocalUser] = useState(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [anonymousId, setAnonymousId] = useState('');
+  const [faceImage, setFaceImage] = useState<string | null>(null);
 
   const { openInfoDialog } = useDialog();
 
@@ -245,17 +246,17 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
   };
 
   const handleUploadFaceToDevice = async () => {
-    if (!profileImage) {
+    if (!faceImage) {
       await openInfoDialog({
         title: '錯誤',
-        content: '請先選擇並裁切頭像照片',
+        content: '請先選擇要上傳的人臉辨識圖片',
       });
       return;
     }
 
     try {
       dispatch(showLoading());
-      const { success, message } = await uploadFaceImage(profileImage);
+      const { success, message } = await uploadFaceImage(faceImage);
       dispatch(hideLoading());
 
       await openInfoDialog({
@@ -270,6 +271,27 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
         title: '錯誤',
         content: getErrorMessage(error),
       });
+    }
+  };
+  const handlePickFaceImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permission.status !== 'granted') {
+      await openInfoDialog({
+        title: '權限不足',
+        content: '請允許存取相簿權限',
+      });
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspectRatio: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setFaceImage(result.assets[0].uri);
     }
   };
 
@@ -346,6 +368,20 @@ const EditPersonalInfoScreen = ({ route, navigation }: any) => {
         >
           <Text style={styles.completeButtonText}>建立人臉辨識會員</Text>
         </TouchableOpacity>
+        <View style={styles.uploadContainer}>
+          <Text style={styles.inputLabel}>人臉辨識圖片</Text>
+          <View style={styles.uploadWrapper}>
+            {faceImage && (
+              <Image source={{ uri: faceImage }} style={styles.profileImage} />
+            )}
+            <TouchableOpacity
+              style={styles.uploadButton}
+              onPress={handlePickFaceImage}
+            >
+              <MaterialIcons name="file-upload" size={30} color="#666666" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <TouchableOpacity
           style={[
