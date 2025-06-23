@@ -1,5 +1,4 @@
-// RouterManagementScreen (完整版) - 對應 AddRouterRequest 所有欄位
-import { useRoute } from '@react-navigation/native';
+// RouterManagementScreen.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
@@ -8,12 +7,15 @@ import {
   Switch,
   TouchableOpacity,
   SafeAreaView,
-  Image,
   TextInput,
   Animated,
   ScrollView,
+  Image,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import HeaderBar from '../../component/admin/HeaderBar';
 import { useDialog } from '../../context/DialogContext';
@@ -23,10 +25,11 @@ import { getErrorMessage } from '../../utils/errorUtils';
 import {
   fetchRoutersByStoreId,
   createRouter,
+  updateRouter,
   deleteRouter,
 } from '../../api/admin/routerApi';
 
-const RouterManagementScreen = ({ navigation }) => {
+const RouterManagementScreen = () => {
   const route = useRoute();
   const storeId = route.params?.storeId;
   const dispatch = useDispatch<AppDispatch>();
@@ -34,17 +37,17 @@ const RouterManagementScreen = ({ navigation }) => {
 
   const [routers, setRouters] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
+  const [editingRouter, setEditingRouter] = useState(null);
   const [form, setForm] = useState({
     circuitName: '',
     circuitNumber: '',
     circuitType: 'DO',
     modbusAddress: '',
     slaveId: '',
-    routerIP: '',
     isControllable: true,
   });
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const resetForm = () => {
     setForm({
@@ -53,9 +56,9 @@ const RouterManagementScreen = ({ navigation }) => {
       circuitType: 'DO',
       modbusAddress: '',
       slaveId: '',
-      routerIP: '',
       isControllable: true,
     });
+    setEditingRouter(null);
   };
 
   const showModal = () => {
@@ -90,21 +93,24 @@ const RouterManagementScreen = ({ navigation }) => {
     }
   };
 
-  const handleAddRouter = async () => {
+  const handleAddOrUpdateRouter = async () => {
     if (!form.circuitName || !form.circuitNumber) {
       await openInfoDialog({ title: '錯誤', content: '請填寫必要欄位' });
       return;
     }
     try {
       dispatch(showLoading());
-      const res = await createRouter({
-        storeId,
-        routerId: null,
+      const payload = {
         ...form,
+        storeId,
         circuitNumber: ~~form.circuitNumber,
         modbusAddress: ~~form.modbusAddress,
         slaveId: ~~form.slaveId,
-      });
+      };
+      const res = editingRouter
+        ? await updateRouter(editingRouter.id, { ...payload })
+        : await createRouter({ ...payload, routerId: null });
+
       dispatch(hideLoading());
       if (res.success) {
         hideModal();
@@ -114,6 +120,19 @@ const RouterManagementScreen = ({ navigation }) => {
       dispatch(hideLoading());
       openInfoDialog({ title: '錯誤', content: getErrorMessage(e) });
     }
+  };
+
+  const handleEdit = (router) => {
+    setForm({
+      circuitName: router.circuitName,
+      circuitNumber: String(router.circuitNumber),
+      circuitType: router.circuitType,
+      modbusAddress: String(router.modbusAddress),
+      slaveId: String(router.slaveId),
+      isControllable: router.isControllable,
+    });
+    setEditingRouter(router);
+    showModal();
   };
 
   const handleDelete = async (router) => {
@@ -140,89 +159,128 @@ const RouterManagementScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <HeaderBar showLeftButton title="Router 管理" />
-        <ScrollView contentContainerStyle={styles.content}>
-          {routers.map((r, i) => (
-            <View key={i} style={styles.item}>
-              <Text style={styles.label}>
-                {r.circuitName}（頻道 {r.circuitNumber}）
-              </Text>
-              <TouchableOpacity onPress={() => handleDelete(r)}>
-                <Icon name="delete" size={20} color="#f00" />
-              </TouchableOpacity>
-            </View>
-          ))}
-          <TouchableOpacity style={styles.addButton} onPress={showModal}>
-            <Text style={styles.addButtonText}>新增 Router</Text>
-          </TouchableOpacity>
-        </ScrollView>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <View style={styles.fixedImageContainer}>
+            <Image
+              source={require('../../assets/iot-admin-bg.png')}
+              resizeMode="contain"
+            />
+          </View>
+          <HeaderBar showLeftButton title="Router 管理" />
+          <ScrollView style={styles.mainContainer}>
+            {routers.map((router, index) => (
+              <View key={index} style={styles.item}>
+                <View style={styles.row}>
+                  <View style={styles.nameRow}>
+                    <Text style={styles.label}>{router.circuitName}</Text>
+                    <TouchableOpacity onPress={() => handleEdit(router)}>
+                      <Icon
+                        name="edit"
+                        size={16}
+                        color="#4285F4"
+                        style={styles.editIcon}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDelete(router)}>
+                      <Icon
+                        name="delete"
+                        size={16}
+                        color="#f00"
+                        style={styles.editIcon}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <Switch
+                    value={router.isControllable}
+                    onValueChange={(val) => {
+                      const updated = [...routers];
+                      updated[index].isControllable = val;
+                      setRouters(updated);
+                    }}
+                  />
+                </View>
+              </View>
+            ))}
+            <TouchableOpacity style={styles.addButton} onPress={showModal}>
+              <Text style={styles.addButtonText}>新增 Router</Text>
+            </TouchableOpacity>
+          </ScrollView>
 
-        {modalVisible && (
-          <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>新增 Router</Text>
-              {[
-                'circuitName',
-                'circuitNumber',
-                'modbusAddress',
-                'slaveId',
-                'routerIP',
-              ].map((key) => (
-                <TextInput
-                  key={key}
-                  placeholder={key}
-                  value={form[key]}
-                  onChangeText={(val) => setForm((f) => ({ ...f, [key]: val }))}
-                  keyboardType={
-                    ['circuitNumber', 'modbusAddress', 'slaveId'].includes(key)
-                      ? 'numeric'
-                      : 'default'
-                  }
-                  style={styles.modalInput}
-                />
-              ))}
-              <Text>類型</Text>
-              <View style={styles.row}>
-                {['DO', 'Relay', 'AI'].map((type) => (
-                  <TouchableOpacity
-                    key={type}
-                    onPress={() =>
-                      setForm((f) => ({ ...f, circuitType: type }))
+          {modalVisible && (
+            <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>
+                  {editingRouter ? '編輯 Router' : '新增 Router'}
+                </Text>
+                {[
+                  'circuitName',
+                  'circuitNumber',
+                  'modbusAddress',
+                  'slaveId',
+                ].map((key) => (
+                  <TextInput
+                    key={key}
+                    placeholder={key}
+                    value={form[key]}
+                    onChangeText={(val) =>
+                      setForm((f) => ({ ...f, [key]: val }))
                     }
-                    style={[
-                      styles.typeBtn,
-                      form.circuitType === type && styles.typeBtnActive,
-                    ]}
-                  >
-                    <Text>{type}</Text>
-                  </TouchableOpacity>
+                    keyboardType={
+                      ['circuitNumber', 'modbusAddress', 'slaveId'].includes(
+                        key
+                      )
+                        ? 'numeric'
+                        : 'default'
+                    }
+                    style={styles.modalInput}
+                  />
                 ))}
+                <Text>類型</Text>
+                <View style={styles.row}>
+                  {['DO', 'Relay', 'AI'].map((type) => (
+                    <TouchableOpacity
+                      key={type}
+                      onPress={() =>
+                        setForm((f) => ({ ...f, circuitType: type }))
+                      }
+                      style={[
+                        styles.typeBtn,
+                        form.circuitType === type && styles.typeBtnActive,
+                      ]}
+                    >
+                      <Text>{type}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <View style={styles.row}>
+                  <Text>是否可控制</Text>
+                  <Switch
+                    value={form.isControllable}
+                    onValueChange={(val) =>
+                      setForm((f) => ({ ...f, isControllable: val }))
+                    }
+                  />
+                </View>
+                <View style={styles.modalButtonRow}>
+                  <TouchableOpacity
+                    style={styles.cancelBtn}
+                    onPress={hideModal}
+                  >
+                    <Text>取消</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.submitBtn}
+                    onPress={handleAddOrUpdateRouter}
+                  >
+                    <Text>送出</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View style={styles.row}>
-                <Text>是否可控制</Text>
-                <Switch
-                  value={form.isControllable}
-                  onValueChange={(val) =>
-                    setForm((f) => ({ ...f, isControllable: val }))
-                  }
-                />
-              </View>
-              <View style={styles.modalButtonRow}>
-                <TouchableOpacity style={styles.cancelBtn} onPress={hideModal}>
-                  <Text>取消</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.submitBtn}
-                  onPress={handleAddRouter}
-                >
-                  <Text>送出</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Animated.View>
-        )}
-      </View>
+            </Animated.View>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 };
@@ -230,31 +288,38 @@ const RouterManagementScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   container: { flex: 1, backgroundColor: '#E3F2FD' },
-  content: { padding: 20 },
+  mainContainer: { flex: 1, padding: 20 },
   item: {
-    backgroundColor: '#fff',
+    borderRadius: 10,
     padding: 16,
-    borderRadius: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 4,
+    borderBottomColor: '#D9D9D9',
+    borderBottomWidth: 1,
   },
-  label: { fontSize: 16, color: '#333' },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  nameRow: { flexDirection: 'row', alignItems: 'center' },
+  label: { fontSize: 16, fontWeight: 'bold', color: '#333', marginRight: 5 },
+  editIcon: { marginLeft: 5 },
   addButton: {
     backgroundColor: '#28a745',
-    padding: 12,
+    padding: 10,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 16,
   },
-  addButtonText: { color: '#fff', fontSize: 16 },
+  addButtonText: { color: 'white', fontSize: 16 },
   modalOverlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -264,13 +329,19 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '90%',
   },
-  modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
   modalInput: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
+    backgroundColor: '#f9f9f9',
   },
   modalButtonRow: {
     flexDirection: 'row',
@@ -293,12 +364,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     alignItems: 'center',
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    gap: 12,
-  },
   typeBtn: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -309,6 +374,14 @@ const styles = StyleSheet.create({
   typeBtnActive: {
     backgroundColor: '#d0f0c0',
     borderColor: '#28a745',
+  },
+  fixedImageContainer: {
+    position: 'absolute',
+    right: -200,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.1,
   },
 });
 
