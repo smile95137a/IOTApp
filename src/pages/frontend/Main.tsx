@@ -10,6 +10,7 @@ import { getAllBanners } from '@/services/frontend/bannerService';
 import { getImageUrl } from '@/utils/ImageUtils';
 import HomeOptionButton from '@/components/frontend/HomeOptionButton';
 import { MdAccessTime, MdStorefront } from 'react-icons/md';
+import BannerSwiper from '@/components/frontend/BannerSwiper';
 
 const Main = () => {
   const navigate = useNavigate();
@@ -37,51 +38,17 @@ const Main = () => {
     loadMainData();
   }, []);
 
-  const goToProductDetail = (banner: any) => {
-    if (banner?.productId) {
-      navigate(`/product/${banner.productId}`);
+  const goToNewsDetail = (banner: any) => {
+    if (banner?.news?.newsUid) {
+      navigate(`/news/${banner.news.newsUid}`, {
+        state: { news: banner.news },
+      });
     }
   };
 
   return (
     <div className="home">
-      {banners.length > 0 && (
-        <div className="home__slider">
-          <Swiper
-            slidesPerView={1}
-            spaceBetween={10}
-            navigation
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: false,
-            }}
-            pagination={{ clickable: true }}
-            modules={[Navigation, Pagination, Autoplay]}
-            loop={true}
-            className="home__swiper"
-            breakpoints={{
-              820: { slidesPerView: 3 },
-            }}
-          >
-            {banners.map((banner, index) => (
-              <SwiperSlide
-                key={index}
-                onClick={() => goToProductDetail(banner)}
-              >
-                <div className="home__slide">
-                  {banner.imageUrl && (
-                    <img
-                      src={getImageUrl(banner.imageUrl)}
-                      className="home__slide-image"
-                    />
-                  )}
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      )}
-
+      {banners.length > 0 && <BannerSwiper banners={banners} />}
       <div className="home__options">
         <div className="home-option-button">
           <HomeOptionButton

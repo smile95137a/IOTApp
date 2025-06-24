@@ -14,6 +14,7 @@ import { checkoutGameGamePay } from '@/services/frontend/gamePayService';
 import { RootState } from '@/store';
 import { useSelector } from 'react-redux';
 import { useDialog } from '@/context/DialogContext';
+import PaymentOptions from '@/components/frontend/PaymentOptions';
 
 const Payment: React.FC = () => {
   const location = useLocation();
@@ -98,7 +99,7 @@ const Payment: React.FC = () => {
             state: {
               type,
               showStartGame: type === 'game',
-              finalAmount,
+              totalAmount: finalAmount,
               data,
             },
           });
@@ -189,20 +190,20 @@ const Payment: React.FC = () => {
         )}
       </div>
 
-      <div className="payment__methods">
-        {paymentMethods
+      <PaymentOptions
+        options={paymentMethods
           .filter((m) => !(type === 'recharge' && m.payType === 1))
-          .map((method) => (
-            <button
-              key={method.payType}
-              className="payment__method"
-              onClick={() => handlePayment(method.label, method.payType)}
-            >
+          .map((method) => ({
+            id: `${method.payType}`,
+            icon: (
               <span className={`payment__icon payment__icon--${method.icon}`} />
-              <span className="payment__label">{method.label}</span>
-            </button>
-          ))}
-      </div>
+            ),
+            title: method.label,
+            rightText:
+              method.payType === 1 && type !== 'recharge' ? `` : undefined,
+            onClick: () => handlePayment(method.label, method.payType),
+          }))}
+      />
     </div>
   );
 };

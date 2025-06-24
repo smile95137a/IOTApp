@@ -73,7 +73,13 @@ const MyBookHistory: React.FC = () => {
   };
 
   const handleBookAction = async (item: GameTransactionRecord) => {
-    const confirmed = await openConfirmDialog({ content: '預約操作' });
+    const confirmed = await openConfirmDialog({
+      title: '預約操作',
+      content: '請選擇要對預約進行的操作',
+      confirmText: '開台（開始遊戲）',
+      cancelText: '取消預約',
+    });
+
     if (confirmed) {
       await handleBookStart(item);
     } else {

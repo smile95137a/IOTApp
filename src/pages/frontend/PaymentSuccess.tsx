@@ -57,17 +57,6 @@ const PaymentSuccess: React.FC = () => {
           $<NumberFormatter number={~~totalAmount} /> 元
         </p>
       </div>
-
-      {showStartGame && (
-        <div className="payment-success__action">
-          <button
-            className="payment-success__start-button"
-            onClick={handleStartGame}
-          >
-            前往球局
-          </button>
-        </div>
-      )}
     </div>
   );
 };
