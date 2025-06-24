@@ -92,7 +92,7 @@ const DeviceManagementScreen = ({ navigation }) => {
           >
             <View style={styles.cardContent}>
               <Image
-                source={require('../../assets/iot-mo-logo.png')}
+                source={require('../../assets/iot-router-logo.png')}
                 style={styles.cardIcon}
               />
               <Text style={styles.cardText}>Router 管理</Text>

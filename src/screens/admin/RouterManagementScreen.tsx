@@ -27,7 +27,9 @@ import {
   createRouter,
   updateRouter,
   deleteRouter,
+  controlRouter,
 } from '../../api/admin/routerApi';
+import { logJson } from '../../utils/logJsonUtils';
 
 const RouterManagementScreen = () => {
   const route = useRoute();
@@ -85,6 +87,7 @@ const RouterManagementScreen = () => {
     try {
       dispatch(showLoading());
       const res = await fetchRoutersByStoreId(storeId);
+      logJson('zx', res);
       dispatch(hideLoading());
       if (res.success) setRouters(res.data);
     } catch (e) {
@@ -193,10 +196,28 @@ const RouterManagementScreen = () => {
                   </View>
                   <Switch
                     value={router.isControllable}
-                    onValueChange={(val) => {
+                    onValueChange={async (val) => {
                       const updated = [...routers];
                       updated[index].isControllable = val;
-                      setRouters(updated);
+                      setRouters(updated); // Optimistic update
+
+                      try {
+                        dispatch(showLoading());
+                        await controlRouter({
+                          routerId: router.id,
+                          isControllable: val,
+                        });
+                        dispatch(hideLoading());
+                      } catch (e) {
+                        dispatch(hideLoading());
+                        // 還原狀態
+                        updated[index].isControllable = !val;
+                        setRouters(updated);
+                        openInfoDialog({
+                          title: '錯誤',
+                          content: getErrorMessage(e),
+                        });
+                      }
                     }}
                   />
                 </View>
