@@ -203,13 +203,18 @@ export const uploadFaceImage = async (
 
 /**
  * 開門操作
+ * @param storeUid 店家 UID
  */
-export const openDoor = async (): Promise<ApiResponse<string>> => {
+export const openDoor = async (
+  storeUid: string
+): Promise<ApiResponse<string>> => {
   const url = `${API_BASE_URL}${basePath}/openDoor`;
-  console.log(`[User API] Requesting to open door at: ${url}`);
+  console.log(
+    `[User API] Requesting to open door at: ${url} with storeUid=${storeUid}`
+  );
 
   try {
-    const response = await api.put(url);
+    const response = await api.put(url, { storeUid });
     console.log(`[User API] Open Door Success:`, response.data);
     return response.data;
   } catch (error: any) {

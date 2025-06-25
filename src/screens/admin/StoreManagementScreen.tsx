@@ -25,6 +25,11 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch, RootState } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
+import QRCode from 'react-native-qrcode-svg';
+import { Modal } from 'react-native';
+import ViewShot from 'react-native-view-shot';
+import * as MediaLibrary from 'expo-media-library';
+import { encryptObject } from '../../utils/cryptoUtils';
 
 const StoreManagementScreen = () => {
   const route = useRoute();
@@ -32,6 +37,10 @@ const StoreManagementScreen = () => {
   const navigation = useNavigation();
   const [stores, setStores] = useState([]);
   const [visibleMenuId, setVisibleMenuId] = useState<string | null>(null);
+  const [qrCodeVisible, setQrCodeVisible] = useState(false);
+  const [qrCodeValue, setQrCodeValue] = useState('');
+  const [qrTitle, setQrTitle] = useState('');
+  const qrCodeRef = React.useRef<any>(null);
   const user = useSelector((state: RootState) => state.user);
   const vendor = route.params?.vendor;
   const isSuperAdmin = user.user?.roles?.some((role) => role.id === 1);
@@ -124,6 +133,47 @@ const StoreManagementScreen = () => {
     }
   };
 
+  const handleShowQRCode = (storeUid: string, storeName: string) => {
+    const encrypted = encryptObject({ qrCodeType: 2, storeUid });
+    setQrCodeValue(encrypted);
+    setQrTitle(storeName);
+    setQrCodeVisible(true);
+  };
+
+  const handleSaveQRCode = async () => {
+    try {
+      dispatch(showLoading());
+      const uri = await qrCodeRef.current.capture();
+      dispatch(hideLoading());
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+
+      if (status !== 'granted') {
+        await openInfoDialog({
+          title: '權限不足',
+          content: '需要媒體存取權限才能儲存圖片',
+          confirmText: '我知道了',
+        });
+        return;
+      }
+
+      const asset = await MediaLibrary.createAssetAsync(uri);
+      await MediaLibrary.createAlbumAsync('QRCode', asset, false);
+      setQrCodeVisible(false);
+      await openInfoDialog({
+        title: '成功',
+        content: '已儲存 QR Code 至相簿',
+        confirmText: '我知道了',
+      });
+    } catch (error: any) {
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: '錯誤',
+        content: '儲存 QR Code 時發生錯誤',
+        confirmText: '我知道了',
+      });
+    }
+  };
+
   return (
     <Provider>
       <SafeAreaView style={styles.safeArea}>
@@ -198,6 +248,14 @@ const StoreManagementScreen = () => {
                                 leadingIcon="trash-can-outline"
                                 titleStyle={{ color: 'red' }}
                               />
+                              <Menu.Item
+                                onPress={() =>
+                                  handleShowQRCode(item.uid, item.name)
+                                }
+                                title="產生 QR Code"
+                                leadingIcon="qrcode"
+                                titleStyle={{ color: '#000' }}
+                              />
                             </>
                           )}
                         </Menu>
@@ -226,6 +284,35 @@ const StoreManagementScreen = () => {
             </ScrollView>
           </View>
         </View>
+        <Modal visible={qrCodeVisible} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>{qrTitle} 的 QR Code</Text>
+
+              <ViewShot
+                ref={qrCodeRef}
+                options={{ format: 'png', result: 'tmpfile' }}
+                style={{ marginVertical: 20 }}
+              >
+                <QRCode value={qrCodeValue} size={200} quietZone={20} />
+              </ViewShot>
+
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleSaveQRCode}
+              >
+                <Text style={styles.modalButtonText}>儲存 QR Code</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: '#888' }]}
+                onPress={() => setQrCodeVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>關閉</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </Provider>
   );
@@ -301,6 +388,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   menuStyle: { backgroundColor: '#FFF', borderRadius: 10 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    width: 280,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+
+  modalButton: {
+    marginTop: 12,
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
 });
 
 export default StoreManagementScreen;

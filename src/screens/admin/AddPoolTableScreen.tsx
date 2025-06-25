@@ -27,9 +27,9 @@ import HeaderBar from '../../component/admin/HeaderBar';
 import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
-import { encryptData } from '../../utils/cryptoUtils';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { fetchAllStores } from '../../api/admin/storeApi';
+import { encryptObject } from '../../utils/cryptoUtils';
 type PoolTableParams = {
   poolTable?: {
     uid: string;
@@ -171,9 +171,11 @@ const AddPoolTableScreen = () => {
   };
   const genQrcode = () => {
     if (!isEditMode) return;
-    console.log(poolTable.uid);
-
-    setQrCodeVal(encryptData(`${poolTable.uid}`));
+    const encrypted = encryptObject({
+      qrCodeType: 1,
+      poolTableUid: poolTable.uid,
+    });
+    setQrCodeVal(encrypted);
     setShowQRCode(true);
   };
 

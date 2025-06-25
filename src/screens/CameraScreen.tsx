@@ -17,9 +17,10 @@ import { fetchPoolTableByUid } from '../api/poolTableAPI';
 import { useDialog } from '../context/DialogContext';
 import { showLoading, hideLoading } from '../store/loadingSlice';
 import { AppDispatch } from '../store/store';
-import { decryptData } from '../utils/cryptoUtils';
+import { decryptObject } from '../utils/cryptoUtils';
 import { getErrorMessage } from '../utils/errorUtils';
 import { logJson } from '../utils/logJsonUtils';
+import { openDoor } from '../api/userApi';
 
 const { width, height } = Dimensions.get('window');
 const SCAN_BOX_SIZE = 250;
@@ -75,52 +76,76 @@ const CameraScreen = () => {
 
     setScanned(true);
     try {
-      const tableUid = decryptData(data);
+      const decryptedObj = decryptObject(data); // 改用 decryptObject 處理 JSON
+      if (!decryptedObj || typeof decryptedObj !== 'object') {
+        throw new Error('無法解析 QR Code 資料');
+      }
 
-      const response = await fetchPoolTableByUid(tableUid);
-      if (response.success) {
-        const storeName = response.data.storeName || '未知店家';
-        const tableName = response.data.poolTableName || '未知桌台';
-        if (response.data.gameId) {
-          const confirm = await openConfirmDialog({
-            title: `已掃描到 ${storeName} - ${tableName}`,
-            content: '是否前往付款？',
-          });
+      const { qrCodeType, poolTableUid, storeUid } = decryptedObj;
 
-          if (confirm) {
-            dispatch(showLoading());
-            const { success, data, message } = await getGamePrice({
-              gameId: response.data.gameId,
+      if (qrCodeType === 1 && poolTableUid) {
+        const response = await fetchPoolTableByUid(poolTableUid);
+        if (response.success) {
+          const storeName = response.data.storeName || '未知店家';
+          const tableName = response.data.poolTableName || '未知桌台';
+          if (response.data.gameId) {
+            const confirm = await openConfirmDialog({
+              title: `已掃描到 ${storeName} - ${tableName}`,
+              content: '是否前往付款？',
             });
-            dispatch(hideLoading());
 
-            if (success) {
+            if (confirm) {
+              dispatch(showLoading());
+              const { success, data, message } = await getGamePrice({
+                gameId: response.data.gameId,
+              });
+              dispatch(hideLoading());
+
+              if (success) {
+                (navigation as any).navigate('Main', {
+                  screen: 'Member',
+                  params: {
+                    screen: 'Payment',
+                    params: {
+                      type: 'gameEnd',
+                      payData: {
+                        gameId: response.data.gameId,
+                        poolTableId: response.data.poolTableId,
+                      },
+                      totalAmount: data.price,
+                    },
+                  },
+                });
+              } else {
+                await openInfoDialog({
+                  title: '錯誤',
+                  content: message || '無法載入店家資訊',
+                });
+              }
+            } else {
+              setScanned(false);
+            }
+          } else {
+            const confirm = await openConfirmDialog({
+              title: `已掃描到 ${storeName} - ${tableName}`,
+              content: '前往開台？',
+            });
+
+            if (confirm) {
               (navigation as any).navigate('Main', {
                 screen: 'Member',
                 params: {
-                  screen: 'Payment',
-                  params: {
-                    type: 'gameEnd',
-                    payData: {
-                      gameId: response.data.gameId,
-                      poolTableId: response.data.poolTableId,
-                    },
-                    totalAmount: data.price,
-                  },
+                  screen: 'Reservation',
+                  params: { tableUid },
                 },
               });
             } else {
-              await openInfoDialog({
-                title: '錯誤',
-                content: message || '無法載入店家資訊',
-              });
+              setScanned(false);
             }
-          } else {
-            setScanned(false);
           }
         } else {
           const confirm = await openConfirmDialog({
-            title: `已掃描到 ${storeName} - ${tableName}`,
+            title: '已掃描到',
             content: '前往開台？',
           });
 
@@ -136,21 +161,26 @@ const CameraScreen = () => {
             setScanned(false);
           }
         }
-      } else {
-        const confirm = await openConfirmDialog({
-          title: '已掃描到',
-          content: '前往開台？',
-        });
+      } else if (qrCodeType === 2 && storeUid) {
+        dispatch(showLoading());
+        const response = await openDoor(storeUid);
+        dispatch(hideLoading());
 
-        if (confirm) {
-          (navigation as any).navigate('Main', {
-            screen: 'Member',
-            params: {
-              screen: 'Reservation',
-              params: { tableUid },
-            },
+        if (response.success) {
+          await openInfoDialog({
+            title: '開門成功',
+            content: '門已成功開啟！',
+          });
+
+          (navigation as any).reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
           });
         } else {
+          await openInfoDialog({
+            title: '開門失敗',
+            content: response.message || '無法開啟門，請稍後再試。',
+          });
           setScanned(false);
         }
       }
