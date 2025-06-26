@@ -132,7 +132,7 @@ const MultiDateSpecialDialog: React.FC<any> = ({
               <View style={styles.formGroup}>
                 <MyDropdown
                   value={String(splitTime(openTime).hour)}
-                  onValueChange={(hourStr) =>
+                  onChange={(hourStr) =>
                     setOpenTime(
                       formatTime(parseInt(hourStr), splitTime(openTime).minute)
                     )
