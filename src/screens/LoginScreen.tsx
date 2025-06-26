@@ -6,15 +6,12 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
-  Image,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select'; // Import picker select
-import { MaterialIcons } from '@expo/vector-icons'; // For the eye icon
+import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
 import { loginUser } from '../api/authApi';
@@ -23,14 +20,15 @@ import { setAuth } from '../store/authSlice';
 import { showLoading, hideLoading } from '../store/loadingSlice';
 import { getErrorMessage } from '../utils/errorUtils';
 import Header from '../component/Header';
+import { MyDropdown } from '../component/MyDropdown';
 
 const LoginScreen = ({ route, navigation }: any) => {
   const { loginType } = route.params || { loginType: 'phone' };
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [countryCode, setCountryCode] = useState('+886'); // Default country code
+  const [countryCode, setCountryCode] = useState('+886');
   const [inputValue, setInputValue] = useState('');
   const [password, setPassword] = useState('');
-  const pickerRef = useRef<RNPickerSelect>(null);
+  const pickerRef = useRef(null);
   const dispatch = useDispatch();
   const { openInfoDialog } = useDialog();
 
@@ -40,18 +38,12 @@ const LoginScreen = ({ route, navigation }: any) => {
   ];
 
   const resetAndNavigateToMain = () => {
-    (navigation as any).reset({
-      index: 0,
-      routes: [{ name: 'Main' }],
-    });
+    navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
   };
 
   const handleLogin = async () => {
     if (!inputValue || !password) {
-      await openInfoDialog({
-        title: '錯誤',
-        content: '請輸入完整資訊',
-      });
+      await openInfoDialog({ title: '錯誤', content: '請輸入完整資訊' });
       return;
     }
 
@@ -67,10 +59,7 @@ const LoginScreen = ({ route, navigation }: any) => {
       if (response.success) {
         const { accessToken, user } = response.data;
         dispatch(setAuth({ token: accessToken, user }));
-        (navigation as any).reset({
-          index: 0,
-          routes: [{ name: 'Main' }],
-        });
+        navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
       } else {
         await openInfoDialog({
           title: '登入失敗',
@@ -80,10 +69,7 @@ const LoginScreen = ({ route, navigation }: any) => {
     } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      await openInfoDialog({
-        title: '錯誤',
-        content: getErrorMessage(error),
-      });
+      await openInfoDialog({ title: '錯誤', content: getErrorMessage(error) });
     }
   };
 
@@ -97,10 +83,7 @@ const LoginScreen = ({ route, navigation }: any) => {
           style={styles.gradient}
         >
           <View style={styles.container}>
-            <Header
-              onBackPress={() => (navigation as any).goBack()}
-              isDarkMode
-            />
+            <Header onBackPress={() => navigation.goBack()} isDarkMode />
 
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -117,40 +100,26 @@ const LoginScreen = ({ route, navigation }: any) => {
                 <Text style={styles.inputLabel}>
                   {loginType === 'phone' ? '手機' : 'Email'}
                 </Text>
-                <View style={styles.inputWrapper}>
-                  {loginType === 'phone' ? (
-                    <>
-                      <RNPickerSelect
-                        value={countryCode || countryCodes[0].value}
-                        onValueChange={(value) => {
-                          if (value) setCountryCode(value);
-                        }}
+                {loginType === 'phone' ? (
+                  <View style={styles.phoneInputWrapper}>
+                    <View style={styles.countryCodeWrapper}>
+                      <MyDropdown
+                        value={countryCode}
+                        onChange={setCountryCode}
                         items={countryCodes}
-                        style={{
-                          inputIOS: styles.dropdownInput,
-                          inputAndroid: styles.dropdownInput,
-                          iconContainer: styles.iconContainer,
-                        }} // 隱藏原本的輸入框
-                        useNativeAndroidPickerStyle={false}
-                        placeholder={{ label: '請選擇', value: '' }}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
+                        zIndex={3000}
                       />
-
-                      <TextInput
-                        style={styles.input}
-                        placeholder="請輸入手機號碼"
-                        keyboardType="phone-pad"
-                        value={inputValue}
-                        onChangeText={setInputValue}
-                      />
-                    </>
-                  ) : (
+                    </View>
+                    <TextInput
+                      style={styles.phoneInput}
+                      placeholder="請輸入手機號碼"
+                      keyboardType="phone-pad"
+                      value={inputValue}
+                      onChangeText={setInputValue}
+                    />
+                  </View>
+                ) : (
+                  <View style={styles.inputWrapper}>
                     <TextInput
                       style={styles.input}
                       placeholder="請輸入 Email"
@@ -158,11 +127,10 @@ const LoginScreen = ({ route, navigation }: any) => {
                       value={inputValue}
                       onChangeText={setInputValue}
                     />
-                  )}
-                </View>
+                  </View>
+                )}
               </View>
 
-              {/* Password Field */}
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>密碼</Text>
                 <View style={styles.inputWrapper}>
@@ -186,8 +154,8 @@ const LoginScreen = ({ route, navigation }: any) => {
               </View>
 
               <TouchableOpacity
-                style={[styles.sendButton]}
-                onPress={() => (navigation as any).navigate('ForgotPassword')}
+                style={styles.sendButton}
+                onPress={() => navigation.navigate('ForgotPassword')}
               >
                 <Text style={styles.forgotPasswordText}>忘記密碼?</Text>
                 <MaterialIcons
@@ -198,7 +166,6 @@ const LoginScreen = ({ route, navigation }: any) => {
                 />
               </TouchableOpacity>
 
-              {/* Login Button */}
               <View style={styles.bottomContainer}>
                 <TouchableOpacity
                   style={styles.homeButton}
@@ -223,29 +190,10 @@ const LoginScreen = ({ route, navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  gradient: {
-    flex: 1,
-    paddingBottom: 16,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
-  containerOS: {
-    flex: 1,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginTop: 30,
-    marginBottom: 20,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-  },
+  safeArea: { flex: 1 },
+  gradient: { flex: 1, paddingBottom: 16 },
+  container: { flex: 1, paddingHorizontal: 16 },
+  containerOS: { flex: 1 },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -259,38 +207,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  tabs: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 20,
-    gap: 12,
-  },
-  tab: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    width: '50%',
-  },
-  activeTab: {
-    borderWidth: 2,
-    borderColor: '#FFA76E',
-    borderRadius: 8,
-  },
-  tabText: {
-    fontSize: 16,
-    color: '#888',
-    textAlign: 'center',
-  },
-  activeTabText: {
-    color: '#F67943',
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 14,
-    marginBottom: 8,
-    color: '#00BFFF',
-  },
+  inputContainer: { marginBottom: 20 },
+  inputLabel: { fontSize: 14, marginBottom: 8, color: '#00BFFF' },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -300,30 +218,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F7F7',
     paddingHorizontal: 10,
   },
-  dropdownInput: {
-    fontSize: 14,
-    color: '#000',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    width: 100,
+  phoneInputWrapper: {
+    flexDirection: 'row',
     alignItems: 'center',
-  },
-  iconContainer: {
-    top: '50%',
-    right: 10,
-    marginTop: -12,
-    position: 'absolute',
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    fontSize: 14,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    backgroundColor: '#F7F7F7',
     paddingHorizontal: 10,
   },
-  forgotPasswordText: {
-    textAlign: 'center',
-    color: '#007BFF',
+  countryCodeWrapper: {
+    flex: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: 6,
   },
+  phoneInput: { flex: 7, height: 40, fontSize: 14, paddingHorizontal: 10 },
+  input: { flex: 1, height: 40, fontSize: 14, paddingHorizontal: 10 },
+  forgotPasswordText: { textAlign: 'center', color: '#007BFF' },
   bottomContainer: {
     position: 'absolute',
     bottom: 0,
@@ -345,28 +257,14 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#FFF',
   },
-  homeButtonText: {
-    fontSize: 14,
-    marginLeft: 5,
-  },
+  homeButtonText: { fontSize: 14, marginLeft: 5 },
   loginButton: {
     backgroundColor: '#FFC702',
     borderRadius: 50,
     paddingHorizontal: 30,
     paddingVertical: 10,
   },
-  loginButtonText: {
-    fontSize: 16,
-  },
-  pickerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: 70,
-  },
-  pickerText: {
-    fontSize: 16,
-    color: '#000',
-  },
+  loginButtonText: { fontSize: 16 },
   sendButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -380,13 +278,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 20,
   },
-  sendIcon: {
-    marginLeft: 5,
-  },
-  sendButtonText: {
-    color: '#007BFF',
-    fontSize: 14,
-  },
+  sendIcon: { marginLeft: 5 },
 });
 
 export default LoginScreen;

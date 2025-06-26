@@ -26,6 +26,7 @@ import { hideLoading, showLoading } from '../../store/loadingSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { getImageUrl } from '../../utils/ImageUtils';
 import { fetchAllNews } from '../../api/admin/newsApi';
+import { MyDropdown } from '../../component/MyDropdown';
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -209,73 +210,30 @@ const AddBannerScreen = () => {
               <Text style={styles.header}>
                 {banner.bannerId ? '編輯Banner' : '新增Banner'}
               </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  gap: 8,
-                  marginBottom: 12,
-                }}
-              >
-                <View style={{ flex: 1 }}>
-                  <RNPickerSelect
-                    value={String(newsId)}
-                    onValueChange={(itemValue) => setNewsId(itemValue)}
-                    items={newsList.map((news) => ({
-                      label: news.title,
-                      value: String(news.id),
-                      key: news.id,
-                    }))}
-                    placeholder={{ label: '選擇連結最新消息', value: '' }}
-                    useNativeAndroidPickerStyle={false}
-                    style={{
-                      inputIOS: styles.dropdownInput,
-                      inputAndroid: styles.dropdownInput,
-                      iconContainer: styles.iconContainer,
-                    }}
-                    Icon={() => (
-                      <MaterialIcons
-                        name="arrow-drop-down"
-                        size={24}
-                        color="#888"
-                      />
-                    )}
-                  />
-                </View>
+              <View style={styles.formGroup}>
+                <MyDropdown
+                  value={String(newsId)}
+                  onChange={(itemValue) => setNewsId(itemValue)}
+                  items={newsList.map((news) => ({
+                    label: news.title,
+                    value: String(news.id),
+                  }))}
+                  zIndex={3000}
+                />
               </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  gap: 8,
-                  marginBottom: 12,
-                }}
-              >
-                <View style={{ flex: 1 }}>
-                  <RNPickerSelect
-                    value={status}
-                    onValueChange={(itemValue) => setStatus(itemValue)}
-                    items={[
-                      { label: '啟用', value: 'AVAILABLE' },
-                      { label: '停用', value: 'UNAVAILABLE' },
-                    ]}
-                    placeholder={{ label: '請選擇狀態', value: '' }}
-                    useNativeAndroidPickerStyle={false}
-                    style={{
-                      inputIOS: styles.dropdownInput,
-                      inputAndroid: styles.dropdownInput,
-                      iconContainer: styles.iconContainer,
-                    }}
-                    Icon={() => (
-                      <MaterialIcons
-                        name="arrow-drop-down"
-                        size={24}
-                        color="#888"
-                      />
-                    )}
-                  />
-                </View>
+
+              <View style={styles.formGroup}>
+                <MyDropdown
+                  value={status}
+                  onChange={(itemValue) => setStatus(itemValue)}
+                  items={[
+                    { label: '啟用', value: 'AVAILABLE' },
+                    { label: '停用', value: 'UNAVAILABLE' },
+                  ]}
+                  zIndex={2000}
+                />
               </View>
+
               <View style={styles.uploadContainer}>
                 <Text style={styles.inputLabel}>上傳照片</Text>
                 <View style={styles.uploadWrapper}>
@@ -431,6 +389,9 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 
