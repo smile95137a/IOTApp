@@ -18,7 +18,6 @@ import { Picker } from '@react-native-picker/picker';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Dimensions } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
 import {
   updateNews,
   createNews,
@@ -29,6 +28,7 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { getImageUrl } from '../../utils/ImageUtils';
+import { MyDropdown } from '../../component/MyDropdown';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const AddNewsScreen = () => {
   const navigation = useNavigation();
@@ -183,38 +183,16 @@ const AddNewsScreen = () => {
                   style={styles.input}
                   multiline
                 />
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    gap: 8,
-                    marginBottom: 12,
-                  }}
-                >
-                  <View style={{ flex: 1 }}>
-                    <RNPickerSelect
-                      value={status}
-                      onValueChange={(itemValue) => setStatus(itemValue)}
-                      items={[
-                        { label: '可用', value: 'AVAILABLE' },
-                        { label: '不可用', value: 'UNAVAILABLE' },
-                      ]}
-                      placeholder={{ label: '請選擇狀態', value: '' }}
-                      useNativeAndroidPickerStyle={false}
-                      style={{
-                        inputIOS: styles.dropdownInput,
-                        inputAndroid: styles.dropdownInput,
-                        iconContainer: styles.iconContainer,
-                      }}
-                      Icon={() => (
-                        <MaterialIcons
-                          name="arrow-drop-down"
-                          size={24}
-                          color="#888"
-                        />
-                      )}
-                    />
-                  </View>
+
+                <View style={styles.formGroup}>
+                  <MyDropdown
+                    value={status}
+                    onChange={(itemValue) => setStatus(itemValue)}
+                    items={[
+                      { label: '可用', value: 'AVAILABLE' },
+                      { label: '不可用', value: 'UNAVAILABLE' },
+                    ]}
+                  />
                 </View>
                 <View style={styles.uploadContainer}>
                   <Text style={styles.inputLabel}>上傳照片</Text>
@@ -377,6 +355,9 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 

@@ -16,11 +16,10 @@ import {
   createRechargeStandard,
   updateRechargeStandard,
 } from '../../api/admin/rechargeStandardApi';
-import RNPickerSelect from 'react-native-picker-select';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import { hideLoading } from '../../store/loadingSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { MyDropdown } from '../../component/MyDropdown';
 
 const AddRechargeStandard = () => {
   const route = useRoute();
@@ -111,24 +110,17 @@ const AddRechargeStandard = () => {
         <View style={styles.twoColumnRow}>
           <View style={styles.twoColumnItem}>
             <Text style={styles.inputLabel}>狀態</Text>
-            <RNPickerSelect
-              value={status}
-              onValueChange={(value) => setStatus(value)}
-              items={[
-                { label: '啟用', value: 'AVAILABLE' },
-                { label: '停用', value: 'UNAVAILABLE' },
-              ]}
-              placeholder={{ label: '請選擇狀態', value: '' }}
-              useNativeAndroidPickerStyle={false}
-              style={{
-                inputIOS: styles.input,
-                inputAndroid: styles.input,
-                iconContainer: styles.iconContainer,
-              }}
-              Icon={() => (
-                <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
-              )}
-            />
+            <View style={styles.formGroup}>
+              <MyDropdown
+                value={status}
+                onChange={(value) => setStatus(value)}
+                items={[
+                  { label: '啟用', value: 'AVAILABLE' },
+                  { label: '停用', value: 'UNAVAILABLE' },
+                ]}
+                zIndex={3000}
+              />
+            </View>
           </View>
         </View>
 
@@ -195,6 +187,9 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 

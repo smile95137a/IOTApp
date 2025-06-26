@@ -24,8 +24,15 @@ export const MyDropdown: React.FC<MyDropdownProps> = ({
     setLocalItems(items);
   }, [items]);
 
+  const computedZIndex = open ? zIndex + 1000 : zIndex;
+
   return (
-    <View style={[styles.wrapper, { zIndex, elevation: zIndex }]}>
+    <View
+      style={[
+        styles.wrapper,
+        { zIndex: computedZIndex, elevation: computedZIndex },
+      ]}
+    >
       {label && <Text style={styles.label}>{label}</Text>}
 
       <DropDownPicker
@@ -33,15 +40,18 @@ export const MyDropdown: React.FC<MyDropdownProps> = ({
         value={value}
         items={localItems}
         setOpen={setOpen}
-        setValue={(callback) => onChange(callback(value))}
+        setValue={(callback) => {
+          onChange(callback(value));
+          setOpen(false);
+        }}
         setItems={setLocalItems}
         placeholder="請選擇..."
         style={styles.dropdown}
         textStyle={styles.text}
         dropDownContainerStyle={styles.dropdownContainer}
         listMode="SCROLLVIEW"
-        dropDownDirection="AUTO"
-        zIndex={zIndex}
+        dropDownDirection="BOTTOM"
+        zIndex={computedZIndex}
       />
     </View>
   );

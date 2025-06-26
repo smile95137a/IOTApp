@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   Switch,
 } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { splitTime, formatTime, hours, minutes } from '../../utils/timeUtils';
 import moment from 'moment';
+import { MyDropdown } from '../../component/MyDropdown';
 
 const SpecialDateList = ({
   specialDates,
@@ -96,76 +96,54 @@ const SpecialDateList = ({
                         </Text>
                         <View style={{ flexDirection: 'row', gap: 8 }}>
                           <View style={{ flex: 1 }}>
-                            <RNPickerSelect
-                              value={String(
-                                splitTime(item[timeKey] || '00:00').hour
-                              )}
-                              onValueChange={(hourStr) => {
-                                const hour = parseInt(hourStr, 10);
-                                const { minute } = splitTime(
-                                  item[timeKey] || '00:00'
-                                );
-                                updateSpecialDate(
-                                  globalIndex,
-                                  timeKey,
-                                  formatTime(hour, minute)
-                                );
-                              }}
-                              items={hours.map((h) => ({
-                                label: `${h} 時`,
-                                value: String(h),
-                              }))}
-                              useNativeAndroidPickerStyle={false}
-                              style={{
-                                inputIOS: styles.dropdownInput,
-                                inputAndroid: styles.dropdownInput,
-                                iconContainer: styles.iconContainer,
-                              }}
-                              placeholder={{ label: '時', value: '' }}
-                              Icon={() => (
-                                <MaterialIcons
-                                  name="arrow-drop-down"
-                                  size={24}
-                                  color="#888"
-                                />
-                              )}
-                            />
+                            <View style={styles.formGroup}>
+                              <MyDropdown
+                                value={String(
+                                  splitTime(item[timeKey] || '00:00').hour
+                                )}
+                                onChange={(hourStr) => {
+                                  const hour = parseInt(hourStr, 10);
+                                  const { minute } = splitTime(
+                                    item[timeKey] || '00:00'
+                                  );
+                                  updateSpecialDate(
+                                    globalIndex,
+                                    timeKey,
+                                    formatTime(hour, minute)
+                                  );
+                                }}
+                                items={hours.map((h) => ({
+                                  label: `${h} 時`,
+                                  value: String(h),
+                                }))}
+                                zIndex={5999}
+                              />
+                            </View>
                           </View>
                           <View style={{ flex: 1 }}>
-                            <RNPickerSelect
-                              value={String(
-                                splitTime(item[timeKey] || '00:00').minute
-                              )}
-                              onValueChange={(minStr) => {
-                                const minute = parseInt(minStr, 10);
-                                const { hour } = splitTime(
-                                  item[timeKey] || '00:00'
-                                );
-                                updateSpecialDate(
-                                  dateIndex,
-                                  timeKey,
-                                  formatTime(hour, minute)
-                                );
-                              }}
-                              items={minutes.map((m) => ({
-                                label: `${m} 分`,
-                                value: String(m),
-                              }))}
-                              useNativeAndroidPickerStyle={false}
-                              style={{
-                                inputIOS: styles.dropdownInput,
-                                inputAndroid: styles.dropdownInput,
-                                iconContainer: styles.iconContainer,
-                              }}
-                              placeholder={{ label: '分', value: '' }}
-                              Icon={() => (
-                                <MaterialIcons
-                                  name="arrow-drop-down"
-                                  size={24}
-                                  color="#888"
-                                />
-                              )}
-                            />
+                            <View style={styles.formGroup}>
+                              <MyDropdown
+                                value={String(
+                                  splitTime(item[timeKey] || '00:00').minute
+                                )}
+                                onChange={(minStr) => {
+                                  const minute = parseInt(minStr, 10);
+                                  const { hour } = splitTime(
+                                    item[timeKey] || '00:00'
+                                  );
+                                  updateSpecialDate(
+                                    dateIndex,
+                                    timeKey,
+                                    formatTime(hour, minute)
+                                  );
+                                }}
+                                items={minutes.map((m) => ({
+                                  label: `${m} 分`,
+                                  value: String(m),
+                                }))}
+                                zIndex={5999}
+                              />
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -197,70 +175,48 @@ const SpecialDateList = ({
                         <Text style={{ fontWeight: 'bold' }}>開始時間</Text>
                         <View style={{ flexDirection: 'row', gap: 8 }}>
                           <View style={{ flex: 1 }}>
-                            <RNPickerSelect
-                              value={String(splitTime(slot.startTime).hour)}
-                              onValueChange={(hourStr) => {
-                                const hour = parseInt(hourStr, 10);
-                                const { minute } = splitTime(slot.startTime);
-                                updateSpecialTimeSlot(
-                                  globalIndex,
-                                  slotIndex,
-                                  'startTime',
-                                  formatTime(hour, minute)
-                                );
-                              }}
-                              items={hours.map((h) => ({
-                                label: `${h} 時`,
-                                value: String(h),
-                              }))}
-                              useNativeAndroidPickerStyle={false}
-                              style={{
-                                inputIOS: styles.dropdownInput,
-                                inputAndroid: styles.dropdownInput,
-                                iconContainer: styles.iconContainer,
-                              }}
-                              placeholder={{ label: '時', value: '' }}
-                              Icon={() => (
-                                <MaterialIcons
-                                  name="arrow-drop-down"
-                                  size={24}
-                                  color="#888"
-                                />
-                              )}
-                            />
+                            <View style={styles.formGroup}>
+                              <MyDropdown
+                                value={String(splitTime(slot.startTime).hour)}
+                                onChange={(hourStr) => {
+                                  const hour = parseInt(hourStr, 10);
+                                  const { minute } = splitTime(slot.startTime);
+                                  updateSpecialTimeSlot(
+                                    globalIndex,
+                                    slotIndex,
+                                    'startTime',
+                                    formatTime(hour, minute)
+                                  );
+                                }}
+                                items={hours.map((h) => ({
+                                  label: `${h} 時`,
+                                  value: String(h),
+                                }))}
+                                zIndex={5999}
+                              />
+                            </View>
                           </View>
                           <View style={{ flex: 1 }}>
-                            <RNPickerSelect
-                              value={String(splitTime(slot.startTime).minute)}
-                              onValueChange={(minStr) => {
-                                const minute = parseInt(minStr, 10);
-                                const { hour } = splitTime(slot.startTime);
-                                updateSpecialTimeSlot(
-                                  globalIndex,
-                                  slotIndex,
-                                  'startTime',
-                                  formatTime(hour, minute)
-                                );
-                              }}
-                              items={minutes.map((m) => ({
-                                label: `${m} 分`,
-                                value: String(m),
-                              }))}
-                              useNativeAndroidPickerStyle={false}
-                              style={{
-                                inputIOS: styles.dropdownInput,
-                                inputAndroid: styles.dropdownInput,
-                                iconContainer: styles.iconContainer,
-                              }}
-                              placeholder={{ label: '分', value: '' }}
-                              Icon={() => (
-                                <MaterialIcons
-                                  name="arrow-drop-down"
-                                  size={24}
-                                  color="#888"
-                                />
-                              )}
-                            />
+                            <View style={styles.formGroup}>
+                              <MyDropdown
+                                value={String(splitTime(slot.startTime).minute)}
+                                onChange={(minStr) => {
+                                  const minute = parseInt(minStr, 10);
+                                  const { hour } = splitTime(slot.startTime);
+                                  updateSpecialTimeSlot(
+                                    globalIndex,
+                                    slotIndex,
+                                    'startTime',
+                                    formatTime(hour, minute)
+                                  );
+                                }}
+                                items={minutes.map((m) => ({
+                                  label: `${m} 分`,
+                                  value: String(m),
+                                }))}
+                                zIndex={5999}
+                              />
+                            </View>
                           </View>
                         </View>
 
@@ -269,70 +225,48 @@ const SpecialDateList = ({
                         </Text>
                         <View style={{ flexDirection: 'row', gap: 8 }}>
                           <View style={{ flex: 1 }}>
-                            <RNPickerSelect
-                              value={String(splitTime(slot.endTime).hour)}
-                              onValueChange={(hourStr) => {
-                                const hour = parseInt(hourStr, 10);
-                                const { minute } = splitTime(slot.endTime);
-                                updateSpecialTimeSlot(
-                                  globalIndex,
-                                  slotIndex,
-                                  'endTime',
-                                  formatTime(hour, minute)
-                                );
-                              }}
-                              items={hours.map((h) => ({
-                                label: `${h} 時`,
-                                value: String(h),
-                              }))}
-                              useNativeAndroidPickerStyle={false}
-                              style={{
-                                inputIOS: styles.dropdownInput,
-                                inputAndroid: styles.dropdownInput,
-                                iconContainer: styles.iconContainer,
-                              }}
-                              placeholder={{ label: '時', value: '' }}
-                              Icon={() => (
-                                <MaterialIcons
-                                  name="arrow-drop-down"
-                                  size={24}
-                                  color="#888"
-                                />
-                              )}
-                            />
+                            <View style={styles.formGroup}>
+                              <MyDropdown
+                                value={String(splitTime(slot.endTime).hour)}
+                                onChange={(hourStr) => {
+                                  const hour = parseInt(hourStr, 10);
+                                  const { minute } = splitTime(slot.endTime);
+                                  updateSpecialTimeSlot(
+                                    globalIndex,
+                                    slotIndex,
+                                    'endTime',
+                                    formatTime(hour, minute)
+                                  );
+                                }}
+                                items={hours.map((h) => ({
+                                  label: `${h} 時`,
+                                  value: String(h),
+                                }))}
+                                zIndex={5999}
+                              />
+                            </View>
                           </View>
                           <View style={{ flex: 1 }}>
-                            <RNPickerSelect
-                              value={String(splitTime(slot.endTime).minute)}
-                              onValueChange={(minStr) => {
-                                const minute = parseInt(minStr, 10);
-                                const { hour } = splitTime(slot.endTime);
-                                updateSpecialTimeSlot(
-                                  globalIndex,
-                                  slotIndex,
-                                  'endTime',
-                                  formatTime(hour, minute)
-                                );
-                              }}
-                              items={minutes.map((m) => ({
-                                label: `${m} 分`,
-                                value: String(m),
-                              }))}
-                              useNativeAndroidPickerStyle={false}
-                              style={{
-                                inputIOS: styles.dropdownInput,
-                                inputAndroid: styles.dropdownInput,
-                                iconContainer: styles.iconContainer,
-                              }}
-                              placeholder={{ label: '分', value: '' }}
-                              Icon={() => (
-                                <MaterialIcons
-                                  name="arrow-drop-down"
-                                  size={24}
-                                  color="#888"
-                                />
-                              )}
-                            />
+                            <View style={styles.formGroup}>
+                              <MyDropdown
+                                value={String(splitTime(slot.endTime).minute)}
+                                onChange={(minStr) => {
+                                  const minute = parseInt(minStr, 10);
+                                  const { hour } = splitTime(slot.endTime);
+                                  updateSpecialTimeSlot(
+                                    globalIndex,
+                                    slotIndex,
+                                    'endTime',
+                                    formatTime(hour, minute)
+                                  );
+                                }}
+                                items={minutes.map((m) => ({
+                                  label: `${m} 分`,
+                                  value: String(m),
+                                }))}
+                                zIndex={5999}
+                              />
+                            </View>
                           </View>
                         </View>
 
@@ -501,6 +435,9 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 8,
     marginHorizontal: '1%',
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 

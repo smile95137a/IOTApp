@@ -15,7 +15,6 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import { fetchReportData } from '../../api/admin/reportApi';
@@ -32,6 +31,7 @@ import { getErrorMessage } from '../../utils/errorUtils';
 import { logJson } from '../../utils/logJsonUtils';
 import moment from 'moment';
 import { Calendar } from 'react-native-calendars';
+import { MyDropdown } from '../../component/MyDropdown';
 
 const ReportDetailScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -297,55 +297,33 @@ const ReportDetailScreen = () => {
                   <View style={styles.row}>
                     <View style={styles.flexOne}>
                       <Text style={styles.label}>加盟商</Text>
-                      <RNPickerSelect
-                        value={vendorId}
-                        onValueChange={(value) => setVendorId(value)}
-                        items={vendors.map((vendor) => ({
-                          key: vendor.id,
-                          label: vendor.name,
-                          value: String(vendor.id),
-                        }))}
-                        style={{
-                          inputIOS: styles.dropdownInput,
-                          inputAndroid: styles.dropdownInput,
-                          iconContainer: styles.iconContainer,
-                        }}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                        useNativeAndroidPickerStyle={false}
-                        placeholder={{ label: '請選擇', value: '' }}
-                      />
+                      <View style={styles.formGroup}>
+                        <MyDropdown
+                          value={vendorId}
+                          onChange={(value) => setVendorId(value)}
+                          items={vendors.map((vendor) => ({
+                            key: vendor.id,
+                            label: vendor.name,
+                            value: String(vendor.id),
+                          }))}
+                          zIndex={3000}
+                        />
+                      </View>
                     </View>
                     <View style={styles.flexOne}>
                       <Text style={styles.label}>店家</Text>
-                      <RNPickerSelect
-                        value={storeId}
-                        onValueChange={(value) => setStoreId(value)}
-                        items={stores.map((store) => ({
-                          key: store.id,
-                          label: store.name,
-                          value: String(store.id),
-                        }))}
-                        style={{
-                          inputIOS: styles.dropdownInput,
-                          inputAndroid: styles.dropdownInput,
-                          iconContainer: styles.iconContainer,
-                        }}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                        useNativeAndroidPickerStyle={false}
-                        placeholder={{ label: '請選擇', value: '' }}
-                      />
+                      <View style={styles.formGroup}>
+                        <MyDropdown
+                          value={storeId}
+                          onChange={(value) => setStoreId(value)}
+                          items={stores.map((store) => ({
+                            key: store.id,
+                            label: store.name,
+                            value: String(store.id),
+                          }))}
+                          zIndex={2000}
+                        />
+                      </View>
                     </View>
                   </View>
 
@@ -377,30 +355,19 @@ const ReportDetailScreen = () => {
                     </View>
                     <View style={styles.flexOne}>
                       <Text style={styles.label}>期間類型</Text>
-                      <RNPickerSelect
-                        value={periodType}
-                        onValueChange={(value) => setPeriodType(value)}
-                        items={[
-                          { label: '日報', value: 'DAY' },
-                          { label: '週報', value: 'WEEK' },
-                          { label: '月報', value: 'MONTH' },
-                          { label: '年報', value: 'YEARS' },
-                        ]}
-                        style={{
-                          inputIOS: styles.dropdownInput,
-                          inputAndroid: styles.dropdownInput,
-                          iconContainer: styles.iconContainer,
-                        }}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                        useNativeAndroidPickerStyle={false}
-                        placeholder={{ label: '請選擇', value: '' }}
-                      />
+                      <View style={styles.formGroup}>
+                        <MyDropdown
+                          value={periodType}
+                          onChange={(value) => setPeriodType(value)}
+                          items={[
+                            { label: '日報', value: 'DAY' },
+                            { label: '週報', value: 'WEEK' },
+                            { label: '月報', value: 'MONTH' },
+                            { label: '年報', value: 'YEARS' },
+                          ]}
+                          zIndex={1000}
+                        />
+                      </View>
                     </View>
                   </View>
 
@@ -459,64 +426,45 @@ const ReportDetailScreen = () => {
                   ) : periodType === 'MONTH' ? (
                     <View>
                       <Text style={styles.label}>選擇月份</Text>
-
-                      <RNPickerSelect
-                        value={moment(startDate).format('YYYY-MM')}
-                        onValueChange={(value) => {
-                          const [year, month] = value.split('-');
-                          const date = new Date(
-                            Number(year),
-                            Number(month) - 1,
-                            1
-                          );
-                          setStartDate(date);
-                          setEndDate(
-                            new Date(date.getFullYear(), date.getMonth() + 1, 0)
-                          ); // 當月最後一天
-                        }}
-                        items={monthOptions}
-                        style={{
-                          inputIOS: styles.dropdownInput,
-                          inputAndroid: styles.dropdownInput,
-                          iconContainer: styles.iconContainer,
-                        }}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                        placeholder={{ label: '請選擇月份', value: '' }}
-                        useNativeAndroidPickerStyle={false}
-                      />
+                      <View style={styles.formGroup}>
+                        <MyDropdown
+                          value={moment(startDate).format('YYYY-MM')}
+                          onChange={(value) => {
+                            const [year, month] = value.split('-');
+                            const date = new Date(
+                              Number(year),
+                              Number(month) - 1,
+                              1
+                            );
+                            setStartDate(date);
+                            setEndDate(
+                              new Date(
+                                date.getFullYear(),
+                                date.getMonth() + 1,
+                                0
+                              )
+                            ); // 當月最後一天
+                          }}
+                          items={monthOptions}
+                          zIndex={3000}
+                        />
+                      </View>
                     </View>
                   ) : (
                     <View>
                       <Text style={styles.label}>選擇年份</Text>
-                      <RNPickerSelect
-                        value={moment(startDate).format('YYYY')}
-                        onValueChange={(value) => {
-                          const date = new Date(Number(value), 0, 1);
-                          setStartDate(date);
-                          setEndDate(new Date(Number(value), 11, 31));
-                        }}
-                        items={yearOptions}
-                        style={{
-                          inputIOS: styles.dropdownInput,
-                          inputAndroid: styles.dropdownInput,
-                          iconContainer: styles.iconContainer,
-                        }}
-                        Icon={() => (
-                          <MaterialIcons
-                            name="arrow-drop-down"
-                            size={24}
-                            color="#888"
-                          />
-                        )}
-                        placeholder={{ label: '請選擇年份', value: '' }}
-                        useNativeAndroidPickerStyle={false}
-                      />
+                      <View style={styles.formGroup}>
+                        <MyDropdown
+                          value={moment(startDate).format('YYYY')}
+                          onChange={(value) => {
+                            const date = new Date(Number(value), 0, 1);
+                            setStartDate(date);
+                            setEndDate(new Date(Number(value), 11, 31));
+                          }}
+                          items={yearOptions}
+                          zIndex={3000}
+                        />
+                      </View>
                     </View>
                   )}
 
@@ -747,6 +695,9 @@ const styles = StyleSheet.create({
     padding: 16,
     width: '90%',
     elevation: 5,
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 

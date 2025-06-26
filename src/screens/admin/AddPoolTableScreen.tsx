@@ -20,8 +20,6 @@ import { useDispatch } from 'react-redux';
 import QRCode from 'react-native-qrcode-svg';
 import * as MediaLibrary from 'expo-media-library';
 import ViewShot from 'react-native-view-shot';
-import RNPickerSelect from 'react-native-picker-select';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { updatePoolTable, createPoolTable } from '../../api/admin/poolTableApi';
 import HeaderBar from '../../component/admin/HeaderBar';
 import { useDialog } from '../../context/DialogContext';
@@ -253,39 +251,18 @@ const AddPoolTableScreen = () => {
                   value={tableNumber}
                   onChangeText={setTableNumber}
                 />
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    gap: 8,
-                    marginBottom: 12,
-                  }}
-                >
-                  <View style={{ flex: 1 }}>
-                    <RNPickerSelect
-                      value={status}
-                      onValueChange={handleStatusChange}
-                      items={[
-                        { label: '啟用', value: 'AVAILABLE' },
-                        { label: '停用', value: 'UNAVAILABLE' },
-                        { label: '故障', value: 'FAULT' },
-                      ]}
-                      placeholder={{ label: '請選擇狀態', value: '' }}
-                      useNativeAndroidPickerStyle={false}
-                      style={{
-                        inputIOS: styles.dropdownInput,
-                        inputAndroid: styles.dropdownInput,
-                        iconContainer: styles.iconContainer,
-                      }}
-                      Icon={() => (
-                        <MaterialIcons
-                          name="arrow-drop-down"
-                          size={24}
-                          color="#888"
-                        />
-                      )}
-                    />
-                  </View>
+
+                <View style={styles.formGroup}>
+                  <MyDropdown
+                    value={status}
+                    onChange={handleStatusChange}
+                    items={[
+                      { label: '啟用', value: 'AVAILABLE' },
+                      { label: '停用', value: 'UNAVAILABLE' },
+                      { label: '故障', value: 'FAULT' },
+                    ]}
+                    zIndex={3000}
+                  />
                 </View>
 
                 <TouchableOpacity
@@ -441,6 +418,9 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 

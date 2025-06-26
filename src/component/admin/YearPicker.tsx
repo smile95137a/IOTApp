@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { MyDropdown } from '../MyDropdown';
 
 interface Props {
   label: string;
@@ -26,24 +25,17 @@ const YearPicker = ({ label, date, setDate, style }: Props) => {
   return (
     <View style={[styles.wrapper, style]}>
       <Text style={styles.label}>{label}</Text>
-      <RNPickerSelect
-        value={selectedYear}
-        onValueChange={handleChange}
-        items={years.map((year) => ({
-          label: `${year}`,
-          value: String(year), // 💡 字串 value
-        }))}
-        style={{
-          inputIOS: styles.input,
-          inputAndroid: styles.input,
-          iconContainer: styles.iconContainer,
-        }}
-        Icon={() => (
-          <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
-        )}
-        useNativeAndroidPickerStyle={false}
-        placeholder={{ label: '選擇年份', value: '' }}
-      />
+      <View style={styles.formGroup}>
+        <MyDropdown
+          value={selectedYear}
+          onChange={handleChange}
+          items={years.map((year) => ({
+            label: `${year}`,
+            value: String(year),
+          }))}
+          zIndex={3000}
+        />
+      </View>
     </View>
   );
 };
@@ -65,6 +57,9 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 

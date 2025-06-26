@@ -22,8 +22,8 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
-import RNPickerSelect from 'react-native-picker-select';
 import { Platform, KeyboardAvoidingView } from 'react-native';
+import { MyDropdown } from '../../component/MyDropdown';
 
 const AddVendorScreen = () => {
   const navigation = useNavigation();
@@ -183,31 +183,20 @@ const AddVendorScreen = () => {
 
               <Text style={styles.label}>指派使用者</Text>
 
-              <RNPickerSelect
-                value={userId}
-                onValueChange={(value) => {
-                  if (value) setUserId(value);
-                }}
-                items={users.map((user) => ({
-                  label: user.name,
-                  value: String(user.id),
-                  key: user.id,
-                }))}
-                placeholder={{ label: '請選擇使用者', value: '' }}
-                useNativeAndroidPickerStyle={false}
-                style={{
-                  inputIOS: styles.dropdownInput,
-                  inputAndroid: styles.dropdownInput,
-                  iconContainer: styles.iconContainer,
-                }}
-                Icon={() => (
-                  <MaterialIcons
-                    name="arrow-drop-down"
-                    size={24}
-                    color="#888"
-                  />
-                )}
-              />
+              <View style={styles.formGroup}>
+                <MyDropdown
+                  value={userId}
+                  onChange={(value) => {
+                    if (value) setUserId(value);
+                  }}
+                  items={users.map((user) => ({
+                    label: user.name,
+                    value: String(user.id),
+                    key: user.id,
+                  }))}
+                  zIndex={3000}
+                />
+              </View>
 
               <Text style={styles.label}>名稱</Text>
               <TextInput
@@ -354,6 +343,9 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 

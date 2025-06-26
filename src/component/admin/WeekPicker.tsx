@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { MyDropdown } from '../MyDropdown';
 
 interface Props {
   label: string;
@@ -63,21 +62,14 @@ const WeekPicker = ({ label, date, setDate, style }: Props) => {
   return (
     <View style={[styles.wrapper, style]}>
       <Text style={styles.label}>{label}</Text>
-      <RNPickerSelect
-        value={selectedValue}
-        onValueChange={handleChange}
-        items={weekOptions}
-        style={{
-          inputIOS: styles.input,
-          inputAndroid: styles.input,
-          iconContainer: styles.iconContainer,
-        }}
-        Icon={() => (
-          <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
-        )}
-        useNativeAndroidPickerStyle={false}
-        placeholder={{ label: '選擇週次', value: '' }}
-      />
+      <View style={styles.formGroup}>
+        <MyDropdown
+          value={selectedValue}
+          onChange={handleChange}
+          items={weekOptions}
+          zIndex={3000}
+        />
+      </View>
     </View>
   );
 };
@@ -99,6 +91,9 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 

@@ -13,7 +13,6 @@ import {
   ScrollView,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +24,7 @@ import { showLoading, hideLoading } from '../store/loadingSlice';
 import { RootState } from '../store/store';
 import { getErrorMessage } from '../utils/errorUtils';
 import Header from '../component/Header';
+import { MyDropdown } from '../component/MyDropdown';
 
 const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   const genderOptions = [
@@ -33,7 +33,6 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
   ];
 
   const dispatch = useDispatch();
-  const pickerRef = useRef<RNPickerSelect>(null);
   const { phone, countryCode, verificationCode } = useSelector(
     (state: RootState) => state.register
   );
@@ -301,25 +300,14 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
                 <Text style={styles.inputLabel}>性別 *</Text>
                 <View style={styles.pickerWrapper}>
                   <>
-                    <RNPickerSelect
-                      value={gender}
-                      onValueChange={(value) => setGender(value)}
-                      items={genderOptions}
-                      style={{
-                        inputIOS: styles.dropdownInput,
-                        inputAndroid: styles.dropdownInput,
-                        iconContainer: styles.iconContainer,
-                      }}
-                      Icon={() => (
-                        <MaterialIcons
-                          name="arrow-drop-down"
-                          size={24}
-                          color="#888"
-                        />
-                      )}
-                      useNativeAndroidPickerStyle={false}
-                      placeholder={{ label: '請選擇', value: '' }}
-                    />
+                    <View style={styles.formGroup}>
+                      <MyDropdown
+                        value={gender}
+                        onChange={(value) => setGender(value)}
+                        items={genderOptions}
+                        zIndex={3000}
+                      />
+                    </View>
                   </>
                 </View>
               </View>
@@ -530,6 +518,9 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 

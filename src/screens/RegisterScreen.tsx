@@ -11,12 +11,12 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
 import { setRegisterData } from '../store/registerSlice';
 import Header from '../component/Header';
+import { MyDropdown } from '../component/MyDropdown';
 
 const RegisterScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch();
@@ -101,27 +101,16 @@ const RegisterScreen = ({ route, navigation }: any) => {
                 <Text style={styles.inputLabel}>手機</Text>
                 <View style={styles.inputWrapper}>
                   <>
-                    <RNPickerSelect
-                      value={countryCode}
-                      onValueChange={(value) => {
-                        if (value) setCountryCode(value);
-                      }}
-                      items={countryCodes}
-                      placeholder={{ label: '請選擇', value: '' }}
-                      useNativeAndroidPickerStyle={false}
-                      style={{
-                        inputIOS: styles.dropdownInput,
-                        inputAndroid: styles.dropdownInput,
-                        iconContainer: styles.iconContainer,
-                      }}
-                      Icon={() => (
-                        <MaterialIcons
-                          name="arrow-drop-down"
-                          size={24}
-                          color="#888"
-                        />
-                      )}
-                    />
+                    <View style={styles.formGroup}>
+                      <MyDropdown
+                        value={countryCode}
+                        onChange={(value) => {
+                          if (value) setCountryCode(value);
+                        }}
+                        items={countryCodes}
+                        zIndex={3000}
+                      />
+                    </View>
 
                     <TextInput
                       style={styles.input}
@@ -373,6 +362,9 @@ const styles = StyleSheet.create({
   },
   disabledText: {
     color: '#aaa', // 文字變灰
+  },
+  formGroup: {
+    marginBottom: 32,
   },
 });
 
