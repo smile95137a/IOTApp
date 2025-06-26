@@ -312,6 +312,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
     backgroundColor: '#fff',
+    height: 50,
   },
   picker: {
     borderWidth: 1,

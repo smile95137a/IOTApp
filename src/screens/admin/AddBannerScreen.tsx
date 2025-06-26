@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   formGroup: {
-    marginBottom: 32,
+    marginBottom: 8,
   },
 });
 

@@ -349,6 +349,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
     backgroundColor: '#FFF',
+    height: 50,
   },
   toggleButton: {
     padding: 15,
