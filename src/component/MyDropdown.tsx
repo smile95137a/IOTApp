@@ -60,6 +60,7 @@ export const MyDropdown: React.FC<MyDropdownProps> = ({
 const styles = StyleSheet.create({
   wrapper: {
     position: 'relative',
+    height: 50,
   },
   label: {
     marginBottom: 4,
@@ -69,7 +70,6 @@ const styles = StyleSheet.create({
   dropdown: {
     borderColor: '#ccc',
     borderRadius: 6,
-    height: 32,
     backgroundColor: '#fff',
     width: '100%',
     paddingHorizontal: 8,

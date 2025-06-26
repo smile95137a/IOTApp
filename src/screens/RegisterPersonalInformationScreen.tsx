@@ -298,18 +298,14 @@ const RegisterPersonalInformationScreen = ({ route, navigation }: any) => {
               {/* 性別選擇 */}
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>性別 *</Text>
-                <View style={styles.pickerWrapper}>
-                  <>
-                    <View style={styles.formGroup}>
-                      <MyDropdown
-                        value={gender}
-                        onChange={(value) => setGender(value)}
-                        items={genderOptions}
-                        zIndex={3000}
-                      />
-                    </View>
-                  </>
-                </View>
+                <>
+                  <MyDropdown
+                    value={gender}
+                    onChange={(value) => setGender(value)}
+                    items={genderOptions}
+                    zIndex={3000}
+                  />
+                </>
               </View>
 
               {/* 上傳頭像照片 */}
@@ -518,9 +514,6 @@ const styles = StyleSheet.create({
     right: 10,
     marginTop: -12,
     position: 'absolute',
-  },
-  formGroup: {
-    marginBottom: 32,
   },
 });
 

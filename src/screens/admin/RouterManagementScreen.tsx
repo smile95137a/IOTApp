@@ -171,62 +171,64 @@ const RouterManagementScreen = () => {
             />
           </View>
           <HeaderBar showLeftButton title="Router 管理" />
-          <ScrollView style={styles.mainContainer}>
-            {routers.map((router, index) => (
-              <View key={index} style={styles.item}>
-                <View style={styles.row}>
-                  <View style={styles.nameRow}>
-                    <Text style={styles.label}>{router.circuitName}</Text>
-                    <TouchableOpacity onPress={() => handleEdit(router)}>
-                      <Icon
-                        name="edit"
-                        size={16}
-                        color="#4285F4"
-                        style={styles.editIcon}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleDelete(router)}>
-                      <Icon
-                        name="delete"
-                        size={16}
-                        color="#f00"
-                        style={styles.editIcon}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <Switch
-                    value={router.isControllable}
-                    onValueChange={async (val) => {
-                      const updated = [...routers];
-                      updated[index].isControllable = val;
-                      setRouters(updated); // Optimistic update
+          <View style={styles.mainContainer}>
+            <ScrollView style={styles.equipmentList}>
+              {routers.map((router, index) => (
+                <View key={index} style={styles.item}>
+                  <View style={styles.row}>
+                    <View style={styles.nameRow}>
+                      <Text style={styles.label}>{router.circuitName}</Text>
+                      <TouchableOpacity onPress={() => handleEdit(router)}>
+                        <Icon
+                          name="edit"
+                          size={16}
+                          color="#4285F4"
+                          style={styles.editIcon}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => handleDelete(router)}>
+                        <Icon
+                          name="delete"
+                          size={16}
+                          color="#f00"
+                          style={styles.editIcon}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <Switch
+                      value={router.isControllable}
+                      onValueChange={async (val) => {
+                        const updated = [...routers];
+                        updated[index].isControllable = val;
+                        setRouters(updated); // Optimistic update
 
-                      try {
-                        dispatch(showLoading());
-                        await controlRouter({
-                          routerId: router.id,
-                          isControllable: val,
-                        });
-                        dispatch(hideLoading());
-                      } catch (e) {
-                        dispatch(hideLoading());
-                        // 還原狀態
-                        updated[index].isControllable = !val;
-                        setRouters(updated);
-                        openInfoDialog({
-                          title: '錯誤',
-                          content: getErrorMessage(e),
-                        });
-                      }
-                    }}
-                  />
+                        try {
+                          dispatch(showLoading());
+                          await controlRouter({
+                            routerId: router.id,
+                            isControllable: val,
+                          });
+                          dispatch(hideLoading());
+                        } catch (e) {
+                          dispatch(hideLoading());
+                          // 還原狀態
+                          updated[index].isControllable = !val;
+                          setRouters(updated);
+                          openInfoDialog({
+                            title: '錯誤',
+                            content: getErrorMessage(e),
+                          });
+                        }
+                      }}
+                    />
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))}
+            </ScrollView>
             <TouchableOpacity style={styles.addButton} onPress={showModal}>
               <Text style={styles.addButtonText}>新增 Router</Text>
             </TouchableOpacity>
-          </ScrollView>
+          </View>
 
           {modalVisible && (
             <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
@@ -309,7 +311,17 @@ const RouterManagementScreen = () => {
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   container: { flex: 1, backgroundColor: '#E3F2FD' },
-  mainContainer: { flex: 1, padding: 20 },
+  mainContainer: {
+    flex: 1,
+    padding: 20,
+    paddingBottom: 80,
+    zIndex: 3,
+  },
+  equipmentList: {
+    flex: 1,
+    marginBottom: 20,
+  },
+
   item: {
     borderRadius: 10,
     padding: 16,

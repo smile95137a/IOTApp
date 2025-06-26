@@ -1583,9 +1583,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
   },
-  formGroup: {
-    marginBottom: 32,
-  },
+  formGroup: {},
 });
 
 export default AddStoreScreen;

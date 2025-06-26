@@ -99,27 +99,24 @@ const RegisterScreen = ({ route, navigation }: any) => {
               {/* Phone Field */}
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>手機</Text>
-                <View style={styles.inputWrapper}>
-                  <>
-                    <View style={styles.formGroup}>
-                      <MyDropdown
-                        value={countryCode}
-                        onChange={(value) => {
-                          if (value) setCountryCode(value);
-                        }}
-                        items={countryCodes}
-                        zIndex={3000}
-                      />
-                    </View>
-
-                    <TextInput
-                      style={styles.input}
-                      placeholder="請輸入手機號碼"
-                      keyboardType="phone-pad"
-                      value={phone}
-                      onChangeText={setPhone}
+                <View style={styles.phoneInputWrapper}>
+                  <View style={styles.countryCodeWrapper}>
+                    <MyDropdown
+                      value={countryCode}
+                      onChange={(value) => {
+                        if (value) setCountryCode(value);
+                      }}
+                      items={countryCodes}
+                      zIndex={3000}
                     />
-                  </>
+                  </View>
+                  <TextInput
+                    style={styles.phoneInput}
+                    placeholder="請輸入手機號碼"
+                    keyboardType="phone-pad"
+                    value={phone}
+                    onChangeText={setPhone}
+                  />
                 </View>
               </View>
 
@@ -280,7 +277,7 @@ const styles = StyleSheet.create({
 
   input: {
     flex: 1,
-    height: 40,
+    height: 50,
     fontSize: 14,
     paddingHorizontal: 10,
   },
@@ -366,6 +363,22 @@ const styles = StyleSheet.create({
   formGroup: {
     marginBottom: 32,
   },
+  phoneInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    backgroundColor: '#F7F7F7',
+    paddingHorizontal: 10,
+  },
+  countryCodeWrapper: {
+    flex: 3,
+    height: 50,
+    justifyContent: 'center',
+    paddingRight: 6,
+  },
+  phoneInput: { flex: 7, height: 50, fontSize: 14, paddingHorizontal: 10 },
 });
 
 export default RegisterScreen;

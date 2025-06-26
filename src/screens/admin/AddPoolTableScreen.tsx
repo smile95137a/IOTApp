@@ -28,6 +28,7 @@ import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { fetchAllStores } from '../../api/admin/storeApi';
 import { encryptObject } from '../../utils/cryptoUtils';
+import { MyDropdown } from '../../component/MyDropdown';
 type PoolTableParams = {
   poolTable?: {
     uid: string;
@@ -347,6 +348,7 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     marginBottom: 10,
+    backgroundColor: '#FFF',
   },
   toggleButton: {
     padding: 15,

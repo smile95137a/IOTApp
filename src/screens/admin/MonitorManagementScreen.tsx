@@ -249,41 +249,43 @@ const MonitorManagementScreen = ({ navigation }) => {
         <View style={styles.header}>
           <HeaderBar showLeftButton title="後檯設備管理-攝影機管理" />
         </View>
-        <ScrollView style={styles.mainContainer}>
-          {monitors.map((monitor, index) => (
-            <View key={index} style={styles.item}>
-              {/* 名稱與開關 */}
-              <View style={styles.row}>
-                <View style={styles.nameRow}>
-                  <Text style={styles.label}>{monitor.name}</Text>
-                  <TouchableOpacity onPress={() => handleEditMonitor(index)}>
-                    <Icon
-                      name="edit"
-                      size={16}
-                      color="#4285F4"
-                      style={styles.editIcon}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDelMonitor(index)}>
-                    <Icon
-                      name="delete"
-                      size={16}
-                      color="#4285F4"
-                      style={styles.editIcon}
-                    />
-                  </TouchableOpacity>
+        <View style={styles.mainContainer}>
+          <ScrollView style={styles.equipmentList}>
+            {monitors.map((monitor, index) => (
+              <View key={index} style={styles.item}>
+                {/* 名稱與開關 */}
+                <View style={styles.row}>
+                  <View style={styles.nameRow}>
+                    <Text style={styles.label}>{monitor.name}</Text>
+                    <TouchableOpacity onPress={() => handleEditMonitor(index)}>
+                      <Icon
+                        name="edit"
+                        size={16}
+                        color="#4285F4"
+                        style={styles.editIcon}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDelMonitor(index)}>
+                      <Icon
+                        name="delete"
+                        size={16}
+                        color="#4285F4"
+                        style={styles.editIcon}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <Switch
+                    value={monitor.status}
+                    onValueChange={() => toggleSwitch(index)}
+                  />
                 </View>
-                <Switch
-                  value={monitor.status}
-                  onValueChange={() => toggleSwitch(index)}
-                />
               </View>
-            </View>
-          ))}
+            ))}
+          </ScrollView>
           <TouchableOpacity style={styles.addButton} onPress={showModal}>
             <Text style={styles.addButtonText}>新增設備</Text>
           </TouchableOpacity>
-        </ScrollView>
+        </View>
         {/* 手寫 Modal */}
         {modalVisible && (
           <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
@@ -356,7 +358,12 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     padding: 20,
+    paddingBottom: 80,
     zIndex: 3,
+  },
+  equipmentList: {
+    flex: 1,
+    marginBottom: 20,
   },
 
   item: {

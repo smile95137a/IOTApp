@@ -311,6 +311,7 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     marginBottom: 10,
+    backgroundColor: '#fff',
   },
   picker: {
     borderWidth: 1,
@@ -344,9 +345,7 @@ const styles = StyleSheet.create({
     marginTop: -12,
     position: 'absolute',
   },
-  formGroup: {
-    marginBottom: 32,
-  },
+  formGroup: {},
 });
 
 export default AddVendorScreen;

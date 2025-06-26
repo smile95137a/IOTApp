@@ -229,12 +229,12 @@ const styles = StyleSheet.create({
   },
   countryCodeWrapper: {
     flex: 3,
-    alignItems: 'center',
+    height: 50,
     justifyContent: 'center',
     paddingRight: 6,
   },
-  phoneInput: { flex: 7, height: 40, fontSize: 14, paddingHorizontal: 10 },
-  input: { flex: 1, height: 40, fontSize: 14, paddingHorizontal: 10 },
+  phoneInput: { flex: 7, height: 50, fontSize: 14, paddingHorizontal: 10 },
+  input: { flex: 1, height: 50, fontSize: 14, paddingHorizontal: 10 },
   forgotPasswordText: { textAlign: 'center', color: '#007BFF' },
   bottomContainer: {
     position: 'absolute',

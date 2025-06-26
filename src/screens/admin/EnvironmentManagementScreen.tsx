@@ -284,63 +284,67 @@ const EnvironmentManagementScreen = ({ navigation }) => {
         <View style={styles.header}>
           <HeaderBar showLeftButton title="環境管理" />
         </View>
-        <ScrollView style={styles.mainContainer}>
-          {equipments.map((light, index) => (
-            <View key={index} style={styles.item}>
-              {/* 名稱與開關 */}
-              <View style={styles.row}>
-                <View style={styles.nameRow}>
-                  <Text style={styles.label}>{light.name}</Text>
-                  <TouchableOpacity onPress={() => handleEditEquipment(index)}>
-                    <Icon
-                      name="edit"
-                      size={16}
-                      color="#4285F4"
-                      style={styles.editIcon}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDelEquipment(index)}>
-                    <Icon
-                      name="delete"
-                      size={16}
-                      color="#4285F4"
-                      style={styles.editIcon}
-                    />
-                  </TouchableOpacity>
+        <View style={styles.mainContainer}>
+          <ScrollView style={styles.equipmentList}>
+            {equipments.map((light, index) => (
+              <View key={index} style={styles.item}>
+                {/* 名稱與開關 */}
+                <View style={styles.row}>
+                  <View style={styles.nameRow}>
+                    <Text style={styles.label}>{light.name}</Text>
+                    <TouchableOpacity
+                      onPress={() => handleEditEquipment(index)}
+                    >
+                      <Icon
+                        name="edit"
+                        size={16}
+                        color="#4285F4"
+                        style={styles.editIcon}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDelEquipment(index)}>
+                      <Icon
+                        name="delete"
+                        size={16}
+                        color="#4285F4"
+                        style={styles.editIcon}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <Switch
+                    value={light.enabled}
+                    onValueChange={() => toggleSwitch(index)}
+                  />
                 </View>
-                <Switch
-                  value={light.enabled}
-                  onValueChange={() => toggleSwitch(index)}
-                />
+                {/* 時間設置 */}
+                <View style={styles.timeRow}>
+                  <Text style={styles.timeLabel}>自動啟閉：</Text>
+                  <TouchableOpacity
+                    style={styles.timeEdit}
+                    onPress={() => handleEditEquipment(index)}
+                  >
+                    <Text style={styles.timeText}>{light.autoStartTime}</Text>
+                    <Icon name="edit" size={14} color="#4285F4" />
+                  </TouchableOpacity>
+                  <Text style={styles.timeLabel}>開啟</Text>
+                  <TouchableOpacity
+                    style={styles.timeEdit}
+                    onPress={() => handleEditEquipment(index)}
+                  >
+                    <Text style={styles.timeText}>{light.autoStopTime}</Text>
+                    <Icon name="edit" size={14} color="#4285F4" />
+                  </TouchableOpacity>
+                  <Text style={styles.timeLabel}>
+                    {light.enabled ? '開啟' : '關閉'}
+                  </Text>
+                </View>
               </View>
-              {/* 時間設置 */}
-              <View style={styles.timeRow}>
-                <Text style={styles.timeLabel}>自動啟閉：</Text>
-                <TouchableOpacity
-                  style={styles.timeEdit}
-                  onPress={() => handleEditEquipment(index)}
-                >
-                  <Text style={styles.timeText}>{light.autoStartTime}</Text>
-                  <Icon name="edit" size={14} color="#4285F4" />
-                </TouchableOpacity>
-                <Text style={styles.timeLabel}>開啟</Text>
-                <TouchableOpacity
-                  style={styles.timeEdit}
-                  onPress={() => handleEditEquipment(index)}
-                >
-                  <Text style={styles.timeText}>{light.autoStopTime}</Text>
-                  <Icon name="edit" size={14} color="#4285F4" />
-                </TouchableOpacity>
-                <Text style={styles.timeLabel}>
-                  {light.enabled ? '開啟' : '關閉'}
-                </Text>
-              </View>
-            </View>
-          ))}
+            ))}
+          </ScrollView>
           <TouchableOpacity style={styles.addButton} onPress={showModal}>
             <Text style={styles.addButtonText}>新增設備</Text>
           </TouchableOpacity>
-        </ScrollView>
+        </View>
         {modalVisible && (
           <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
             <View style={styles.modalContent}>
@@ -460,7 +464,12 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     padding: 20,
+    paddingBottom: 80,
     zIndex: 3,
+  },
+  equipmentList: {
+    flex: 1,
+    marginBottom: 20,
   },
 
   item: {

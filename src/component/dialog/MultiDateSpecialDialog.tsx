@@ -460,7 +460,5 @@ const styles = StyleSheet.create({
     marginTop: -12,
     position: 'absolute',
   },
-  formGroup: {
-    marginBottom: 32,
-  },
+  formGroup: {},
 });
