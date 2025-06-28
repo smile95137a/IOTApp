@@ -40,6 +40,8 @@ const MonitorManagementScreen = ({ navigation }) => {
   const [monitorName, setMonitorName] = useState('');
   const [monitorStatus, setMonitorStatus] = useState(false);
   const [monitorNumber, setMonitorNumber] = useState('');
+  const [monitorPort, setMonitorPort] = useState('');
+
   const [editingMonitorIndex, setEditingMonitorIndex] = useState(null);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -68,6 +70,7 @@ const MonitorManagementScreen = ({ navigation }) => {
     setMonitorName(monitor.name);
     setMonitorStatus(monitor.status);
     setMonitorNumber(monitor.number ? String(monitor.number) : '');
+    setMonitorPort(monitor.monitorPort ? String(monitor.monitorPort) : '');
 
     setEditingMonitorIndex(index);
     showModal();
@@ -91,12 +94,14 @@ const MonitorManagementScreen = ({ navigation }) => {
           name: monitorName,
           storeId: storeId,
           number: ~~monitorNumber,
+          monitorPort: ~~monitorPort,
         });
       } else {
         response = await updateMonitor({
           name: monitorName,
           uid: monitorId,
           number: ~~monitorNumber,
+          monitorPort: ~~monitorPort,
           status: monitorStatus,
           storeId: storeId,
         });
@@ -305,6 +310,14 @@ const MonitorManagementScreen = ({ navigation }) => {
                 placeholder="輸入頻道號碼"
                 value={monitorNumber}
                 onChangeText={setMonitorNumber}
+                keyboardType="numeric"
+              />
+              <Text style={styles.modalLabel}>Port 編號</Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="輸入 Port 編號"
+                value={monitorPort}
+                onChangeText={setMonitorPort}
                 keyboardType="numeric"
               />
 
