@@ -103,7 +103,7 @@ const MonitorViewScreen = () => {
                     style={styles.cardWrapper}
                     onPress={() =>
                       (navigation as any).navigate('MonitorViewDetail', {
-                        storeId: item.id,
+                        store: item,
                       })
                     }
                   >

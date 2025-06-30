@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   SafeAreaView,
   Image,
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
@@ -49,8 +49,8 @@ const AdminStoreDetailScreen = () => {
   const [monitorExpandedMap, setMonitorExpandedMap] = useState<{
     [id: number]: boolean;
   }>({});
-
-  const { snapshots, error: cameraError } = useCameraSnapshots(store.storeIP);
+  const [storeIP, setStoreIP] = useState<string>('');
+  const { snapshots, error: cameraError } = useCameraSnapshots(storeIP);
 
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<number | null>(
     null
@@ -155,16 +155,18 @@ const AdminStoreDetailScreen = () => {
       openInfoDialog({ title: '錯誤', content: '監控裝置載入失敗' });
     }
   };
-
-  useEffect(() => {
-    if (store) {
-      loadStoreDetail();
-      loadEquipments();
-      loadMonitors();
-      loadPoolTables();
-      loadStoreReport();
-    }
-  }, [store]);
+  useFocusEffect(
+    useCallback(() => {
+      if (store) {
+        setStoreIP(store.storeIP);
+        loadStoreDetail();
+        loadEquipments();
+        loadMonitors();
+        loadPoolTables();
+        loadStoreReport();
+      }
+    }, [store])
+  );
 
   const toggleEquipmentSwitch = async (index: number) => {
     const current = equipments[index];

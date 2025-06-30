@@ -19,18 +19,28 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { useCameraSnapshots } from '../../hooks/useCameraSnapshots';
+import { logJson } from '../../utils/logJsonUtils';
 
 const MonitorViewDetailScreen = () => {
   const route = useRoute();
-  const storeId = route.params?.storeId;
+  const store = route.params?.store;
   const dispatch = useDispatch<AppDispatch>();
   const [monitors, setMonitors] = useState([]);
   const { openInfoDialog } = useDialog();
-
+  const [storeIP, setStoreIP] = useState<string>('');
+  const { snapshots, error: cameraError } = useCameraSnapshots(storeIP);
+  useFocusEffect(
+    useCallback(() => {
+      if (store) {
+        setStoreIP(store.storeIP);
+      }
+    }, [store])
+  );
   const loadMonitors = async () => {
     try {
       dispatch(showLoading());
-      const response = await getMonitorsByStoreId(storeId);
+      const response = await getMonitorsByStoreId(store.id);
       dispatch(hideLoading());
 
       if (response.success) {
@@ -93,23 +103,45 @@ const MonitorViewDetailScreen = () => {
             {/* ScrollView 改寫 Grid */}
             <ScrollView contentContainerStyle={styles.listContainer}>
               <View style={styles.cardWrapper}>
-                {monitors.map((item) => (
-                  <TouchableOpacity key={item.uid} style={styles.card}>
-                    <View style={styles.row}>
-                      <Image
-                        source={require('../../assets/iot-camera-logo.png')}
-                        style={styles.cardIcon}
-                      />
-                      <View style={{ flex: 1, flexDirection: 'column' }}>
-                        <Text style={styles.cardTitle}>{item.name}</Text>
+                {monitors.map((monitor) => {
+                  const snapshot = snapshots.find(
+                    (s) => ~~s.id === ~~monitor.number
+                  );
+
+                  return (
+                    <TouchableOpacity key={monitor.uid} style={styles.card}>
+                      {snapshot ? (
+                        <Image
+                          source={{ uri: snapshot.image }}
+                          style={styles.monitorImage}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <View
+                          style={[
+                            styles.monitorImage,
+                            { justifyContent: 'center', alignItems: 'center' },
+                          ]}
+                        >
+                          <Text style={{ color: '#888', fontSize: 14 }}>
+                            無畫面
+                          </Text>
+                        </View>
+                      )}
+                      <View style={{ marginTop: 10, alignItems: 'center' }}>
+                        <Text style={styles.deviceItem}>{monitor.name}</Text>
+                        <Text
+                          style={[
+                            styles.monitorStatusText,
+                            { color: snapshot ? '#4CAF50' : '#999' },
+                          ]}
+                        >
+                          {snapshot ? '正常' : '離線/未連線'}
+                        </Text>
                       </View>
-                    </View>
-                    <Image
-                      source={require('../../assets/iot-m.jpg')}
-                      style={styles.cameraImage}
-                    />
-                  </TouchableOpacity>
-                ))}
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             </ScrollView>
           </View>
@@ -178,6 +210,27 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     resizeMode: 'cover',
+  },
+  monitorImage: {
+    width: '100%',
+    height: 120,
+    borderRadius: 12,
+    backgroundColor: '#ccc',
+  },
+
+  deviceItem: {
+    fontSize: 15,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+
+  monitorStatusText: {
+    marginTop: 4,
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  listContainer: {
+    paddingBottom: 20,
   },
 });
 
