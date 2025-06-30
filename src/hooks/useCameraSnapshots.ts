@@ -72,18 +72,31 @@ export const useCameraSnapshots = (cameraHost: string) => {
   };
 
   useEffect(() => {
+    if (!cameraHost) return;
+
     let active = true;
-    (async () => {
+    let currentChannels: { id: string; name: string }[] = [];
+
+    const startPolling = async () => {
       const channels = await fetchChannelList();
       if (!active || channels.length === 0) return;
 
+      currentChannels = channels;
       await fetchSnapshots(channels);
-      intervalRef.current = setInterval(() => fetchSnapshots(channels), 100);
-    })();
+
+      intervalRef.current = setInterval(() => {
+        fetchSnapshots(currentChannels);
+      }, 1000);
+    };
+
+    startPolling();
 
     return () => {
       active = false;
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
   }, [cameraHost]);
 
