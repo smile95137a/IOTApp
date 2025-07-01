@@ -30,6 +30,7 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { logJson } from '../../utils/logJsonUtils';
 
 const RouterManagementScreen = () => {
   const route = useRoute();
@@ -194,6 +195,7 @@ const RouterManagementScreen = () => {
 
       if (response.success) {
         setRouters(response.data);
+        logJson('loadRouters', response.data);
       } else {
         await openInfoDialog({
           title: '錯誤',
