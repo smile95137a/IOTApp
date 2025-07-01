@@ -10,6 +10,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   ScrollView,
+  Modal,
 } from 'react-native';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
@@ -20,7 +21,6 @@ import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { useCameraSnapshots } from '../../hooks/useCameraSnapshots';
-import { logJson } from '../../utils/logJsonUtils';
 
 const MonitorViewDetailScreen = () => {
   const route = useRoute();
@@ -29,7 +29,12 @@ const MonitorViewDetailScreen = () => {
   const [monitors, setMonitors] = useState([]);
   const { openInfoDialog } = useDialog();
   const [storeIP, setStoreIP] = useState<string>('');
-  const { snapshots, error: cameraError } = useCameraSnapshots(storeIP);
+  const { snapshots } = useCameraSnapshots(storeIP);
+
+  const [selectedSnapshotId, setSelectedSnapshotId] = useState<number | null>(
+    null
+  );
+
   useFocusEffect(
     useCallback(() => {
       if (store) {
@@ -37,6 +42,7 @@ const MonitorViewDetailScreen = () => {
       }
     }, [store])
   );
+
   const loadMonitors = async () => {
     try {
       dispatch(showLoading());
@@ -48,9 +54,9 @@ const MonitorViewDetailScreen = () => {
           ...item,
           id: item.id,
           name: item.name,
+          number: item.number,
           status: !!item.status,
         }));
-
         setMonitors(formattedData);
       } else {
         await openInfoDialog({
@@ -73,11 +79,7 @@ const MonitorViewDetailScreen = () => {
     loadMonitors();
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadMonitors();
-    }, [])
-  );
+  const selectedSnapshot = snapshots.find((s) => ~~s.id === selectedSnapshotId);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -100,7 +102,6 @@ const MonitorViewDetailScreen = () => {
               <Text style={styles.header}>攝影店家</Text>
             </View>
 
-            {/* ScrollView 改寫 Grid */}
             <ScrollView contentContainerStyle={styles.listContainer}>
               <View style={styles.cardWrapper}>
                 {monitors.map((monitor) => {
@@ -109,7 +110,14 @@ const MonitorViewDetailScreen = () => {
                   );
 
                   return (
-                    <TouchableOpacity key={monitor.uid} style={styles.card}>
+                    <TouchableOpacity
+                      key={monitor.uid}
+                      style={styles.card}
+                      onPress={() =>
+                        snapshot && setSelectedSnapshotId(Number(snapshot.id))
+                      }
+                      disabled={!snapshot}
+                    >
                       {snapshot ? (
                         <Image
                           source={{ uri: snapshot.image }}
@@ -145,6 +153,39 @@ const MonitorViewDetailScreen = () => {
               </View>
             </ScrollView>
           </View>
+
+          {/* 🔍 Modal Preview */}
+          <Modal
+            visible={!!selectedSnapshotId}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setSelectedSnapshotId(null)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>
+                  {selectedSnapshot?.name || '監控畫面'} - 放大預覽
+                </Text>
+                <Image
+                  source={{ uri: selectedSnapshot?.image }}
+                  style={{
+                    width: '100%',
+                    height: 220,
+                    borderRadius: 8,
+                    marginTop: 12,
+                    backgroundColor: '#ccc',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text
+                  style={styles.modalClose}
+                  onPress={() => setSelectedSnapshotId(null)}
+                >
+                  關閉
+                </Text>
+              </View>
+            </View>
+          </Modal>
         </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
@@ -174,26 +215,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   cardWrapper: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 8,
-  },
-  cardIcon: {
-    width: 40,
-    height: 40,
-    marginRight: 10,
-    borderRadius: 999,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFF',
   },
   card: {
     backgroundColor: '#4787C7',
@@ -206,24 +232,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
   },
-  cameraImage: {
-    flex: 1,
-    width: '100%',
-    resizeMode: 'cover',
-  },
   monitorImage: {
     width: '100%',
     height: 120,
     borderRadius: 12,
     backgroundColor: '#ccc',
   },
-
   deviceItem: {
     fontSize: 15,
     color: '#fff',
     fontWeight: 'bold',
   },
-
   monitorStatusText: {
     marginTop: 4,
     fontSize: 13,
@@ -231,6 +250,35 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 24,
+    borderRadius: 12,
+    width: '80%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  modalClose: {
+    marginTop: 20,
+    color: '#007AFF',
+    textAlign: 'right',
+    fontWeight: '600',
   },
 });
 

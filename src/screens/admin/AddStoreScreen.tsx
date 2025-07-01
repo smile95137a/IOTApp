@@ -238,6 +238,11 @@ const AddStoreScreen = () => {
       });
       return;
     }
+    const finalStoreIP =
+      storeIP.startsWith('http://') || storeIP.startsWith('https://')
+        ? storeIP
+        : `http://${storeIP}`;
+
     const storeData = {
       name,
       address,
@@ -261,7 +266,7 @@ const AddStoreScreen = () => {
         timeSlots: date.timeSlots.map((slot) => ({ ...slot })),
       })),
       weekendSchedule,
-      storeIP,
+      storeIP: finalStoreIP,
     };
 
     logJson('Store Data', storeData);
@@ -737,7 +742,6 @@ const AddStoreScreen = () => {
                     style={styles.input}
                     value={storeIP}
                     onChangeText={setStoreIP}
-                    keyboardType="numeric"
                   />
                 </View>
               </View>
