@@ -44,7 +44,7 @@ export const useCameraSnapshots = (cameraHost: string) => {
         console.log('[useCameraSnapshots] got channels:', filtered);
         setChannelList(filtered);
       } catch (err: any) {
-        console.error('[useCameraSnapshots] loadChannelList error', err);
+        console.log('[useCameraSnapshots] loadChannelList error', err);
         setError('取得通道錯誤：' + err.message);
         setChannelList([]);
       }
@@ -95,7 +95,7 @@ export const useCameraSnapshots = (cameraHost: string) => {
         );
         setSnapshots(results);
       } catch (e) {
-        console.error('[useCameraSnapshots] fetchSnapshots error', e);
+        console.log('[useCameraSnapshots] fetchSnapshots error', e);
       }
     };
 
