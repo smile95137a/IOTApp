@@ -18,13 +18,14 @@ export const useCameraSnapshots = (cameraHost: string) => {
   const [error, setError] = useState<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 抓取通道列表
   useEffect(() => {
     if (!cameraHost) return;
 
     const loadChannelList = async () => {
       try {
         console.log('[useCameraSnapshots] loading channels…');
+        console.log(`[API] GET ${cameraHost}/GetChannelList`);
+
         const res = await axios.get(`${cameraHost}/GetChannelList`, {
           headers: { 'Content-Type': 'application/xml', ...AUTH_HEADER },
         });
@@ -46,33 +47,35 @@ export const useCameraSnapshots = (cameraHost: string) => {
       } catch (err: any) {
         console.log('[useCameraSnapshots] loadChannelList error', err);
         setError('取得通道錯誤：' + err.message);
-        setChannelList([]);
+        setChannelList([]); // 清空，但會繼續 retry
       }
     };
 
     loadChannelList();
   }, [cameraHost]);
 
-  // 輪詢 snapshot，每秒更新一次
   useEffect(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
 
-    if (channelList.length === 0 || !cameraHost) {
-      console.log(
-        '[useCameraSnapshots] no channels or cameraHost, skip polling'
-      );
-      return;
-    }
-
     const fetchSnapshots = async () => {
       console.log('[useCameraSnapshots] fetching snapshots…');
+
+      if (!cameraHost) return;
+
       try {
+        // 如果 channel list 是空的，嘗試重新取得
+        const channelsToUse = channelList.length
+          ? channelList
+          : await reloadChannels();
+
         const results = await Promise.all(
-          channelList.map(async ({ id, name }) => {
+          channelsToUse.map(async ({ id, name }) => {
             try {
+              console.log(`[API] GET ${cameraHost}/GetSnapshot/${id}`);
+
               const res = await axios.get(
                 `${cameraHost}/GetSnapshot/${id}?_=${Date.now()}`,
                 { headers: AUTH_HEADER, responseType: 'blob' }
@@ -88,23 +91,56 @@ export const useCameraSnapshots = (cameraHost: string) => {
                 reader.onerror = reject;
                 reader.readAsDataURL(res.data);
               });
-            } catch {
+            } catch (err) {
+              console.warn(
+                `[useCameraSnapshots] snapshot failed for ${name}`,
+                err
+              );
               return { id, name, image: '' };
             }
           })
         );
+
         setSnapshots(results);
       } catch (e) {
-        console.log('[useCameraSnapshots] fetchSnapshots error', e);
+        console.log('[useCameraSnapshots] fetchSnapshots global error', e);
+        // 不中斷 polling，即使全部失敗
       }
     };
 
-    fetchSnapshots();
+    const reloadChannels = async (): Promise<
+      { id: string; name: string }[]
+    > => {
+      try {
+        console.log(`[API] GET ${cameraHost}/GetChannelList [reloadChannels]`);
+
+        const res = await axios.get(`${cameraHost}/GetChannelList`, {
+          headers: { 'Content-Type': 'application/xml', ...AUTH_HEADER },
+        });
+        const parser = new XMLParser({
+          ignoreAttributes: false,
+          attributeNamePrefix: '@_',
+        });
+        const parsed = parser.parse(res.data);
+        const items = parsed?.config?.item;
+        const list = Array.isArray(items) ? items : [items];
+        const filtered = list
+          .filter((ch) => ch['@_channelStatus'] === 'videoOn')
+          .map((ch) => ({
+            id: ch['#text'],
+            name: ch['@_name'] || `Camera ${ch['#text']}`,
+          }));
+        setChannelList(filtered);
+        return filtered;
+      } catch (err) {
+        console.log('[useCameraSnapshots] reloadChannels failed', err);
+        return [];
+      }
+    };
+
+    fetchSnapshots(); // 第一次立即抓
     intervalRef.current = setInterval(fetchSnapshots, 1000);
-    console.log(
-      '[useCameraSnapshots] started polling, interval id =',
-      intervalRef.current
-    );
+    console.log('[useCameraSnapshots] started polling');
 
     return () => {
       if (intervalRef.current) {
