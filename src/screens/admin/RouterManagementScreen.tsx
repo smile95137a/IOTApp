@@ -303,14 +303,14 @@ const RouterManagementScreen = () => {
                   value={circuitName}
                   onChangeText={setCircuitName}
                 />
-                <Text style={styles.modalLabel}>頻道號碼</Text>
+                {/* <Text style={styles.modalLabel}>頻道號碼</Text>
                 <TextInput
                   style={styles.modalInput}
                   placeholder="輸入頻道號碼"
                   value={circuitNumber}
                   onChangeText={setCircuitNumber}
                   keyboardType="numeric"
-                />
+                /> */}
                 <Text style={styles.modalLabel}>Port 編號</Text>
                 <TextInput
                   style={styles.modalInput}
