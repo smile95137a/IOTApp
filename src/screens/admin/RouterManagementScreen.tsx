@@ -318,22 +318,6 @@ const RouterManagementScreen = () => {
                   onChangeText={setRouterPort}
                   keyboardType="numeric"
                 />
-                <Text style={styles.modalLabel}>類型</Text>
-                <View style={styles.row}>
-                  {['DO', 'Relay', 'AI'].map((type) => (
-                    <TouchableOpacity
-                      key={type}
-                      onPress={() => setCircuitType(type)}
-                      style={[
-                        styles.typeBtn,
-                        circuitType === type && styles.typeBtnActive,
-                      ]}
-                    >
-                      <Text>{type}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-
                 <Text style={styles.modalLabel}>Modbus 位址</Text>
                 <TextInput
                   style={styles.modalInput}
