@@ -217,17 +217,18 @@ const RouterManagementScreen = () => {
     const router = routers[index];
     const newStatus = !router.isControllable;
     const updated = [...routers];
-    updated[index].isControllable = newStatus;
+    const storeId = route.params?.storeId;
+    updated[index].targetStatus = newStatus;
     setRouters(updated);
 
     try {
       dispatch(showLoading());
-      await controlRouter({ routerId: router.id, isControllable: newStatus });
+      await controlRouter({ routerId: router.id, targetStatus: newStatus , storeId: storeId });
       dispatch(hideLoading());
       loadRouters();
     } catch (error) {
       if (error.isAutoLogout) return;
-      updated[index].isControllable = !newStatus;
+      updated[index].targetStatus = !newStatus;
       setRouters(updated);
       dispatch(hideLoading());
       await openInfoDialog({
