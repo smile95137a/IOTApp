@@ -102,7 +102,7 @@ const PaymentScreen = ({ navigation }: any) => {
           (navigation as any).navigate('PaymentSuccess', {
             type,
             showStartGame: type === 'game',
-            finalAmount,
+            totalAmount: finalAmount,
             data,
           });
         }
