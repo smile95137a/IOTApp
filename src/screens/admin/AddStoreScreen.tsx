@@ -238,10 +238,6 @@ const AddStoreScreen = () => {
       });
       return;
     }
-    const finalStoreIP =
-      storeIP.startsWith('http://') || storeIP.startsWith('https://')
-        ? storeIP
-        : `http://${storeIP}`;
 
     const storeData = {
       name,
@@ -266,7 +262,7 @@ const AddStoreScreen = () => {
         timeSlots: date.timeSlots.map((slot) => ({ ...slot })),
       })),
       weekendSchedule,
-      storeIP: finalStoreIP,
+      storeIP: storeIP,
     };
 
     logJson('Store Data', storeData);

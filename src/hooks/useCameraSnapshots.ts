@@ -8,6 +8,13 @@ const AUTH_HEADER = {
   Authorization: 'Basic ' + Buffer.from('admin:123456').toString('base64'),
 };
 
+const ensureHttpPrefix = (url: string) => {
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    return `http://${url}`;
+  }
+  return url;
+};
+
 export const useCameraSnapshots = (cameraHost: string) => {
   const [snapshots, setSnapshots] = useState<
     { id: string; name: string; image: string }[]
@@ -17,18 +24,21 @@ export const useCameraSnapshots = (cameraHost: string) => {
   >([]);
   const [error, setError] = useState<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const cameraHostWithProtocol = ensureHttpPrefix(cameraHost);
 
   useEffect(() => {
     if (!cameraHost) return;
-
     const loadChannelList = async () => {
       try {
         console.log('[useCameraSnapshots] loading channels…');
-        console.log(`[API] GET ${cameraHost}/GetChannelList`);
+        console.log(`[API] GET ${cameraHostWithProtocol}/GetChannelList`);
 
-        const res = await axios.get(`${cameraHost}/GetChannelList`, {
-          headers: { 'Content-Type': 'application/xml', ...AUTH_HEADER },
-        });
+        const res = await axios.get(
+          `${cameraHostWithProtocol}/GetChannelList`,
+          {
+            headers: { 'Content-Type': 'application/xml', ...AUTH_HEADER },
+          }
+        );
         const parser = new XMLParser({
           ignoreAttributes: false,
           attributeNamePrefix: '@_',
@@ -74,10 +84,12 @@ export const useCameraSnapshots = (cameraHost: string) => {
         const results = await Promise.all(
           channelsToUse.map(async ({ id, name }) => {
             try {
-              console.log(`[API] GET ${cameraHost}/GetSnapshot/${id}`);
+              console.log(
+                `[API] GET ${cameraHostWithProtocol}/GetSnapshot/${id}`
+              );
 
               const res = await axios.get(
-                `${cameraHost}/GetSnapshot/${id}?_=${Date.now()}`,
+                `${cameraHostWithProtocol}/GetSnapshot/${id}?_=${Date.now()}`,
                 { headers: AUTH_HEADER, responseType: 'blob' }
               );
               const reader = new FileReader();
@@ -112,11 +124,16 @@ export const useCameraSnapshots = (cameraHost: string) => {
       { id: string; name: string }[]
     > => {
       try {
-        console.log(`[API] GET ${cameraHost}/GetChannelList [reloadChannels]`);
+        console.log(
+          `[API] GET ${cameraHostWithProtocol}/GetChannelList [reloadChannels]`
+        );
 
-        const res = await axios.get(`${cameraHost}/GetChannelList`, {
-          headers: { 'Content-Type': 'application/xml', ...AUTH_HEADER },
-        });
+        const res = await axios.get(
+          `${cameraHostWithProtocol}/GetChannelList`,
+          {
+            headers: { 'Content-Type': 'application/xml', ...AUTH_HEADER },
+          }
+        );
         const parser = new XMLParser({
           ignoreAttributes: false,
           attributeNamePrefix: '@_',
