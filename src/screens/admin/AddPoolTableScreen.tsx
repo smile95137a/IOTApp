@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+// beautified AddPoolTableScreen.tsx
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
@@ -26,9 +26,28 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
-import { fetchAllStores } from '../../api/admin/storeApi';
+import { fetchRoutersByStoreId } from '../../api/admin/routerApi';
 import { encryptObject } from '../../utils/cryptoUtils';
 import { MyDropdown } from '../../component/MyDropdown';
+import { logJson } from '../../utils/logJsonUtils';
+
+const COLORS = {
+  primary: '#007bff',
+  secondary: '#ffc107',
+  danger: '#dc3545',
+  success: '#28a745',
+  background: '#f8f9fa',
+  border: '#dee2e6',
+};
+
+const SHADOW = {
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+};
+
 type PoolTableParams = {
   poolTable?: {
     uid: string;
@@ -36,57 +55,54 @@ type PoolTableParams = {
     status: string;
     store: { id: number };
     isUse: boolean;
+    routerIds?: number[];
   };
+  storeId?: number;
 };
 
 const AddPoolTableScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<{ params: PoolTableParams }, 'params'>>();
   const dispatch = useDispatch<AppDispatch>();
+  const { openInfoDialog, openConfirmDialog } = useDialog();
 
   const poolTable = route.params?.poolTable;
   const choseStoreId = route.params?.storeId;
-
   const isEditMode = !!poolTable;
 
   const [tableNumber, setTableNumber] = useState(poolTable?.tableNumber || '');
-  const [status, setStatus] = useState(poolTable?.status || 'active');
+  const [status, setStatus] = useState(poolTable?.status || 'AVAILABLE');
   const [storeId, setStoreId] = useState(
-    poolTable?.storeId ? String(poolTable.storeId) : `${choseStoreId}`
+    poolTable?.store?.id ? String(poolTable.store.id) : `${choseStoreId}`
   );
   const [isUse, setIsUse] = useState(poolTable?.isUse ?? false);
   const [qrCodeVal, setQrCodeVal] = useState('');
   const [showQRCode, setShowQRCode] = useState(false);
-  const [stores, setStores] = useState([]);
-  const { openInfoDialog, openConfirmDialog } = useDialog();
+  const [routerIds, setRouterIds] = useState<number[]>(
+    poolTable?.routerIds || []
+  );
+  const [routers, setRouters] = useState<{ id: number; circuitName: string }[]>(
+    []
+  );
+  logJson('asd', poolTable);
+  const qrCodeRef = useRef<any>(null);
 
   useEffect(() => {
-    const loadStores = async () => {
+    const loadRouters = async () => {
       try {
         dispatch(showLoading());
-        const response = await fetchAllStores();
+        const { success, data, message } = await fetchRoutersByStoreId(
+          ~~storeId
+        );
         dispatch(hideLoading());
-
-        if (response.success) {
-          setStores(response.data);
-        } else {
-          await openInfoDialog({
-            title: '錯誤',
-            content: '無法獲取店家列表',
-            confirmText: '我知道了',
-          });
-        }
-      } catch (error: any) {
-        if (error.isAutoLogout) return;
+        if (success) setRouters(data);
+        else openInfoDialog({ title: '錯誤', content: message || '查詢失敗' });
+      } catch {
         dispatch(hideLoading());
-        await openInfoDialog({
-          title: '錯誤',
-          content: getErrorMessage(error),
-        });
+        openInfoDialog({ title: '錯誤', content: '發生例外錯誤，請稍後再試' });
       }
     };
-
-    loadStores();
+    loadRouters();
   }, []);
 
   const handleSubmit = async () => {
@@ -98,7 +114,6 @@ const AddPoolTableScreen = () => {
       });
       return;
     }
-
     if (status === 'FAULT') {
       const confirmed = await openConfirmDialog({
         title: '提醒',
@@ -106,68 +121,34 @@ const AddPoolTableScreen = () => {
         confirmText: '確定',
         cancelText: '取消',
       });
-
       if (!confirmed) return;
     }
-    const poolTableData = {
+    const payload = {
       tableNumber,
       status,
       store: { id: parseInt(storeId) },
       isUse,
+      routerIds,
     };
-
     try {
       dispatch(showLoading());
-
-      if (isEditMode) {
-        const { success, message } = await updatePoolTable(
-          poolTable.uid,
-          poolTableData
-        );
-        dispatch(hideLoading());
-
-        if (success) {
-          await openInfoDialog({
-            title: '成功',
-            content: '桌檯資訊更新成功',
-            confirmText: '確定',
-          });
-          (navigation as any).goBack();
-        } else {
-          await openInfoDialog({
-            title: '錯誤',
-            content: message || '更新失敗',
-            confirmText: '我知道了',
-          });
-        }
-      } else {
-        const { success, message } = await createPoolTable(poolTableData);
-        dispatch(hideLoading());
-
-        if (success) {
-          await openInfoDialog({
-            title: '成功',
-            content: '桌檯新增成功',
-            confirmText: '確定',
-          });
-          (navigation as any).goBack();
-        } else {
-          await openInfoDialog({
-            title: '錯誤',
-            content: message || '新增失敗',
-            confirmText: '我知道了',
-          });
-        }
-      }
+      const result = isEditMode
+        ? await updatePoolTable(poolTable.uid, payload)
+        : await createPoolTable(payload);
+      dispatch(hideLoading());
+      await openInfoDialog({
+        title: result.success ? '成功' : '錯誤',
+        content: result.message || (isEditMode ? '更新失敗' : '新增失敗'),
+        confirmText: '我知道了',
+      });
+      if (result.success) (navigation as any).goBack();
     } catch (error: any) {
       if (error.isAutoLogout) return;
       dispatch(hideLoading());
-      await openInfoDialog({
-        title: '錯誤',
-        content: getErrorMessage(error),
-      });
+      await openInfoDialog({ title: '錯誤', content: getErrorMessage(error) });
     }
   };
+
   const genQrcode = () => {
     if (!isEditMode) return;
     const encrypted = encryptObject({
@@ -178,15 +159,12 @@ const AddPoolTableScreen = () => {
     setShowQRCode(true);
   };
 
-  const qrCodeRef = React.useRef<any>(null);
-
   const handleSaveQRCode = async () => {
     try {
       dispatch(showLoading());
       const uri = await qrCodeRef.current.capture();
       dispatch(hideLoading());
       const { status } = await MediaLibrary.requestPermissionsAsync();
-
       if (status !== 'granted') {
         await openInfoDialog({
           title: '權限不足',
@@ -195,7 +173,6 @@ const AddPoolTableScreen = () => {
         });
         return;
       }
-
       const asset = await MediaLibrary.createAssetAsync(uri);
       await MediaLibrary.createAlbumAsync('QRCode', asset, false);
       setShowQRCode(false);
@@ -214,107 +191,118 @@ const AddPoolTableScreen = () => {
       });
     }
   };
-  const handleStatusChange = (newStatus: string) => {
-    setStatus(newStatus);
-  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          <View style={styles.backgroundImageWrapper}>
-            <Image
-              source={require('../../assets/iot-admin-bg.png')}
-              style={{ width: '100%' }}
-              resizeMode="contain"
-            />
-          </View>
+          <HeaderBar
+            showLeftButton
+            title={isEditMode ? '編輯桌檯' : '新增桌檯'}
+          />
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}
+          >
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+              <Text style={styles.header}>
+                {isEditMode ? '編輯桌檯' : '新增桌檯'}
+              </Text>
 
-          <View style={styles.headerWrapper}>
-            <HeaderBar
-              showLeftButton
-              title={isEditMode ? '編輯桌檯' : '新增桌檯'}
-            />
-          </View>
-          <View style={styles.contentWrapper}>
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              style={styles.container}
-            >
-              <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <Text style={styles.header}>
-                  {isEditMode ? '編輯桌檯' : '新增桌檯'}
-                </Text>
+              <TextInput
+                style={styles.input}
+                placeholder="桌檯號碼"
+                value={tableNumber}
+                onChangeText={setTableNumber}
+              />
 
-                <TextInput
-                  style={styles.input}
-                  placeholder="桌檯號碼"
-                  value={tableNumber}
-                  onChangeText={setTableNumber}
+              <View style={styles.formGroup}>
+                <MyDropdown
+                  value={status}
+                  onChange={setStatus}
+                  items={[
+                    { label: '啟用', value: 'AVAILABLE' },
+                    { label: '停用', value: 'UNAVAILABLE' },
+                    { label: '故障', value: 'FAULT' },
+                  ]}
+                  zIndex={3000}
                 />
+              </View>
 
-                <View style={styles.formGroup}>
-                  <MyDropdown
-                    value={status}
-                    onChange={handleStatusChange}
-                    items={[
-                      { label: '啟用', value: 'AVAILABLE' },
-                      { label: '停用', value: 'UNAVAILABLE' },
-                      { label: '故障', value: 'FAULT' },
-                    ]}
-                    zIndex={3000}
-                  />
-                </View>
+              <View style={styles.formGroup}>
+                <Text style={styles.label}>選擇 Router：</Text>
+                {routers.map((router) => {
+                  const selected = routerIds.includes(router.id);
+                  return (
+                    <TouchableOpacity
+                      key={router.id}
+                      style={styles.routerItem}
+                      onPress={() => {
+                        setRouterIds((prev) =>
+                          selected
+                            ? prev.filter((id) => id !== router.id)
+                            : [...prev, router.id]
+                        );
+                      }}
+                    >
+                      <View
+                        style={[
+                          styles.routerCheckbox,
+                          selected && styles.routerCheckboxSelected,
+                        ]}
+                      />
+                      <Text style={{ fontSize: 16 }}>{router.circuitName}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
 
-                <TouchableOpacity
-                  style={styles.submitButton}
-                  onPress={handleSubmit}
-                >
-                  <Text style={styles.submitButtonText}>
-                    {isEditMode ? '更新' : '提交'}
-                  </Text>
-                </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleSubmit}
+              >
+                <Text style={styles.submitButtonText}>
+                  {isEditMode ? '更新' : '提交'}
+                </Text>
+              </TouchableOpacity>
 
-                {/* 只有在編輯模式下才顯示 QR Code 按鈕 */}
-                {isEditMode && (
-                  <TouchableOpacity style={styles.qrButton} onPress={genQrcode}>
-                    <Text style={styles.qrButtonText}>產生 QR Code</Text>
-                  </TouchableOpacity>
-                )}
-              </ScrollView>
-
-              {/* QR Code Modal */}
               {isEditMode && (
-                <Modal visible={showQRCode} transparent animationType="slide">
-                  <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                      <Text style={styles.modalTitle}>桌檯 QR Code</Text>
-                      <ViewShot
-                        ref={qrCodeRef}
-                        options={{ format: 'png', result: 'tmpfile' }}
-                      >
-                        <QRCode value={qrCodeVal} size={200} quietZone={20} />
-                      </ViewShot>
-
-                      <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={handleSaveQRCode}
-                      >
-                        <Text style={styles.closeButtonText}>儲存 QR Code</Text>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={() => setShowQRCode(false)}
-                      >
-                        <Text style={styles.closeButtonText}>關閉</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </Modal>
+                <TouchableOpacity style={styles.qrButton} onPress={genQrcode}>
+                  <Text style={styles.qrButtonText}>產生 QR Code</Text>
+                </TouchableOpacity>
               )}
-            </KeyboardAvoidingView>
-          </View>
+            </ScrollView>
+
+            {isEditMode && (
+              <Modal visible={showQRCode} transparent animationType="slide">
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>桌檯 QR Code</Text>
+                    <ViewShot
+                      ref={qrCodeRef}
+                      options={{ format: 'png', result: 'tmpfile' }}
+                    >
+                      <QRCode value={qrCodeVal} size={200} quietZone={20} />
+                    </ViewShot>
+
+                    <TouchableOpacity
+                      style={styles.closeButton}
+                      onPress={handleSaveQRCode}
+                    >
+                      <Text style={styles.closeButtonText}>儲存 QR Code</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.closeButton}
+                      onPress={() => setShowQRCode(false)}
+                    >
+                      <Text style={styles.closeButtonText}>關閉</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
+            )}
+          </KeyboardAvoidingView>
         </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
@@ -324,60 +312,61 @@ const AddPoolTableScreen = () => {
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   container: { flex: 1 },
-  backgroundImageWrapper: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    right: 0,
-    bottom: 0,
-  },
-
-  headerWrapper: { backgroundColor: '#FFFFFF' },
-  contentWrapper: { flex: 1, padding: 20 },
   scrollContainer: { padding: 20 },
   header: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 24,
     textAlign: 'center',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 10,
+    borderColor: COLORS.border,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     fontSize: 16,
-    marginBottom: 10,
-    backgroundColor: '#FFF',
-    height: 50,
+    backgroundColor: '#fff',
+    marginBottom: 12,
+    ...SHADOW,
   },
-  toggleButton: {
-    padding: 15,
-    borderRadius: 8,
+  formGroup: { marginBottom: 24 },
+  label: { fontSize: 15, fontWeight: '600', marginBottom: 8 },
+  routerItem: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginBottom: 12,
   },
-  toggleOn: { backgroundColor: '#28a745' },
-  toggleOff: { backgroundColor: '#dc3545' },
-  toggleButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  routerCheckbox: {
+    height: 22,
+    width: 22,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    backgroundColor: '#fff',
+    marginRight: 12,
+  },
+  routerCheckboxSelected: {
+    backgroundColor: COLORS.primary,
+  },
   submitButton: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+    padding: 16,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 24,
+    ...SHADOW,
   },
-  submitButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  submitButtonText: { color: '#fff', fontSize: 18, fontWeight: '600' },
   qrButton: {
-    backgroundColor: '#ffc107',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: COLORS.secondary,
+    padding: 16,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 16,
+    ...SHADOW,
   },
-  qrButtonText: { color: '#000', fontSize: 18, fontWeight: 'bold' },
-
-  // QR Code Modal
+  qrButtonText: { color: '#000', fontSize: 18, fontWeight: '600' },
   modalContainer: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -393,38 +382,12 @@ const styles = StyleSheet.create({
   modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
   closeButton: {
     marginTop: 20,
-    backgroundColor: '#007bff',
+    backgroundColor: COLORS.primary,
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
   },
   closeButtonText: { color: '#fff', fontSize: 16 },
-  label: { fontSize: 16, fontWeight: 'bold', marginTop: 10 },
-
-  picker: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  dropdownInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    fontSize: 14,
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#FFF',
-  },
-  iconContainer: {
-    top: '50%',
-    right: 10,
-    marginTop: -12,
-    position: 'absolute',
-  },
-  formGroup: {
-    marginBottom: 32,
-  },
 });
 
 export default AddPoolTableScreen;
