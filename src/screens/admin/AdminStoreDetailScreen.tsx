@@ -56,8 +56,6 @@ const AdminStoreDetailScreen = () => {
     null
   );
 
-  logJson('storeIP', storeIP);
-  logJson('snapshots', snapshots);
   const loadStoreReport = async () => {
     try {
       dispatch(showLoading());
