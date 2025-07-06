@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { fetchRechargeStandards } from '../../api/rechargeApi';
-import { getUserUse } from '../../api/paymentApi';
+import { getUserUse, topUp } from '../../api/paymentApi';
 import NumberFormatter from '../../component/NumberFormatter';
 import { useDialog } from '../../context/DialogContext';
 import { logJson } from '../../utils/logJsonUtils';
@@ -35,8 +35,8 @@ const RechargeScreen = ({ navigation }) => {
     },
     {
       id: 'first_member',
-      rechargeAmount: 100,
-      bonusAmount: 100,
+      rechargeAmount: 0,
+      bonusAmount: 0,
       title: '首次會員優惠',
       tag: '首次會員優惠',
     },
@@ -112,6 +112,37 @@ const RechargeScreen = ({ navigation }) => {
       sendType = 'send';
     }
 
+    if (selected.id === 'first_member') {
+      try {
+        await topUp({
+          price: selected.rechargeAmount,
+          payType: 1, // 預設使用儲值金入帳
+          point: selected.bonusAmount,
+          isFirst,
+          sendType,
+        });
+
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'RechargeSuccess',
+              params: {
+                totalAmount: selected.rechargeAmount,
+              },
+            },
+          ],
+        });
+      } catch (err) {
+        await openInfoDialog({
+          title: '錯誤',
+          content: '儲值失敗，請稍後再試',
+        });
+      }
+
+      return;
+    }
+
     navigation.navigate('Payment', {
       type: 'recharge',
       totalAmount: selected.rechargeAmount,
@@ -146,7 +177,13 @@ const RechargeScreen = ({ navigation }) => {
                     selectedOptionId === item.id && styles.selectedText,
                   ]}
                 >
-                  儲值 <NumberFormatter number={~~item.rechargeAmount} /> 元
+                  {item.id === 'first_member' ? (
+                    <>贈送儲值金額 100元</>
+                  ) : (
+                    <>
+                      儲值 <NumberFormatter number={~~item.rechargeAmount} /> 元
+                    </>
+                  )}
                 </Text>
                 <Text
                   style={[
@@ -154,8 +191,15 @@ const RechargeScreen = ({ navigation }) => {
                     selectedOptionId === item.id && styles.selectedText,
                   ]}
                 >
-                  送 <NumberFormatter number={~~item.bonusAmount} /> 元
+                  {item.id === 'first_member' ? (
+                    ''
+                  ) : (
+                    <>
+                      送 <NumberFormatter number={~~item.bonusAmount} /> 元
+                    </>
+                  )}
                 </Text>
+
                 {selectedOptionId === item.id && (
                   <MaterialIcons
                     name="check"
