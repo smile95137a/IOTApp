@@ -53,13 +53,6 @@ const PaymentScreen = ({ navigation }: any) => {
           poolTableId: payData.poolTableId,
         });
       } else if (type === 'recharge') {
-        logJson('recharge', {
-          price: rechargeOption.rechargeAmount,
-          payType,
-          point: rechargeOption.bonusAmount,
-          isFirst: rechargeOption.isFirst,
-          sendType: rechargeOption.sendType,
-        });
         result = await topUp({
           price: rechargeOption.rechargeAmount,
           payType,
@@ -104,15 +97,31 @@ const PaymentScreen = ({ navigation }: any) => {
       dispatch(hideLoading());
       if (success && data) {
         if (type === 'recharge') {
-          (navigation as any).navigate('RechargeSuccess', {
-            totalAmount: finalAmount,
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: 'RechargeSuccess',
+                params: {
+                  totalAmount: finalAmount,
+                },
+              },
+            ],
           });
         } else {
-          (navigation as any).navigate('PaymentSuccess', {
-            type,
-            showStartGame: type === 'game',
-            totalAmount: finalAmount,
-            data,
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: 'PaymentSuccess',
+                params: {
+                  type,
+                  showStartGame: type === 'game',
+                  totalAmount: finalAmount,
+                  data,
+                },
+              },
+            ],
           });
         }
       } else {
