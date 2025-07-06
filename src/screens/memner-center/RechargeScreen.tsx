@@ -35,7 +35,7 @@ const RechargeScreen = ({ navigation }) => {
     },
     {
       id: 'first_member',
-      rechargeAmount: 0,
+      rechargeAmount: 100,
       bonusAmount: 0,
       title: '首次會員優惠',
       tag: '首次會員優惠',

@@ -53,13 +53,6 @@ const PaymentScreen = ({ navigation }: any) => {
           poolTableId: payData.poolTableId,
         });
       } else if (type === 'recharge') {
-        logJson('recharge', {
-          price: rechargeOption.rechargeAmount,
-          payType,
-          point: rechargeOption.bonusAmount,
-          isFirst: rechargeOption.isFirst,
-          sendType: rechargeOption.sendType,
-        });
         result = await topUp({
           price: rechargeOption.rechargeAmount,
           payType,
