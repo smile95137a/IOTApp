@@ -20,7 +20,9 @@ const RechargeScreen = ({ navigation }) => {
   >(null);
   const [rechargeOptions, setRechargeOptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isUsed, setIsUsed] = useState<boolean>(true);
+
+  const [firstUse, setFirstUse] = useState<boolean>(true);
+  const [sendUse, setSendUse] = useState<boolean>(true);
   const { openInfoDialog } = useDialog();
 
   const allFirstTimeOptions = [
@@ -47,18 +49,28 @@ const RechargeScreen = ({ navigation }) => {
           fetchRechargeStandards(),
           getUserUse(),
         ]);
-        logJson('userUseRxesp', userUseResp);
+
+        logJson('userUseResp', userUseResp);
+        const usedData = userUseResp?.data || {};
+
+        setFirstUse(!usedData.firstUse);
+        setSendUse(!usedData.sendUse);
+
         const availableOptions = (rechargeData || [])
           .filter((item) => item.status === 'AVAILABLE')
           .sort((a, b) => b.rechargeAmount - a.rechargeAmount);
 
-        const used = userUseResp.data;
-        setIsUsed(used);
+        const firstTimeAvailableOptions = [];
 
-        const options = used
-          ? availableOptions
-          : [...allFirstTimeOptions, ...availableOptions];
-        setRechargeOptions(options);
+        if (!usedData.firstUse) {
+          firstTimeAvailableOptions.push(allFirstTimeOptions[0]); // first_member
+        }
+
+        if (!usedData.sendUse) {
+          firstTimeAvailableOptions.push(allFirstTimeOptions[1]); // first_recharge
+        }
+
+        setRechargeOptions([...firstTimeAvailableOptions, ...availableOptions]);
       } catch (err) {
         await openInfoDialog({
           title: '錯誤',
@@ -89,14 +101,24 @@ const RechargeScreen = ({ navigation }) => {
       return;
     }
 
-    // 判斷是否為首儲方案 & 首儲未使用過
-    const isFirst = isUsed;
+    let isFirst = false;
+    let sendType = 'dep';
+
+    if (selected.id === 'first_member' && firstUse) {
+      isFirst = true;
+      sendType = 'send';
+    } else if (selected.id === 'first_recharge' && sendUse) {
+      isFirst = true;
+      sendType = 'dep';
+    }
+
     navigation.navigate('Payment', {
       type: 'recharge',
       totalAmount: selected.rechargeAmount,
       rechargeOption: {
         ...selected,
         isFirst,
+        sendType,
       },
     });
   };

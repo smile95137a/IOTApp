@@ -30,6 +30,7 @@ import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { logJson } from '../../utils/logJsonUtils';
 import { useCameraSnapshots } from '../../hooks/useCameraSnapshots';
+import { fetchRoutersByStoreId } from '../../api/admin/routerApi';
 
 const AdminStoreDetailScreen = () => {
   const route = useRoute<any>();
@@ -117,13 +118,12 @@ const AdminStoreDetailScreen = () => {
   const loadEquipments = async () => {
     try {
       dispatch(showLoading());
-      const response = await fetchStoreEquipmentsByStoreId(store.id);
+      const response = await fetchRoutersByStoreId(store.id);
       dispatch(hideLoading());
       if (response.success) {
-        logJson(',', response.data);
         const formatted = response.data.map((item: any) => ({
           id: item.id,
-          name: item.equipmentName,
+          name: !!item.circuitName ? item.circuitName : '',
           enabled: !!item.status,
           status: !!item.status,
         }));
