@@ -125,9 +125,8 @@ const AdminStoreDetailScreen = () => {
           id: item.id,
           name: item.equipmentName,
           enabled: !!item.status,
-          status: item.status,
+          status: !!item.status,
         }));
-
         setEquipments(formatted);
       }
     } catch {
@@ -530,7 +529,7 @@ const AdminStoreDetailScreen = () => {
                         </View>
                         <View style={{ alignItems: 'flex-end' }}>
                           <Switch
-                            value={item.enabled}
+                            value={!!item.enabled}
                             onValueChange={() => toggleEquipmentSwitch(index)}
                           />
                         </View>

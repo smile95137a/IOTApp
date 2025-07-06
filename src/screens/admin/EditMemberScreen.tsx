@@ -199,105 +199,104 @@ const EditMemberScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.container}>
-          <View style={styles.fixedImageContainer}>
-            <Image
-              source={require('../../assets/iot-admin-bg.png')}
-              resizeMode="contain"
-            />
-          </View>
-          {/* Header */}
-          <View style={styles.header}>
-            <HeaderBar showLeftButton title="會員管理" />
-          </View>
-          <View style={styles.mainContainer}>
-            {/* 頭像組件 */}
-            <View style={styles.profileImageContainer}>
-              {member?.userImg ? (
-                <Image
-                  source={{ uri: getImageUrl(member.userImg) }}
-                  style={styles.profileImage}
-                />
-              ) : member?.gender === 'female' ? (
-                <Image
-                  source={require('../../assets/iot-girl.png')}
-                  style={styles.profileImage}
-                />
-              ) : member?.gender === 'male' ? (
-                <Image
-                  source={require('../../assets/iot-boy.png')}
-                  style={styles.profileImage}
-                />
-              ) : (
-                <Image
-                  source={require('../../assets/iot-user-logo.jpg')}
-                  style={styles.profileImage}
-                />
-              )}
-            </View>
-
-            {/* 會員資料表單 */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>姓名：</Text>
-              <Text style={styles.inputVal}>{name}</Text>
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>性別：</Text>
-              <Text style={styles.inputVal}>{getGender(member.gender)}</Text>
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>手機：</Text>
-              <Text style={styles.inputVal}>
-                {member.countryCode}
-                {member.phoneNumber}
-              </Text>
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email：</Text>
-              <Text style={styles.inputVal}>{email}</Text>
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>角色：</Text>
-            </View>
-            <View style={styles.roleContainer}>
-              {roles
-                .filter((role) => role.roleName !== 'ROLE_BLACKLIST')
-                .map((item) => (
-                  <View key={item.roleName} style={styles.checkboxContainer}>
-                    <CheckBox
-                      value={selectedRoles.includes(item.roleName)}
-                      onValueChange={() => toggleRoleSelection(item.roleName)}
-                    />
-                    <Text style={styles.checkboxLabel}>
-                      {getRoleCHName(item.roleName)}
-                    </Text>
-                  </View>
-                ))}
-            </View>
-            {/* 按鈕組 */}
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.saveButtonText}>確定</Text>
-            </TouchableOpacity>
-
-            {isBlackMember ? (
-              <TouchableOpacity
-                style={styles.unblacklistButton}
-                onPress={handleUnblacklist}
-              >
-                <Text style={styles.unblacklistText}>移出黑名單</Text>
-              </TouchableOpacity>
+      <View style={styles.container}>
+        <View style={styles.fixedImageContainer}>
+          <Image
+            source={require('../../assets/iot-admin-bg.png')}
+            style={{ width: '100%' }}
+            resizeMode="contain"
+          />
+        </View>
+        {/* Header */}
+        <View style={styles.header}>
+          <HeaderBar showLeftButton title="會員管理" />
+        </View>
+        <View style={styles.mainContainer}>
+          {/* 頭像組件 */}
+          <View style={styles.profileImageContainer}>
+            {member?.userImg ? (
+              <Image
+                source={{ uri: getImageUrl(member.userImg) }}
+                style={styles.profileImage}
+              />
+            ) : member?.gender === 'female' ? (
+              <Image
+                source={require('../../assets/iot-girl.png')}
+                style={styles.profileImage}
+              />
+            ) : member?.gender === 'male' ? (
+              <Image
+                source={require('../../assets/iot-boy.png')}
+                style={styles.profileImage}
+              />
             ) : (
-              <TouchableOpacity
-                style={styles.blacklistButton}
-                onPress={handleBlacklist}
-              >
-                <Text style={styles.blacklistText}>加入黑名單</Text>
-              </TouchableOpacity>
+              <Image
+                source={require('../../assets/iot-user-logo.jpg')}
+                style={styles.profileImage}
+              />
             )}
           </View>
+
+          {/* 會員資料表單 */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>姓名：</Text>
+            <Text style={styles.inputVal}>{name}</Text>
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>性別：</Text>
+            <Text style={styles.inputVal}>{getGender(member.gender)}</Text>
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>手機：</Text>
+            <Text style={styles.inputVal}>
+              {member.countryCode}
+              {member.phoneNumber}
+            </Text>
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email：</Text>
+            <Text style={styles.inputVal}>{email}</Text>
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>角色：</Text>
+          </View>
+          <View style={styles.roleContainer}>
+            {roles
+              .filter((role) => role.roleName !== 'ROLE_BLACKLIST')
+              .map((item) => (
+                <View key={item.roleName} style={styles.checkboxContainer}>
+                  <CheckBox
+                    value={selectedRoles.includes(item.roleName)}
+                    onValueChange={() => toggleRoleSelection(item.roleName)}
+                  />
+                  <Text style={styles.checkboxLabel}>
+                    {getRoleCHName(item.roleName)}
+                  </Text>
+                </View>
+              ))}
+          </View>
+          {/* 按鈕組 */}
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <Text style={styles.saveButtonText}>確定</Text>
+          </TouchableOpacity>
+
+          {isBlackMember ? (
+            <TouchableOpacity
+              style={styles.unblacklistButton}
+              onPress={handleUnblacklist}
+            >
+              <Text style={styles.unblacklistText}>移出黑名單</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.blacklistButton}
+              onPress={handleBlacklist}
+            >
+              <Text style={styles.blacklistText}>加入黑名單</Text>
+            </TouchableOpacity>
+          )}
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -306,22 +305,15 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: 20, // 為滑動留出額外的底部空間
-  },
   container: {
     flex: 1,
-    backgroundColor: '#E3F2FD',
   },
   fixedImageContainer: {
     position: 'absolute',
-    right: -200,
+    width: '100%',
+    height: '100%',
+    right: 0,
     bottom: 0,
-
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: 0.1,
   },
   header: {
     backgroundColor: '#FFFFFF',

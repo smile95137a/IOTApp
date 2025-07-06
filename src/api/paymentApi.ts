@@ -31,3 +31,15 @@ export const topUp = async (
     throw error;
   }
 };
+
+export const getUserUse = async (): Promise<ApiResponse<boolean>> => {
+  const url = `${API_BASE_URL}${basePath}/isUse`;
+  console.log(`[Payment API] Get user use status: ${url}`);
+  try {
+    const response = await api.get<ApiResponse<boolean>>(url);
+    return response.data;
+  } catch (error: any) {
+    console.error(`[Payment API] Get user use error:`, error);
+    throw error;
+  }
+};

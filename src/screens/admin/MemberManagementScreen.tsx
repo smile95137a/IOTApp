@@ -174,6 +174,7 @@ const MemberManagementScreen = ({ navigation }) => {
         <View style={styles.fixedImageContainer}>
           <Image
             source={require('../../assets/iot-admin-bg.png')}
+            style={{ width: '100%' }}
             resizeMode="contain"
           />
         </View>
@@ -382,15 +383,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#E3F2FD',
   },
   fixedImageContainer: {
     position: 'absolute',
-    right: -200,
+    width: '100%',
+    height: '100%',
+    right: 0,
     bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: 0.1,
   },
   header: {
     backgroundColor: '#FFFFFF',

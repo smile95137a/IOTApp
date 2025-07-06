@@ -6,18 +6,17 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  Alert,
   Image,
   TouchableWithoutFeedback,
   Keyboard,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { Picker } from '@react-native-picker/picker';
-import { ScrollView } from 'react-native-gesture-handler';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { Dimensions } from 'react-native';
+
 import {
   updateNews,
   createNews,
@@ -29,14 +28,16 @@ import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { getImageUrl } from '../../utils/ImageUtils';
 import { MyDropdown } from '../../component/MyDropdown';
+
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
 const AddNewsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
-  const [news, setNews] = useState(route.params?.news || {});
-
   const { openInfoDialog } = useDialog();
+
+  const [news, setNews] = useState(route.params?.news || {});
   const [title, setTitle] = useState(news.title || '');
   const [content, setContent] = useState(news.content || '');
   const [status, setStatus] = useState(news.status || 'AVAILABLE');
@@ -45,13 +46,9 @@ const AddNewsScreen = () => {
   const handleSave = async () => {
     dispatch(showLoading());
     try {
-      const newsData = {
-        title,
-        content,
-        status,
-      };
-
+      const newsData = { title, content, status };
       let savedNews;
+
       if (news.id) {
         savedNews = await updateNews(news.newsUid, {
           id: news.id,
@@ -60,10 +57,12 @@ const AddNewsScreen = () => {
       } else {
         savedNews = await createNews(newsData);
       }
+
       const savedNewsId = savedNews.data?.id;
       if (image && savedNewsId) {
         await uploadNewsImages(savedNewsId, image);
       }
+
       dispatch(hideLoading());
       (navigation as any).goBack();
     } catch (error: any) {
@@ -77,7 +76,7 @@ const AddNewsScreen = () => {
   };
 
   const handleUploadPhoto = async () => {
-    let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
       await openInfoDialog({
         title: '權限不足',
@@ -87,7 +86,7 @@ const AddNewsScreen = () => {
       return;
     }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       quality: 1,
@@ -108,7 +107,7 @@ const AddNewsScreen = () => {
   };
 
   const handleTakePhoto = async () => {
-    let permission = await ImagePicker.requestCameraPermissionsAsync();
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (permission.status !== 'granted') {
       await openInfoDialog({
         title: '權限不足',
@@ -118,7 +117,7 @@ const AddNewsScreen = () => {
       return;
     }
 
-    let result = await ImagePicker.launchCameraAsync({
+    const result = await ImagePicker.launchCameraAsync({
       allowsEditing: false,
       quality: 1,
     });
@@ -148,9 +147,9 @@ const AddNewsScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView style={styles.container}>
-          <View style={styles.backgroundImageWrapper}>
+      <SafeAreaView style={styles.newsScreen}>
+        <View style={styles.newsScreen__scroll}>
+          <View style={styles.newsScreen__background}>
             <Image
               source={require('../../assets/iot-admin-bg.png')}
               style={{ width: '100%' }}
@@ -158,155 +157,143 @@ const AddNewsScreen = () => {
             />
           </View>
 
-          <View style={styles.headerWrapper}>
+          <View style={styles.newsScreen__header}>
             <HeaderBar
               showLeftButton
               title={news.id ? '編輯最新消息' : '新增最新消息'}
             />
           </View>
-          <View style={styles.contentWrapper}>
-            <SafeAreaView style={styles.safeArea}>
-              <View style={styles.container}>
-                <Text style={styles.header}>
-                  {news.id ? '編輯最新消息' : '新增最新消息'}
-                </Text>
-                <TextInput
-                  placeholder="標題"
-                  value={title}
-                  onChangeText={setTitle}
-                  style={styles.input}
-                />
-                <TextInput
-                  placeholder="內容"
-                  value={content}
-                  onChangeText={setContent}
-                  style={styles.input}
-                  multiline
-                />
 
-                <View style={styles.formGroup}>
-                  <MyDropdown
-                    value={status}
-                    onChange={(itemValue) => setStatus(itemValue)}
-                    items={[
-                      { label: '可用', value: 'AVAILABLE' },
-                      { label: '不可用', value: 'UNAVAILABLE' },
-                    ]}
-                  />
-                </View>
-                <View style={styles.uploadContainer}>
-                  <Text style={styles.inputLabel}>上傳照片</Text>
-                  <View style={styles.uploadWrapper}>
-                    {news.id ? (
-                      <>
-                        {image ? (
-                          <>
-                            <Image
-                              source={{ uri: image }}
-                              style={styles.profileImage}
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <Image
-                              src={getImageUrl(news.imageUrl)}
-                              style={styles.profileImage}
-                              resizeMode="cover"
-                            />
-                          </>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {image && (
-                          <Image
-                            source={{ uri: image }}
-                            style={styles.profileImage}
-                          />
-                        )}
-                      </>
-                    )}
-                    <TouchableOpacity
-                      style={styles.uploadButton}
-                      onPress={handleUploadPhoto}
-                    >
-                      <MaterialIcons
-                        name="file-upload"
-                        size={30}
-                        color="#666666"
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.uploadButton}
-                      onPress={handleTakePhoto}
-                    >
-                      <MaterialIcons
-                        name="camera-alt"
-                        size={30}
-                        color="#666666"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
+          <ScrollView style={styles.newsForm}>
+            <Text style={styles.newsForm__title}>
+              {news.id ? '編輯最新消息' : '新增最新消息'}
+            </Text>
+
+            <View style={styles.newsForm__group}>
+              <Text style={styles.newsForm__label}>標題</Text>
+              <TextInput
+                value={title}
+                onChangeText={setTitle}
+                style={styles.newsForm__input}
+                placeholder="請輸入標題"
+              />
+            </View>
+
+            <View style={styles.newsForm__group}>
+              <Text style={styles.newsForm__label}>內容</Text>
+              <TextInput
+                value={content}
+                onChangeText={setContent}
+                style={[styles.newsForm__input, { height: 120 }]}
+                multiline
+                placeholder="請輸入內容"
+              />
+            </View>
+
+            <View style={styles.newsForm__group}>
+              <Text style={styles.newsForm__label}>狀態</Text>
+              <MyDropdown
+                value={status}
+                onChange={setStatus}
+                items={[
+                  { label: '可用', value: 'AVAILABLE' },
+                  { label: '不可用', value: 'UNAVAILABLE' },
+                ]}
+              />
+            </View>
+
+            <View style={styles.newsForm__group}>
+              <Text style={styles.newsForm__label}>上傳圖片</Text>
+              <View style={styles.newsForm__uploadWrapper}>
+                {news.id ? (
+                  image ? (
+                    <Image
+                      source={{ uri: image }}
+                      style={styles.newsForm__image}
+                    />
+                  ) : (
+                    <Image
+                      src={getImageUrl(news.imageUrl)}
+                      style={styles.newsForm__image}
+                      resizeMode="cover"
+                    />
+                  )
+                ) : (
+                  image && (
+                    <Image
+                      source={{ uri: image }}
+                      style={styles.newsForm__image}
+                    />
+                  )
+                )}
+
                 <TouchableOpacity
-                  style={styles.saveButton}
-                  onPress={handleSave}
+                  style={styles.newsForm__uploadButton}
+                  onPress={handleUploadPhoto}
                 >
-                  <Text style={styles.saveButtonText}>保存</Text>
+                  <MaterialIcons name="file-upload" size={30} color="#666" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.newsForm__uploadButton}
+                  onPress={handleTakePhoto}
+                >
+                  <MaterialIcons name="camera-alt" size={30} color="#666" />
                 </TouchableOpacity>
               </View>
-            </SafeAreaView>
-          </View>
-        </ScrollView>
+            </View>
+
+            <TouchableOpacity
+              style={styles.newsForm__submit}
+              onPress={handleSave}
+            >
+              <Text style={styles.newsForm__submitText}>保存</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  container: { flex: 1 },
-  backgroundImageWrapper: {
+  newsScreen: { flex: 1 },
+  newsScreen__scroll: { flex: 1 },
+  newsScreen__background: {
     position: 'absolute',
     width: '100%',
     height: '100%',
     right: 0,
     bottom: 0,
   },
-
-  headerWrapper: { backgroundColor: '#FFFFFF' },
-  contentWrapper: { flex: 1, padding: 20 },
-  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
-  input: {
+  newsScreen__header: {
+    backgroundColor: '#FFFFFF',
+  },
+  newsForm: {
+    flex: 1,
+    padding: 20,
+  },
+  newsForm__title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  newsForm__group: {
+    marginBottom: 16,
+  },
+  newsForm__label: {
+    fontSize: 16,
+    marginBottom: 6,
+    fontWeight: '500',
+    color: '#333',
+  },
+  newsForm__input: {
     backgroundColor: '#fff',
-    padding: 15,
+    padding: 12,
     borderRadius: 8,
-    marginBottom: 15,
+    borderColor: '#ccc',
+    borderWidth: 1,
   },
-  picker: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-
-  uploadButtonText: { color: '#fff', fontSize: 18 },
-  image: {
-    width: '100%',
-    height: 200,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  saveButton: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  saveButtonText: { color: '#fff', fontSize: 18 },
-  uploadContainer: {
-    marginTop: 20,
-  },
-  uploadWrapper: {
+  newsForm__uploadWrapper: {
     width: SCREEN_WIDTH - 40,
     height: SCREEN_WIDTH - 40,
     borderWidth: 1,
@@ -320,7 +307,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
-  uploadButton: {
+  newsForm__uploadButton: {
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -331,33 +318,23 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     zIndex: 2,
   },
-  profileImage: {
-    position: 'absolute', // 讓圖片絕對定位在父容器內
+  newsForm__image: {
+    position: 'absolute',
     left: 0,
     inset: 0,
-    zIndex: 1, // 確保圖片在最上層
-  },
-  inputLabel: {
-    fontSize: 22,
-    marginBottom: 5,
-  },
-  dropdownInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
+    zIndex: 1,
     borderRadius: 8,
-    fontSize: 14,
+  },
+  newsForm__submit: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 8,
     alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#FFF',
+    marginTop: 10,
   },
-  iconContainer: {
-    top: '50%',
-    right: 10,
-    marginTop: -12,
-    position: 'absolute',
-  },
-  formGroup: {
-    marginBottom: 32,
+  newsForm__submitText: {
+    color: '#fff',
+    fontSize: 18,
   },
 });
 

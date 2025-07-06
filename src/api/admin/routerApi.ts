@@ -22,6 +22,29 @@ export const fetchRoutersByStoreId = async (storeId: number): Promise<any> => {
 };
 
 /**
+ * 取得某桌檯對應的 Router（含是否被綁定）
+ */
+export const fetchRoutersWithTableInfo = async (
+  storeId: number,
+  poolTableId: number
+): Promise<any> => {
+  const url = `${API_BASE_URL}${basePath}/store/${storeId}/${poolTableId}`;
+  console.log(
+    `[Router API] Fetching routers with table info: store=${storeId}, table=${poolTableId}`
+  );
+  try {
+    const response = await api.get(url);
+    return response.data;
+  } catch (error) {
+    console.error(
+      '[Router API] Error fetching routers with table info:',
+      error
+    );
+    throw error;
+  }
+};
+
+/**
  * 新增 Router
  */
 export const createRouter = async (request: any): Promise<any> => {

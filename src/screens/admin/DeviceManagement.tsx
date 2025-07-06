@@ -8,7 +8,7 @@ import {
   Image,
   SafeAreaView,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // 添加箭頭圖標
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import HeaderBar from '../../component/admin/HeaderBar';
 
 const DeviceManagementScreen = ({ navigation }) => {
@@ -16,91 +16,57 @@ const DeviceManagementScreen = ({ navigation }) => {
   const storeId = route.params?.storeId;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.fixedImageContainer}>
+    <SafeAreaView style={styles.deviceScreen}>
+      <View style={styles.deviceScreen__container}>
+        <View style={styles.deviceScreen__background}>
           <Image
             source={require('../../assets/iot-admin-bg.png')}
+            style={{ width: '100%' }}
             resizeMode="contain"
           />
         </View>
-        {/* Header */}
-        <View style={styles.header}>
+
+        <View style={styles.deviceScreen__header}>
           <HeaderBar showLeftButton title="設備管理" />
         </View>
-        <View style={styles.mainContainer}>
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() =>
-              (navigation as any).navigate('EnvironmentManagement', { storeId })
-            }
-          >
-            <View style={styles.cardContent}>
-              <Image
-                source={require('../../assets/iot-switch.png')}
-                style={styles.cardIcon}
-              />
-              <Text style={styles.cardText}>環境管理</Text>
-            </View>
-            <View style={styles.cardBtn}>
-              <Icon name="chevron-right" size={20} color="#fff" />
-            </View>
-          </TouchableOpacity>
 
-          {/* 桌檯管理卡片 */}
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() =>
-              (navigation as any).navigate('DeviceTableManagement', { storeId })
-            }
-          >
-            <View style={styles.cardContent}>
-              <Image
-                source={require('../../assets/iot-table-enable.png')}
-                style={styles.cardIcon}
-              />
-              <Text style={styles.cardText}>桌檯管理</Text>
-            </View>
-            <View style={styles.cardBtn}>
-              <Icon name="chevron-right" size={20} color="#fff" />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() =>
-              (navigation as any).navigate('MonitorManagement', { storeId })
-            }
-          >
-            <View style={styles.cardContent}>
-              <Image
-                source={require('../../assets/iot-mo-logo.png')}
-                style={styles.cardIcon}
-              />
-              <Text style={styles.cardText}>攝影機管理</Text>
-            </View>
-            <View style={styles.cardBtn}>
-              <Icon name="chevron-right" size={20} color="#fff" />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() =>
-              (navigation as any).navigate('RouterManagement', { storeId })
-            }
-          >
-            <View style={styles.cardContent}>
-              <Image
-                source={require('../../assets/iot-router-logo.png')}
-                style={styles.cardIcon}
-              />
-              <Text style={styles.cardText}>Router 管理</Text>
-            </View>
-            <View style={styles.cardBtn}>
-              <Icon name="chevron-right" size={20} color="#fff" />
-            </View>
-          </TouchableOpacity>
+        <View style={styles.deviceScreen__main}>
+          {[
+            {
+              title: '環境管理',
+              icon: require('../../assets/iot-switch.png'),
+              target: 'EnvironmentManagement',
+            },
+            {
+              title: '桌檯管理',
+              icon: require('../../assets/iot-table-enable.png'),
+              target: 'DeviceTableManagement',
+            },
+            {
+              title: '攝影機管理',
+              icon: require('../../assets/iot-mo-logo.png'),
+              target: 'MonitorManagement',
+            },
+            {
+              title: 'Router 管理',
+              icon: require('../../assets/iot-router-logo.png'),
+              target: 'RouterManagement',
+            },
+          ].map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.deviceCard}
+              onPress={() => navigation.navigate(item.target, { storeId })}
+            >
+              <View style={styles.deviceCard__content}>
+                <Image source={item.icon} style={styles.deviceCard__icon} />
+                <Text style={styles.deviceCard__text}>{item.title}</Text>
+              </View>
+              <View style={styles.deviceCard__button}>
+                <Icon name="chevron-right" size={20} color="#fff" />
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
     </SafeAreaView>
@@ -108,63 +74,56 @@ const DeviceManagementScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
+  deviceScreen: {
     flex: 1,
   },
-  container: {
+  deviceScreen__container: {
     flex: 1,
-    backgroundColor: '#E3F2FD',
   },
-  fixedImageContainer: {
-    position: 'absolute', // Fix it to the block
-    right: -200,
+  deviceScreen__background: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    right: 0,
     bottom: 0,
-    // Push it behind other content
-    alignItems: 'center', // Center horizontally
-    justifyContent: 'center', // Center vertically
-    opacity: 0.1, // Make it subtle as a background
   },
-  fixedImage: {
-    width: 400,
-    height: 400,
-  },
-  header: {
+  deviceScreen__header: {
     backgroundColor: '#FFFFFF',
   },
-  mainContainer: {
+  deviceScreen__main: {
     flex: 1,
     padding: 20,
     zIndex: 3,
   },
 
-  card: {
+  deviceCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // 左右元素分布
+    justifyContent: 'space-between',
     backgroundColor: '#FFFFFF',
-    width: '100%', // 寬度更接近設計圖比例
+    width: '100%',
     padding: 24,
     marginVertical: 10,
     borderRadius: 12,
     shadowOpacity: 0.1,
     shadowRadius: 10,
   },
-  cardContent: {
+  deviceCard__content: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  cardIcon: {
+  deviceCard__icon: {
     width: 130,
     height: 100,
     marginRight: 15,
-    objectFit: 'contain',
+    resizeMode: 'contain',
   },
-  cardText: {
+  deviceCard__text: {
     fontSize: 18,
     fontWeight: '500',
     color: '#333',
   },
-  cardBtn: {
+  deviceCard__button: {
     width: 30,
     height: 30,
     borderRadius: 15,
@@ -172,7 +131,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardArrow: {},
 });
 
 export default DeviceManagementScreen;

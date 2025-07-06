@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
-  Alert,
+  Image,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -122,7 +122,14 @@ const RechargeSettingManagementScreen = () => {
     <Provider>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          <View style={styles.headerWrapper}>
+          <View style={styles.fixedImageContainer}>
+            <Image
+              source={require('../../assets/iot-admin-bg.png')}
+              style={{ width: '100%' }}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.header}>
             <HeaderBar title="儲值設定管理" showLeftButton />
           </View>
 
@@ -294,9 +301,22 @@ const RechargeSettingManagementScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  container: { flex: 1 },
-  headerWrapper: { backgroundColor: '#FFFFFF' },
+  safeArea: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+  },
+  fixedImageContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    right: 0,
+    bottom: 0,
+  },
+  header: {
+    backgroundColor: '#FFFFFF',
+  },
   scrollContent: { padding: 20 },
   sectionTitle: {
     fontSize: 18,

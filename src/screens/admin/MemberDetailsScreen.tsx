@@ -23,6 +23,7 @@ const MemberDetailsScreen = ({ route, navigation }) => {
         <View style={styles.fixedImageContainer}>
           <Image
             source={require('../../assets/iot-admin-bg.png')}
+            style={{ width: '100%' }}
             resizeMode="contain"
           />
         </View>
@@ -108,7 +109,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#E3F2FD',
   },
   profileContainer: {
     flexDirection: 'row',
@@ -117,13 +117,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   fixedImageContainer: {
-    position: 'absolute', // Fix it to the block
-    right: -200,
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    right: 0,
     bottom: 0,
-    // Push it behind other content
-    alignItems: 'center', // Center horizontally
-    justifyContent: 'center', // Center vertically
-    opacity: 0.1, // Make it subtle as a background
   },
   fixedImage: {
     width: 400,

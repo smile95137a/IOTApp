@@ -26,7 +26,10 @@ import { useDialog } from '../../context/DialogContext';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
-import { fetchRoutersByStoreId } from '../../api/admin/routerApi';
+import {
+  fetchRoutersByStoreId,
+  fetchRoutersWithTableInfo,
+} from '../../api/admin/routerApi';
 import { encryptObject } from '../../utils/cryptoUtils';
 import { MyDropdown } from '../../component/MyDropdown';
 import { logJson } from '../../utils/logJsonUtils';
@@ -91,18 +94,24 @@ const AddPoolTableScreen = () => {
     const loadRouters = async () => {
       try {
         dispatch(showLoading());
-        const { success, data, message } = await fetchRoutersByStoreId(
-          ~~storeId
+        const { success, data, message } = await fetchRoutersWithTableInfo(
+          ~~storeId,
+          poolTable.id
         );
         dispatch(hideLoading());
-        if (success) setRouters(data);
-        else openInfoDialog({ title: '錯誤', content: message || '查詢失敗' });
+        if (success) {
+          setRouters(data);
+          const preselected = data.filter((r) => r.associated).map((r) => r.id);
+          setRouterIds(preselected);
+        } else {
+          openInfoDialog({ title: '錯誤', content: message || '查詢失敗' });
+        }
       } catch {
         dispatch(hideLoading());
         openInfoDialog({ title: '錯誤', content: '發生例外錯誤，請稍後再試' });
       }
     };
-    loadRouters();
+    if (isEditMode) loadRouters();
   }, []);
 
   const handleSubmit = async () => {
@@ -251,7 +260,7 @@ const AddPoolTableScreen = () => {
                           selected && styles.routerCheckboxSelected,
                         ]}
                       />
-                      <Text style={{ fontSize: 16 }}>{router.circuitName}</Text>
+                      <Text style={{ fontSize: 16 }}>{router.name}</Text>
                     </TouchableOpacity>
                   );
                 })}

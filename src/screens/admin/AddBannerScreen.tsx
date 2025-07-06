@@ -26,6 +26,7 @@ import { getErrorMessage } from '../../utils/errorUtils';
 import { getImageUrl } from '../../utils/ImageUtils';
 import { fetchAllNews } from '../../api/admin/newsApi';
 import { MyDropdown } from '../../component/MyDropdown';
+
 const AddBannerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -82,15 +83,11 @@ const AddBannerScreen = () => {
       });
       return;
     }
+
     dispatch(showLoading());
     try {
-      const bannerData = {
-        status,
-        newsId,
-      };
-
+      const bannerData = { status, newsId };
       let savedBanner;
-      console.log(banner.bannerId);
 
       if (banner.bannerId) {
         savedBanner = await updateBanner(banner.bannerId, {
@@ -104,6 +101,7 @@ const AddBannerScreen = () => {
       if (image && savedBanner?.data?.bannerId) {
         await uploadBannerImage(savedBanner?.data?.bannerId, image);
       }
+
       dispatch(hideLoading());
       (navigation as any).goBack();
     } catch (error: any) {
@@ -147,7 +145,6 @@ const AddBannerScreen = () => {
     }
   };
 
-  // 拍照
   const handleTakePhoto = async () => {
     let permission = await ImagePicker.requestCameraPermissionsAsync();
     if (permission.status !== 'granted') {
@@ -177,6 +174,7 @@ const AddBannerScreen = () => {
       });
     }
   };
+
   useEffect(() => {
     if (route.params?.croppedImageUri) {
       setImage(route.params.croppedImageUri);
@@ -188,9 +186,9 @@ const AddBannerScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView style={styles.container}>
-          <View style={styles.backgroundImageWrapper}>
+      <SafeAreaView style={styles.bannerScreen}>
+        <View style={styles.bannerScreen__scroll}>
+          <View style={styles.bannerScreen__background}>
             <Image
               source={require('../../assets/iot-admin-bg.png')}
               style={{ width: '100%' }}
@@ -198,149 +196,129 @@ const AddBannerScreen = () => {
             />
           </View>
 
-          <View style={styles.headerWrapper}>
+          <View style={styles.bannerScreen__header}>
             <HeaderBar
               showLeftButton
               title={banner.bannerId ? '編輯Banner' : '新增Banner'}
             />
           </View>
-          <View style={styles.contentWrapper}>
-            <ScrollView style={styles.container}>
-              <Text style={styles.header}>
-                {banner.bannerId ? '編輯Banner' : '新增Banner'}
-              </Text>
-              <View style={styles.formGroup}>
-                <MyDropdown
-                  value={String(newsId)}
-                  onChange={(itemValue) => setNewsId(itemValue)}
-                  items={newsList.map((news) => ({
-                    label: news.title,
-                    value: String(news.id),
-                  }))}
-                  zIndex={3000}
-                />
-              </View>
 
-              <View style={styles.formGroup}>
-                <MyDropdown
-                  value={status}
-                  onChange={(itemValue) => setStatus(itemValue)}
-                  items={[
-                    { label: '啟用', value: 'AVAILABLE' },
-                    { label: '停用', value: 'UNAVAILABLE' },
-                  ]}
-                  zIndex={2000}
-                />
-              </View>
+          <ScrollView style={styles.bannerForm}>
+            <Text style={styles.bannerForm__title}>
+              {banner.bannerId ? '編輯Banner' : '新增Banner'}
+            </Text>
 
-              <View style={styles.uploadContainer}>
-                <Text style={styles.inputLabel}>上傳照片</Text>
-                <View style={styles.uploadWrapper}>
-                  {banner.bannerId ? (
-                    <>
-                      {image ? (
-                        <>
-                          <Image
-                            source={{ uri: image }}
-                            style={styles.profileImage}
-                          />
-                        </>
-                      ) : (
-                        <>
-                          <Image
-                            src={getImageUrl(banner.imageUrl)}
-                            style={styles.profileImage}
-                            resizeMode="cover"
-                          />
-                        </>
-                      )}
-                    </>
+            <View style={styles.bannerForm__group}>
+              <Text style={styles.bannerForm__label}>連結的最新消息</Text>
+              <MyDropdown
+                value={String(newsId)}
+                onChange={setNewsId}
+                items={newsList.map((news) => ({
+                  label: news.title,
+                  value: String(news.id),
+                }))}
+                zIndex={3000}
+              />
+            </View>
+
+            <View style={styles.bannerForm__group}>
+              <Text style={styles.bannerForm__label}>狀態</Text>
+              <MyDropdown
+                value={status}
+                onChange={setStatus}
+                items={[
+                  { label: '啟用', value: 'AVAILABLE' },
+                  { label: '停用', value: 'UNAVAILABLE' },
+                ]}
+                zIndex={2000}
+              />
+            </View>
+
+            <View style={styles.bannerForm__group}>
+              <Text style={styles.bannerForm__label}>上傳圖片</Text>
+              <View style={styles.bannerForm__uploadWrapper}>
+                {banner.bannerId ? (
+                  image ? (
+                    <Image
+                      source={{ uri: image }}
+                      style={styles.bannerForm__image}
+                    />
                   ) : (
-                    <>
-                      {image && (
-                        <Image
-                          source={{ uri: image }}
-                          style={styles.profileImage}
-                        />
-                      )}
-                    </>
-                  )}
+                    <Image
+                      src={getImageUrl(banner.imageUrl)}
+                      style={styles.bannerForm__image}
+                      resizeMode="cover"
+                    />
+                  )
+                ) : (
+                  image && (
+                    <Image
+                      source={{ uri: image }}
+                      style={styles.bannerForm__image}
+                    />
+                  )
+                )}
 
-                  <TouchableOpacity
-                    style={styles.uploadButton}
-                    onPress={handleUploadPhoto}
-                  >
-                    <MaterialIcons
-                      name="file-upload"
-                      size={30}
-                      color="#666666"
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.uploadButton}
-                    onPress={handleTakePhoto}
-                  >
-                    <MaterialIcons
-                      name="camera-alt"
-                      size={30}
-                      color="#666666"
-                    />
-                  </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                  style={styles.bannerForm__uploadButton}
+                  onPress={handleUploadPhoto}
+                >
+                  <MaterialIcons name="file-upload" size={30} color="#666666" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.bannerForm__uploadButton}
+                  onPress={handleTakePhoto}
+                >
+                  <MaterialIcons name="camera-alt" size={30} color="#666666" />
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                <Text style={styles.saveButtonText}>保存</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
-        </ScrollView>
+            </View>
+
+            <TouchableOpacity
+              style={styles.bannerForm__submit}
+              onPress={handleSave}
+            >
+              <Text style={styles.bannerForm__submitText}>保存</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  container: { flex: 1 },
-  backgroundImageWrapper: {
+  bannerScreen: { flex: 1 },
+  bannerScreen__scroll: { flex: 1 },
+  bannerScreen__background: {
     position: 'absolute',
     width: '100%',
     height: '100%',
     right: 0,
     bottom: 0,
   },
-
-  headerWrapper: { backgroundColor: '#FFFFFF' },
-  contentWrapper: { flex: 1, padding: 20 },
-  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
-  picker: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginBottom: 15,
+  bannerScreen__header: {
+    backgroundColor: '#FFFFFF',
   },
-  image: {
-    width: '100%',
-    height: 200,
-    borderRadius: 8,
-    marginBottom: 15,
+  bannerForm: {
+    flex: 1,
+    padding: 20,
   },
-  saveButton: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
+  bannerForm__title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
-  newsImage: {
-    width: '100%',
-    height: 230,
-    borderRadius: 10,
-    marginBottom: 15,
+  bannerForm__group: {
+    marginBottom: 12,
   },
-  saveButtonText: { color: '#fff', fontSize: 18 },
-  uploadContainer: {
-    marginTop: 20,
+  bannerForm__label: {
+    fontSize: 16,
+    marginBottom: 6,
+    fontWeight: '500',
+    color: '#333',
   },
-  uploadWrapper: {
+  bannerForm__uploadWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
@@ -353,7 +331,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 12,
   },
-  uploadButton: {
+  bannerForm__uploadButton: {
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -364,33 +342,25 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     zIndex: 2,
   },
-  profileImage: {
-    position: 'absolute', // 讓圖片絕對定位在父容器內
-    left: 0,
-    inset: 0,
-    zIndex: 1, // 確保圖片在最上層
-  },
-  inputLabel: {
-    fontSize: 22,
-    marginBottom: 5,
-  },
-  dropdownInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    fontSize: 14,
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#FFF',
-  },
-  iconContainer: {
-    top: '50%',
-    right: 10,
-    marginTop: -12,
+  bannerForm__image: {
     position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    zIndex: 1,
+    borderRadius: 8,
   },
-  formGroup: {
-    marginBottom: 8,
+  bannerForm__submit: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  bannerForm__submitText: {
+    color: '#fff',
+    fontSize: 18,
   },
 });
 

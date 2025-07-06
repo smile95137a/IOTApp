@@ -57,6 +57,7 @@ const PaymentScreen = ({ navigation }: any) => {
           price: rechargeOption.rechargeAmount,
           payType,
           point: rechargeOption.bonusAmount,
+          isFirst: rechargeOption.isFirst,
         });
       } else if (type === 'payEnd') {
         result = await checkoutGameGamePay({
