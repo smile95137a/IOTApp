@@ -27,18 +27,18 @@ const RechargeScreen = ({ navigation }) => {
 
   const allFirstTimeOptions = [
     {
-      id: 'first_member',
-      rechargeAmount: 100,
-      bonusAmount: 100,
-      title: '首次會員優惠',
-      tag: '首次會員優惠',
-    },
-    {
       id: 'first_recharge',
       rechargeAmount: 300,
       bonusAmount: 150,
       title: '首次儲值限定',
       tag: '首次儲值限定',
+    },
+    {
+      id: 'first_member',
+      rechargeAmount: 100,
+      bonusAmount: 100,
+      title: '首次會員優惠',
+      tag: '首次會員優惠',
     },
   ];
 
@@ -63,11 +63,11 @@ const RechargeScreen = ({ navigation }) => {
         const firstTimeAvailableOptions = [];
 
         if (!usedData.firstUse) {
-          firstTimeAvailableOptions.push(allFirstTimeOptions[0]); // first_member
+          firstTimeAvailableOptions.push(allFirstTimeOptions[0]);
         }
 
         if (!usedData.sendUse) {
-          firstTimeAvailableOptions.push(allFirstTimeOptions[1]); // first_recharge
+          firstTimeAvailableOptions.push(allFirstTimeOptions[1]);
         }
 
         setRechargeOptions([...firstTimeAvailableOptions, ...availableOptions]);
@@ -101,17 +101,15 @@ const RechargeScreen = ({ navigation }) => {
       return;
     }
 
-    console.log(selected);
-
     let isFirst = false;
     let sendType = 'dep';
 
-    if (selected.id === 'first_member' && firstUse) {
-      isFirst = true;
-      sendType = 'send';
-    } else if (selected.id === 'first_recharge' && sendUse) {
+    if (selected.id === 'first_recharge' && firstUse) {
       isFirst = true;
       sendType = 'dep';
+    } else if (selected.id === 'first_member' && sendUse) {
+      isFirst = true;
+      sendType = 'send';
     }
 
     navigation.navigate('Payment', {
