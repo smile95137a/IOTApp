@@ -101,6 +101,8 @@ const RechargeScreen = ({ navigation }) => {
       return;
     }
 
+    console.log(selected);
+
     let isFirst = false;
     let sendType = 'dep';
 
