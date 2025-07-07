@@ -318,7 +318,7 @@ const StoreDetailScreen = () => {
                         if (status === 'available') {
                           (navigation as any).navigate('Member', {
                             screen: 'Reservation',
-                            params: { tableUid: item.uid },
+                            params: { poolTableUid: item.uid },
                           });
                         }
                       }}
