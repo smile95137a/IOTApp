@@ -22,22 +22,22 @@ import { getErrorMessage } from '../../utils/errorUtils';
 const ReservationScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const route = useRoute();
-  const { tableUid } = route.params || {}; // 從參數中獲取桌檯 UID
+  const { poolTableUid } = route.params || {}; // 從參數中獲取桌檯 UID
   const { openInfoDialog } = useDialog();
 
   const [poolTable, setPoolTable] = useState(null);
   const [totalAmount, setTotalAmount] = useState(200); // 預設金額 200 元
 
   useEffect(() => {
-    if (tableUid) {
+    if (poolTableUid) {
       loadPoolTable();
     }
-  }, [tableUid]);
+  }, [poolTableUid]);
 
   const loadPoolTable = async () => {
     try {
       dispatch(showLoading());
-      const response = await fetchPoolTableByUid(tableUid);
+      const response = await fetchPoolTableByUid(poolTableUid);
       dispatch(hideLoading());
       if (response.success) {
         setPoolTable(response.data);
@@ -64,7 +64,7 @@ const ReservationScreen = ({ navigation }) => {
   const handleConfirmPayment = () => {
     (navigation as any).navigate('Payment', {
       type: 'game',
-      payData: { uid: tableUid },
+      payData: { uid: poolTableUid },
       totalAmount: poolTable?.deposit,
     });
   };
