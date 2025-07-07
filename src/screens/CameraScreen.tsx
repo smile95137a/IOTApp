@@ -89,6 +89,7 @@ const CameraScreen = () => {
           const storeName = response.data.storeName || '未知店家';
           const tableName = response.data.poolTableName || '未知桌台';
           if (response.data.gameId) {
+            dispatch(hideLoading());
             const confirm = await openConfirmDialog({
               title: `已掃描到 ${storeName} - ${tableName}`,
               content: '是否前往付款？',
@@ -126,6 +127,7 @@ const CameraScreen = () => {
               setScanned(false);
             }
           } else {
+            dispatch(hideLoading());
             const confirm = await openConfirmDialog({
               title: `已掃描到 ${storeName} - ${tableName}`,
               content: '前往開台？',
@@ -144,6 +146,7 @@ const CameraScreen = () => {
             }
           }
         } else {
+          dispatch(hideLoading());
           const confirm = await openConfirmDialog({
             title: '已掃描到',
             content: '前往開台？',
