@@ -132,7 +132,7 @@ const SpecialDateList = ({
                                     item[timeKey] || '00:00'
                                   );
                                   updateSpecialDate(
-                                    dateIndex,
+                                    globalIndex,
                                     timeKey,
                                     formatTime(hour, minute)
                                   );

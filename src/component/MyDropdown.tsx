@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 interface MyDropdownProps {
@@ -49,7 +49,7 @@ export const MyDropdown: React.FC<MyDropdownProps> = ({
         style={styles.dropdown}
         textStyle={styles.text}
         dropDownContainerStyle={styles.dropdownContainer}
-        listMode="SCROLLVIEW"
+        listMode={Platform.OS === 'android' ? 'MODAL' : 'SCROLLVIEW'}
         dropDownDirection="BOTTOM"
         zIndex={computedZIndex}
       />
