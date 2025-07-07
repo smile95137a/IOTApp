@@ -136,7 +136,7 @@ const CameraScreen = () => {
                 screen: 'Member',
                 params: {
                   screen: 'Reservation',
-                  params: { tableUid },
+                  params: { poolTableUid },
                 },
               });
             } else {
@@ -154,7 +154,7 @@ const CameraScreen = () => {
               screen: 'Member',
               params: {
                 screen: 'Reservation',
-                params: { tableUid },
+                params: { poolTableUid },
               },
             });
           } else {
