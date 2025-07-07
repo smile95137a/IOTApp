@@ -242,7 +242,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
               </View>
               <TouchableOpacity style={styles.pricingCard}>
                 <Text style={styles.pricingAmount}>
-                  <NumberFormatter number={~~todayPricing.regularRate * 60} />
+                  <NumberFormatter number={todayPricing.regularRate * 60} />
                   元/小時
                 </Text>
                 <Text style={styles.pricingDetails}>一般時段</Text>
@@ -254,7 +254,7 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.pricingCard}>
                 <Text style={styles.pricingAmount}>
-                  <NumberFormatter number={~~todayPricing.discountRate * 60} />
+                  <NumberFormatter number={todayPricing.discountRate * 60} />
                   元/小時
                 </Text>
                 <Text style={styles.pricingDetails}>優惠時段</Text>

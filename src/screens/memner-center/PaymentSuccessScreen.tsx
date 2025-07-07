@@ -70,7 +70,7 @@ const PaymentSuccessScreen = ({ navigation }: any) => {
         <Text style={styles.totalAmount}>
           <Text style={styles.totalAmountLabel}>總金額：</Text>
           <Text>
-            $<NumberFormatter number={~~totalAmount} /> 元
+            $<NumberFormatter number={totalAmount} /> 元
           </Text>
         </Text>
       </View>

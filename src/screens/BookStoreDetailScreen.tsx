@@ -25,6 +25,7 @@ import { getErrorMessage } from '../utils/errorUtils';
 import { getImageUrl } from '../utils/ImageUtils';
 import Header from '../component/Header';
 import { fetchStoreByUid } from '../api/storeApi';
+import { logJson } from '../utils/logJsonUtils';
 
 const StoreDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -73,7 +74,11 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
 
           setTodayPricing({
             regularRate: todayRes.regularRate,
-            discountRate: currentSlot?.regularRate ?? todayRes.regularRate,
+            discountRate: todayRes.discountRate,
+          });
+          logJson('zxc', {
+            regularRate: todayRes.regularRate,
+            discountRate: todayRes.discountRate,
           });
 
           setCurrentDiscountSlot({
@@ -196,7 +201,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
               </View>
               <TouchableOpacity style={styles.pricingCard}>
                 <Text style={styles.pricingAmount}>
-                  <NumberFormatter number={~~todayPricing.regularRate * 60} />
+                  <NumberFormatter number={todayPricing.regularRate * 60} />
                   元/小時
                 </Text>
                 <Text style={styles.pricingDetails}>一般時段</Text>
@@ -209,7 +214,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.pricingCard}>
                 <Text style={styles.pricingAmount}>
-                  <NumberFormatter number={~~todayPricing.discountRate * 60} />
+                  <NumberFormatter number={todayPricing.discountRate * 60} />
                   元/小時
                 </Text>
                 <Text style={styles.pricingDetails}>優惠時段</Text>

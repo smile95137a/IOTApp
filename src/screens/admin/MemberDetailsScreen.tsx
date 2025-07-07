@@ -77,14 +77,14 @@ const MemberDetailsScreen = ({ route, navigation }) => {
             {/* 修改：消費總額與筆數 */}
             <Text style={styles.spendingText}>
               消費總額：
-              <NumberFormatter number={~~member.totalConsumptionAmount} />
+              <NumberFormatter number={member.totalConsumptionAmount} />
               元（{member.totalConsumptionCount || 0} 筆）
             </Text>
 
             {/* 新增：儲值總額與筆數 */}
             <Text style={styles.spendingText}>
               儲值總額：
-              <NumberFormatter number={~~member.totalDepositsAmount} />
+              <NumberFormatter number={member.totalDepositsAmount} />
               元（{member.totalDepositsCount || 0} 筆）
             </Text>
           </View>

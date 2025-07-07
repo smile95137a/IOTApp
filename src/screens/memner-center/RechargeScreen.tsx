@@ -181,7 +181,7 @@ const RechargeScreen = ({ navigation }) => {
                     <>贈送儲值金額 100元</>
                   ) : (
                     <>
-                      儲值 <NumberFormatter number={~~item.rechargeAmount} /> 元
+                      儲值 <NumberFormatter number={item.rechargeAmount} /> 元
                     </>
                   )}
                 </Text>
@@ -195,7 +195,7 @@ const RechargeScreen = ({ navigation }) => {
                     ''
                   ) : (
                     <>
-                      送 <NumberFormatter number={~~item.bonusAmount} /> 元
+                      送 <NumberFormatter number={item.bonusAmount} /> 元
                     </>
                   )}
                 </Text>
