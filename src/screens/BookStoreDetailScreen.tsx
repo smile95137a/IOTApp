@@ -17,7 +17,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import { fetchPoolTablesByStoreUid } from '../api/poolTableAPI';
 import NumberFormatter from '../component/NumberFormatter';
-import { useInfoDialog } from '../hooks/useInfoDialog';
 import { showLoading, hideLoading } from '../store/loadingSlice';
 import { AppDispatch } from '../store/store';
 import { setSelectedStore } from '../store/storeSelectionSlice';
@@ -26,10 +25,11 @@ import { getImageUrl } from '../utils/ImageUtils';
 import Header from '../component/Header';
 import { fetchStoreByUid } from '../api/storeApi';
 import { logJson } from '../utils/logJsonUtils';
+import { useDialog } from '../context/DialogContext';
 
 const StoreDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const { store } = route.params;
   const [tables, setTables] = useState<any[]>([]);

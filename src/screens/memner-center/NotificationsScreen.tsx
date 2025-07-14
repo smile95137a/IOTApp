@@ -10,16 +10,16 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { useDispatch } from 'react-redux';
-import { useInfoDialog } from '../../hooks/useInfoDialog';
 import { fetchAllNews } from '../../api/newsApi';
 import DateFormatter from '../../component/DateFormatter';
 import { hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { useDialog } from '../../context/DialogContext';
 
 const NotificationsScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
   const [notifications, setNotifications] = useState([]);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);

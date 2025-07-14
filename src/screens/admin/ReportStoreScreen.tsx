@@ -19,14 +19,14 @@ import { Menu, Provider } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { fetchStoresByVendorId } from '../../api/admin/storeApi';
 import HeaderBar from '../../component/admin/HeaderBar';
-import { useInfoDialog } from '../../hooks/useInfoDialog';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { useDialog } from '../../context/DialogContext';
 
 const ReportStoreScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const route = useRoute();
   const vendorId = route.params?.vendorId;

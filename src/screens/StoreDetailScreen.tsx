@@ -17,7 +17,6 @@ import Feather from '@expo/vector-icons/Feather';
 import moment from 'moment';
 import { fetchPoolTablesByStoreUid } from '../api/poolTableAPI';
 import NumberFormatter from '../component/NumberFormatter';
-import { useInfoDialog } from '../hooks/useInfoDialog';
 import { showLoading, hideLoading } from '../store/loadingSlice';
 import { AppDispatch } from '../store/store';
 import { setSelectedStore } from '../store/storeSelectionSlice';
@@ -27,12 +26,14 @@ import { logJson } from '../utils/logJsonUtils';
 import Header from '../component/Header';
 import { fetchStoreByUid } from '../api/storeApi';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { startGame } from '../api/gameApi';
+import { useDialog } from '../context/DialogContext';
 
 const StoreDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const { store } = route.params;
   const [tables, setTables] = useState<any[]>([]);
@@ -203,6 +204,46 @@ const StoreDetailScreen = () => {
     };
   };
 
+  const handleStartGame = async (poolTableUid: string) => {
+    try {
+      dispatch(showLoading());
+
+      const payType = 'game';
+      const result = await startGame({ poolTableUId: poolTableUid, payType });
+      dispatch(hideLoading());
+      if (result.success) {
+        if (result.data) {
+          await openInfoDialog({
+            title: '系統訊息',
+            content: '開局成功',
+            confirmText: '我知道了',
+          });
+          (navigation as any).reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          });
+        } else {
+          await openInfoDialog({
+            title: '錯誤',
+            content: result.message || '開局失敗，請稍後再試',
+          });
+        }
+      } else {
+        await openInfoDialog({
+          title: '錯誤',
+          content: result.message || '開局失敗，請稍後再試',
+        });
+      }
+    } catch (error: any) {
+      if (error.isAutoLogout) return;
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
+    } finally {
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient
@@ -314,14 +355,7 @@ const StoreDetailScreen = () => {
                       key={item.id}
                       style={styles.tableItem}
                       disabled={status !== 'available'}
-                      onPress={() => {
-                        if (status === 'available') {
-                          (navigation as any).navigate('Member', {
-                            screen: 'Reservation',
-                            params: { poolTableUid: item.uid },
-                          });
-                        }
-                      }}
+                      onPress={() => handleStartGame(item.uid)}
                     >
                       <Image
                         source={

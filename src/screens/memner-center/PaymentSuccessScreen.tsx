@@ -10,16 +10,16 @@ import {
 import { useDispatch } from 'react-redux';
 import { fetchUserInfo } from '../../api/userApi';
 import NumberFormatter from '../../component/NumberFormatter';
-import { useInfoDialog } from '../../hooks/useInfoDialog';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch } from '../../store/store';
 import { setUser } from '../../store/userSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { logJson } from '../../utils/logJsonUtils';
+import { useDialog } from '../../context/DialogContext';
 
 const PaymentSuccessScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const route = useRoute<any>();
   const { type, totalAmount, showStartGame, data } = route.params || {};

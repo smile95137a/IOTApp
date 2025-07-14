@@ -16,15 +16,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
 import { resetPassword } from '../api/userApi';
-import { useInfoDialog } from '../hooks/useInfoDialog';
 import { hideLoading } from '../store/loadingSlice';
 import { AppDispatch } from '../store/store';
 import { getErrorMessage } from '../utils/errorUtils';
 import Header from '../component/Header';
+import { useDialog } from '../context/DialogContext';
 
 const ResetPasswordScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

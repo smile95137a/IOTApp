@@ -19,13 +19,13 @@ import moment from 'moment';
 import { LocaleConfig } from 'react-native-calendars';
 import { fetchPoolTablesByStoreUid } from '../api/poolTableAPI';
 import NumberFormatter from '../component/NumberFormatter';
-import { useInfoDialog } from '../hooks/useInfoDialog';
 import { showLoading, hideLoading } from '../store/loadingSlice';
 import { AppDispatch } from '../store/store';
 import { getErrorMessage } from '../utils/errorUtils';
 import { getImageUrl } from '../utils/ImageUtils';
 import Header from '../component/Header';
 import { fetchStoreByUid } from '../api/storeApi';
+import { useDialog } from '../context/DialogContext';
 
 LocaleConfig.locales['zh-tw'] = {
   monthNames: [
@@ -73,7 +73,7 @@ LocaleConfig.defaultLocale = 'zh-tw';
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
   const [selectedDate, setSelectedDate] = useState(
     moment().format('YYYY-MM-DD')
   );

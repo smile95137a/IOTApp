@@ -16,14 +16,14 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 import { useAuthRequest } from 'expo-auth-session';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch } from 'react-redux';
-import { useInfoDialog } from '../hooks/useInfoDialog';
 import { hideLoading } from '../store/loadingSlice';
 import { AppDispatch } from '../store/store';
 import { getErrorMessage } from '../utils/errorUtils';
+import { useDialog } from '../context/DialogContext';
 
 const LoginHomeScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const resetAndNavigateToMain = () => {
     (navigation as any).reset({

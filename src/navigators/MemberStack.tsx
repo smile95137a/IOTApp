@@ -14,7 +14,6 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { fetchUserInfo, uploadProfileImage } from '../api/userApi';
 import NumberFormatter from '../component/NumberFormatter';
-import { useInfoDialog } from '../hooks/useInfoDialog';
 import ContactScreen from '../screens/memner-center/ContactScreen';
 import DepositHistoryScreen from '../screens/memner-center/DepositHistoryScreen';
 import EditPersonalInfoScreen from '../screens/memner-center/EditPersonalInfoScreen';
@@ -36,6 +35,7 @@ import { getImageUrl } from '../utils/ImageUtils';
 import * as ImagePicker from 'expo-image-picker';
 import Header from '../component/Header';
 import PaymentScreen from '../screens/memner-center/PaymentScreen';
+import { useDialog } from '../context/DialogContext';
 const Stack = createStackNavigator();
 
 const MainLayout = ({ children }) => {
@@ -48,7 +48,7 @@ const MainLayout = ({ children }) => {
 
   const [localUser, setLocalUser] = useState(user);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
   const selectedStore = useSelector(
     (state: RootState) => state.storeSelection.selectedStore
   );

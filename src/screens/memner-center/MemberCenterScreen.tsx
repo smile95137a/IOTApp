@@ -10,12 +10,12 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserInfo } from '../../api/userApi';
-import { useInfoDialog } from '../../hooks/useInfoDialog';
 import { logOut } from '../../store/authSlice';
 import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { AppDispatch, RootState } from '../../store/store';
 import { setUser } from '../../store/userSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { useDialog } from '../../context/DialogContext';
 
 const menuItems = [
   {
@@ -80,7 +80,7 @@ const menuItems = [
 
 const MemberCenterScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
   const user = useSelector((state: RootState) => state.user.user); // Get user from Redux
 
   const [localUser, setLocalUser] = useState(user);

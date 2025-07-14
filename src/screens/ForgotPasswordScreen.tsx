@@ -14,15 +14,15 @@ import {
   Keyboard,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { useInfoDialog } from '../hooks/useInfoDialog';
 import { hideLoading } from '../store/loadingSlice';
 import { AppDispatch } from '../store/store';
 import { getErrorMessage } from '../utils/errorUtils';
 import Header from '../component/Header';
+import { useDialog } from '../context/DialogContext';
 
 const ForgotPasswordScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const [email, setEmail] = useState('');
 

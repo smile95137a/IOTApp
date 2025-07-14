@@ -13,7 +13,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Location from 'expo-location';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useInfoDialog } from '../hooks/useInfoDialog';
 import { setLocation } from '../store/locationSlice';
 import { AppDispatch, RootState } from '../store/store';
 import { getErrorMessage } from '../utils/errorUtils';
@@ -22,10 +21,11 @@ import { findNearestStores } from '../utils/LocationUtils';
 import { fetchAllStores } from '../api/storeApi';
 import { showLoading, hideLoading } from '../store/loadingSlice';
 import Header from '../component/Header';
+import { useDialog } from '../context/DialogContext';
 
 const StoreScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { openInfoDialog } = useInfoDialog();
+  const { openConfirmDialog, openInfoDialog } = useDialog();
 
   const [stores, setStores] = useState<any[]>([]);
   const [isLoadGps, setIsLoadGps] = useState(false);
