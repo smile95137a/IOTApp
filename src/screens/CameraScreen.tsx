@@ -89,6 +89,7 @@ const CameraScreen = () => {
         if (response.success) {
           const storeName = response.data.storeName || '未知店家';
           const tableName = response.data.poolTableName || '未知桌台';
+          const priceByHour = response.data.priceByHour || '未知桌台';
           if (response.data.gameId) {
             dispatch(hideLoading());
             const confirm = await openConfirmDialog({
@@ -130,7 +131,7 @@ const CameraScreen = () => {
           } else {
             dispatch(hideLoading());
             const confirm = await openConfirmDialog({
-              title: `已掃描到 ${storeName} - ${tableName}`,
+              title: `已掃描到 ${storeName} - ${tableName} $${priceByHour}/小時`,
               content: '前往開台？',
             });
 
