@@ -156,33 +156,28 @@ const AddVendorScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <View style={styles.backgroundImageWrapper}>
-            <Image
-              source={require('../../assets/iot-admin-bg.png')}
-              style={{ width: '100%' }}
-              resizeMode="contain"
-            />
-          </View>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+          <View style={styles.container}>
+            <View style={styles.backgroundImageWrapper}>
+              <Image
+                source={require('../../assets/iot-admin-bg.png')}
+                style={{ width: '100%' }}
+                resizeMode="contain"
+              />
+            </View>
 
-          <View style={styles.headerWrapper}>
-            <HeaderBar
-              showLeftButton
-              title={vendor?.id ? '編輯加盟商' : '新增加盟商'}
-            />
-          </View>
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={100}
-          >
+            <View style={styles.headerWrapper}>
+              <HeaderBar
+                showLeftButton
+                title={vendor?.id ? '編輯加盟商' : '新增加盟商'}
+              />
+            </View>
+
             <ScrollView style={styles.contentWrapper}>
               <Text style={styles.header}>
                 {vendor?.id ? '編輯加盟商' : '新增加盟商'}
               </Text>
-
               <Text style={styles.label}>指派使用者</Text>
-
               <View style={styles.formGroup}>
                 <MyDropdown
                   value={userId}
@@ -197,7 +192,6 @@ const AddVendorScreen = () => {
                   zIndex={3000}
                 />
               </View>
-
               <Text style={styles.label}>名稱</Text>
               <TextInput
                 style={styles.input}
@@ -205,7 +199,6 @@ const AddVendorScreen = () => {
                 onChangeText={setName}
                 placeholder="請輸入名稱"
               />
-
               <Text style={styles.label}>聯絡人資訊</Text>
               <TextInput
                 style={styles.input}
@@ -213,7 +206,6 @@ const AddVendorScreen = () => {
                 onChangeText={setContactInfo}
                 placeholder="請輸入聯絡人資訊"
               />
-
               <Text style={styles.label}>公司名稱</Text>
               <TextInput
                 style={styles.input}
@@ -221,7 +213,6 @@ const AddVendorScreen = () => {
                 onChangeText={setCompanyName}
                 placeholder="請輸入公司名稱"
               />
-
               <Text style={styles.label}>公司地址</Text>
               <TextInput
                 style={styles.input}
@@ -229,7 +220,6 @@ const AddVendorScreen = () => {
                 onChangeText={setCompanyAddress}
                 placeholder="請輸入公司地址"
               />
-
               <Text style={styles.label}>住宅地址</Text>
               <TextInput
                 style={styles.input}
@@ -237,7 +227,6 @@ const AddVendorScreen = () => {
                 onChangeText={setAddress}
                 placeholder="請輸入住宅地址"
               />
-
               <Text style={styles.label}>行動電話</Text>
               <TextInput
                 style={styles.input}
@@ -246,7 +235,6 @@ const AddVendorScreen = () => {
                 placeholder="請輸入行動電話"
                 keyboardType="phone-pad"
               />
-
               <Text style={styles.label}>電子郵件</Text>
               <TextInput
                 style={styles.input}
@@ -255,7 +243,6 @@ const AddVendorScreen = () => {
                 placeholder="請輸入電子郵件"
                 keyboardType="email-address"
               />
-
               <Text style={styles.label}>室內電話</Text>
               <TextInput
                 style={styles.input}
@@ -264,7 +251,6 @@ const AddVendorScreen = () => {
                 placeholder="請輸入室內電話"
                 keyboardType="phone-pad"
               />
-
               <TouchableOpacity
                 style={styles.submitButton}
                 onPress={handleSubmit}
@@ -274,8 +260,8 @@ const AddVendorScreen = () => {
                 </Text>
               </TouchableOpacity>
             </ScrollView>
-          </KeyboardAvoidingView>
-        </View>
+          </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -283,7 +269,7 @@ const AddVendorScreen = () => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
-  container: { flexGrow: 1 },
+  container: { flex: 1 },
   backgroundImageWrapper: {
     position: 'absolute',
     width: '100%',

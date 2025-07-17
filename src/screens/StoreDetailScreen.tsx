@@ -338,7 +338,9 @@ const StoreDetailScreen = () => {
               <View style={styles.tableGrid}>
                 {tables.map((item) => {
                   const isReserved = item.isUse;
-                  const isFault = item.status === 'FAULT';
+                  const isFault =
+                    item.status === 'FAULT' || item.status === 'UNAVAILABLE';
+
                   const status = isFault
                     ? 'fault'
                     : isReserved
@@ -349,7 +351,6 @@ const StoreDetailScreen = () => {
                     : isReserved
                     ? '開局進行中'
                     : '立即開台';
-
                   return (
                     <TouchableOpacity
                       key={item.id}

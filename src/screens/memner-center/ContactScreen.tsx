@@ -43,6 +43,7 @@ const ContactScreen = ({ navigation, route }) => {
           return now.isBetween(start, end, null, '[)');
         });
 
+        logJson('matchedSlot', matchedSlot);
         setCurrentSlot(matchedSlot || null);
       };
 
@@ -131,7 +132,7 @@ const ContactScreen = ({ navigation, route }) => {
               <View style={styles.rateBox}>
                 <Text style={styles.price}>
                   {currentSlot.isDiscount ? '優惠時段：' : '一般時段：'}
-                  <NumberFormatter number={60 * ~~currentSlot.rate} />
+                  <NumberFormatter number={60 * currentSlot.rate} />
                   元/小時
                 </Text>
               </View>

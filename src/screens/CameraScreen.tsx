@@ -12,7 +12,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { getGamePrice } from '../api/gameApi';
+import { getGamePrice, startGame } from '../api/gameApi';
 import { fetchPoolTableByUid } from '../api/poolTableAPI';
 import { useDialog } from '../context/DialogContext';
 import { showLoading, hideLoading } from '../store/loadingSlice';
@@ -134,13 +134,46 @@ const CameraScreen = () => {
             });
 
             if (confirm) {
-              (navigation as any).navigate('Main', {
-                screen: 'Member',
-                params: {
-                  screen: 'Reservation',
-                  params: { poolTableUid },
-                },
-              });
+              try {
+                dispatch(showLoading());
+
+                const payType = 'game';
+                const result = await startGame({
+                  poolTableUId: poolTableUid,
+                  payType,
+                });
+                dispatch(hideLoading());
+                if (result.success) {
+                  if (result.data) {
+                    await openInfoDialog({
+                      title: '系統訊息',
+                      content: '開局成功',
+                      confirmText: '我知道了',
+                    });
+                    (navigation as any).reset({
+                      index: 0,
+                      routes: [{ name: 'Main' }],
+                    });
+                  } else {
+                    await openInfoDialog({
+                      title: '錯誤',
+                      content: result.message || '開局失敗，請稍後再試',
+                    });
+                  }
+                } else {
+                  await openInfoDialog({
+                    title: '錯誤',
+                    content: result.message || '開局失敗，請稍後再試',
+                  });
+                }
+              } catch (error: any) {
+                if (error.isAutoLogout) return;
+                await openInfoDialog({
+                  title: '錯誤',
+                  content: getErrorMessage(error),
+                });
+              } finally {
+              }
             } else {
               setScanned(false);
             }
