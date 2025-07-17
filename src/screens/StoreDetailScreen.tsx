@@ -70,40 +70,22 @@ const StoreDetailScreen = () => {
         const storeRes = await fetchStoreByUid(store.uid);
         const todayRes = storeRes.data.todayRes;
         if (todayRes) {
-          const now = moment();
-          const open = moment(todayRes.openTime, 'HH:mm');
-          const close = moment(todayRes.closeTime, 'HH:mm');
-
-          const inBusinessHours = now.isBetween(open, close, null, '[)');
-
-          const currentSlot = todayRes.timeSlots.find((slot) => {
-            const start = moment(slot.startTime, 'HH:mm');
-            const end = moment(slot.endTime, 'HH:mm');
-            return now.isBetween(start, end, null, '[)');
-          });
+          const currentSlot = todayRes.timeSlots[0];
 
           setTodayPricing({
             regularRate: todayRes.regularRate,
-            discountRate: currentSlot?.regularRate ?? todayRes.regularRate,
+            discountRate: todayRes.discountRate,
           });
 
-          setCurrentDiscountSlot(
-            currentSlot
-              ? {
-                  startTime: currentSlot.startTime,
-                  endTime: currentSlot.endTime,
-                }
-              : null
-          );
+          setCurrentDiscountSlot({
+            startTime: currentSlot.startTime,
+            endTime: currentSlot.endTime,
+          });
 
-          setCurrentRegularSlot(
-            inBusinessHours
-              ? {
-                  startTime: todayRes.openTime,
-                  endTime: todayRes.closeTime,
-                }
-              : null
-          );
+          setCurrentRegularSlot({
+            startTime: todayRes.openTime,
+            endTime: todayRes.closeTime,
+          });
         }
 
         dispatch(hideLoading());
@@ -220,7 +202,32 @@ const StoreDetailScreen = () => {
           });
           (navigation as any).reset({
             index: 0,
-            routes: [{ name: 'Main' }],
+            routes: [
+              {
+                name: 'Main',
+                state: {
+                  routes: [
+                    {
+                      name: 'Member',
+                      state: {
+                        routes: [
+                          {
+                            name: 'Contact',
+                            params: {
+                              transaction: {
+                                ...result.data.gameRecord,
+                                storePhone: result.data.storePhone,
+                                timeSlots: result.data.timeSlots,
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
           });
         } else {
           await openInfoDialog({

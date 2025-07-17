@@ -85,6 +85,7 @@ const CameraScreen = () => {
 
       if (qrCodeType === 1 && poolTableUid) {
         const response = await fetchPoolTableByUid(poolTableUid);
+        logJson('zx', response);
         if (response.success) {
           const storeName = response.data.storeName || '未知店家';
           const tableName = response.data.poolTableName || '未知桌台';
@@ -152,7 +153,32 @@ const CameraScreen = () => {
                     });
                     (navigation as any).reset({
                       index: 0,
-                      routes: [{ name: 'Main' }],
+                      routes: [
+                        {
+                          name: 'Main',
+                          state: {
+                            routes: [
+                              {
+                                name: 'Member',
+                                state: {
+                                  routes: [
+                                    {
+                                      name: 'Contact',
+                                      params: {
+                                        transaction: {
+                                          ...result.data.gameRecord,
+                                          storePhone: result.data.storePhone,
+                                          timeSlots: result.data.timeSlots,
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
                     });
                   } else {
                     await openInfoDialog({

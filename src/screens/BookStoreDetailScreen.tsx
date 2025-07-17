@@ -66,17 +66,9 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
         const storeRes = await fetchStoreByUid(store.uid);
         const todayRes = storeRes.data.todayRes;
         if (todayRes) {
-          const now = moment();
-          const open = moment(todayRes.openTime, 'HH:mm');
-          const close = moment(todayRes.closeTime, 'HH:mm');
-
           const currentSlot = todayRes.timeSlots[0];
 
           setTodayPricing({
-            regularRate: todayRes.regularRate,
-            discountRate: todayRes.discountRate,
-          });
-          logJson('zxc', {
             regularRate: todayRes.regularRate,
             discountRate: todayRes.discountRate,
           });
@@ -248,7 +240,7 @@ const StoreDetailScreen = ({ route, navigation }: any) => {
                     item.status === 'FAULT' || item.status === 'UNAVAILABLE';
 
                   const status = isFault ? 'fault' : 'available';
-                  const label = isFault ? '設備維護中' : '立即開台';
+                  const label = isFault ? '設備維護中' : '選擇桌檯';
                   return (
                     <TouchableOpacity
                       key={item.id}
