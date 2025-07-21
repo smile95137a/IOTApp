@@ -38,8 +38,6 @@ const GameHistoryScreen = ({ navigation }: any) => {
           )
         );
         setTransactions(sortedData);
-
-        setTransactions(data);
       } else {
         setTransactions([]);
         await openInfoDialog({

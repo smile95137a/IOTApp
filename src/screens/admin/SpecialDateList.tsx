@@ -163,7 +163,7 @@ const SpecialDateList = ({
                       keyboardType="numeric"
                       value={String(item.regularRate)}
                       onChangeText={(val) =>
-                        updateSpecialDate(globalIndex, 'regularRate', ~~val)
+                        updateSpecialDate(globalIndex, 'regularRate', val)
                       }
                     />
 
@@ -283,7 +283,7 @@ const SpecialDateList = ({
                               globalIndex,
                               slotIndex,
                               'price',
-                              ~~val
+                              val
                             )
                           }
                           style={{

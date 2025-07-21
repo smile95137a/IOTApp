@@ -405,6 +405,23 @@ const AddStoreScreen = () => {
     });
     if (confirmed) removeTimeSlot(slotIndex);
   };
+  const removeWeekendTimeSlot = async (index: number) => {
+    const confirmed = await openConfirmDialog({
+      title: '確定刪除',
+      content: '你要刪除這個週末折扣時段嗎？',
+      confirmText: '刪除',
+      cancelText: '取消',
+    });
+
+    if (confirmed) {
+      const updated = [...weekendSchedule.timeSlots];
+      updated.splice(index, 1);
+      setWeekendSchedule((prev) => ({
+        ...prev,
+        timeSlots: updated,
+      }));
+    }
+  };
 
   const geocodeAddress = async (inputAddress: string) => {
     try {
@@ -1156,9 +1173,9 @@ const AddStoreScreen = () => {
                       keyboardType="numeric"
                       value={String(weekendSchedule.regularRate)}
                       onChangeText={(text) =>
-                        setWeekendSchedule((prev) => ({
+                        setWeekendSchedule((prev: any) => ({
                           ...prev,
-                          regularRate: parseFloat(text) || 0,
+                          regularRate: text || 0,
                         }))
                       }
                     />
@@ -1170,9 +1187,9 @@ const AddStoreScreen = () => {
                       keyboardType="numeric"
                       value={String(weekendSchedule.discountRate)}
                       onChangeText={(text) =>
-                        setWeekendSchedule((prev) => ({
+                        setWeekendSchedule((prev: any) => ({
                           ...prev,
-                          discountRate: parseFloat(text) || 0,
+                          discountRate: text || 0,
                         }))
                       }
                     />
@@ -1309,6 +1326,18 @@ const AddStoreScreen = () => {
                           }}
                         />
                       </View>
+                      <TouchableOpacity
+                        onPress={() => removeWeekendTimeSlot(index)}
+                        style={{
+                          marginTop: 8,
+                          padding: 8,
+                          backgroundColor: '#ffcccc',
+                          borderRadius: 6,
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Text style={{ color: '#900' }}>刪除這個折扣時段</Text>
+                      </TouchableOpacity>
                     </View>
                   ))}
 

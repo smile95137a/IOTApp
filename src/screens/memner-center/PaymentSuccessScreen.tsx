@@ -61,7 +61,9 @@ const PaymentSuccessScreen = ({ navigation }: any) => {
       },
     });
   };
-
+  const handleGoHome = () => {
+    (navigation as any).navigate('Home');
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.messageContainer}>
@@ -83,6 +85,10 @@ const PaymentSuccessScreen = ({ navigation }: any) => {
           <Text style={styles.startGameText}>前往球局</Text>
         </TouchableOpacity>
       )}
+
+      <TouchableOpacity style={styles.doneButton} onPress={handleGoHome}>
+        <Text style={styles.doneButtonText}>完成</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -129,6 +135,18 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   startGameText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  doneButton: {
+    backgroundColor: '#CFCFCF',
+    borderRadius: 30,
+    paddingHorizontal: 40,
+    paddingVertical: 12,
+    marginBottom: 20,
+  },
+  doneButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#000',
