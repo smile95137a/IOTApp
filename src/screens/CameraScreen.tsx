@@ -93,7 +93,7 @@ const CameraScreen = () => {
           if (response.data.gameId) {
             dispatch(hideLoading());
             const confirm = await openConfirmDialog({
-              title: `已掃描到 ${storeName} - ${tableName}`,
+              title: `已掃描到 ${storeName} - ${tableName} $${priceByHour}/小時`,
               content: '是否前往付款？',
             });
 
