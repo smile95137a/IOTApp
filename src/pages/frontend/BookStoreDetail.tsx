@@ -30,7 +30,8 @@ const StoreDetailScreen: React.FC = () => {
   const [store, setStoreState] = useState<any>(null);
   const [tables, setTables] = useState<any[]>([]);
   const [todayPricing, setTodayPricing] = useState<any>(null);
-  const [currentSlot, setCurrentSlot] = useState<any>(null);
+  const [currentRegularSlot, setCurrentRegularSlot] = useState<any>(null);
+  const [currentDiscountSlot, setCurrentDiscountSlot] = useState<any>(null);
 
   useEffect(() => {
     if (storeId) {
@@ -47,12 +48,22 @@ const StoreDetailScreen: React.FC = () => {
 
     const today = storeData.todayRes;
     if (today) {
-      const now = moment();
-      const slot = today.timeSlots.find((t: any) =>
-        now.isBetween(moment(t.startTime, 'HH:mm'), moment(t.endTime, 'HH:mm'))
-      );
-      setTodayPricing(today);
-      setCurrentSlot(slot);
+      const currentSlot = today.timeSlots[0];
+
+      setTodayPricing({
+        regularRate: today.regularRate,
+        discountRate: today.discountRate,
+      });
+
+      setCurrentDiscountSlot({
+        startTime: currentSlot.startTime,
+        endTime: currentSlot.endTime,
+      });
+
+      setCurrentRegularSlot({
+        startTime: today.openTime,
+        endTime: today.closeTime,
+      });
     }
   };
 
@@ -91,18 +102,19 @@ const StoreDetailScreen: React.FC = () => {
                 </p>
                 <p className="store-detail__price-sub">一般時段</p>
                 <p className="store-detail__price-time">
-                  {todayPricing?.openTime} - {todayPricing?.closeTime}
+                  {currentRegularSlot?.startTime} -{' '}
+                  {currentRegularSlot?.endTime}
                 </p>
               </div>
               <div>
                 <p className="store-detail__price-main">
-                  <NumberFormatter number={currentSlot?.price * 60 ?? 0} />
+                  <NumberFormatter number={todayPricing.discountRate * 60} />
                   元/小時
                 </p>
                 <p className="store-detail__price-sub">優惠時段</p>
                 <p className="store-detail__price-time">
-                  {currentSlot
-                    ? `${currentSlot.startTime} - ${currentSlot.endTime}`
+                  {currentDiscountSlot
+                    ? `${currentDiscountSlot.startTime} - ${currentDiscountSlot.endTime}`
                     : '目前無優惠時段'}
                 </p>
               </div>

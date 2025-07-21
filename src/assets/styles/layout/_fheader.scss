@@ -79,7 +79,7 @@ $root-block-name: '.fheader';
       @include screen(md) {
         @include flex(null, null, column);
         width: 196px;
-        background: #d8ffff;
+        background: linear-gradient(180deg, #1d1640 0%, #4067a4 99%);
         height: 100%;
         gap: 18px;
         padding: 24px;

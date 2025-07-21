@@ -55,6 +55,8 @@ const Payment: React.FC = () => {
           price: rechargeOption.rechargeAmount,
           payType,
           point: rechargeOption.bonusAmount,
+          isFirst: rechargeOption.isFirst,
+          sendType: rechargeOption.sendType,
         });
       } else if (type === 'payEnd') {
         result = await checkoutGameGamePay({

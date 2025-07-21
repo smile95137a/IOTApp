@@ -10,6 +10,7 @@ import MCard from '@/components/frontend/MCard';
 import logo from '@/assets/image/i-Pool_logo_RGB_2.png';
 import { getLoginUrl } from '@/utils/AuthUtils';
 import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 interface LoginFormValues {
   email?: string;
@@ -75,13 +76,15 @@ const Login: React.FC = () => {
         dispatch(setToken(data.accessToken));
         navigate('/main', { replace: true });
       } else {
-        await openInfoDialog('系統提示', message || '登入失敗，請稍後再試！');
+        await openInfoDialog({
+          title: '系統提示',
+          content: message || '登入失敗，請稍後再試！',
+        });
       }
     } catch (error: any) {
       setLoading(false);
-      const message =
-        error?.response?.data?.message || '登入失敗，請稍後再試！';
-      await openInfoDialog('系統提示', message);
+
+      await openInfoDialog({ title: '錯誤', content: getErrorMessage(error) });
     }
   };
 

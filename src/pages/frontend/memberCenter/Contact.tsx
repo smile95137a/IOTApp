@@ -96,7 +96,7 @@ const Contact: React.FC = () => {
           <div className="contact__rate">
             <span>
               {currentSlot.isDiscount ? '優惠時段：' : '一般時段：'}
-              <NumberFormatter number={60 * ~~currentSlot.rate} /> 元/小時
+              <NumberFormatter number={60 * currentSlot.rate} /> 元/小時
             </span>
           </div>
         )}

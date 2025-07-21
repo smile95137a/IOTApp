@@ -7,6 +7,9 @@ import tableDisableImg from '@/assets/image/iot-table-disable.png';
 import NumberFormatter from '@/components/common/NumberFormatter';
 import { fetchPoolTablesByStoreUid } from '@/services/frontend/poolTableService';
 import { fetchStoreByUid } from '@/services/frontend/storeService';
+import { startGame } from '@/services/frontend/gameService';
+import { useDialog } from '@/context/DialogContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const StoreDetailScreen: React.FC = () => {
   const { storeId } = useParams();
@@ -14,8 +17,9 @@ const StoreDetailScreen: React.FC = () => {
   const [store, setStore] = useState<any>(null);
   const [tables, setTables] = useState<any[]>([]);
   const [todayPricing, setTodayPricing] = useState<any>(null);
-  const [currentSlot, setCurrentSlot] = useState<any>(null);
-
+  const [currentRegularSlot, setCurrentRegularSlot] = useState<any>(null);
+  const [currentDiscountSlot, setCurrentDiscountSlot] = useState<any>(null);
+  const { openConfirmDialog, openInfoDialog } = useDialog();
   useEffect(() => {
     if (storeId) {
       loadStore();
@@ -30,12 +34,22 @@ const StoreDetailScreen: React.FC = () => {
 
     const today = storeData.todayRes;
     if (today) {
-      const now = moment();
-      const slot = today.timeSlots.find((t: any) =>
-        now.isBetween(moment(t.startTime, 'HH:mm'), moment(t.endTime, 'HH:mm'))
-      );
-      setTodayPricing(today);
-      setCurrentSlot(slot);
+      const currentSlot = today.timeSlots[0];
+
+      setTodayPricing({
+        regularRate: today.regularRate,
+        discountRate: today.discountRate,
+      });
+
+      setCurrentDiscountSlot({
+        startTime: currentSlot.startTime,
+        endTime: currentSlot.endTime,
+      });
+
+      setCurrentRegularSlot({
+        startTime: today.openTime,
+        endTime: today.closeTime,
+      });
     }
   };
 
@@ -48,6 +62,38 @@ const StoreDetailScreen: React.FC = () => {
 
   const available = tables.filter((t) => !t.isUse).length;
 
+  const handleStartGame = async (poolTableUid: string) => {
+    try {
+      const payType = 'game';
+      const result = await startGame({ poolTableUId: poolTableUid, payType });
+      if (result.success) {
+        if (result.data) {
+          await openInfoDialog({
+            title: '系統訊息',
+            content: '開局成功',
+            confirmText: '我知道了',
+          });
+          navigate('/member-center/game-ongoing');
+        } else {
+          await openInfoDialog({
+            title: '錯誤',
+            content: result.message || '開局失敗，請稍後再試',
+          });
+        }
+      } else {
+        await openInfoDialog({
+          title: '錯誤',
+          content: result.message || '開局失敗，請稍後再試',
+        });
+      }
+    } catch (error: any) {
+      if (error.isAutoLogout) return;
+      await openInfoDialog({
+        title: '錯誤',
+        content: getErrorMessage(error),
+      });
+    }
+  };
   return (
     <div className="store-detail">
       <div className="store-detail__header">
@@ -74,18 +120,18 @@ const StoreDetailScreen: React.FC = () => {
                 </p>
                 <p className="store-detail__price-sub">一般時段</p>
                 <p className="store-detail__price-time">
-                  {todayPricing?.openTime} - {todayPricing?.closeTime}
+                  {currentRegularSlot?.startTime} -{currentRegularSlot?.endTime}
                 </p>
               </div>
               <div>
                 <p className="store-detail__price-main">
-                  <NumberFormatter number={currentSlot?.price * 60 ?? 0} />
+                  <NumberFormatter number={todayPricing.discountRate * 60} />
                   元/小時
                 </p>
                 <p className="store-detail__price-sub">優惠時段</p>
                 <p className="store-detail__price-time">
-                  {currentSlot
-                    ? `${currentSlot.startTime} - ${currentSlot.endTime}`
+                  {currentDiscountSlot
+                    ? `${currentDiscountSlot.startTime} - ${currentDiscountSlot.endTime}`
                     : '目前無優惠時段'}
                 </p>
               </div>
@@ -102,28 +148,25 @@ const StoreDetailScreen: React.FC = () => {
 
         <div className="store-detail__table-grid">
           {tables.map((table) => {
-            const status =
-              table.status === 'FAULT'
-                ? 'fault'
-                : table.isUse
-                ? 'reserved'
-                : 'available';
-            const label =
-              status === 'fault'
-                ? '設備維護中'
-                : status === 'reserved'
-                ? '開局進行中'
-                : '立即開台';
+            const isReserved = table.isUse;
+            const isFault =
+              table.status === 'FAULT' || table.status === 'UNAVAILABLE';
 
+            const status = isFault
+              ? 'fault'
+              : isReserved
+              ? 'reserved'
+              : 'available';
+            const label = isFault
+              ? '設備維護中'
+              : isReserved
+              ? '開局進行中'
+              : '立即開台';
             return (
               <div
                 key={table.id}
                 className="store-detail__table-item"
-                onClick={() => {
-                  if (status === 'available') {
-                    navigate(`/reservation?tableUid=${table.uid}`);
-                  }
-                }}
+                onClick={() => handleStartGame(table.uid)}
               >
                 <img
                   src={
