@@ -124,8 +124,8 @@ const AdminStoreDetailScreen = () => {
         const formatted = response.data.map((item: any) => ({
           id: item.id,
           name: !!item.circuitName ? item.circuitName : '',
-          enabled: !!item.status,
-          status: !!item.status,
+          enabled: !!item.isControllable,
+          status: !!item.isControllable,
         }));
         logJson('loadEquipments', response.data);
         logJson('loadEquipments formatted', formatted);
