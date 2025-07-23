@@ -127,6 +127,8 @@ const AdminStoreDetailScreen = () => {
           enabled: !!item.status,
           status: !!item.status,
         }));
+        logJson('loadEquipments', response.data);
+        logJson('loadEquipments formatted', formatted);
         setEquipments(formatted);
       }
     } catch {
@@ -178,6 +180,7 @@ const AdminStoreDetailScreen = () => {
       dispatch(showLoading());
       await updateStoreEquipmentStatus(current.id, newStatus);
       dispatch(hideLoading());
+      loadEquipments();
     } catch {
       dispatch(hideLoading());
       updated[index] = { ...current, enabled: !newStatus };
