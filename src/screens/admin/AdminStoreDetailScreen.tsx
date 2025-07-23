@@ -30,7 +30,10 @@ import { showLoading, hideLoading } from '../../store/loadingSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { logJson } from '../../utils/logJsonUtils';
 import { useCameraSnapshots } from '../../hooks/useCameraSnapshots';
-import { fetchRoutersByStoreId } from '../../api/admin/routerApi';
+import {
+  controlRouter,
+  fetchRoutersByStoreId,
+} from '../../api/admin/routerApi';
 
 const AdminStoreDetailScreen = () => {
   const route = useRoute<any>();
@@ -178,7 +181,11 @@ const AdminStoreDetailScreen = () => {
 
     try {
       dispatch(showLoading());
-      await updateStoreEquipmentStatus(current.id, newStatus);
+      await controlRouter({
+        routerId: current.id,
+        targetStatus: newStatus,
+        storeId: store.id,
+      });
       dispatch(hideLoading());
       loadEquipments();
     } catch {
