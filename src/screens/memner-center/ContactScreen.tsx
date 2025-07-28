@@ -26,30 +26,58 @@ const ContactScreen = ({ navigation, route }) => {
   const { transaction } = route.params || {};
   const [elapsedTime, setElapsedTime] = useState(0);
   const [currentSlot, setCurrentSlot] = useState<any>(null);
+  const [mergedSlots, setMergedSlots] = useState<{
+    regular?: { startTime: string; endTime: string };
+    discount?: { startTime: string; endTime: string };
+  }>({});
+  const isCurrentSlotRegular = currentSlot && !currentSlot.isDiscount;
+  const isCurrentSlotDiscount = currentSlot && currentSlot.isDiscount;
 
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
+    logJson('zxc', transaction);
     if (transaction?.startTime && transaction?.timeSlots) {
       const startTime = moment(transaction.startTime, 'YYYY/MM/DD HH:mm:ss');
 
+      // 合併時段區間
+      const regularTimes = transaction.timeSlots.filter((s) => !s.isDiscount);
+      const discountTimes = transaction.timeSlots.filter((s) => s.isDiscount);
+
+      const getMinMaxTime = (slots: typeof transaction.timeSlots) => {
+        if (!slots.length) return undefined;
+        const times = slots.map((s) => ({
+          start: moment(s.startTime, 'HH:mm:ss'),
+          end: moment(s.endTime, 'HH:mm:ss'),
+        }));
+        const min = moment.min(times.map((t) => t.start));
+        const max = moment.max(times.map((t) => t.end));
+        return {
+          startTime: min.format('HH:mm:ss'),
+          endTime: max.format('HH:mm:ss'),
+        };
+      };
+
+      setMergedSlots({
+        regular: getMinMaxTime(regularTimes),
+        discount: getMinMaxTime(discountTimes),
+      });
+
+      // 計時器
       const updateTimer = () => {
         const now = moment();
         setElapsedTime(now.diff(startTime, 'seconds'));
 
-        // 每秒重新判斷目前的時段
         const matchedSlot = transaction.timeSlots.find((slot) => {
           const start = moment(slot.startTime, 'HH:mm:ss');
           const end = moment(slot.endTime, 'HH:mm:ss');
           return now.isBetween(start, end, null, '[)');
         });
 
-        logJson('matchedSlot', matchedSlot);
         setCurrentSlot(matchedSlot || null);
       };
 
-      updateTimer(); // 初始更新
+      updateTimer(); // 初始
       const timer = setInterval(updateTimer, 1000);
-
       return () => clearInterval(timer);
     }
   }, [transaction]);
@@ -127,24 +155,69 @@ const ContactScreen = ({ navigation, route }) => {
             },
           ]}
         >
-          <View style={styles.timerTopRow}>
-            {transaction?.timeSlots?.map((slot, index) => {
-              const isCurrent =
-                currentSlot?.startTime === slot.startTime &&
-                currentSlot?.endTime === slot.endTime;
+          <View style={styles.slotListContainer}>
+            <Text style={styles.slotSectionTitle}>費率時段一覽</Text>
 
-              return (
+            <View style={styles.slotGrid}>
+              {mergedSlots.regular && (
                 <View
-                  key={index}
-                  style={[styles.rateBox, isCurrent && styles.rateBoxActive]}
+                  style={[
+                    styles.slotCard,
+                    isCurrentSlotRegular && styles.slotCardActive,
+                  ]}
                 >
-                  <Text style={styles.price}>
-                    {slot.isDiscount ? '優惠時段：' : '一般時段：'}
-                    <NumberFormatter number={60 * slot.rate} /> 元/小時
+                  <View style={styles.slotCardHeader}>
+                    <FontAwesome
+                      name="clock-o"
+                      size={16}
+                      color="#4a4a4a"
+                      style={styles.slotIcon}
+                    />
+                    <Text style={styles.slotTitle}>一般</Text>
+                  </View>
+                  <Text style={styles.slotTime}>
+                    {moment(mergedSlots.regular.startTime, 'HH:mm:ss').format(
+                      'HH:mm'
+                    )}{' '}
+                    ~{' '}
+                    {moment(mergedSlots.regular.endTime, 'HH:mm:ss').format(
+                      'HH:mm'
+                    )}
                   </Text>
+                  <Text style={styles.slotRate}>合併時段</Text>
                 </View>
-              );
-            })}
+              )}
+              {mergedSlots.discount && (
+                <View
+                  style={[
+                    styles.slotCard,
+                    isCurrentSlotDiscount && styles.slotCardActive,
+                  ]}
+                >
+                  <View style={styles.slotCardHeader}>
+                    <FontAwesome
+                      name="tag"
+                      size={16}
+                      color="#f67943"
+                      style={styles.slotIcon}
+                    />
+                    <Text style={[styles.slotTitle, styles.discountText]}>
+                      優惠
+                    </Text>
+                  </View>
+                  <Text style={styles.slotTime}>
+                    {moment(mergedSlots.discount.startTime, 'HH:mm:ss').format(
+                      'HH:mm'
+                    )}{' '}
+                    ~{' '}
+                    {moment(mergedSlots.discount.endTime, 'HH:mm:ss').format(
+                      'HH:mm'
+                    )}
+                  </Text>
+                  <Text style={styles.slotRate}>合併時段</Text>
+                </View>
+              )}
+            </View>
           </View>
 
           <View style={styles.timerTimeContainer}>
@@ -314,6 +387,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  timerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  rateBox: {
+    paddingHorizontal: 4,
+  },
   iconWrapper: {
     alignItems: 'center',
     marginRight: 16,
@@ -337,24 +419,76 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  timerTopRow: {
+  slotListContainer: {
+    width: '100%',
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+  },
+
+  slotSectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 12,
+  },
+
+  slotGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 8,
-    width: '100%',
-    paddingHorizontal: 12,
   },
 
-  rateBox: {
+  slotCard: {
     width: '48%',
-    paddingVertical: 8,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    paddingVertical: 12,
     paddingHorizontal: 10,
-    borderRadius: 8,
-    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
   },
-  rateBoxActive: {
-    backgroundColor: '#ccc',
+
+  slotCardActive: {
+    backgroundColor: '#fff9e6',
+    borderColor: '#ffc107',
+    shadowOpacity: 0.12,
+    elevation: 3,
+  },
+
+  slotCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  slotIcon: {
+    marginRight: 6,
+  },
+
+  slotTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+
+  discountText: {
+    color: '#f67943',
+  },
+
+  slotTime: {
+    fontSize: 13,
+    color: '#666',
+  },
+
+  slotRate: {
+    fontSize: 13,
+    color: '#000',
+    fontWeight: '600',
+    marginTop: 4,
   },
 });
 
