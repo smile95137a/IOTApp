@@ -127,17 +127,25 @@ const ContactScreen = ({ navigation, route }) => {
             },
           ]}
         >
-          {currentSlot && (
-            <View style={styles.timerTopRow}>
-              <View style={styles.rateBox}>
-                <Text style={styles.price}>
-                  {currentSlot.isDiscount ? '優惠時段：' : '一般時段：'}
-                  <NumberFormatter number={60 * currentSlot.rate} />
-                  元/小時
-                </Text>
-              </View>
-            </View>
-          )}
+          <View style={styles.timerTopRow}>
+            {transaction?.timeSlots?.map((slot, index) => {
+              const isCurrent =
+                currentSlot?.startTime === slot.startTime &&
+                currentSlot?.endTime === slot.endTime;
+
+              return (
+                <View
+                  key={index}
+                  style={[styles.rateBox, isCurrent && styles.rateBoxActive]}
+                >
+                  <Text style={styles.price}>
+                    {slot.isDiscount ? '優惠時段：' : '一般時段：'}
+                    <NumberFormatter number={60 * slot.rate} /> 元/小時
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
 
           <View style={styles.timerTimeContainer}>
             <Text style={styles.timerText}>球局已進行</Text>
@@ -306,15 +314,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  timerTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  rateBox: {
-    paddingHorizontal: 4,
-  },
   iconWrapper: {
     alignItems: 'center',
     marginRight: 16,
@@ -337,6 +336,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
+  },
+  timerTopRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    width: '100%',
+    paddingHorizontal: 12,
+  },
+
+  rateBox: {
+    width: '48%',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  rateBoxActive: {
+    backgroundColor: '#ccc',
   },
 });
 

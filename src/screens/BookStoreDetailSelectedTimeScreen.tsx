@@ -27,9 +27,14 @@ import { genRandom } from '../utils/RandomUtils';
 import Header from '../component/Header';
 import { fetchStoreByUid } from '../api/storeApi';
 import { logJson } from '../utils/logJsonUtils';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store'; // 請確保這個路徑正確
 
 const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   const dispatch = useDispatch<AppDispatch>();
+
+  // 加在函式元件內部
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
 
   const { store, tableItem, selectedDate } = route.params;
   const { openConfirmDialog, openInfoDialog } = useDialog();
@@ -65,7 +70,6 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
               id: genRandom(32),
               rate: x.rate * 60,
             })) || [];
-          logJson('asd', slots);
           setTimeSlots(slots);
         } else {
           console.log(`API 回應失敗: 未能獲取桌台數據`);
@@ -174,6 +178,26 @@ const BookStoreDetailSelectedDate = ({ route, navigation }: any) => {
   };
 
   const handleMultipleReservation = async () => {
+    if (!isLoggedIn) {
+      await openInfoDialog({
+        title: '請先登入',
+        content: '進行預約前請先登入帳號',
+      });
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'Auth',
+            state: {
+              routes: [{ name: 'LoginHome' }],
+            },
+          },
+        ],
+      });
+
+      return;
+    }
+
     if (activeTimeSlots.length === 0) {
       await openInfoDialog({
         title: '請選擇時段',

@@ -13,6 +13,8 @@ import { getUserUse, topUp } from '../../api/paymentApi';
 import NumberFormatter from '../../component/NumberFormatter';
 import { useDialog } from '../../context/DialogContext';
 import { logJson } from '../../utils/logJsonUtils';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 const RechargeScreen = ({ navigation }) => {
   const [selectedOptionId, setSelectedOptionId] = useState<
@@ -24,6 +26,7 @@ const RechargeScreen = ({ navigation }) => {
   const [firstUse, setFirstUse] = useState<boolean>(true);
   const [sendUse, setSendUse] = useState<boolean>(true);
   const { openInfoDialog } = useDialog();
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
 
   const allFirstTimeOptions = [
     {
@@ -41,8 +44,32 @@ const RechargeScreen = ({ navigation }) => {
       tag: '首次會員優惠',
     },
   ];
-
   useEffect(() => {
+    const checkLogin = async () => {
+      if (!isLoggedIn) {
+        await openInfoDialog({
+          title: '請先登入',
+          content: '進行儲值前請先登入帳號',
+        });
+
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'Auth',
+              state: {
+                routes: [{ name: 'LoginHome' }],
+              },
+            },
+          ],
+        });
+      }
+    };
+
+    checkLogin();
+  }, [isLoggedIn]);
+  useEffect(() => {
+    if (!isLoggedIn) return;
     const loadData = async () => {
       try {
         const [rechargeData, userUseResp] = await Promise.all([
