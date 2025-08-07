@@ -4,59 +4,74 @@
 
     <div class="news-page__list">
       <div
+        v-if="newsList.length > 0"
         class="news-card"
         v-for="news in newsList"
-        :key="news.id"
-        @click="goToDetail(news.id)"
+        :key="news.newsUid"
+        @click="goToDetail(news.newsUid)"
       >
-        <div
+        <img
           class="news-card__image"
-          :style="{ backgroundImage: `url(${news.image})` }"
-        ></div>
+          :src="getImageUrl(news.imageUrl)"
+          :alt="news.title"
+        />
         <div class="news-card__content">
           <div class="news-card__info">
             <div class="news-card__title">{{ news.title }}</div>
-            <div class="news-card__desc">{{ news.summary }}</div>
-            <div class="news-card__date">2024.9.16</div>
+            <div class="news-card__desc">{{ getSummary(news.content) }}</div>
+            <div class="news-card__date">
+              {{ formatDate(news.createdDate) }}
+            </div>
           </div>
           <div class="news-card__arrow">
             <i class="fas fa-chevron-right"></i>
           </div>
         </div>
       </div>
+
+      <div v-else class="news-page__empty">目前尚無最新消息</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { getAllNewsNoUser } from '@/services/newsService';
+import { getImageUrl } from '@/utils/ImageUtils';
 
 const router = useRouter();
+const newsList = ref<any[]>([]);
 
-const newsList = [
-  {
-    id: 1,
-    title: '板橋文化振興店開幕大放送',
-    summary: '內容內容內容內容內容內容內容內容內容內容內容內容內容內容...',
-    image: '/news-thumb.jpg',
-  },
-  {
-    id: 2,
-    title: '台北中山旗艦館開張囉！',
-    summary: '內容內容內容內容內容內容內容內容內容內容內容內容內容內容...',
-    image: '/news-thumb.jpg',
-  },
-  {
-    id: 3,
-    title: '享撞球 x 特約優惠活動開跑',
-    summary: '內容內容內容內容內容內容內容內容內容內容內容內容內容內容...',
-    image: '/news-thumb.jpg',
-  },
-];
-
-const goToDetail = (id: number) => {
-  router.push({ name: 'NewsDetail', params: { id } });
+const fetchNews = async () => {
+  try {
+    const res = await getAllNewsNoUser();
+    if (res.success) {
+      newsList.value = res.data;
+    } else {
+      console.warn('取得最新消息失敗', res.message);
+    }
+  } catch (error) {
+    console.error('無法載入最新消息', error);
+  }
 };
+
+const goToDetail = (uid: string) => {
+  router.push({ name: 'NewsDetail', params: { id: uid } });
+};
+
+const getSummary = (content: string, maxLength = 40) => {
+  return content.length > maxLength
+    ? content.slice(0, maxLength) + '...'
+    : content;
+};
+
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr.replace(/-/g, '/'));
+  return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
+};
+
+onMounted(fetchNews);
 </script>
 
 <style scoped lang="scss">
@@ -83,6 +98,13 @@ const goToDetail = (id: number) => {
       margin: 0 auto;
     }
   }
+
+  &__empty {
+    text-align: center;
+    font-size: 1rem;
+    padding: 2rem;
+    color: #fff;
+  }
 }
 
 .news-card {
@@ -94,7 +116,6 @@ const goToDetail = (id: number) => {
   cursor: pointer;
   transition: transform 0.2s;
   align-items: center;
-  position: relative;
 
   &:hover {
     transform: translateY(-2px);
@@ -104,8 +125,7 @@ const goToDetail = (id: number) => {
     flex-shrink: 0;
     width: 80px;
     height: 80px;
-    background-size: cover;
-    background-position: center;
+    object-fit: cover;
     border-radius: 6px;
     margin: 0.75rem;
 
@@ -122,23 +142,18 @@ const goToDetail = (id: number) => {
     padding-right: 1rem;
     background-color: #00bfff;
     border-radius: 0 12px 12px 0;
-    gap: 0.5rem; // 加一點間距更清楚
-    overflow: hidden; // 限制內容不超出
+    gap: 0.5rem;
+    overflow: hidden;
   }
 
   &__info {
-    flex: 1; // 讓資訊內容可收縮
-    min-width: 0; // 避免內容撐開
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
 
-  &__arrow {
-    color: #000;
-    font-size: 1rem;
-    flex-shrink: 0; // 固定箭頭大小
-  }
   &__title {
     font-weight: bold;
     font-size: 1rem;
@@ -161,6 +176,12 @@ const goToDetail = (id: number) => {
     margin-top: 0.25rem;
     font-size: 0.8rem;
     color: #008bff;
+  }
+
+  &__arrow {
+    color: #000;
+    font-size: 1rem;
+    flex-shrink: 0;
   }
 }
 </style>
