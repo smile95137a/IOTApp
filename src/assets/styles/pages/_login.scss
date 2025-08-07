@@ -4,50 +4,102 @@ $root-block-name: '.login';
   $p: &;
   $p__text: #{$p}__text;
   $p__btn: #{$p}__btn;
-  width: 100%;
-  position: relative;
 
-  &__container {
-    max-width: 1200px;
+  @include flex(center, center);
+  height: 100%;
+  padding: 0 0 64px 0;
+  max-width: 1280px;
+  margin: 0 auto;
+
+  @include screen(lg) {
+    margin: 0 24px;
+  }
+  &__wrapper {
+    padding: 32px 24px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 4rem 2rem;
+    width: 100%;
+
+    @include screen(md) {
+      padding: 16px;
+    }
   }
 
-  &__content {
+  &__title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #01befe;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  &__container {
     @include w_h(100%, 100%);
     @include flex(center, null, column);
     padding: 64px;
     flex: 1;
+    background: #fff;
+    border-radius: 12px;
     @include screen(md) {
       padding: 8px;
     }
   }
-  &__title {
-    font-weight: 400;
-    font-size: 30px;
-    text-align: center;
-    color: #a53b25;
-  }
+
   &__main {
-    @include flex(null, center);
-    width: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
     gap: 120px;
+    width: 100%;
+
     @include screen(md) {
-      @include flex(center, null, column);
+      flex-direction: column;
+      gap: 32px;
     }
+  }
+
+  &__left,
+  &__right {
+    flex: 1 1 50%;
+    max-width: 50%;
+
+    @include screen(md) {
+      max-width: 100%;
+      flex: unset;
+    }
+  }
+
+  &__left {
+    display: flex;
+    justify-content: center;
+    .login__left-inner {
+      @include flex(center, center, column);
+      width: 100%;
+    }
+  }
+
+  &__right {
+    display: flex;
+    justify-content: center;
   }
 
   &__form {
     width: 100%;
     max-width: 340px;
     @include flex(null, null, column);
+
     &-inputs {
+      margin-bottom: 16px;
     }
+
     #{$p__text} {
       color: #212121;
-      text-align: left;
+      font-size: 15px;
+      font-weight: 500;
+
       &--error {
-        color: #a53b25;
+        color: #fe4206;
+        font-size: 13px;
+        margin-top: 4px;
       }
     }
 
@@ -56,69 +108,96 @@ $root-block-name: '.login';
       padding: 14px 20px;
       border-radius: 8px;
       border: 1px solid #d4d4d4;
+      font-size: 15px;
+
+      &.input-error,
       &--error {
-        border: 1px solid #a53b25;
+        border: 1px solid #fe4206;
       }
     }
   }
 
   &__forgot {
     @include flex(null, end);
-    padding: 16px 24px;
+    padding: 16px 0;
+
     #{$p__text} {
       color: #e21a1c;
-
       font-size: 14px;
       font-weight: 500;
-      letter-spacing: 0.30000001192092896px;
+      letter-spacing: 0.3px;
       text-decoration: underline;
-    }
-
-    &-input {
-      @include w_h(100%, 54px);
+      cursor: pointer;
     }
   }
 
   &__btns {
     flex: 1;
     @include flex(end, center);
+    margin-top: 24px;
   }
 
   &__btn {
     @include flex(center, center);
     @include w_h(100%, 48px);
     border-radius: 90px;
-    background: #a53b25;
+    background: #4285f4;
     color: #fff;
-
     font-size: 20px;
     text-align: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
 
-    &--register {
-      background: #fff;
-      color: #a53b25;
-      border: 1px solid #a53b25;
+    &:hover {
+      background: #2a6ad8;
+    }
+
+    &:disabled {
+      background: #a8c0ec;
+      cursor: not-allowed;
     }
   }
 
   &__other {
     width: 100%;
-    max-width: 365px;
     @include flex(null, null, column);
+    margin-top: 32px;
+
     &-img {
+      flex: 1;
       width: 100%;
+      background: linear-gradient(180deg, #1c1741 0%, #3b5c95 100%);
+      border-radius: 20px;
+      @include flex(center, center);
+
+      img {
+        max-width: 249px;
+        height: auto;
+      }
     }
 
     &-info {
       padding: 24px 12px 24px 36px;
+      text-align: center;
+
       #{$p__text} {
         font-size: 20px;
         font-weight: 400;
+        color: #e21a1c; // 整體文字改為紅色
+        line-height: 1.5;
+
+        .login__register-link {
+          color: #e21a1c;
+          font-weight: 600;
+          text-decoration: underline;
+          cursor: pointer;
+        }
       }
     }
 
     &-btn {
       @include flex(null, center);
+
       #{$p__btn} {
         width: 100%;
         max-width: 338px;
@@ -131,6 +210,7 @@ $root-block-name: '.login';
     @include w_h(100%, 32px);
     @include flex(center, center);
     position: relative;
+
     &-line {
       width: 100%;
       max-width: 306px;
@@ -146,45 +226,90 @@ $root-block-name: '.login';
       font-family: Noto Sans TC;
       font-size: 15px;
       font-weight: 500;
-      line-height: 21.72px;
+      line-height: 1.4;
     }
   }
 
-  &__auth {
-    height: 158px;
-    @include flex(null, center, column);
+  &__auths {
+    @include flex(center, center, column);
     gap: 20px;
+    width: 100%;
+    margin: 24px 0;
+  }
+
+  &__auth {
+    @include flex(center, center, column);
+    gap: 20px;
+    width: 100%;
+    margin: 24px 0;
+
     &-btn {
-      @include flex;
+      @include flex(center, center);
       width: 100%;
       max-width: 338px;
       height: 50px;
       background: #fff;
-      padding: 18px 45px 18px 45px;
+      padding: 0 45px;
       border-radius: 10px;
       border: 1px solid #aeaeb2;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
 
       &-icon {
         @include flex(center, center);
         width: 24px;
         height: 100%;
+        margin-right: 12px;
       }
+
       &-text {
-        @include flex(center, center);
         flex: 1;
         font-size: 16px;
         font-weight: 600;
         color: #212121;
+        text-align: center;
       }
     }
   }
 
-  &__footer {
-    text-align: center;
-    margin-top: 1rem;
+  &__toggle {
+    @include flex(center, center, column); // 改為垂直排列
+    gap: 20px; // 與 .login__auth 相同
+    width: 100%;
+    margin: 24px 0;
 
-    p {
-      margin-bottom: 0.5rem;
+    &-btn {
+      @include flex(center, center);
+      width: 100%;
+      max-width: 338px;
+      height: 50px;
+      background: #fff;
+      padding: 0 45px;
+      border-radius: 10px;
+      border: 1px solid #aeaeb2;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
+
+      &.active {
+        background-color: #ffc702;
+        border-color: #ffc702;
+        color: #000;
+        font-weight: 600;
+      }
+
+      span {
+        font-size: 16px;
+        font-weight: 600;
+        color: #212121;
+      }
     }
   }
 }
