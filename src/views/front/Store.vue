@@ -4,24 +4,29 @@
       <div
         class="store-card"
         v-for="store in storeList"
-        :key="store.id"
-        @click="goToDetail(store.id)"
+        :key="store.uid"
+        @click="goToDetail(store.uid)"
       >
         <img
           class="store-card__image"
-          :src="getImageUrl(store.image)"
+          :src="getImageUrl(store.imgUrl)"
           :alt="store.name"
         />
 
         <div class="store-card__info">
           <div class="store-card__name">{{ store.name }}</div>
           <div class="store-card__address">{{ store.address }}</div>
-          <div class="store-card__distance">{{ store.distance }}km</div>
         </div>
 
-        <div class="store-card__table-count">
+        <div
+          class="store-card__table-count"
+          :class="{
+            'store-card__table-count--gray': store.availableCount === 0,
+            'store-card__table-count--yellow': store.availableCount > 0,
+          }"
+        >
           <div class="label">剩餘桌數</div>
-          <div class="count">{{ store.availableTables }}</div>
+          <div class="count">{{ store.availableCount }}</div>
           <div class="arrow">
             <i class="fas fa-chevron-right" />
           </div>
@@ -44,15 +49,20 @@ const storeList = ref<Store[]>([]);
 
 const loadStores = async () => {
   await executeApi({
-    fn: () => fetchAllStores(),
+    fn: fetchAllStores,
     onSuccess: (data) => {
-      storeList.value = data;
+      const withAvailable = data.map((store: any) => {
+        const availableCount =
+          store.poolTables?.filter((t: any) => !t.isUse)?.length || 0;
+        return { ...store, availableCount };
+      });
+      storeList.value = withAvailable;
     },
   });
 };
 
-const goToDetail = (id: number | string) => {
-  router.push({ name: 'StoreDetail', params: { id } });
+const goToDetail = (uid: string) => {
+  router.push({ name: 'StoreDetail', params: { id: uid } });
 };
 
 onMounted(loadStores);
@@ -75,13 +85,13 @@ onMounted(loadStores);
 
 .store-card {
   display: flex;
-  align-items: stretch; // ⭐ 保證所有內容高度一致
+  align-items: stretch;
   background: #00bfff;
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s;
-  min-height: 100px; // ⭐ 明確卡片高度
+  min-height: 100px;
 
   &:hover {
     transform: translateY(-2px);
@@ -135,8 +145,6 @@ onMounted(loadStores);
   }
 
   &__table-count {
-    background: #ffc107;
-    color: #000;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -146,6 +154,16 @@ onMounted(loadStores);
     gap: 0.3rem;
     flex-shrink: 0;
     min-width: 80px;
+
+    &--yellow {
+      background: #ffc107;
+      color: #000;
+    }
+
+    &--gray {
+      background: #ddd;
+      color: #666;
+    }
 
     .label {
       font-size: 0.7rem;
@@ -163,7 +181,6 @@ onMounted(loadStores);
       align-items: center;
       font-size: 0.75rem;
       font-weight: bold;
-      color: #000;
 
       &::after {
         content: ' 查看';
