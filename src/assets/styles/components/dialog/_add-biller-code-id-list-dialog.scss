@@ -1,0 +1,79 @@
+$root-block-name: '.addBillerCodeIdListDialog';
+
+#{$root-block-name} {
+  $p: &;
+  $p__text: #{$p}__text;
+
+  width: 100%;
+  @include flex(null, null, column);
+
+  &__main {
+    flex: 1;
+    background: #fff;
+    padding: 24px 24px 24px;
+    @include flex(null, null, column);
+
+    &-content {
+      flex: 1;
+      @include flex(null, null, column);
+      #{ $p__text} {
+        text-align: center;
+        font-size: 22px;
+        letter-spacing: 1px;
+        &--title {
+          font-size: 28px;
+          font-weight: 900;
+          margin-bottom: 8px;
+        }
+      }
+    }
+
+    &-btns {
+      @include flex(center, center);
+      gap: 24px;
+    }
+
+    &-btn {
+      width: 168px;
+      height: 54px;
+      border-radius: 50px;
+      border: 2px solid #000;
+      opacity: 0px;
+      @include flex(center, center);
+
+      font-size: 25px;
+      font-weight: 400;
+
+      &--confirm {
+        color: #fff;
+        background: #ff0033;
+      }
+    }
+
+    &-balance {
+      @include flex(center, center);
+      border-bottom: 1px solid #cf8046;
+      padding-bottom: 64px;
+      @include screen(lg) {
+        padding-bottom: 12px;
+      }
+    }
+  }
+
+  &__text {
+    font-size: 25px;
+    font-weight: 400;
+    &--title {
+      color: #017162;
+    }
+    &--red {
+      font-size: 64px;
+      font-weight: 400;
+      color: #fe4206;
+    }
+
+    &--bold {
+      font-weight: 800;
+    }
+  }
+}

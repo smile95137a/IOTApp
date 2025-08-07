@@ -2,66 +2,20 @@ $root-block-name: '.mcard';
 
 #{$root-block-name} {
   $p: &;
-  $p__text: #{$p}__text;
-  $p__header: #{$p}__header;
-  $p__content: #{$p}__content;
-
-  @include flex(null, null, column);
-  border-radius: 30px;
-  overflow: hidden;
+  $p__label: #{$p}__label;
+  padding: 12px;
+  margin: 0;
+  position: relative;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  box-shadow: 0px 12px 30px 0px #00000026;
-
-  &--ichiban {
-    #{ $p__header} {
-      padding: 0;
-      align-items: end;
-    }
-  }
-  &--login,
-  &--register,
-  &--mainpage,
-  &--product-detail-one {
-    min-height: 636px;
-    box-shadow: 0px 12px 30px 0px #00000026;
-  }
-
-  &--memberCenter {
-    min-height: 1315px;
-    #{$p__content} {
-      padding: 24px;
-
-      @include screen(lg) {
-        padding: 12px;
-      }
-      @include screen(md) {
-        padding: 6px;
-      }
-    }
-  }
-
-  &--login {
-    @include screen(xs) {
-      min-height: 478px;
-    }
-  }
-
-  &__header {
-    padding: 16px 0;
-    height: 74px;
-
-    @include flex(center, center);
-
-    #{$p__text} {
-      font-size: 30px;
-      font-weight: 400;
-      color: #2a88cb;
-    }
-  }
-
   &__content {
     flex: 1;
-    background: #fff;
-    @include flex(null, null, column);
+    display: flex;
+    flex-direction: column;
   }
 }

@@ -7,11 +7,16 @@ $root-block-name: '.loader';
   z-index: 99999999;
   inset: 0;
   background-color: rgba(255, 255, 255, 0.7);
-  @include flex(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &__img {
-    @include abs-center;
-    color: #2a88cb;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #017162;
     font-size: 20px;
     font-weight: bold;
 
@@ -33,13 +38,13 @@ $root-block-name: '.loader';
       @extend %slider;
       margin-left: -30px;
       width: math.div($img-width, 4) * 3;
-      background-color: #2a88cb;
+      background-color: #52bf90;
     }
 
     > *:nth-child(2) {
       @extend %slider;
       width: $img-width;
-      background-color: #cde5f8;
+      background-color: #dc0005;
       animation-name: slide-right-short;
     }
 
@@ -47,7 +52,7 @@ $root-block-name: '.loader';
       @extend %slider;
       margin-left: -40px;
       width: math.div($img-width, 1.5);
-      background-color: #6b9fd2;
+      background-color: #317256;
     }
   }
 }

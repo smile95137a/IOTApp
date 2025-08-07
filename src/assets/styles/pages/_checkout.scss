@@ -1,0 +1,252 @@
+//
+.checkout {
+  width: 100%;
+  position: relative;
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+
+  &__block {
+    background: #fde3de;
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    background: #fde3de;
+    border-radius: 16px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__item-img {
+    width: 100px;
+    height: 100px;
+    background: #ccc;
+    border-radius: 12px;
+    flex-shrink: 0;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; // ✅ 保持比例填滿容器
+      border-radius: 12px;
+      display: block;
+    }
+  }
+
+  &__item-info {
+    margin-left: 1rem;
+    flex: 1;
+
+    p {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  &__item-control {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    button {
+      border: none;
+      background: none;
+      font-size: 1.5rem;
+      color: #a93e26;
+      cursor: pointer;
+    }
+
+    span {
+      font-size: 1.1rem;
+      min-width: 1.5rem;
+      text-align: center;
+    }
+
+    .price {
+      margin-left: auto;
+      font-weight: bold;
+      font-size: 1.25rem;
+      color: #a53b25;
+    }
+  }
+
+  &__form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem 2rem;
+  }
+
+  &__form-group {
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+  }
+
+  &__form-group--full {
+    grid-column: 1 / -1;
+  }
+  &__form-input {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+
+  &__radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    input[type='radio'] {
+      accent-color: #a53b25; // 可以根據品牌色調整
+    }
+  }
+
+  &__form-radio {
+    width: 16px;
+    height: 16px;
+  }
+
+  &__form-error {
+    margin-top: 0.25rem;
+    color: #d22;
+    font-size: 0.875rem;
+  }
+
+  &__total {
+    text-align: right;
+    font-size: 1rem;
+    line-height: 1.8;
+
+    p {
+      margin: 0.2rem 0;
+    }
+
+    .total {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #d22;
+      margin-top: 0.75rem;
+    }
+  }
+
+  &__buttons {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+
+    .btn {
+      padding: 0.75rem 2.5rem;
+      font-size: 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .btn-outline {
+      border: 1.5px solid #a93e26;
+      background: #fff;
+      color: #a93e26;
+
+      &:hover {
+        background: #fbe9e7;
+      }
+    }
+
+    .btn-primary {
+      background: #a53b25;
+      color: #fff;
+      border: none;
+
+      &:hover {
+        background: #d33a00;
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    &__form-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    &__form-group--full {
+      grid-column: 1 / 2 !important;
+    }
+
+    &__buttons {
+      flex-direction: column;
+      align-items: center;
+
+      .btn {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+
+    &__item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &__item-img {
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__store-selector {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #fff8f6;
+    border: 1px solid #f2c1b8;
+    border-radius: 8px;
+
+    button {
+      padding: 0.5rem 1.25rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      background-color: #a53b25;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #d33a00;
+      }
+    }
+
+    p {
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+      color: #444;
+      line-height: 1.5;
+    }
+  }
+}
+//

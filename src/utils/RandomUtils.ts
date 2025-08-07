@@ -6,7 +6,7 @@ const ALL_CHARS = NUMBERS + LOWER_CHARS + UPPER_CHARS + OTHER_CHARS;
 const ALL_CHARS_WITHOUT_OTHER = NUMBERS + LOWER_CHARS + UPPER_CHARS;
 const LETTERS = LOWER_CHARS + UPPER_CHARS;
 const LETTERS_WITH_SYMBOLS = LOWER_CHARS + UPPER_CHARS + OTHER_CHARS;
-export const getRandomNumberInRange = (min: number, max: number) => {
+export const getRandomNumberInRange = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 

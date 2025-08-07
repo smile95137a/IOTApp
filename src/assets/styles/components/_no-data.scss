@@ -1,0 +1,24 @@
+$root-block-name: '.noData';
+
+#{$root-block-name} {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 72px 16px;
+  &__img {
+    width: 160px;
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  &__text {
+    letter-spacing: 0.5px;
+    color: #a53b25;
+    font-weight: bold;
+    margin-top: 4px;
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+}

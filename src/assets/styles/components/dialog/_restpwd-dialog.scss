@@ -1,0 +1,189 @@
+// 色彩變數
+$color-primary: #3f2412; // 主色（深咖啡）
+$color-accent: #a53b25; // 強調色（磚紅）
+$color-bg: #f8f5f2; // 背景（淺米白）
+$color-border: #b38b6d; // 次色（柔棕）
+$color-error: $color-accent;
+
+$root-block-name: '.restPwdDialog';
+
+#{$root-block-name} {
+  $p: &;
+  $p__text: #{$p}__text;
+
+  @include w_h(100%, 100%);
+  @include flex(null, null, column);
+
+  &__form {
+    width: 100%;
+    &-inputs {
+    }
+
+    #{$p__text} {
+      color: $color-primary;
+
+      &--error {
+        color: $color-error;
+      }
+    }
+
+    &-input {
+      @include w_h(100%, 50px);
+      padding: 14px 20px;
+      border-radius: 8px;
+      border: 1px solid #d4d4d4;
+
+      &--error {
+        border-color: $color-error;
+      }
+    }
+  }
+
+  &__header {
+    @include w_h(100%, 72px);
+    background: $color-primary;
+    position: relative;
+    border-radius: 18px 18px 0 0;
+
+    &::after {
+      content: '';
+      display: flex;
+      position: absolute;
+      width: 320px;
+      height: 98px;
+      border-radius: 40px;
+      bottom: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: $color-primary;
+    }
+  }
+
+  &__logo {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9;
+
+    &-img {
+      @include w_h(255px, 255px);
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    z-index: 9;
+    transform: translateY(-50%);
+
+    &-img {
+      @include w_h(255px, 255px);
+    }
+  }
+
+  &__main {
+    flex: 1;
+    background: $color-bg;
+    border-radius: 0 0 18px 18px;
+    padding: 48px 24px 24px 24px;
+    @include flex(null, null, column);
+
+    &-content {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    &-product {
+      margin-top: 40px;
+      height: 300px;
+      overflow: auto;
+
+      @include screen(lg) {
+        height: 200px;
+      }
+
+      &-divider {
+        width: 100%;
+        height: 1px;
+        background: $color-border;
+        position: relative;
+
+        #{$p__text} {
+          position: absolute;
+          @include abs-center;
+          background: $color-bg;
+          color: $color-border;
+          font-size: 24px;
+          padding: 0 24px;
+        }
+      }
+    }
+
+    &-btns {
+      @include flex(center, center);
+      gap: 24px;
+    }
+
+    &-btn {
+      width: 168px;
+      height: 54px;
+      border-radius: 50px;
+      border: 2px solid $color-primary;
+      @include flex(center, center);
+      font-size: 25px;
+      font-weight: 400;
+
+      &--cancel {
+        background: $color-primary;
+        color: #fff;
+      }
+
+      &--confirm {
+        background: $color-accent;
+        color: #fff;
+      }
+    }
+
+    &-balance,
+    &-count,
+    &-total {
+      @include flex(center, center);
+      padding-bottom: 20px;
+
+      @include screen(lg) {
+        padding-bottom: 12px;
+        border-bottom: 1px solid $color-border;
+      }
+    }
+
+    &-total {
+      @include screen(lg) {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
+  &__text {
+    font-size: 20px;
+    font-weight: 400;
+
+    &--red {
+      font-size: 64px;
+      font-weight: 400;
+      color: $color-error;
+    }
+
+    &--num {
+      font-size: 20px;
+      font-weight: 400;
+      color: $color-border;
+    }
+
+    &--bold {
+      font-weight: 800;
+    }
+  }
+}
