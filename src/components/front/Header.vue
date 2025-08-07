@@ -3,7 +3,7 @@
     <div class="the-header__inner">
       <!-- Logo -->
       <div class="the-header__logo">
-        <img alt="iPool 享撞球" />
+        <img :src="logoP" alt="iPool 享撞球" />
       </div>
 
       <!-- Desktop Nav -->
@@ -42,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import logoP from '@/assets/image/i-Pool_logo_RGB_2.png';
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const navList = [

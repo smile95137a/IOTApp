@@ -2,7 +2,7 @@
   <footer class="the-footer">
     <div class="the-footer__line"></div>
     <div class="the-footer__content">
-      <img alt="iPool 享撞球" class="the-footer__logo" />
+      <img :src="logoP" alt="iPool 享撞球" class="the-footer__logo" />
       <div class="the-footer__text">
         <div>@2025 iPool All rights reserved</div>
         <div>享撞球 版權所有</div>
@@ -10,7 +10,9 @@
     </div>
   </footer>
 </template>
-
+<script setup lang="ts">
+import logoP from '@/assets/image/i-Pool_logo_RGB_2.png';
+</script>
 <style scoped lang="scss">
 .the-footer {
   background-color: #1a3a85;
@@ -39,7 +41,7 @@
   }
 
   &__logo {
-    height: 40px;
+    height: 100px;
     margin-bottom: 0.8rem;
 
     @media (min-width: 768px) {
