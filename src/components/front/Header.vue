@@ -8,14 +8,14 @@
 
       <!-- Desktop Nav -->
       <nav class="the-header__nav" v-if="!isMobile">
-        <a
+        <router-link
           v-for="item in navList"
           :key="item.text"
-          :href="item.href"
+          :to="item.to"
           class="the-header__link"
         >
           <i :class="item.icon" /> {{ item.text }}
-        </a>
+        </router-link>
       </nav>
 
       <!-- Mobile Hamburger -->
@@ -27,15 +27,15 @@
     <!-- Slide-in Mobile Menu -->
     <transition name="slide">
       <div class="the-header__mobile-menu" v-if="isMobile && isMenuOpen">
-        <a
+        <router-link
           v-for="item in navList"
           :key="item.text"
-          :href="item.href"
+          :to="item.to"
           class="the-header__mobile-link"
           @click="closeMenu"
         >
           <i :class="item.icon" /> {{ item.text }}
-        </a>
+        </router-link>
       </div>
     </transition>
   </header>
@@ -46,11 +46,11 @@ import logoP from '@/assets/image/i-Pool_logo_RGB_2.png';
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const navList = [
-  { text: '首頁', icon: 'fas fa-home', href: '#' },
-  { text: '最新消息', icon: 'fas fa-star', href: '#' },
-  { text: '儲值', icon: 'fas fa-dollar-sign', href: '#' },
-  { text: '門市探索', icon: 'fas fa-search', href: '#' },
-  { text: '會員', icon: 'fas fa-user', href: '#' },
+  { text: '首頁', icon: 'fas fa-home', to: '/' },
+  { text: '最新消息', icon: 'fas fa-star', to: '/news' },
+  { text: '儲值', icon: 'fas fa-dollar-sign', to: '/recharge' },
+  { text: '門市探索', icon: 'fas fa-search', to: '/store-search' },
+  { text: '會員', icon: 'fas fa-user', to: '/member' },
 ];
 
 const isMenuOpen = ref(false);
@@ -91,7 +91,7 @@ onUnmounted(() => {
   }
 
   &__logo img {
-    height: 48px;
+    height: 150px;
     margin-bottom: 1rem;
   }
 

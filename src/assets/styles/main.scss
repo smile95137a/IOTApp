@@ -908,3 +908,11 @@ table tbody tr:hover {
     background: #d9363e;
   }
 }
+body {
+  background: linear-gradient(180deg, #1d1640 0%, #4067a4 99%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  min-height: 100vh;
+  margin: 0;
+}

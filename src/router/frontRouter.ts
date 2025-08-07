@@ -30,6 +30,9 @@ import PaymentCBOffering from '@/views/front/PaymentCBOffering.vue';
 import MyLight from '@/views/front/MyLight.vue';
 import OAuth2Redirect from '@/views/front/OAuth2Redirect.vue';
 import CheckoutSuccess from '@/views/front/CheckoutSuccess.vue';
+import News from '@/views/front/News.vue';
+import NewsDetail from '@/views/front/NewsDetail.vue';
+
 export const frontRoutes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -42,6 +45,8 @@ export const frontRoutes: Array<RouteRecordRaw> = [
         component: RestPwd,
       },
       { path: 'home', component: Home },
+      { path: 'news', component: News, name: 'News' },
+      { path: 'news/:id', component: NewsDetail, name: 'NewsDetail' },
       { path: 'login', component: Login, name: 'Login' },
       { path: 'register', component: Register },
       {

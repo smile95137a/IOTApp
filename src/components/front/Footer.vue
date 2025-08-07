@@ -15,7 +15,6 @@ import logoP from '@/assets/image/i-Pool_logo_RGB_2.png';
 </script>
 <style scoped lang="scss">
 .the-footer {
-  background-color: #1a3a85;
   color: #fff;
   padding: 2rem 1rem;
   text-align: center;
