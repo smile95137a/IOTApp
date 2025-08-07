@@ -20,7 +20,7 @@
             <div class="news-card__title">{{ news.title }}</div>
             <div class="news-card__desc">{{ getSummary(news.content) }}</div>
             <div class="news-card__date">
-              {{ formatDate(news.createdDate) }}
+              <DateFormatter :date="news?.createdDate" :format="'YYYY.MM.DD'" />
             </div>
           </div>
           <div class="news-card__arrow">
@@ -39,7 +39,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getAllNewsNoUser } from '@/services/newsService';
 import { getImageUrl } from '@/utils/ImageUtils';
-
+import DateFormatter from '@/components/common/DateFormatter.vue';
 const router = useRouter();
 const newsList = ref<any[]>([]);
 
@@ -77,7 +77,6 @@ onMounted(fetchNews);
 <style scoped lang="scss">
 .news-page {
   padding: 2rem 1rem;
-  background: linear-gradient(180deg, #1d1640 0%, #4067a4 99%);
   color: white;
   min-height: 100vh;
 
@@ -175,11 +174,11 @@ onMounted(fetchNews);
   &__date {
     margin-top: 0.25rem;
     font-size: 0.8rem;
-    color: #008bff;
+    color: #f67943;
   }
 
   &__arrow {
-    color: #000;
+    color: #a6a6a6;
     font-size: 1rem;
     flex-shrink: 0;
   }
