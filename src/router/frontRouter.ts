@@ -18,7 +18,7 @@ import MemberProfile from '@/views/front/MemberCenter/MemberProfile.vue';
 import PurchaseHistory from '@/views/front/MemberCenter/PurchaseHistory.vue';
 import MyBlessings from '@/views/front/MemberCenter/MyBlessings.vue';
 import OrderHistory from '@/views/front/MemberCenter/OrderHistory.vue';
-import ProductDetail from '@/views/front/ProductDetail.vue';
+import StoreDetail from '@/views/front/StoreDetail.vue';
 import Cart from '@/views/front/Cart.vue';
 import Privacy from '@/views/front/Privacy.vue';
 import Policy from '@/views/front/Policy.vue';
@@ -48,7 +48,7 @@ export const frontRoutes: Array<RouteRecordRaw> = [
       { path: 'news', component: News, name: 'News' },
       { path: 'news/:id', component: NewsDetail, name: 'NewsDetail' },
       { path: 'store', component: Store, name: 'Store' },
-      { path: 'store/:id', component: ProductDetail, name: 'ProductDetail' },
+      { path: 'store/:id', component: StoreDetail, name: 'StoreDetail' },
       { path: 'login', component: Login, name: 'Login' },
       { path: 'register', component: Register },
 
