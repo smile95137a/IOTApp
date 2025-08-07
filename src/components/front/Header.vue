@@ -49,7 +49,7 @@ const navList = [
   { text: '首頁', icon: 'fas fa-home', to: '/' },
   { text: '最新消息', icon: 'fas fa-star', to: '/news' },
   { text: '儲值', icon: 'fas fa-dollar-sign', to: '/recharge' },
-  { text: '門市探索', icon: 'fas fa-search', to: '/store-search' },
+  { text: '門市探索', icon: 'fas fa-search', to: '/store' },
   { text: '會員', icon: 'fas fa-user', to: '/member' },
 ];
 
@@ -130,10 +130,10 @@ onUnmounted(() => {
     left: 0;
     width: 220px;
     height: 100vh;
-    background-color: #2e56a1;
+    background-color: #3b5c95;
     display: flex;
     flex-direction: column;
-    padding-top: 3.5rem;
+    padding: 2rem;
     z-index: 999;
 
     .the-header__mobile-link {
@@ -143,7 +143,7 @@ onUnmounted(() => {
       display: flex;
       align-items: center;
       gap: 0.8rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      border-bottom: 1px solid #01befe;
 
       &:hover {
         background-color: rgba(255, 255, 255, 0.1);

@@ -47,8 +47,11 @@ export const frontRoutes: Array<RouteRecordRaw> = [
       { path: 'home', component: Home },
       { path: 'news', component: News, name: 'News' },
       { path: 'news/:id', component: NewsDetail, name: 'NewsDetail' },
+      { path: 'store', component: Store, name: 'Store' },
+      { path: 'store/:id', component: ProductDetail, name: 'ProductDetail' },
       { path: 'login', component: Login, name: 'Login' },
       { path: 'register', component: Register },
+
       {
         path: 'member-center',
         component: MemberCenter,
@@ -83,8 +86,7 @@ export const frontRoutes: Array<RouteRecordRaw> = [
       { path: 'lightProduct', component: LightProduct },
       { path: 'blessing', component: Blessing },
       { path: 'master', component: Master },
-      { path: 'store', component: Store, name: 'StoreProductList' },
-      { path: 'store/:id', component: ProductDetail, name: 'ProductDetail' },
+
       { path: 'cart', component: Cart, name: 'Cart' },
       {
         path: 'checkout-success/:id',
