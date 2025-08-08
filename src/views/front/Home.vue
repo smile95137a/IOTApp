@@ -52,12 +52,6 @@ const cards = [
     link: '/store',
   },
   {
-    title: '掃碼開台',
-    desc: '掃描球桌上的 QRcode 開台/開燈',
-    icon: 'fas fa-qrcode',
-    link: '/scan',
-  },
-  {
     title: '預約開台',
     desc: '選擇門市預約開台',
     icon: 'fas fa-clock',

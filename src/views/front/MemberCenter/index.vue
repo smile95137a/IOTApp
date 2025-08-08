@@ -15,20 +15,9 @@
     </div>
 
     <div v-if="showHeader" class="member-center__card">
-      <div class="member-center__list">
+      <div class="member-center__grid">
         <div
-          v-for="(item, index) in leftMenu"
-          :key="index"
-          class="member-center__item"
-          @click="goTo(item)"
-        >
-          <i :class="item.icon"></i>
-          <span>{{ item.label }}</span>
-        </div>
-      </div>
-      <div class="member-center__list">
-        <div
-          v-for="(item, index) in rightMenu"
+          v-for="(item, index) in menuList"
           :key="index"
           class="member-center__item"
           @click="goTo(item)"
@@ -38,33 +27,30 @@
         </div>
       </div>
     </div>
+
     <RouterView />
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import boyAvatar from '@/assets/image/iot-boy.png';
 import girlAvatar from '@/assets/image/iot-girl.png';
 import { useAuthFrontStore } from '@/stores/authFrontStore';
 import { getUserInfo } from '@/services/UsersService';
 import { getImageUrl } from '@/utils/ImageUtils';
-import { useRoute } from 'vue-router';
-
-const route = useRoute();
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthFrontStore();
-const user = computed(() => authStore.user);
 
+const user = computed(() => authStore.user);
 const userBalance = computed(() => authStore.user?.amount || 0);
 const userSliver = computed(() => authStore.user?.point || 0);
 const userBonus = computed(() => authStore.user?.balance || 0);
 
-const showHeader = computed(() => {
-  return route.path === '/member-center';
-});
+const showHeader = computed(() => route.path === '/member-center');
 
 const goTo = (value: { route?: string; action?: string }) => {
   if (value.action === 'logout') {
@@ -73,12 +59,13 @@ const goTo = (value: { route?: string; action?: string }) => {
     router.push(value.route);
   }
 };
+
 const handleLogout = () => {
   localStorage.clear();
   router.replace('/login');
 };
 
-const leftMenu = [
+const menuList = [
   { label: '編輯會員', icon: 'fas fa-pen', route: '/member-center/edit' },
   {
     label: '訊息通知',
@@ -100,9 +87,6 @@ const leftMenu = [
     icon: 'fas fa-play-circle',
     route: '/member-center/games-in-progress',
   },
-];
-
-const rightMenu = [
   {
     label: '開局記錄',
     icon: 'fas fa-history',
@@ -196,34 +180,29 @@ onMounted(() => {
     color: #333;
     border-radius: 10px;
     padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
   }
 
-  &__list {
-    width: 48%;
-    display: flex;
-    flex-direction: column;
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
   }
 
   &__item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 0.75rem 1rem;
     border: 1px solid #eee;
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.2s;
+    gap: 20px;
 
     &:hover {
       background: #f0f0f0;
     }
 
     i {
-      margin-right: 0.5rem;
       color: #333;
     }
 
@@ -238,12 +217,8 @@ onMounted(() => {
       text-align: center;
     }
 
-    &__card {
-      flex-direction: column;
-    }
-
-    &__list {
-      width: 100%;
+    &__grid {
+      grid-template-columns: 1fr;
     }
   }
 }

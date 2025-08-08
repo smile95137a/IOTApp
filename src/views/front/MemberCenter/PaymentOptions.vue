@@ -8,7 +8,11 @@
     >
       <div class="payment-options__left">
         <div class="payment-options__icon">
-          <component :is="opt.icon" />
+          <img
+            class="payment-options__icon-img"
+            :src="getIconUrl(opt.icon)"
+            :alt="opt.icon"
+          />
         </div>
         <div class="payment-options__title">{{ opt.title }}</div>
       </div>
@@ -18,45 +22,80 @@
         </span>
         <i class="fas fa-chevron-right payment-options__chevron"></i>
       </div>
+      <img class="payment-options__bg" :src="iotPayBg" alt="bg" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import iconWallet from '@/assets/image/iot-pay1.png';
+import iconCreditCard from '@/assets/image/iot-credit-card.png';
+import iconLinePay from '@/assets/image/iot-line-pay.png';
+import iconJkoPay from '@/assets/image/iot-l-pay.png';
+import iconApplePay from '@/assets/image/iot-apple-pay.png';
+import iotPayBg from '@/assets/image/iot-pay-bg.png';
 
 export interface PaymentOption {
   id: string;
-  icon: any;
+  icon: string;
   title: string;
   rightText?: string;
   onClick: () => void;
 }
 
-defineProps<{
+const props = defineProps<{
   options: PaymentOption[];
 }>();
+
+const iconMap: Record<string, string> = {
+  wallet: iconWallet,
+  'credit-card': iconCreditCard,
+  line: iconLinePay,
+  lpay: iconJkoPay,
+  apple: iconApplePay,
+};
+
+const getIconUrl = (key: string): string => {
+  console.log(key);
+
+  return iconMap[key] || '';
+};
 </script>
+
 <style lang="scss">
 .payment-options {
+  position: relative; // ✅ 包含背景圖定位
   display: flex;
   flex-direction: column;
   gap: 12px;
 
+  &__bg {
+    position: absolute;
+    right: 50px;
+    bottom: -50px;
+    width: 120px;
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 0;
+  }
+
   &__item {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #fff;
     border-radius: 12px;
     padding: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); // ⭐ 加了陰影
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     cursor: pointer;
     transition: background 0.2s, box-shadow 0.2s;
 
     &:hover {
       background-color: #f9f9f9;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); // ⭐ 滑過更明顯
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     }
   }
 
@@ -72,6 +111,12 @@ defineProps<{
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  &__icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
   &__title {

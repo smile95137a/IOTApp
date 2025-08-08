@@ -64,10 +64,11 @@ import BookStoreDetailStep1 from '@/components/front/BookStoreDetailStep1.vue';
 import BookStoreDetailStep2 from '@/components/front/BookStoreDetailStep2.vue';
 import BookStoreDetailStep3 from '@/components/front/BookStoreDetailStep3.vue';
 import { useBookingStepStore } from '@/stores/bookingStepStore';
+import { useAuthFrontStore } from '@/stores/authFrontStore';
 
 const route = useRoute();
 const router = useRouter();
-const dialogStore = useDialogStore();
+const authStore = useAuthFrontStore();
 const bookingStepStore = useBookingStepStore();
 
 const store = ref<any>(null);
@@ -116,42 +117,15 @@ const loadTables = async () => {
   });
 };
 
-const available = computed(() => tables.value.filter((t) => !t.isUse).length);
-
-const getTableImg = (table: any) => {
-  return isTableAvailable(table) ? tableEnableImg : tableDisableImg;
-};
-
-const isTableAvailable = (table: any) => {
-  return (
-    !table.isUse && table.status !== 'FAULT' && table.status !== 'UNAVAILABLE'
-  );
-};
-
-const getTableLabel = (table: any) => {
-  if (table.status === 'FAULT' || table.status === 'UNAVAILABLE')
-    return '設備維護中';
-  if (table.isUse) return '開局進行中';
-  return '立即開台';
-};
-
-const handleStartGame = async (poolTableUid: string) => {
-  const payType = 'game';
-
-  await executeApi({
-    fn: () => startGame({ poolTableUId: poolTableUid, payType }),
-    onSuccess: (data) => {
-      dialogStore.openInfoDialog({
-        title: '系統訊息',
-        message: '開局成功',
-        confirmText: '我知道了',
-      });
-      router.push('/member-center/reservations');
-    },
-  });
-};
-
 onMounted(() => {
+  if (!authStore.isLogin) {
+    router.replace({
+      path: '/login',
+      state: { redirect: route.fullPath },
+    });
+    return;
+  }
+
   if (storeId) {
     loadStore();
     loadTables();

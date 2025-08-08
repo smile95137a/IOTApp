@@ -189,9 +189,7 @@ const filteredMethods = computed(() =>
     .filter((m) => !(type === 'recharge' && m.payType === 1))
     .map((method) => ({
       id: `${method.payType}`,
-      icon: h('span', {
-        class: `payment__icon payment__icon--${method.icon}`,
-      }),
+      icon: method.icon,
       title: method.label,
       onClick: () => handlePayment(method.label, method.payType),
     }))

@@ -6,29 +6,51 @@
         <div class="login__main">
           <div class="login__left">
             <div v-if="!isStart" class="login__auths">
-              <div class="login__toggle">
-                <button class="login__toggle-btn" @click="startLogin('email')">
-                  Email 登入
+              <div class="login__auths">
+                <button
+                  class="login__auth-btn"
+                  :class="{ active: loginType === 'email' }"
+                  @click="startLogin('email')"
+                >
+                  <div class="login__auth-btn-icon">
+                    <i class="fas fa-envelope"></i>
+                  </div>
+                  <div class="login__auth-btn-text">Email 登入</div>
                 </button>
-                <button class="login__toggle-btn" @click="startLogin('phone')">
-                  手機登入
+
+                <button
+                  class="login__auth-btn"
+                  :class="{ active: loginType === 'phone' }"
+                  @click="startLogin('phone')"
+                >
+                  <div class="login__auth-btn-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                  </div>
+                  <div class="login__auth-btn-text">手機登入</div>
                 </button>
               </div>
+
               <div class="login__divider">
                 <div class="login__divider-line" />
                 <div class="login__divider-text">或</div>
               </div>
               <div class="login__auth">
                 <div class="login__auth-btn" @click="handleOauth('google')">
-                  <div class="login__auth-btn-icon" />
+                  <div class="login__auth-btn-icon">
+                    <i class="fab fa-google"></i>
+                  </div>
                   <div class="login__auth-btn-text">Google 帳號登入</div>
                 </div>
                 <div class="login__auth-btn" @click="handleOauth('facebook')">
-                  <div class="login__auth-btn-icon" />
+                  <div class="login__auth-btn-icon">
+                    <i class="fab fa-facebook-f"></i>
+                  </div>
                   <div class="login__auth-btn-text">Facebook 登入</div>
                 </div>
                 <div class="login__auth-btn" @click="handleOauth('apple')">
-                  <div class="login__auth-btn-icon" />
+                  <div class="login__auth-btn-icon">
+                    <i class="fab fa-apple"></i>
+                  </div>
                   <div class="login__auth-btn-text">Apple ID 登入</div>
                 </div>
               </div>
@@ -192,7 +214,9 @@ const onSubmit = handleSubmit(async (values) => {
   });
 });
 
-const handleForgot = () => {};
+const handleForgot = () => {
+  // TODO: 忘記密碼邏輯
+};
 
 const toRegister = () => {
   router.push('/register');
