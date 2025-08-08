@@ -61,7 +61,7 @@ const goTo = (value: { route?: string; action?: string }) => {
 };
 
 const handleLogout = () => {
-  localStorage.clear();
+  authStore.clearAuthData();
   router.replace('/login');
 };
 
