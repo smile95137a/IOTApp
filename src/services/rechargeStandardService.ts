@@ -8,7 +8,7 @@ const basePath = '/recharge/standard';
  */
 export const fetchRechargeStandards = async () => {
   try {
-    const response = await api.get<ApiResponse<any[]>>(basePath);
+    const response = await api.get<any[]>(basePath);
     return response.data;
   } catch (error) {
     console.error('[Recharge API] Error fetching recharge standards:', error);

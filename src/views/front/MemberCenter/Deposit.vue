@@ -1,52 +1,53 @@
 <template>
-  <div class="recharge">
-    <div class="recharge__container">
-      <h2 class="recharge__title">選擇儲值方案</h2>
+  <MCard>
+    <div class="recharge">
+      <div class="recharge__container">
+        <h2 class="recharge__title">選擇儲值方案</h2>
 
-      <div v-if="loading" class="recharge__loading">載入中...</div>
-
-      <div v-else class="recharge__grid">
-        <div
-          v-for="item in rechargeOptions"
-          :key="item.id"
-          :class="[
-            'recharge__card',
-            { 'recharge__card--selected': selectedOptionId === item.id },
-          ]"
-          @click="handleSelect(item.id)"
-        >
-          <div class="recharge__card-content">
-            <div v-if="item.tag" class="recharge__tag">{{ item.tag }}</div>
-            <div class="recharge__option-amount">
-              <template v-if="item.id === 'first_member'">
-                贈送儲值金額 100元
-              </template>
-              <template v-else>
-                儲值 {{ formatNumber(item.rechargeAmount) }} 元
-              </template>
-            </div>
-            <div
-              v-if="item.id !== 'first_member'"
-              class="recharge__option-bonus"
-            >
-              送 {{ formatNumber(item.bonusAmount) }} 元
-            </div>
-            <div
-              v-if="selectedOptionId === item.id"
-              class="recharge__card-check"
-            >
-              ✓
+        <div class="recharge__grid">
+          <div
+            v-for="item in rechargeOptions"
+            :key="item.id"
+            :class="[
+              'recharge__card',
+              { 'recharge__card--selected': selectedOptionId === item.id },
+            ]"
+            @click="handleSelect(item.id)"
+          >
+            <div class="recharge__card-content">
+              <div v-if="item.tag" class="recharge__tag">{{ item.tag }}</div>
+              <div class="recharge__option-amount">
+                <template v-if="item.id === 'first_member'">
+                  贈送儲值金額 100元
+                </template>
+                <template v-else>
+                  儲值 {{ formatNumber(item.rechargeAmount) }} 元
+                </template>
+              </div>
+              <div
+                v-if="item.id !== 'first_member'"
+                class="recharge__option-bonus"
+              >
+                送 {{ formatNumber(item.bonusAmount) }} 元
+              </div>
+              <div
+                v-if="selectedOptionId === item.id"
+                class="recharge__card-check"
+              >
+                ✓
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <button class="recharge__submit" @click="handleRecharge">儲值</button>
-    </div>
-  </div>
+        <button class="recharge__submit" @click="handleRecharge">儲值</button>
+      </div>
+    </div></MCard
+  >
 </template>
 
 <script setup lang="ts">
+import MCard from '@/components/common/MCard.vue';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useDialogStore } from '@/stores/dialogStore';
@@ -174,19 +175,6 @@ const handleRecharge = async () => {
 
 <style scoped lang="scss">
 .recharge {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 4rem 2rem;
-
-  &__container {
-    max-width: 720px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  }
-
   &__title {
     font-size: 24px;
     font-weight: bold;
@@ -196,19 +184,24 @@ const handleRecharge = async () => {
   }
 
   &__grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); // ✅ 手機版兩欄
     gap: 1rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(
+        auto-fill,
+        minmax(220px, 1fr)
+      ); // ✅ 電腦版自動塞滿
+    }
   }
 
-  // ✅ 將原本 __option 改為 __card 支援新 class 名
   &__card {
-    width: calc(50% - 0.5rem);
+    width: 100%; // ✅ 由 grid 控制寬度
     min-height: 108px;
     border: 1px solid #f67943;
     border-radius: 8px;
-    padding: 1rem 0.5rem;
+    padding: 2rem 0.5rem;
     text-align: center;
     position: relative;
     cursor: pointer;
@@ -282,7 +275,27 @@ const handleRecharge = async () => {
     margin-top: 3rem;
     text-align: center;
   }
+
+  &__tag {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: #f67943;
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  &__card-check {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    font-size: 20px;
+    color: #fff;
+  }
 }
+
 .recharge__tag {
   position: absolute;
   top: 8px;
