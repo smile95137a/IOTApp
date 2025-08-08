@@ -291,7 +291,7 @@ const getCupImage = (result: string) => {
     display: flex;
     align-items: center;
     background: #fff;
-    color: #a53b25;
+    color: #01befe;
     padding: 16px 24px;
     border-radius: 20px;
     min-width: 280px;
@@ -325,7 +325,7 @@ const getCupImage = (result: string) => {
     margin-left: auto;
 
     &--red {
-      color: #a53b25;
+      color: #01befe;
     }
 
     &--black {

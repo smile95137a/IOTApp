@@ -20,7 +20,7 @@ $root-block-name: '.pagination';
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    background: #a53b25; // 主色
+    background: #01befe; // 主色
     color: #fff;
 
     &:hover:not(#{$p__btn}--active):not(:disabled) {

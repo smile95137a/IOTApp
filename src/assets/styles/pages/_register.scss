@@ -36,7 +36,7 @@ $root-block-name: '.register';
 
   &__form {
     width: 100%;
-    max-width: 340px;
+    max-width: 380px;
     @include flex(null, null, column);
     &-inputs {
       &--addr {
@@ -117,7 +117,7 @@ $root-block-name: '.register';
     @include flex(center, center);
     @include w_h(100%, 48px);
     border-radius: 90px;
-    background: #a53b25;
+    background: #01befe;
     color: #fff;
 
     font-size: 20px;

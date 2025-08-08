@@ -141,7 +141,7 @@ onMounted(async () => {
   position: relative;
 
   &__header {
-    background: #a53b25;
+    background: #01befe;
     color: #fff;
     display: flex;
     justify-content: flex-end;

@@ -25,6 +25,7 @@
     "swiper": "^11.2.10",
     "vee-validate": "^4.14.7",
     "vue": "^3.4.21",
+    "vue-advanced-cropper": "^2.8.9",
     "vue-router": "^4.3.2",
     "vue3-datepicker": "^0.4.0",
     "yup": "^1.4.0",

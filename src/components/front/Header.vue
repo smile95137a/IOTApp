@@ -24,6 +24,9 @@
       </div>
     </div>
 
+    <!-- Header Bottom Border Line -->
+    <div class="the-header__line"></div>
+
     <!-- Slide-in Mobile Menu -->
     <transition name="slide">
       <div class="the-header__mobile-menu" v-if="isMobile && isMenuOpen">
@@ -78,8 +81,6 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .the-header {
-  border-bottom: 2px solid #3baaff;
-  padding-bottom: 0.5rem;
   position: relative;
 
   &__inner {
@@ -90,9 +91,14 @@ onUnmounted(() => {
     position: relative;
   }
 
-  &__logo img {
-    height: 150px;
-    margin-bottom: 1rem;
+  &__logo {
+    display: inline-block;
+    cursor: pointer;
+
+    img {
+      height: 150px;
+      margin-bottom: 1rem;
+    }
   }
 
   &__nav {
@@ -149,6 +155,14 @@ onUnmounted(() => {
         background-color: rgba(255, 255, 255, 0.1);
       }
     }
+  }
+
+  &__line {
+    border-bottom: 2px solid #3baaff;
+    margin-top: 0.5rem;
+    max-width: 1080px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 

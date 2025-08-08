@@ -67,15 +67,17 @@ export const resetPassword = async (userReq: {
 
 export const uploadProfileImage = async (
   userId: string,
-  imageUri: string
+  base64DataUrl: string
 ): Promise<boolean> => {
   try {
-    const formData = new FormData();
-    formData.append('file', {
-      uri: imageUri,
-      name: `profile_${userId}.jpg`,
+    // 將 base64 轉為 Blob
+    const blob = await (await fetch(base64DataUrl)).blob();
+    const file = new File([blob], `profile_${userId}.jpg`, {
       type: 'image/jpeg',
-    } as any);
+    });
+
+    const formData = new FormData();
+    formData.append('file', file);
 
     const response = await api.post(
       `${basePath}/${userId}/upload-profile-image`,

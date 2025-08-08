@@ -174,96 +174,130 @@ const handleRecharge = async () => {
 
 <style scoped lang="scss">
 .recharge {
-  padding: 2rem;
-  color: #333;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
 
   &__container {
-    max-width: 600px;
+    max-width: 720px;
     margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   }
 
   &__title {
-    text-align: center;
-    font-size: 1.8rem;
+    font-size: 24px;
+    font-weight: bold;
     margin-bottom: 1.5rem;
-    color: #0088cc;
-  }
-
-  &__loading {
     text-align: center;
-    font-size: 1rem;
-    color: #999;
+    color: #333;
   }
 
   &__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 1.5rem;
   }
 
+  // ✅ 將原本 __option 改為 __card 支援新 class 名
   &__card {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 1rem;
-    background: #fff;
-    cursor: pointer;
+    width: calc(50% - 0.5rem);
+    min-height: 108px;
+    border: 1px solid #f67943;
+    border-radius: 8px;
+    padding: 1rem 0.5rem;
+    text-align: center;
     position: relative;
-    transition: 0.2s;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+
+    &-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    &-check {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      font-size: 20px;
+      color: #fff;
+    }
 
     &--selected {
-      border-color: #00aaff;
-      box-shadow: 0 0 0 2px #00aaff33;
+      background-color: #f67943;
+      border-color: #f67943;
+
+      .recharge__option-amount,
+      .recharge__option-bonus {
+        color: #fff;
+      }
+
+      .recharge__card-check {
+        color: #fff;
+      }
     }
-  }
-
-  &__card-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    font-size: 1rem;
-  }
-
-  &__tag {
-    background: #ffcc00;
-    color: #000;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.8rem;
-    border-radius: 4px;
-    width: fit-content;
   }
 
   &__option-amount {
+    font-size: 16px;
     font-weight: bold;
+    color: #f67943;
   }
 
   &__option-bonus {
-    color: #00aa66;
-    font-size: 0.95rem;
-  }
-
-  &__card-check {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.75rem;
-    font-size: 1.25rem;
-    color: #00aa88;
+    font-size: 14px;
+    margin-top: 0.5rem;
+    color: #f67943;
   }
 
   &__submit {
-    display: block;
-    width: 100%;
-    padding: 0.75rem;
-    background-color: #0088cc;
-    color: white;
+    margin: 2rem auto 1rem;
+    padding: 0.75rem 3rem;
+    background-color: #f67943;
+    border-radius: 25px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
     cursor: pointer;
+    display: block;
 
     &:hover {
-      background-color: #0077b3;
+      background-color: #d75c2f;
+    }
+
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
     }
   }
+
+  &__loading {
+    margin-top: 3rem;
+    text-align: center;
+  }
+}
+.recharge__tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: #f67943;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.recharge__card-check {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 20px;
+  color: #fff;
 }
 </style>
