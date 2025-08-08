@@ -53,10 +53,11 @@ import { useRouter } from 'vue-router';
 import { useDialogStore } from '@/stores/dialogStore';
 import { getUserUse, topUp } from '@/services/paymentService';
 import { fetchRechargeStandards } from '@/services/rechargeStandardService';
+import { usePaymentStore } from '@/stores/paymentStore';
 
 const router = useRouter();
 const dialog = useDialogStore();
-
+const paymentStore = usePaymentStore();
 const selectedOptionId = ref<string | number | null>(null);
 const rechargeOptions = ref<any[]>([]);
 const firstUse = ref(true);
@@ -121,7 +122,7 @@ const handleRecharge = async () => {
     (item) => item.id === selectedOptionId.value
   );
   if (!selected) {
-    dialog.openInfoDialog({ title: '錯誤', content: '請選擇儲值金額' });
+    dialog.openInfoDialog({ title: '錯誤', message: '請選擇儲值金額' });
     return;
   }
 
@@ -136,30 +137,16 @@ const handleRecharge = async () => {
     sendType = 'send';
   }
 
-  // 若為「首次會員送點」直接入帳
   if (selected.id === 'first_member' && sendUse.value) {
-    try {
-      await topUp({
-        price: selected.rechargeAmount,
-        payType: 1,
-        point: selected.bonusAmount,
-        isFirst,
-        sendType,
-      });
-      router.push({
-        path: '/payment-success',
-        state: { totalAmount: selected.rechargeAmount },
-      });
-    } catch (err) {
-      dialog.openInfoDialog({ title: '錯誤', message: '儲值失敗，請稍後再試' });
-    }
-    return;
-  }
+    await topUp({
+      price: selected.rechargeAmount,
+      payType: 1,
+      point: selected.bonusAmount,
+      isFirst,
+      sendType,
+    });
 
-  // 其他導向付款頁
-  router.push({
-    path: '/payment',
-    state: {
+    paymentStore.setSuccessData({
       type: 'recharge',
       totalAmount: selected.rechargeAmount,
       rechargeOption: {
@@ -167,8 +154,22 @@ const handleRecharge = async () => {
         isFirst,
         sendType,
       },
+    });
+
+    router.push('./payment-success');
+    return;
+  }
+
+  paymentStore.setRechargeData({
+    type: 'recharge',
+    totalAmount: selected.rechargeAmount,
+    rechargeOption: {
+      ...selected,
+      isFirst,
+      sendType,
     },
   });
+  router.push('./payment');
 };
 </script>
 

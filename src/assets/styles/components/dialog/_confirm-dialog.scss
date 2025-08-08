@@ -74,8 +74,9 @@ $root-block-name: '.confirmDialog';
 
     &-btn {
       @include flex(center, center);
-      width: 70px;
+      min-width: 70px;
       height: 32px;
+      padding: 0 16px;
       border-radius: 50px;
       background: #fff;
       font-size: 14px;

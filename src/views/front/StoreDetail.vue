@@ -158,7 +158,7 @@ const handleStartGame = async (poolTableUid: string) => {
         message: '開局成功',
         confirmText: '我知道了',
       });
-      router.push('/member-center/game-ongoing');
+      router.push('/member-center/games-in-progress');
     },
   });
 };

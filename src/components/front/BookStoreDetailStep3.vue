@@ -33,9 +33,12 @@ import TimeSlotSelector from '@/components/front/TimeSlotSelector.vue';
 import moment from 'moment';
 import { checkIsUse, getAvailableTimes } from '@/services/gameService';
 import { executeApi } from '@/utils/executeApiUtils';
+import { usePaymentStore } from '@/stores/paymentStore';
 
 const bookingStore = useBookingStepStore();
 const dialogStore = useDialogStore();
+const paymentStore = usePaymentStore();
+
 const router = useRouter();
 
 const timeSlots = ref<any[]>([]);
@@ -124,21 +127,17 @@ const confirmBooking = async () => {
 
   if (!confirmed) return;
 
-  router.push({
-    path: '/payment',
-    state: {
-      type: 'bookGame',
-      payData: {
-        poolTableUId: table.value.uid,
-        bookDate: moment(selectedDate.value).format('YYYY-MM-DD'),
-        selectedTime: selected,
-      },
-      totalAmount: selected.reduce(
-        (sum, s) => sum + (s.rate || store.value.deposit),
-        0
-      ),
-    },
+  paymentStore.type = 'bookGame';
+  paymentStore.setPayData({
+    poolTableUId: table.value.uid,
+    bookDate: moment(selectedDate.value).format('YYYY-MM-DD'),
+    selectedTime: selected,
   });
+  paymentStore.totalAmount = selected.reduce(
+    (sum, s) => sum + (s.rate || store.value.deposit),
+    0
+  );
+  router.push('/member-center/payment');
 };
 
 onMounted(() => {

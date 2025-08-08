@@ -23,7 +23,7 @@ export async function executeApi<T = any>({
   onSuccess,
   onFail,
   showCatchDialog = false,
-  showFailDialog = false,
+  showFailDialog = true,
 }: ExecuteApiOptions<T>): Promise<T | null> {
   const dialogStore = useDialogStore();
 

@@ -36,6 +36,7 @@ import NoData from '@/components/common/NoData.vue';
 import NumberFormatter from '@/components/common/NumberFormatter.vue';
 import { executeApi } from '@/utils/executeApiUtils';
 import { fetchGameRecords } from '@/services/gameRecordService';
+import { useTransactionStore } from '@/stores/transactionStore';
 
 interface GameRecord {
   id: string;
@@ -47,6 +48,7 @@ interface GameRecord {
 const router = useRouter();
 const transactions = ref<GameRecord[]>([]);
 const isFetched = ref(false);
+const transactionStore = useTransactionStore();
 
 const loadTransactions = async () => {
   await executeApi({
@@ -67,7 +69,8 @@ const loadTransactions = async () => {
 };
 
 const handleTransactionClick = (item: GameRecord) => {
-  router.push({ path: '/member-center/contact', state: { transaction: item } });
+  transactionStore.setTransaction(item);
+  router.push({ path: '/member-center/contact' });
 };
 
 onMounted(() => {

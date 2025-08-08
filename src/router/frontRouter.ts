@@ -16,6 +16,9 @@ import MemberGamesInProgress from '@/views/front/MemberCenter/GamesInProgress.vu
 import MemberGameHistory from '@/views/front/MemberCenter/GameHistory.vue';
 import MemberDeposit from '@/views/front/MemberCenter/Deposit.vue';
 import MemberReservations from '@/views/front/MemberCenter/Reservations.vue';
+import Payment from '@/views/front/MemberCenter/Payment.vue';
+import PaymentSuccess from '@/views/front/MemberCenter/PaymentSuccess.vue';
+import Contact from '@/views/front/MemberCenter/Contact.vue';
 import StoreDetail from '@/views/front/StoreDetail.vue';
 import News from '@/views/front/News.vue';
 import NewsDetail from '@/views/front/NewsDetail.vue';
@@ -60,6 +63,9 @@ export const frontRoutes: Array<RouteRecordRaw> = [
           { path: 'game-history', component: MemberGameHistory },
           { path: 'deposit', component: MemberDeposit },
           { path: 'reservations', component: MemberReservations },
+          { path: 'contact', component: Contact },
+          { path: 'payment', component: Payment },
+          { path: 'payment-success', component: PaymentSuccess },
         ],
       },
 

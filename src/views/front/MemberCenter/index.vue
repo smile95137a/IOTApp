@@ -58,9 +58,9 @@ const router = useRouter();
 const authStore = useAuthFrontStore();
 const user = computed(() => authStore.user);
 
-const userBalance = ref(0);
-const userBonus = ref(0);
-const userSliver = ref(0);
+const userBalance = computed(() => authStore.user?.amount || 0);
+const userSliver = computed(() => authStore.user?.point || 0);
+const userBonus = computed(() => authStore.user?.balance || 0);
 
 const showHeader = computed(() => {
   return route.path === '/member-center';
@@ -136,9 +136,6 @@ const fetchUser = async () => {
   const { success, data } = await getUserInfo();
   if (success) {
     authStore.setUser(data);
-    userBalance.value = data.amount || 0;
-    userSliver.value = data.point || 0;
-    userBonus.value = data.balance || 0;
   }
 };
 
@@ -151,7 +148,6 @@ onMounted(() => {
 .member-center {
   padding: 2rem;
   min-height: 100vh;
-  color: #fff;
 
   &__title {
     text-align: center;
