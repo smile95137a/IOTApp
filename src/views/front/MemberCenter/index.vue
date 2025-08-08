@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="member-center__card">
+    <div v-if="showHeader" class="member-center__card">
       <div class="member-center__list">
         <div
           v-for="(item, index) in leftMenu"
@@ -50,6 +50,9 @@ import girlAvatar from '@/assets/image/iot-girl.png';
 import { useAuthFrontStore } from '@/stores/authFrontStore';
 import { getUserInfo } from '@/services/UsersService';
 import { getImageUrl } from '@/utils/ImageUtils';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 
 const router = useRouter();
 const authStore = useAuthFrontStore();
@@ -58,6 +61,10 @@ const user = computed(() => authStore.user);
 const userBalance = ref(0);
 const userBonus = ref(0);
 const userSliver = ref(0);
+
+const showHeader = computed(() => {
+  return route.path === '/member-center';
+});
 
 const goTo = (value: { route?: string; action?: string }) => {
   if (value.action === 'logout') {

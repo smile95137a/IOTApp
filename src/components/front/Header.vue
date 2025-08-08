@@ -51,7 +51,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 const navList = [
   { text: '首頁', icon: 'fas fa-home', to: '/' },
   { text: '最新消息', icon: 'fas fa-star', to: '/news' },
-  { text: '儲值', icon: 'fas fa-dollar-sign', to: '/recharge' },
+  { text: '儲值', icon: 'fas fa-dollar-sign', to: '/member-center/deposit' },
   { text: '門市探索', icon: 'fas fa-search', to: '/store' },
   { text: '會員', icon: 'fas fa-user', to: '/member-center' },
 ];

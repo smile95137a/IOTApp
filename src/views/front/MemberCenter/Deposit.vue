@@ -42,8 +42,8 @@
 
         <button class="recharge__submit" @click="handleRecharge">儲值</button>
       </div>
-    </div></MCard
-  >
+    </div>
+  </MCard>
 </template>
 
 <script setup lang="ts">
@@ -59,7 +59,6 @@ const dialog = useDialogStore();
 
 const selectedOptionId = ref<string | number | null>(null);
 const rechargeOptions = ref<any[]>([]);
-const loading = ref(true);
 const firstUse = ref(true);
 const sendUse = ref(true);
 
@@ -185,19 +184,16 @@ const handleRecharge = async () => {
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); // ✅ 手機版兩欄
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
 
     @media (min-width: 768px) {
-      grid-template-columns: repeat(
-        auto-fill,
-        minmax(220px, 1fr)
-      ); // ✅ 電腦版自動塞滿
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     }
   }
 
   &__card {
-    width: 100%; // ✅ 由 grid 控制寬度
+    width: 100%;
     min-height: 108px;
     border: 1px solid #f67943;
     border-radius: 8px;
