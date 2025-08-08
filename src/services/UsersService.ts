@@ -1,4 +1,5 @@
-import { api } from './FrontendAPI';
+import { ApiResponse } from '@/vite-env';
+import { api } from './FrontAPI';
 
 const basePath = '/user';
 
@@ -74,7 +75,7 @@ export const uploadProfileImage = async (
       uri: imageUri,
       name: `profile_${userId}.jpg`,
       type: 'image/jpeg',
-    } as any); // 若你使用的是 React Native, 這裡需加 `as any`
+    } as any);
 
     const response = await api.post(
       `${basePath}/${userId}/upload-profile-image`,

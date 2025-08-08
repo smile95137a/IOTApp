@@ -1,118 +1,236 @@
 <template>
   <div class="member-center">
-    <SectionBackground variant="divination" />
+    <div class="member-center__header">
+      <h2 class="member-center__title">會員中心</h2>
 
-    <div class="member-center__container">
-      <MCard customClass="mcard--member-center member-center__card">
-        <!-- 導覽 Tabs -->
-        <div class="member-center__tabs">
-          <router-link
-            to="/member-center/memberProfile"
-            exact-active-class="active"
-          >
-            <i class="fas fa-user"></i> 會員資料
-          </router-link>
-          <router-link
-            to="/member-center/purchaseHistory"
-            exact-active-class="active"
-          >
-            <i class="fas fa-receipt"></i> 消費紀錄
-          </router-link>
-          <router-link
-            to="/member-center/myBlessings"
-            exact-active-class="active"
-          >
-            <i class="fas fa-hands"></i> 我的供奉
-          </router-link>
-          <router-link
-            to="/member-center/orderHistory"
-            exact-active-class="active"
-          >
-            <i class="fas fa-clipboard-list"></i> 訂單記錄
-          </router-link>
+      <div class="member-center__info">
+        <img class="member-center__avatar" :src="avatarUrl" alt="avatar" />
+        <div class="member-center__meta">
+          <h3 class="member-center__name">{{ user?.name || '未登入' }}</h3>
+          <p>儲值金額：{{ formatNumber(userBalance) }}（消費優先扣除）</p>
+          <p>贈送：{{ formatNumber(userSliver) }}</p>
+          <p>可用餘額：{{ formatNumber(userBonus) }}</p>
         </div>
-
-        <!-- 子頁面內容 -->
-        <div class="member-center__content">
-          <router-view />
-        </div>
-      </MCard>
+      </div>
     </div>
+
+    <div class="member-center__card">
+      <div class="member-center__list">
+        <div
+          v-for="(item, index) in leftMenu"
+          :key="index"
+          class="member-center__item"
+          @click="goTo(item.route)"
+        >
+          <i :class="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </div>
+      </div>
+      <div class="member-center__list">
+        <div
+          v-for="(item, index) in rightMenu"
+          :key="index"
+          class="member-center__item"
+          @click="goTo(item.route)"
+        >
+          <i :class="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </div>
+      </div>
+    </div>
+    <RouterView />
   </div>
 </template>
 
 <script setup lang="ts">
-import MCard from '@/components/common/MCard.vue';
-import SectionBackground from '@/components/common/SectionBackground.vue';
-import Header from '@/components/front/Header.vue';
+import { onMounted, ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import boyAvatar from '@/assets/image/iot-boy.png';
+import girlAvatar from '@/assets/image/iot-girl.png';
+import { useAuthFrontStore } from '@/stores/authFrontStore';
+import { getUserInfo } from '@/services/UsersService';
+import { getImageUrl } from '@/utils/ImageUtils';
+
+const router = useRouter();
+const authStore = useAuthFrontStore();
+const user = computed(() => authStore.user);
+
+const userBalance = ref(0);
+const userBonus = ref(0);
+const userSliver = ref(0);
+
+const goTo = (route: string) => {
+  router.push(route);
+};
+
+const leftMenu = [
+  { label: '編輯會員', icon: 'fas fa-pen', route: '/member-center/edit' },
+  {
+    label: '訊息通知',
+    icon: 'fas fa-comment-alt',
+    route: '/member-center/notifications',
+  },
+  {
+    label: '消費記錄',
+    icon: 'fas fa-calendar-alt',
+    route: '/member-center/transactions',
+  },
+  {
+    label: '儲值記錄',
+    icon: 'fas fa-wallet',
+    route: '/member-center/deposit-history',
+  },
+  {
+    label: '開局進行中',
+    icon: 'fas fa-play-circle',
+    route: '/member-center/games-in-progress',
+  },
+];
+
+const rightMenu = [
+  {
+    label: '開局記錄',
+    icon: 'fas fa-history',
+    route: '/member-center/game-history',
+  },
+  {
+    label: '儲值',
+    icon: 'fas fa-dollar-sign',
+    route: '/member-center/deposit',
+  },
+  {
+    label: '我的預約',
+    icon: 'fas fa-clock',
+    route: '/member-center/reservations',
+  },
+  { label: '前往後台', icon: 'fas fa-user-shield', route: '/admin' },
+  { label: '登出', icon: 'fas fa-sign-out-alt', route: '/logout' },
+];
+
+const avatarUrl = computed(() => {
+  if (user.value?.imgUrl) return getImageUrl(user.value.imgUrl);
+  return user.value?.gender === 'female' ? girlAvatar : boyAvatar;
+});
+
+const formatNumber = (num: number) => num.toLocaleString();
+
+const fetchUser = async () => {
+  const { success, data } = await getUserInfo();
+  if (success) {
+    authStore.setUser(data);
+    userBalance.value = data.amount || 0;
+    userSliver.value = data.point || 0;
+    userBonus.value = data.balance || 0;
+  }
+};
+
+onMounted(() => {
+  fetchUser();
+});
 </script>
 
 <style scoped lang="scss">
 .member-center {
-  position: relative;
-  padding-top: 6rem;
+  padding: 2rem;
   min-height: 100vh;
+  color: #fff;
 
-  &__container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 2rem;
+  &__title {
+    text-align: center;
+    font-size: 2rem;
+    color: #00ccff;
   }
 
-  &__card {
-    border-radius: 16px;
-    padding: 3rem 2rem;
-    background: #fff;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  }
-
-  &__tabs {
-    display: flex;
-    justify-content: flex-start;
-    gap: 2rem;
+  &__header {
+    text-align: center;
     margin-bottom: 2rem;
-    flex-wrap: wrap;
+  }
 
-    a {
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      font-weight: 500;
-      color: #888;
-      position: relative;
-      transition: color 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+  &__info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
 
-      i {
-        font-size: 1rem;
-      }
+  &__avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
 
-      &.active {
-        color: #b3442e;
-        font-weight: bold;
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: #ffcc00;
+    font-size: 0.95rem;
+    line-height: 1.6;
 
-        i {
-          color: #b3442e;
-        }
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: -2px;
-          left: 0;
-          width: 100%;
-          height: 3px;
-          background-color: #b3442e;
-          border-radius: 2px;
-        }
-      }
+    .member-center__name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 0.5rem;
     }
   }
 
-  &__content {
-    padding-top: 1rem;
+  &__card {
+    background: #fff;
+    color: #333;
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  &__list {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #f0f0f0;
+    }
+
+    i {
+      margin-right: 0.5rem;
+      color: #333;
+    }
+
+    span {
+      flex: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    &__info {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    &__card {
+      flex-direction: column;
+    }
+
+    &__list {
+      width: 100%;
+    }
   }
 }
 </style>

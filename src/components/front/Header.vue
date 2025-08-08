@@ -50,7 +50,7 @@ const navList = [
   { text: '最新消息', icon: 'fas fa-star', to: '/news' },
   { text: '儲值', icon: 'fas fa-dollar-sign', to: '/recharge' },
   { text: '門市探索', icon: 'fas fa-search', to: '/store' },
-  { text: '會員', icon: 'fas fa-user', to: '/member' },
+  { text: '會員', icon: 'fas fa-user', to: '/member-center' },
 ];
 
 const isMenuOpen = ref(false);

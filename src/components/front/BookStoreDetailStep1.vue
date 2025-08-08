@@ -1,138 +1,38 @@
 <template>
-  <div class="store-detail" v-if="store">
-    <div class="store-detail__header">
-      <img
-        class="store-detail__logo"
-        :src="getImageUrl(store.imgUrl)"
-        alt="store"
-      />
-      <div class="store-detail__info">
-        <h2 class="store-detail__title">{{ store.name }}</h2>
-        <p class="store-detail__address">{{ store.address }}</p>
-      </div>
-    </div>
-    <div class="store-pricing">
-      <div class="store-pricing__label">
-        <div class="label-line">時段</div>
-        <div class="label-line">計費</div>
-      </div>
-      <div class="store-pricing__columns">
-        <div class="store-pricing__column">
-          <div class="price">{{ todayPricing?.regularRate * 60 }}元/小時</div>
-          <div class="desc">一般時段</div>
-          <div class="time">
-            {{ currentRegularSlot?.startTime }}~
-            {{ currentRegularSlot?.endTime }}
-          </div>
-        </div>
-        <div class="store-pricing__column">
-          <div class="price">{{ todayPricing?.discountRate * 60 }}元/小時</div>
-          <div class="desc">優惠時段</div>
-          <div class="time">
-            {{ currentDiscountSlot.startTime }}~
-            {{ currentDiscountSlot.endTime }}
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="store-detail__card">
-      <div class="store-detail__table-summary">
-        <p>桌數：{{ tables.length }}桌</p>
-        <p class="store__table-available">可用桌數：{{ available }}桌</p>
-      </div>
+  <div class="store-detail__table-summary">
+    <p>桌數：{{ tables.length }}桌</p>
+    <p class="store__table-available">可用桌數：{{ available }}桌</p>
+  </div>
 
-      <div class="store-detail__table-grid">
-        <div
-          v-for="table in tables"
-          :key="table.id"
-          class="store-detail__table-item"
-          @click="handleStartGame(table.uid)"
-        >
-          <img
-            :src="getTableImg(table)"
-            :alt="table.name"
-            class="store-detail__table-img"
-          />
-          <div
-            class="store-detail__table-btn"
-            :class="{
-              'store-detail__table-btn--yellow': isTableAvailable(table),
-              'store-detail__table-btn--gray': !isTableAvailable(table),
-            }"
-          >
-            {{ table.tableNumber }} {{ getTableLabel(table) }}
-          </div>
-        </div>
+  <div class="store-detail__table-grid">
+    <div
+      v-for="table in tables"
+      :key="table.id"
+      class="store-detail__table-item"
+      @click="handleSelectTable(table)"
+    >
+      <img
+        :src="getTableImg(table)"
+        :alt="table.name"
+        class="store-detail__table-img"
+      />
+      <div class="store-detail__table-btn store-detail__table-btn--yellow">
+        {{ table.tableNumber }} 預約開台
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { getImageUrl } from '@/utils/ImageUtils';
+import { computed } from 'vue';
+import { useBookingStepStore } from '@/stores/bookingStepStore';
 import tableEnableImg from '@/assets/image/iot-table-enable.png';
 import tableDisableImg from '@/assets/image/iot-table-disable.png';
-import { fetchStoreByUid } from '@/services/storeService';
-import { useDialogStore } from '@/stores/dialogStore';
-import { fetchPoolTablesByStoreUid } from '@/services copy/frontend/poolTableService';
-import { startGame } from '@/services/gameService';
-import { executeApi } from '@/utils/executeApiUtils';
 
-const route = useRoute();
-const router = useRouter();
-const dialogStore = useDialogStore();
+const bookingStepStore = useBookingStepStore();
 
-const store = ref<any>(null);
-const tables = ref<any[]>([]);
-const todayPricing = ref<any>(null);
-const currentRegularSlot = ref<any>(null);
-const currentDiscountSlot = ref<any>(null);
-
-const storeId = route.params.id as string;
-
-const loadStore = async () => {
-  await executeApi({
-    fn: () => fetchStoreByUid(storeId),
-    onSuccess: (data: any) => {
-      store.value = data;
-      const today = data.todayRes;
-      if (today) {
-        const currentSlot = today.timeSlots?.[0];
-        todayPricing.value = {
-          regularRate: today.regularRate,
-          discountRate: today.discountRate,
-        };
-        currentRegularSlot.value = {
-          startTime: today.openTime,
-          endTime: today.closeTime,
-        };
-        if (currentSlot) {
-          currentDiscountSlot.value = {
-            startTime: currentSlot.startTime,
-            endTime: currentSlot.endTime,
-          };
-        }
-      }
-    },
-  });
-};
-
-const loadTables = async () => {
-  await executeApi({
-    fn: () => fetchPoolTablesByStoreUid(storeId),
-    onSuccess: (data) => {
-      tables.value = data;
-    },
-  });
-};
-
+const tables = computed(() => bookingStepStore.tables);
 const available = computed(() => tables.value.filter((t) => !t.isUse).length);
-
-const getTableImg = (table: any) => {
-  return isTableAvailable(table) ? tableEnableImg : tableDisableImg;
-};
 
 const isTableAvailable = (table: any) => {
   return (
@@ -140,36 +40,16 @@ const isTableAvailable = (table: any) => {
   );
 };
 
-const getTableLabel = (table: any) => {
-  if (table.status === 'FAULT' || table.status === 'UNAVAILABLE')
-    return '設備維護中';
-  if (table.isUse) return '開局進行中';
-  return '立即開台';
+const getTableImg = (table: any) => {
+  return tableEnableImg;
 };
 
-const handleStartGame = async (poolTableUid: string) => {
-  const payType = 'game';
-
-  await executeApi({
-    fn: () => startGame({ poolTableUId: poolTableUid, payType }),
-    onSuccess: (data) => {
-      dialogStore.openInfoDialog({
-        title: '系統訊息',
-        message: '開局成功',
-        confirmText: '我知道了',
-      });
-      router.push('/member-center/game-ongoing');
-    },
-  });
+const handleSelectTable = (table: any) => {
+  bookingStepStore.setTable(table);
+  bookingStepStore.setStep(2);
 };
-
-onMounted(() => {
-  if (storeId) {
-    loadStore();
-    loadTables();
-  }
-});
 </script>
+
 <style scoped lang="scss">
 .store-detail {
   max-width: 1080px;

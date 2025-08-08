@@ -36,34 +36,15 @@
       </div>
     </div>
     <div class="store-detail__card">
-      <div class="store-detail__table-summary">
-        <p>桌數：{{ tables.length }}桌</p>
-        <p class="store__table-available">可用桌數：{{ available }}桌</p>
-      </div>
-
-      <div class="store-detail__table-grid">
-        <div
-          v-for="table in tables"
-          :key="table.id"
-          class="store-detail__table-item"
-          @click="handleStartGame(table.uid)"
-        >
-          <img
-            :src="getTableImg(table)"
-            :alt="table.name"
-            class="store-detail__table-img"
-          />
-          <div
-            class="store-detail__table-btn"
-            :class="{
-              'store-detail__table-btn--yellow': isTableAvailable(table),
-              'store-detail__table-btn--gray': !isTableAvailable(table),
-            }"
-          >
-            {{ table.tableNumber }} {{ getTableLabel(table) }}
-          </div>
-        </div>
-      </div>
+      <template v-if="bookingStepStore.step === 1">
+        <BookStoreDetailStep1 />
+      </template>
+      <template v-else-if="bookingStepStore.step === 2">
+        <BookStoreDetailStep2 />
+      </template>
+      <template v-else-if="bookingStepStore.step === 3">
+        <BookStoreDetailStep3 />
+      </template>
     </div>
   </div>
 </template>
@@ -79,10 +60,15 @@ import { useDialogStore } from '@/stores/dialogStore';
 import { fetchPoolTablesByStoreUid } from '@/services copy/frontend/poolTableService';
 import { startGame } from '@/services/gameService';
 import { executeApi } from '@/utils/executeApiUtils';
+import BookStoreDetailStep1 from '@/components/front/BookStoreDetailStep1.vue';
+import BookStoreDetailStep2 from '@/components/front/BookStoreDetailStep2.vue';
+import BookStoreDetailStep3 from '@/components/front/BookStoreDetailStep3.vue';
+import { useBookingStepStore } from '@/stores/bookingStepStore';
 
 const route = useRoute();
 const router = useRouter();
 const dialogStore = useDialogStore();
+const bookingStepStore = useBookingStepStore();
 
 const store = ref<any>(null);
 const tables = ref<any[]>([]);
@@ -97,6 +83,7 @@ const loadStore = async () => {
     fn: () => fetchStoreByUid(storeId),
     onSuccess: (data: any) => {
       store.value = data;
+      bookingStepStore.setStore(data);
       const today = data.todayRes;
       if (today) {
         const currentSlot = today.timeSlots?.[0];
@@ -124,6 +111,7 @@ const loadTables = async () => {
     fn: () => fetchPoolTablesByStoreUid(storeId),
     onSuccess: (data) => {
       tables.value = data;
+      bookingStepStore.setTables(data);
     },
   });
 };

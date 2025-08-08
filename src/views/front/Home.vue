@@ -61,7 +61,7 @@ const cards = [
     title: '預約開台',
     desc: '選擇門市預約開台',
     icon: 'fas fa-clock',
-    link: '/booking',
+    link: '/bookStore',
   },
 ];
 </script>

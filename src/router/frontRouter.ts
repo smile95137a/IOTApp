@@ -13,11 +13,17 @@ import Master from '@/views/front/Master.vue';
 import RestPwd from '@/views/front/RestPwd.vue';
 import Store from '@/views/front/Store.vue';
 import NotFound from '@/views/front/NotFound.vue';
+// 在這段上面加上
 import MemberCenter from '@/views/front/MemberCenter/index.vue';
-import MemberProfile from '@/views/front/MemberCenter/MemberProfile.vue';
-import PurchaseHistory from '@/views/front/MemberCenter/PurchaseHistory.vue';
-import MyBlessings from '@/views/front/MemberCenter/MyBlessings.vue';
-import OrderHistory from '@/views/front/MemberCenter/OrderHistory.vue';
+import MemberEdit from '@/views/front/MemberCenter/Edit.vue';
+import MemberNotifications from '@/views/front/MemberCenter/Notifications.vue';
+import MemberTransactions from '@/views/front/MemberCenter/Transactions.vue';
+import MemberDepositHistory from '@/views/front/MemberCenter/DepositHistory.vue';
+import MemberGamesInProgress from '@/views/front/MemberCenter/GamesInProgress.vue';
+import MemberGameHistory from '@/views/front/MemberCenter/GameHistory.vue';
+import MemberDeposit from '@/views/front/MemberCenter/Deposit.vue';
+import MemberReservations from '@/views/front/MemberCenter/Reservations.vue';
+
 import StoreDetail from '@/views/front/StoreDetail.vue';
 import Cart from '@/views/front/Cart.vue';
 import Privacy from '@/views/front/Privacy.vue';
@@ -32,6 +38,8 @@ import OAuth2Redirect from '@/views/front/OAuth2Redirect.vue';
 import CheckoutSuccess from '@/views/front/CheckoutSuccess.vue';
 import News from '@/views/front/News.vue';
 import NewsDetail from '@/views/front/NewsDetail.vue';
+import BookStore from '@/views/front/BookStore.vue';
+import BookStoreDetail from '@/views/front/BookStoreDetail.vue';
 
 export const frontRoutes: Array<RouteRecordRaw> = [
   {
@@ -49,6 +57,12 @@ export const frontRoutes: Array<RouteRecordRaw> = [
       { path: 'news/:id', component: NewsDetail, name: 'NewsDetail' },
       { path: 'store', component: Store, name: 'Store' },
       { path: 'store/:id', component: StoreDetail, name: 'StoreDetail' },
+      { path: 'bookStore', component: BookStore, name: 'BookStore' },
+      {
+        path: 'bookStore/:id',
+        component: BookStoreDetail,
+        name: 'BookStoreDetail',
+      },
       { path: 'login', component: Login, name: 'Login' },
       { path: 'register', component: Register },
 
@@ -57,29 +71,17 @@ export const frontRoutes: Array<RouteRecordRaw> = [
         component: MemberCenter,
         meta: { requiresAuth: true },
         children: [
-          { path: '', redirect: { name: 'MemberProfile' } },
-          {
-            path: 'memberProfile',
-            name: 'MemberProfile',
-            component: MemberProfile,
-          },
-          {
-            path: 'purchaseHistory',
-            name: 'PurchaseHistory',
-            component: PurchaseHistory,
-          },
-          {
-            path: 'myBlessings',
-            name: 'MyBlessings',
-            component: MyBlessings,
-          },
-          {
-            path: 'orderHistory',
-            name: 'OrderHistory',
-            component: OrderHistory,
-          },
+          { path: 'edit', component: MemberEdit },
+          { path: 'notifications', component: MemberNotifications },
+          { path: 'transactions', component: MemberTransactions },
+          { path: 'deposit-history', component: MemberDepositHistory },
+          { path: 'games-in-progress', component: MemberGamesInProgress },
+          { path: 'game-history', component: MemberGameHistory },
+          { path: 'deposit', component: MemberDeposit },
+          { path: 'reservations', component: MemberReservations },
         ],
       },
+
       { path: 'divination', component: Divination },
       { path: 'offeringHall', component: OfferingHall },
       { path: 'godOffering', component: GodOffering },
