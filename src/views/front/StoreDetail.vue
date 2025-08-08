@@ -79,10 +79,12 @@ import { useDialogStore } from '@/stores/dialogStore';
 import { fetchPoolTablesByStoreUid } from '@/services copy/frontend/poolTableService';
 import { startGame } from '@/services/gameService';
 import { executeApi } from '@/utils/executeApiUtils';
+import { useAuthFrontStore } from '@/stores/authFrontStore';
 
 const route = useRoute();
 const router = useRouter();
 const dialogStore = useDialogStore();
+const authStore = useAuthFrontStore();
 
 const store = ref<any>(null);
 const tables = ref<any[]>([]);
@@ -148,6 +150,15 @@ const getTableLabel = (table: any) => {
 };
 
 const handleStartGame = async (poolTableUid: string) => {
+  if (!authStore.isLogin) {
+    dialogStore.openInfoDialog({
+      title: '請先登入',
+      message: '使用此功能前請先登入會員。',
+      confirmText: '前往登入',
+    });
+    router.replace('/login');
+    return;
+  }
   const payType = 'game';
 
   await executeApi({

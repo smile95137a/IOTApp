@@ -24,6 +24,7 @@ import News from '@/views/front/News.vue';
 import NewsDetail from '@/views/front/NewsDetail.vue';
 import BookStore from '@/views/front/BookStore.vue';
 import BookStoreDetail from '@/views/front/BookStoreDetail.vue';
+import Scan from '@/views/front/Scan.vue';
 
 export const frontRoutes: Array<RouteRecordRaw> = [
   {
@@ -37,6 +38,7 @@ export const frontRoutes: Array<RouteRecordRaw> = [
         component: RestPwd,
       },
       { path: 'home', component: Home },
+      { path: 'scan', component: Scan, name: 'Scan' },
       { path: 'news', component: News, name: 'News' },
       { path: 'news/:id', component: NewsDetail, name: 'NewsDetail' },
       { path: 'store', component: Store, name: 'Store' },
