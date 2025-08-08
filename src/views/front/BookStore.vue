@@ -64,7 +64,6 @@ onMounted(loadStores);
 
 <style scoped lang="scss">
 .store-page {
-  background: linear-gradient(180deg, #1d1640 0%, #4067a4 99%);
   min-height: 100vh;
   padding: 2rem 1rem;
 
