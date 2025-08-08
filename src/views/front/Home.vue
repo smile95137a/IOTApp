@@ -47,9 +47,9 @@ const navigate = (link: string) => {
 const cards = [
   {
     title: '門市探索',
-    desc: '最近據點：ABCDEF 5.4km',
+    desc: '',
     icon: 'fas fa-store',
-    link: '/store-search',
+    link: '/store',
   },
   {
     title: '掃碼開台',

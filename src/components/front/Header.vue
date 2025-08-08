@@ -2,9 +2,9 @@
   <header class="the-header">
     <div class="the-header__inner">
       <!-- Logo -->
-      <div class="the-header__logo">
+      <router-link to="/" class="the-header__logo">
         <img :src="logoP" alt="iPool 享撞球" />
-      </div>
+      </router-link>
 
       <!-- Desktop Nav -->
       <nav class="the-header__nav" v-if="!isMobile">
