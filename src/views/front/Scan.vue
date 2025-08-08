@@ -93,7 +93,9 @@ const handleQRCode = async (text: string) => {
     const { qrCodeType, poolTableUid, storeUid } = decrypted;
 
     if (qrCodeType === 1 && poolTableUid) {
+      loading.startLoading();
       const res = await fetchPoolTableByUid(poolTableUid);
+      loading.stopLoading();
       if (res.success) {
         const { storeName, poolTableName, priceByHour, gameId, poolTableId } =
           res.data;
@@ -103,7 +105,9 @@ const handleQRCode = async (text: string) => {
             message: '是否前往付款？',
           });
           if (confirm) {
+            loading.startLoading();
             const { success, data } = await getGamePrice({ gameId });
+            loading.stopLoading();
             if (success) {
               stopScanner();
 
@@ -123,10 +127,12 @@ const handleQRCode = async (text: string) => {
             message: '前往開台？',
           });
           if (confirm) {
+            loading.startLoading();
             const result = await startGame({
               poolTableUId: poolTableUid,
               payType: 'game',
             });
+            loading.stopLoading();
             if (result.success) {
               await dialog.openInfoDialog({
                 title: '系統訊息',
@@ -160,6 +166,7 @@ const handleQRCode = async (text: string) => {
       // 預留開門邏輯
     }
   } catch (e: any) {
+    loading.stopLoading();
     await dialog.openInfoDialog({ title: '錯誤', message: getErrorMessage(e) });
     scanned.value = false;
   }
