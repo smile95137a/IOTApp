@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import MCard from '@/components/common/MCard.vue';
-import SectionBackground from '@/components/common/SectionBackground.vue';
-import Header from '@/components/front/Header.vue';
 import {
   getAllCityNames,
   getAreaListByCityName,
@@ -127,7 +125,6 @@ watch(area, (newArea) => {
 
 <template>
   <div class="register">
-    <SectionBackground variant="divination" />
     <div class="register__container">
       <MCard customClass="mcard--login login__card">
         <form @submit="onSubmit">

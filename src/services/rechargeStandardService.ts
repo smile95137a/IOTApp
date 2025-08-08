@@ -1,4 +1,5 @@
-import { api } from './FrontendAPI';
+import { ApiResponse } from '@/vite-env';
+import { api } from './FrontAPI';
 
 const basePath = '/recharge/standard';
 

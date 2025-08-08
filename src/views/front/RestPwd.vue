@@ -1,13 +1,10 @@
-<template>
-  <RestPwdForm v-if="isActiveUrl" />
-</template>
+<template></template>
 
 <script lang="ts" setup>
 import { verifyResetToken } from '@/services/UserService';
 import { useDialogStore } from '@/stores/dialogStore';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import RestPwdForm from '@/components/front/RestPwdForm.vue';
 
 interface ErrMsg {
   title: string;
