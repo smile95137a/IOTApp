@@ -20,7 +20,7 @@
           v-for="(item, index) in leftMenu"
           :key="index"
           class="member-center__item"
-          @click="goTo(item.route)"
+          @click="goTo(item)"
         >
           <i :class="item.icon"></i>
           <span>{{ item.label }}</span>
@@ -31,7 +31,7 @@
           v-for="(item, index) in rightMenu"
           :key="index"
           class="member-center__item"
-          @click="goTo(item.route)"
+          @click="goTo(item)"
         >
           <i :class="item.icon"></i>
           <span>{{ item.label }}</span>
@@ -59,8 +59,16 @@ const userBalance = ref(0);
 const userBonus = ref(0);
 const userSliver = ref(0);
 
-const goTo = (route: string) => {
-  router.push(route);
+const goTo = (value: { route?: string; action?: string }) => {
+  if (value.action === 'logout') {
+    handleLogout();
+  } else if (value.route) {
+    router.push(value.route);
+  }
+};
+const handleLogout = () => {
+  localStorage.clear();
+  router.replace('/login');
 };
 
 const leftMenu = [
@@ -103,8 +111,11 @@ const rightMenu = [
     icon: 'fas fa-clock',
     route: '/member-center/reservations',
   },
-  { label: '前往後台', icon: 'fas fa-user-shield', route: '/admin' },
-  { label: '登出', icon: 'fas fa-sign-out-alt', route: '/logout' },
+  {
+    label: '登出',
+    icon: 'fas fa-sign-out-alt',
+    action: 'logout',
+  },
 ];
 
 const avatarUrl = computed(() => {
