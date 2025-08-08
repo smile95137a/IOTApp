@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import p1 from '@/assets/image/magic_joe.png';
+import p1 from '@/assets/image/i-Pool_logo_RGB_1.png';
 import { withDefaults, defineProps } from 'vue';
 
 const props = withDefaults(
