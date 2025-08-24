@@ -70,16 +70,18 @@ const StoreDetailScreen = () => {
         const storeRes = await fetchStoreByUid(store.uid);
         const todayRes = storeRes.data.todayRes;
         if (todayRes) {
-          const currentSlot = todayRes.timeSlots[0];
+          const currentSlot =
+            Array.isArray(todayRes.timeSlots) && todayRes.timeSlots.length > 0
+              ? todayRes.timeSlots[0]
+              : null;
 
           setTodayPricing({
             regularRate: todayRes.regularRate,
             discountRate: todayRes.discountRate,
           });
-
           setCurrentDiscountSlot({
-            startTime: currentSlot.startTime,
-            endTime: currentSlot.endTime,
+            startTime: currentSlot?.startTime ?? '',
+            endTime: currentSlot?.endTime ?? '',
           });
 
           setCurrentRegularSlot({

@@ -43,7 +43,7 @@ const RouterManagementScreen = () => {
   const [routerId, setRouterId] = useState(null);
   const [circuitName, setCircuitName] = useState('');
   const [circuitNumber, setCircuitNumber] = useState('');
-  const [routerPort, setRouterPort] = useState('');
+  const [routerPort, setRouterPort] = useState('502');
   const [isControllable, setIsControllable] = useState(true);
   const [circuitType, setCircuitType] = useState('DO');
   const [modbusAddress, setModbusAddress] = useState('');
@@ -52,6 +52,19 @@ const RouterManagementScreen = () => {
   const [editingRouterIndex, setEditingRouterIndex] = useState(null);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const openAddModal = () => {
+    setRouterId(null);
+    setCircuitName('');
+    setCircuitNumber('');
+    setRouterPort('502');
+    setIsControllable(true);
+    setCircuitType('DO');
+    setModbusAddress('');
+    setSlaveId('');
+    setEditingRouterIndex(null);
+    showModal();
+  };
 
   const showModal = () => {
     setModalVisible(true);
@@ -74,14 +87,15 @@ const RouterManagementScreen = () => {
 
   const handleEditRouter = (index) => {
     const router = routers[index];
+    logJson('asd', router);
     setRouterId(router.id);
     setCircuitName(router.circuitName);
-    setCircuitNumber(router.circuitNumber ? String(router.circuitNumber) : '');
-    setRouterPort(router.routerPort ? String(router.routerPort) : '');
+    setCircuitNumber(String(router.circuitNumber));
+    setRouterPort(String(router.routerPort));
     setIsControllable(router.isControllable);
     setCircuitType(router.circuitType || 'DO');
-    setModbusAddress(router.modbusAddress ? String(router.modbusAddress) : '');
-    setSlaveId(router.slaveId ? String(router.slaveId) : '');
+    setModbusAddress(String(router.modbusAddress));
+    setSlaveId(String(router.slaveId));
 
     setEditingRouterIndex(index);
     showModal();
@@ -123,7 +137,7 @@ const RouterManagementScreen = () => {
       } else {
         await openInfoDialog({
           title: '錯誤',
-          content: '無法獲取 Router 資料',
+          content: '無法獲取 迴路 資料',
           confirmText: '我知道了',
         });
       }
@@ -140,7 +154,7 @@ const RouterManagementScreen = () => {
     setRouterId(null);
     setCircuitName('');
     setCircuitNumber('');
-    setRouterPort('');
+    setRouterPort('502');
     setIsControllable(true);
     setEditingRouterIndex(null);
     setModalVisible(false);
@@ -149,7 +163,7 @@ const RouterManagementScreen = () => {
   const handleDelRouter = async (index) => {
     const confirmed = await openConfirmDialog({
       title: '確認刪除',
-      content: `確定要刪除 Router「${routers[index].circuitName}」嗎？`,
+      content: `確定要刪除 迴路${routers[index].circuitName}」嗎？`,
       confirmText: '刪除',
       cancelText: '取消',
     });
@@ -167,13 +181,13 @@ const RouterManagementScreen = () => {
         setRouters(updated);
         await openInfoDialog({
           title: '成功',
-          content: 'Router 已刪除',
+          content: '迴路 已刪除',
           confirmText: '我知道了',
         });
       } else {
         await openInfoDialog({
           title: '錯誤',
-          content: '刪除 Router 失敗，請稍後再試',
+          content: '刪除 迴路 失敗，請稍後再試',
           confirmText: '我知道了',
         });
       }
@@ -195,11 +209,10 @@ const RouterManagementScreen = () => {
 
       if (response.success) {
         setRouters(response.data);
-        logJson('loadRouters', response.data);
       } else {
         await openInfoDialog({
           title: '錯誤',
-          content: '無法獲取 Router 列表',
+          content: '無法獲取 迴路 列表',
           confirmText: '我知道了',
         });
       }
@@ -257,7 +270,7 @@ const RouterManagementScreen = () => {
           />
         </View>
         <View style={styles.header}>
-          <HeaderBar showLeftButton title="Router 管理" />
+          <HeaderBar showLeftButton title="迴路管理" />
         </View>
         <View style={styles.mainContainer}>
           <ScrollView style={styles.equipmentList}>
@@ -291,46 +304,32 @@ const RouterManagementScreen = () => {
               </View>
             ))}
           </ScrollView>
-          <TouchableOpacity style={styles.addButton} onPress={showModal}>
-            <Text style={styles.addButtonText}>新增 Router</Text>
+          <TouchableOpacity style={styles.addButton} onPress={openAddModal}>
+            <Text style={styles.addButtonText}>新增迴路</Text>
           </TouchableOpacity>
         </View>
         {modalVisible && (
           <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>新增 Router</Text>
+                <Text style={styles.modalTitle}>
+                  {routerId === null ? '新增迴路' : '編輯迴路'}
+                </Text>
 
-                <Text style={styles.modalLabel}>Router 名稱</Text>
+                <Text style={styles.modalLabel}>迴路名稱</Text>
                 <TextInput
                   style={styles.modalInput}
-                  placeholder="輸入 Router 名稱"
+                  placeholder="輸入 迴路 名稱"
                   value={circuitName}
                   onChangeText={setCircuitName}
                 />
-                {/* <Text style={styles.modalLabel}>頻道號碼</Text>
-                <TextInput
-                  style={styles.modalInput}
-                  placeholder="輸入頻道號碼"
-                  value={circuitNumber}
-                  onChangeText={setCircuitNumber}
-                  keyboardType="numeric"
-                /> */}
-                <Text style={styles.modalLabel}>Port 編號</Text>
-                <TextInput
-                  style={styles.modalInput}
-                  placeholder="輸入 Port 編號"
-                  value={routerPort}
-                  onChangeText={setRouterPort}
-                  keyboardType="numeric"
-                />
+
                 <Text style={styles.modalLabel}>Modbus 位址</Text>
                 <TextInput
                   style={styles.modalInput}
                   placeholder="輸入 Modbus 位址"
                   value={modbusAddress}
                   onChangeText={setModbusAddress}
-                  keyboardType="numeric"
                 />
 
                 <Text style={styles.modalLabel}>Slave ID</Text>

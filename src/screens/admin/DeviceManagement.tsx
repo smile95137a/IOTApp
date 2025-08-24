@@ -33,11 +33,6 @@ const DeviceManagementScreen = ({ navigation }) => {
         <View style={styles.deviceScreen__main}>
           {[
             {
-              title: '環境管理',
-              icon: require('../../assets/iot-switch.png'),
-              target: 'EnvironmentManagement',
-            },
-            {
               title: '桌檯管理',
               icon: require('../../assets/iot-table-enable.png'),
               target: 'DeviceTableManagement',
@@ -48,7 +43,7 @@ const DeviceManagementScreen = ({ navigation }) => {
               target: 'MonitorManagement',
             },
             {
-              title: 'Router 管理',
+              title: '迴路管理',
               icon: require('../../assets/iot-router-logo.png'),
               target: 'RouterManagement',
             },

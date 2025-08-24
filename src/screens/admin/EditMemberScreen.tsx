@@ -190,7 +190,7 @@ const EditMemberScreen = ({ route, navigation }) => {
       ROLE_ADMIN: '系統管理員',
       ROLE_USER: '一般會員',
       ROLE_MANUFACTURER: '加盟商',
-      ROLE_STORE_MANAGER: '加盟商',
+      ROLE_STORE_MANAGER: '店長',
       ROLE_BLACKLIST: '黑名單',
     };
 

@@ -641,7 +641,7 @@ const AddStoreScreen = () => {
                   </View>
                 </View>
                 <View style={styles.twoColumnItem}>
-                  <Text style={styles.inputLabel}>加盟商</Text>
+                  <Text style={styles.inputLabel}>店長</Text>
 
                   <View style={styles.formGroup}>
                     <MyDropdown
