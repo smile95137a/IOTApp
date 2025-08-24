@@ -29,8 +29,8 @@
           <div class="price">{{ todayPricing?.discountRate * 60 }}元/小時</div>
           <div class="desc">優惠時段</div>
           <div class="time">
-            {{ currentDiscountSlot.startTime }}~
-            {{ currentDiscountSlot.endTime }}
+            {{ currentDiscountSlot?.startTime }}~
+            {{ currentDiscountSlot?.endTime }}
           </div>
         </div>
       </div>
