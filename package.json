@@ -8,10 +8,10 @@
     "dev:local": "vite --mode dev --host",
     "dev:uat": "vite --mode uat --host",
     "dev:prod": "vite --mode production --host",
-    "build": "vue-tsc && vite build",
-    "build:dev": "vue-tsc && vite build --mode dev",
-    "build:uat": "vue-tsc && vite build --mode uat",
-    "build:prod": "vue-tsc && vite build --mode production",
+    "build": "vite build",
+    "build:dev": "vite build --mode dev",
+    "build:uat": "vite build --mode uat",
+    "build:prod": "vite build --mode production",
     "preview": "vite preview --host"
   },
   "dependencies": {
