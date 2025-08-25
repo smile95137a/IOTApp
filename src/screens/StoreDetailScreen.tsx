@@ -70,23 +70,36 @@ const StoreDetailScreen = () => {
         const storeRes = await fetchStoreByUid(store.uid);
         const todayRes = storeRes.data.todayRes;
         if (todayRes) {
-          const currentSlot =
-            Array.isArray(todayRes.timeSlots) && todayRes.timeSlots.length > 0
-              ? todayRes.timeSlots[0]
-              : null;
-
-          setTodayPricing({
-            regularRate: todayRes.regularRate,
-            discountRate: todayRes.discountRate,
-          });
-          setCurrentDiscountSlot({
-            startTime: currentSlot?.startTime ?? '',
-            endTime: currentSlot?.endTime ?? '',
-          });
-
           setCurrentRegularSlot({
-            startTime: todayRes.openTime,
-            endTime: todayRes.closeTime,
+            startTime: todayRes.openTime ?? '',
+            endTime: todayRes.closeTime ?? '',
+          });
+
+          let discountRate = todayRes.discountRate;
+          let currentDiscountSlot = null;
+
+          if (todayRes.isSpecialDate && Array.isArray(todayRes.timeSlots)) {
+            const now = moment(); // 現在時間
+            const matchedSlot = todayRes.timeSlots.find((slot: any) => {
+              if (!slot.startTime || !slot.endTime) return false;
+              const start = moment(slot.startTime, 'HH:mm');
+              const end = moment(slot.endTime, 'HH:mm');
+              return now.isBetween(start, end, null, '[)'); // [) 表示包含 start 不包含 end
+            });
+
+            if (matchedSlot) {
+              discountRate = matchedSlot.regularRate; // 這裡依你給的 JSON，優惠金額存 regularRate
+              currentDiscountSlot = {
+                startTime: matchedSlot.startTime,
+                endTime: matchedSlot.endTime,
+              };
+            }
+          }
+
+          setCurrentDiscountSlot(currentDiscountSlot);
+          setTodayPricing({
+            regularRate: Number(todayRes.regularRate ?? 0),
+            discountRate: discountRate ? Number(discountRate) : null,
           });
         }
 
