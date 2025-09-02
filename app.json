@@ -51,7 +51,7 @@
         "ENCRYPTION_KEY": "my_secure_encryption_key_123",
         "HASH_KEY": "MYHASHSTART",
         "HASH_VALUE": "MYHASHEND",
-        "API_BASE_URL": "https://ipoolspace.tw",
+        "API_BASE_URL": "https://api.ipoolspace.tw",
         "projectId": "a9f981a8-30e0-4d5e-ba21-25e6e6512792",
         "version": "0507v1"
       }
