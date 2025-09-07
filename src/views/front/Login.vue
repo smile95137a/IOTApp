@@ -71,26 +71,35 @@
 
               <div class="login__form-inputs" v-if="loginType === 'phone'">
                 <p class="login__text">手機號碼</p>
-                <div style="display: flex; gap: 8px">
-                  <select
-                    v-model="countryCode"
-                    v-bind="countryCodeAttrs"
-                    class="login__form-input"
-                    style="max-width: 100px"
-                  >
-                    <option value="+886">+886（台灣）</option>
-                    <option value="+81">+81（日本）</option>
-                    <option value="+82">+82（韓國）</option>
-                    <option value="+1">+1（美國）</option>
-                  </select>
+                <div class="login__phone-row">
+                  <!-- 國碼 select -->
+                  <div class="login__select-wrap">
+                    <select
+                      v-model="countryCode"
+                      v-bind="countryCodeAttrs"
+                      class="login__form-input login__select"
+                      aria-label="國家區碼"
+                    >
+                      <option value="+886">+886（台灣）</option>
+                      <option value="+81">+81（日本）</option>
+                      <option value="+82">+82（韓國）</option>
+                      <option value="+1">+1（美國）</option>
+                    </select>
+                  </div>
+
+                  <!-- 手機號碼 input -->
                   <input
                     v-model="phone"
                     v-bind="phoneAttrs"
                     type="tel"
                     class="login__form-input"
                     placeholder="請輸入手機號碼"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    aria-label="手機號碼"
                   />
                 </div>
+
                 <p class="error-text" v-if="errors.phone">{{ errors.phone }}</p>
               </div>
 
@@ -149,7 +158,7 @@
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getLoginUrl } from '@/utils/AuthUtils';
-import logo from '@/assets/image/i-Pool_logo_RGB_2.png';
+import logo from '@/assets/image/i-Pool_logo_RGB_3.png';
 import { useForm } from 'vee-validate';
 import { executeApi } from '@/utils/executeApiUtils';
 import { useAuthFrontStore } from '@/stores/authFrontStore';

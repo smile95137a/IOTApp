@@ -3,19 +3,19 @@
     <!-- 卡片區 -->
     <div class="home-main__cards">
       <div
-        class="card"
+        class="home-main__card"
         v-for="item in cards"
         :key="item.title"
         @click="navigate(item.link)"
       >
         <!-- 上方橢圓按鈕 -->
-        <div class="card__button">
+        <div class="home-main__card-button">
           <i :class="item.icon" />
           <span>{{ item.title }}</span>
-          <i class="fas fa-chevron-right card__arrow" />
+          <i class="fas fa-chevron-right home-main__card-arrow" />
         </div>
         <!-- 下方描述文字 -->
-        <div class="card__desc">{{ item.desc }}</div>
+        <div class="home-main__card-desc">{{ item.desc }}</div>
       </div>
     </div>
   </section>
@@ -57,7 +57,6 @@ const cards = [
     icon: 'fas fa-qrcode',
     link: '/scan',
   },
-
   {
     title: '預約開台',
     desc: '選擇門市預約開台',
@@ -75,58 +74,67 @@ const cards = [
   &__cards {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
 
     @media (min-width: 768px) {
       flex-direction: row;
       justify-content: center;
-      gap: 2rem;
-    }
-  }
-}
-
-.card {
-  background: #19174a;
-  border-radius: 20px;
-  padding: 1.5rem 1rem;
-  text-align: center;
-  transition: transform 0.2s ease;
-  cursor: pointer;
-
-  @media (min-width: 768px) {
-    width: 260px;
-    height: 180px;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-
-  &__button {
-    background: #ffc400;
-    border-radius: 50px;
-    padding: 0.6rem 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: bold;
-    color: #000;
-    font-size: 1rem;
-
-    i {
-      font-size: 1.1rem;
+      gap: 2.5rem;
     }
   }
 
-  &__desc {
-    color: #00bfff;
-    font-size: 0.85rem;
-    margin-top: 1rem;
-  }
+  &__card {
+    background: linear-gradient(145deg, #1f1c5c, #141238);
+    border-radius: 20px;
+    padding: 1.8rem 1.2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35);
 
-  &__arrow {
-    margin-left: auto;
+    @media (min-width: 768px) {
+      width: 280px;
+      height: 190px;
+    }
+
+    &:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    &-button {
+      background: linear-gradient(90deg, #ffc400, #ffda5b);
+      border-radius: 50px;
+      padding: 0.6rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: bold;
+      color: #000;
+      font-size: 1rem;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+
+      i {
+        font-size: 1.2rem;
+      }
+    }
+
+    &-arrow {
+      margin-left: auto;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover &-arrow {
+      transform: translateX(4px);
+    }
+
+    &-desc {
+      color: #00d4ff;
+      font-size: 0.9rem;
+      margin-top: 1.2rem;
+      line-height: 1.4;
+      letter-spacing: 0.5px;
+    }
   }
 }
 </style>

@@ -1,6 +1,8 @@
 <template>
   <footer class="the-footer">
-    <div class="the-footer__line"></div>
+    <!-- Footer Divider -->
+    <div class="the-footer__divider"></div>
+
     <div class="the-footer__content">
       <img :src="logoP" alt="iPool 享撞球" class="the-footer__logo" />
       <div class="the-footer__text">
@@ -10,19 +12,21 @@
     </div>
   </footer>
 </template>
+
 <script setup lang="ts">
-import logoP from '@/assets/image/i-Pool_logo_RGB_2.png';
+import logoP from '@/assets/image/i-Pool_logo_RGB_3.png';
 </script>
+
 <style scoped lang="scss">
 .the-footer {
   color: #fff;
   padding: 2rem 1rem;
   text-align: center;
 
-  &__line {
-    border-top: 2px solid #3baaff;
+  &__divider {
+    border-top: 2px solid #01befe;
     margin-bottom: 1.5rem;
-    max-width: 1080px;
+    max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -31,27 +35,42 @@ import logoP from '@/assets/image/i-Pool_logo_RGB_2.png';
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 0.8rem;
 
     @media (min-width: 768px) {
       flex-direction: row;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 2rem;
     }
   }
 
   &__logo {
-    height: 100px;
+    height: 70px;
     margin-bottom: 0.8rem;
+    transition: transform 0.3s ease;
 
     @media (min-width: 768px) {
       margin-bottom: 0;
+    }
+
+    &:hover {
+      transform: scale(1.05);
     }
   }
 
   &__text {
     font-size: 0.9rem;
-    line-height: 1.4;
-    color: #ddd;
+    line-height: 1.6;
+    color: #ccc;
+
+    div {
+      margin: 0.2rem 0;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #ffd700;
+      }
+    }
   }
 }
 </style>

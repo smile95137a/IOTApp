@@ -1,14 +1,10 @@
 <template>
   <div class="loader">
-    <span class="loader__img">
+    <div class="loader__img">
       <div></div>
       <div></div>
       <div></div>
-      <p class="loader__text">loading...</p>
-    </span>
+    </div>
+    <div class="loader__text">Loading...</div>
   </div>
 </template>
-
-<script lang="ts" setup></script>
-
-<style scoped></style>

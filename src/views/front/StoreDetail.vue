@@ -100,8 +100,10 @@ const loadStore = async () => {
     onSuccess: (data: any) => {
       store.value = data;
       const today = data.todayRes;
+      console.log('today', data.todayRes);
       if (today) {
         const currentSlot = today.timeSlots?.[0];
+
         todayPricing.value = {
           regularRate: today.regularRate,
           discountRate: today.discountRate,
@@ -186,18 +188,21 @@ onMounted(() => {
   max-width: 1080px;
   margin: 0 auto;
   padding: 4rem 2rem;
+
   &__header {
     display: flex;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
   }
 
   &__logo {
     width: 96px;
     height: 96px;
     border-radius: 50%;
-    background-color: #ccc;
-    margin-right: 16px;
+    background-color: #f5f5f5;
+    margin-right: 20px;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 
   &__info {
@@ -210,115 +215,25 @@ onMounted(() => {
     font-size: 28px;
     font-weight: 800;
     color: #fff;
-    margin: 0;
+    margin: 0 0 6px;
   }
 
   &__address {
     font-size: 14px;
     color: #dcdcdc;
-    margin: 4px 0 0;
   }
 
   &__card {
     background: #fff;
     border-radius: 16px;
     padding: 32px;
-  }
-
-  // 🟡 價格區橫向排版
-  &__price {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-
-  &__price-block {
-    display: flex;
-    align-items: flex-start;
-    gap: 32px;
-    flex-wrap: wrap;
-  }
-
-  &__price-label {
-    font-size: 18px;
-    font-weight: bold;
-    color: #000;
-    min-width: 80px;
-    align-self: flex-start;
-  }
-
-  &__price-detail {
-    display: flex;
-    gap: 32px;
-
-    & > div {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-  }
-
-  &__price-main {
-    font-size: 20px;
-    font-weight: 700;
-    color: #000;
-  }
-
-  &__price-sub {
-    font-size: 14px;
-    font-weight: 500;
-    color: #444;
-  }
-
-  &__price-time {
-    font-size: 12px;
-    color: #888;
-  }
-
-  // 📱 手機響應式：價格區塊改為直排
-  @media (max-width: 768px) {
-    &__price-block {
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    &__price-detail {
-      flex-direction: column;
-      gap: 16px;
-    }
-  }
-
-  &__buttons {
-    display: flex;
-    gap: 8px;
-  }
-
-  &__btn {
-    background-color: #198754;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 14px;
-    cursor: pointer;
-
-    &--secondary {
-      background-color: #2e9b62;
-    }
-  }
-
-  &__divider {
-    margin: 24px 0;
-    border: none;
-    border-top: 1px solid #ccc;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
   }
 
   &__table-summary {
     display: flex;
     justify-content: center;
-    gap: 24px;
+    gap: 40px;
     font-size: 18px;
     font-weight: 700;
 
@@ -330,62 +245,93 @@ onMounted(() => {
   &__table-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(163px, 1fr));
-    gap: 16px;
+    gap: 20px;
     justify-content: center;
-    margin-top: 24px;
+    margin-top: 28px;
   }
 
   &__table-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+
+      .store-detail__table-img {
+        filter: brightness(1.05);
+      }
+    }
   }
 
   &__table-img {
-    width: 163px;
-    height: 122px;
-    object-fit: contain; // 保持完整比例顯示
-    display: block;
+    width: 140px;
+    height: 100px;
+    object-fit: contain;
+    border-radius: 8px;
   }
 
   &__table-btn {
     width: 100%;
     border-radius: 8px;
-    padding: 12px 0;
+    padding: 10px 0;
     font-size: 14px;
     font-weight: 600;
     text-align: center;
+    transition: background-color 0.25s ease, transform 0.25s ease;
 
     &--yellow {
-      background-color: #ffc702;
+      background: linear-gradient(90deg, #ffc400, #ffda5b);
       color: #000;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+      animation: pulseYellow 2.5s infinite;
+
+      &:hover {
+        background: linear-gradient(90deg, #ffda5b, #ffe680);
+        transform: scale(1.05);
+      }
     }
 
     &--gray {
-      background-color: #a9a9a9;
+      background: #b0b0b0;
       color: #fff;
+      opacity: 0.9;
     }
   }
 }
+
 .store-pricing {
   display: flex;
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.25),
+    rgba(255, 255, 255, 0.15)
+  );
   border-radius: 12px;
   padding: 24px;
-  height: 100px;
   color: #fff;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  margin: 36px 0;
+  margin: 40px 0;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+
+  // 進場動畫
+  animation: fadeUp 0.6s ease-out;
 
   &__label {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-end;
-    margin-right: 24px;
+    margin-right: 28px;
     font-weight: 500;
     line-height: 1.6;
     white-space: nowrap;
@@ -393,7 +339,7 @@ onMounted(() => {
 
   &__columns {
     display: flex;
-    gap: 24px;
+    gap: 32px;
     align-items: center;
   }
 
@@ -401,44 +347,52 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-left: 24px;
+    padding-left: 28px;
     border-left: 1px solid rgba(255, 255, 255, 0.4);
     text-align: center;
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 
     .price {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 4px;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      animation: glowPulse 2s infinite;
+    }
+
+    // 優惠價：紅色跳動
+    &:nth-child(2) .price {
+      color: #ff5252;
+      animation: glowPulseRed 1.8s infinite;
     }
 
     .desc {
       font-size: 14px;
-      opacity: 0.85;
-      margin-bottom: 2px;
+      opacity: 0.9;
+      margin-bottom: 4px;
     }
 
     .time {
       font-size: 13px;
-      opacity: 0.7;
+      opacity: 0.75;
     }
   }
 
-  // ✅ RWD：手機版切換為直向排版
   @media (max-width: 768px) {
     flex-direction: column;
     height: auto;
     align-items: stretch;
-    padding: 16px;
+    padding: 20px;
 
     &__label {
       align-items: center;
       margin-right: 0;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     &__columns {
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
     }
 
     &__column {
@@ -452,6 +406,57 @@ onMounted(() => {
         padding-top: 0;
       }
     }
+  }
+}
+
+/* ===== 動畫效果 ===== */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 215, 64, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(255, 215, 64, 0.9);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(255, 215, 64, 0.5);
+  }
+}
+
+@keyframes glowPulseRed {
+  0% {
+    text-shadow: 0 0 6px rgba(255, 82, 82, 0.6);
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 0 0 18px rgba(255, 82, 82, 1);
+    transform: scale(1.1);
+  }
+  100% {
+    text-shadow: 0 0 6px rgba(255, 82, 82, 0.6);
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseYellow {
+  0% {
+    box-shadow: 0 0 6px rgba(255, 215, 64, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(255, 215, 64, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 6px rgba(255, 215, 64, 0.4);
   }
 }
 </style>

@@ -166,6 +166,7 @@ $root-block-name: '.login';
     &-img {
       flex: 1;
       width: 100%;
+      padding: 8rem;
       background: linear-gradient(180deg, #1c1741 0%, #3b5c95 100%);
       border-radius: 20px;
       @include flex(center, center);
@@ -311,5 +312,87 @@ $root-block-name: '.login';
         color: #212121;
       }
     }
+  }
+
+  /* 手機登入：國碼 + 手機欄位 */
+  &__phone-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+
+    @include screen(md) {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* 讓兩個欄位在桌面並排、手機滿版 */
+    .login__select-wrap,
+    .login__form-input {
+      flex: 1 1 auto;
+    }
+
+    /* 國碼欄位在桌面略窄一點，留寬給電話 */
+    .login__select-wrap {
+      flex: 0 0 120px;
+
+      @include screen(md) {
+        flex: 1 1 auto; // 手機滿版
+      }
+    }
+  }
+
+  /* 自訂 select 外觀（與 input 一致） */
+  &__select {
+    // reset 原生外觀
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    // 與 .login__form-input 相同框線/高度
+    @include w_h(100%, 50px);
+    padding: 14px 44px 14px 16px; // 右側留空給箭頭
+    border-radius: 8px;
+    border: 1px solid #d4d4d4;
+    font-size: 15px;
+    background-color: #fff;
+    line-height: 1.2;
+
+    &:focus {
+      outline: none;
+      border-color: #4285f4;
+      box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.15);
+    }
+
+    &.input-error,
+    &--error {
+      border-color: #fe4206;
+    }
+  }
+
+  /* 包裹 select 用來放箭頭與控制 overflow */
+  &__select-wrap {
+    position: relative;
+    width: 100%;
+
+    /* 自訂箭頭（SVG data URI），避免額外資源 */
+    &::after {
+      content: '';
+      position: absolute;
+      pointer-events: none;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      background-repeat: no-repeat;
+      background-size: 14px 14px;
+      // 簡單的下箭頭
+      background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    }
+  }
+
+  /* 與 input 對齊的 placeholder、錯誤樣式（若需要） */
+  &__form-input::placeholder {
+    color: #a0a0a0;
   }
 }

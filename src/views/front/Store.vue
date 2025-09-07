@@ -67,7 +67,6 @@ const goToDetail = (uid: string) => {
 
 onMounted(loadStores);
 </script>
-
 <style scoped lang="scss">
 .store-page {
   min-height: 100vh;
@@ -85,15 +84,17 @@ onMounted(loadStores);
 .store-card {
   display: flex;
   align-items: stretch;
-  background: #00bfff;
+  background: linear-gradient(135deg, #00bfff, #009acd); // 原藍色 → 藍色漸層
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   min-height: 100px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
   }
 
   &__image {
@@ -103,6 +104,8 @@ onMounted(loadStores);
     object-fit: cover;
     border-radius: 50%;
     margin: auto 1rem;
+    background: #f5f5f5;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 
     @media (min-width: 768px) {
       width: 70px;
@@ -153,14 +156,19 @@ onMounted(loadStores);
     gap: 0.3rem;
     flex-shrink: 0;
     min-width: 80px;
+    transition: background 0.3s ease;
 
     &--yellow {
-      background: #ffc107;
+      background: linear-gradient(90deg, #ffc107, #ffeb3b);
       color: #000;
+
+      .count {
+        animation: glowPulse 2s infinite;
+      }
     }
 
     &--gray {
-      background: #ddd;
+      background: linear-gradient(90deg, #ddd, #bbb);
       color: #666;
     }
 
@@ -173,6 +181,7 @@ onMounted(loadStores);
       font-size: 1.5rem;
       font-weight: bold;
       line-height: 1;
+      transition: transform 0.2s ease;
     }
 
     .arrow {
@@ -180,12 +189,33 @@ onMounted(loadStores);
       align-items: center;
       font-size: 0.75rem;
       font-weight: bold;
+      transition: transform 0.3s ease;
 
       &::after {
         content: ' 查看';
         margin-left: 0.25rem;
       }
     }
+  }
+
+  &:hover .store-card__table-count .arrow {
+    transform: translateX(4px);
+  }
+}
+
+/* ====== 動畫效果 ====== */
+@keyframes glowPulse {
+  0% {
+    text-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 193, 7, 0.9);
+    transform: scale(1.1);
+  }
+  100% {
+    text-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+    transform: scale(1);
   }
 }
 </style>

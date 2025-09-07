@@ -24,8 +24,8 @@
       </div>
     </div>
 
-    <!-- Header Bottom Border Line -->
-    <div class="the-header__line"></div>
+    <!-- Header Bottom Divider -->
+    <div class="the-header__divider"></div>
 
     <!-- Slide-in Mobile Menu -->
     <transition name="slide">
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import logoP from '@/assets/image/i-Pool_logo_RGB_2.png';
+import logoP from '@/assets/image/i-Pool_logo_RGB_3.png';
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const navList = [
@@ -82,85 +82,112 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .the-header {
   position: relative;
-
+  padding: 2rem 1rem;
   &__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.8rem 1.5rem;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: 1rem;
-    position: relative;
+    justify-content: space-between;
   }
 
   &__logo {
-    display: inline-block;
-    cursor: pointer;
-
     img {
-      height: 150px;
-      margin-bottom: 1rem;
+      height: 60px;
+      width: auto;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover img {
+      transform: scale(1.05);
     }
   }
 
   &__nav {
     display: flex;
     gap: 2rem;
-    flex-wrap: wrap;
-    justify-content: center;
   }
 
   &__link {
     color: white;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    font-weight: 500;
     text-decoration: none;
     display: flex;
     align-items: center;
     gap: 0.4rem;
+    position: relative;
+    transition: color 0.3s ease;
 
     &:hover {
       color: #ffd700;
     }
+
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 0;
+      height: 2px;
+      background: #ffd700;
+      transition: width 0.3s ease;
+    }
+
+    &:hover:after {
+      width: 100%;
+    }
   }
 
   &__hamburger {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
     font-size: 1.8rem;
     color: white;
     cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
   }
 
   &__mobile-menu {
     position: fixed;
     top: 0;
     left: 0;
-    width: 220px;
+    width: 240px;
     height: 100vh;
-    background-color: #3b5c95;
+    background: #243b66;
     display: flex;
     flex-direction: column;
-    padding: 2rem;
+    padding: 2rem 0;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
     z-index: 999;
 
     .the-header__mobile-link {
       color: white;
-      padding: 1rem 1.5rem;
+      padding: 1rem 2rem;
       text-decoration: none;
       display: flex;
       align-items: center;
       gap: 0.8rem;
-      border-bottom: 1px solid #01befe;
+      font-size: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      transition: background 0.3s ease, padding-left 0.3s ease;
 
       &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.1);
+        padding-left: 2.5rem;
       }
     }
   }
 
-  &__line {
-    border-bottom: 2px solid #3baaff;
-    margin-top: 0.5rem;
-    max-width: 1080px;
+  &__divider {
+    border-bottom: 2px solid #01befe;
+    margin-top: 0.3rem;
+    max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -169,7 +196,7 @@ onUnmounted(() => {
 /* Slide transition */
 .slide-enter-active,
 .slide-leave-active {
-  transition: transform 0.3s ease;
+  transition: transform 0.35s ease;
 }
 .slide-enter-from {
   transform: translateX(-100%);

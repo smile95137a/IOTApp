@@ -127,21 +127,28 @@ onMounted(() => {
   fetchUser();
 });
 </script>
-
 <style scoped lang="scss">
 .member-center {
   padding: 2rem;
   min-height: 100vh;
 
-  &__title {
-    text-align: center;
-    font-size: 2rem;
-    color: #00ccff;
-  }
-
+  /* ===== Header 區塊：深色保持 ===== */
   &__header {
+    border-radius: 16px;
+    padding: 2rem 1rem;
     text-align: center;
     margin-bottom: 2rem;
+    color: #fff;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  }
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(90deg, #00ccff, #00ffcc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   &__info {
@@ -157,15 +164,23 @@ onMounted(() => {
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
+    border: 3px solid #00ccff;
+    background: #fafafa;
+    box-shadow: 0 0 12px rgba(0, 204, 255, 0.5);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 
   &__meta {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    color: #ffcc00;
     font-size: 0.95rem;
     line-height: 1.6;
+    color: #ffda5b;
 
     .member-center__name {
       font-size: 1.5rem;
@@ -175,39 +190,62 @@ onMounted(() => {
     }
   }
 
+  /* ===== Card Grid 區塊 ===== */
   &__card {
-    background: #fff;
-    color: #333;
-    border-radius: 10px;
-    padding: 1rem;
+    background: #f9f9f9; // 新增淡灰底
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   }
 
   &__grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr; // 手機單欄
     gap: 1rem;
+
+    @media (min-width: 769px) {
+      grid-template-columns: repeat(2, 1fr); // 桌機雙欄
+    }
   }
 
   &__item {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    padding: 0.75rem 1rem;
+    justify-content: center;
+    padding: 1.2rem 1rem;
+    border-radius: 14px;
+    background: #fff;
     border: 1px solid #eee;
-    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     cursor: pointer;
-    transition: background 0.2s;
-    gap: 20px;
+    transition: all 0.3s ease;
+    text-align: center;
+    gap: 0.6rem;
 
     &:hover {
-      background: #f0f0f0;
+      background: #fff;
+      border: 1px solid transparent;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      transform: translateY(-4px);
+
+      i {
+        color: #00bcd4;
+        transform: scale(1.15);
+      }
     }
 
     i {
-      color: #333;
+      font-size: 1.4rem;
+      color: #555;
+      transition: all 0.3s ease;
     }
 
     span {
-      flex: 1;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #333;
     }
   }
 
@@ -215,10 +253,6 @@ onMounted(() => {
     &__info {
       flex-direction: column;
       text-align: center;
-    }
-
-    &__grid {
-      grid-template-columns: 1fr;
     }
   }
 }

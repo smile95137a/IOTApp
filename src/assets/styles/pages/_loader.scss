@@ -1,22 +1,17 @@
 @use 'sass:math';
 
-$root-block-name: '.loader';
-
-#{$root-block-name} {
+.loader {
   position: fixed;
   z-index: 99999999;
   inset: 0;
   background-color: rgba(255, 255, 255, 0.7);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
   &__img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #017162;
+    position: relative;
     font-size: 20px;
     font-weight: bold;
 
@@ -24,10 +19,10 @@ $root-block-name: '.loader';
 
     %slider {
       $slider-height: 8px;
-
       height: $slider-height;
       border-radius: math.div($slider-height, 2);
       animation: slide-right 0.7s ease-in-out infinite alternate;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
     }
 
     > * + * {
@@ -38,13 +33,13 @@ $root-block-name: '.loader';
       @extend %slider;
       margin-left: -30px;
       width: math.div($img-width, 4) * 3;
-      background-color: #52bf90;
+      background-color: #1e3a8a; // 深藍
     }
 
     > *:nth-child(2) {
       @extend %slider;
       width: $img-width;
-      background-color: #dc0005;
+      background-color: #3baaff; // 淺藍
       animation-name: slide-right-short;
     }
 
@@ -52,8 +47,19 @@ $root-block-name: '.loader';
       @extend %slider;
       margin-left: -40px;
       width: math.div($img-width, 1.5);
-      background-color: #317256;
+      background-color: #facc15; // 淺黃
     }
+  }
+
+  &__text {
+    margin-top: 1.5rem;
+    font-size: 1.4rem;
+    font-weight: bold;
+    background: linear-gradient(90deg, #3baaff, #facc15, #3baaff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 2s linear infinite;
   }
 }
 
@@ -66,5 +72,14 @@ $root-block-name: '.loader';
 @keyframes slide-right-short {
   100% {
     transform: translateX(30px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
