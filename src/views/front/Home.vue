@@ -1,6 +1,35 @@
 <template>
   <section class="home-main">
-    <!-- 卡片區 -->
+    <!-- 🔹 輪播區 -->
+    <div class="home-main__banner" v-if="banners.length">
+      <Swiper
+        :modules="[Navigation, Autoplay]"
+        :slides-per-view="1"
+        :loop="true"
+        :autoplay="{ delay: 3000, disableOnInteraction: false } as any"
+        :navigation="true as any"
+        class="home-main__swiper"
+      >
+        <SwiperSlide v-for="(banner, idx) in banners" :key="banner.bannerUid">
+          <!-- 如果有新聞就連到新聞頁，否則只顯示圖片 -->
+          <a v-if="banner.news" :href="`/news/${banner.news.newsUid}`">
+            <img
+              :src="getImageUrl(banner.imageUrl)"
+              :alt="banner.news.title"
+              class="home-main__banner-img"
+            />
+          </a>
+          <img
+            v-else
+            :src="getImageUrl(banner.imageUrl)"
+            :alt="`banner-${idx}`"
+            class="home-main__banner-img"
+          />
+        </SwiperSlide>
+      </Swiper>
+    </div>
+
+    <!-- 🔹 卡片區 -->
     <div class="home-main__cards">
       <div
         class="home-main__card"
@@ -8,13 +37,11 @@
         :key="item.title"
         @click="navigate(item.link)"
       >
-        <!-- 上方橢圓按鈕 -->
         <div class="home-main__card-button">
           <i :class="item.icon" />
           <span>{{ item.title }}</span>
           <i class="fas fa-chevron-right home-main__card-arrow" />
         </div>
-        <!-- 下方描述文字 -->
         <div class="home-main__card-desc">{{ item.desc }}</div>
       </div>
     </div>
@@ -24,18 +51,34 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { getAllBanners } from '@/services/BannerServices';
+import { getImageUrl } from '@/utils/ImageUtils';
 
 const router = useRouter();
 
 const isMobile = ref(false);
+const banners = ref<any[]>([]);
+
 const checkMobile = () => {
   isMobile.value = window.innerWidth < 768;
 };
 
-onMounted(() => {
+onMounted(async () => {
   checkMobile();
   window.addEventListener('resize', checkMobile);
+
+  try {
+    const res = await getAllBanners();
+    banners.value = res.data || [];
+  } catch (err) {
+    console.error('載入 Banner 失敗', err);
+  }
 });
+
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile);
 });
@@ -70,6 +113,22 @@ const cards = [
 .home-main {
   padding: 2rem 1rem;
   color: white;
+
+  &__banner {
+    margin-bottom: 2rem;
+
+    .home-main__banner-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 16px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+
+      @media (min-width: 768px) {
+        height: 280px;
+      }
+    }
+  }
 
   &__cards {
     display: flex;
