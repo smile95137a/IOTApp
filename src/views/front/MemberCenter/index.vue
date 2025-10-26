@@ -131,7 +131,9 @@ onMounted(() => {
 .member-center {
   padding: 2rem;
   min-height: 100vh;
-
+  @media (max-width: 768px) {
+    padding: 0;
+  }
   /* ===== Header 區塊：深色保持 ===== */
   &__header {
     border-radius: 16px;
@@ -140,6 +142,9 @@ onMounted(() => {
     margin-bottom: 2rem;
     color: #fff;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    @media (max-width: 768px) {
+      box-shadow: none;
+    }
   }
 
   &__title {
@@ -149,6 +154,9 @@ onMounted(() => {
     background: linear-gradient(90deg, #00ccff, #00ffcc);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+    }
   }
 
   &__info {
@@ -197,6 +205,9 @@ onMounted(() => {
     margin-top: 2rem;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    @media (max-width: 768px) {
+      border-radius: 22px 22px 0 0;
+    }
   }
 
   &__grid {
@@ -247,12 +258,23 @@ onMounted(() => {
       font-size: 0.95rem;
       color: #333;
     }
+
+    @media (max-width: 768px) {
+      background: transparent;
+      box-shadow: none;
+      border: 0;
+      flex-direction: row;
+      justify-content: start;
+      gap: 22px;
+      color: #7a7979;
+      span {
+        color: #7a7979;
+      }
+    }
   }
 
   @media (max-width: 768px) {
     &__info {
-      flex-direction: column;
-      text-align: center;
     }
   }
 }

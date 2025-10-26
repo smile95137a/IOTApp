@@ -69,7 +69,7 @@ onMounted(fetchDetail);
   &__title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #ffffff;
+    color: #01befe;
     text-align: left;
     margin-bottom: 0.25rem;
     letter-spacing: 0.05em;
@@ -82,7 +82,7 @@ onMounted(fetchDetail);
   &__date {
     text-align: left;
     font-size: 0.85rem;
-    color: #f67943;
+    color: #01befe;
     margin-bottom: 1.5rem;
     letter-spacing: 0.05em;
   }

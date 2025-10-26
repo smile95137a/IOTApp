@@ -20,7 +20,7 @@
 
       <!-- Mobile Hamburger -->
       <div class="the-header__hamburger" v-if="isMobile" @click="toggleMenu">
-        <i class="fas fa-bars" />
+        <i class="fas fa-ellipsis-v" />
       </div>
     </div>
 
@@ -83,6 +83,9 @@ onUnmounted(() => {
 .the-header {
   position: relative;
   padding: 2rem 1rem;
+  position: relative;
+  padding: 2rem 1rem;
+
   &__inner {
     max-width: 1200px;
     margin: 0 auto;
@@ -90,6 +93,10 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    @media (max-width: 767px) {
+      justify-content: center;
+    }
   }
 
   &__logo {
@@ -97,6 +104,10 @@ onUnmounted(() => {
       height: 60px;
       width: auto;
       transition: transform 0.3s ease;
+
+      @media (max-width: 767px) {
+        height: 100px;
+      }
     }
 
     &:hover img {
@@ -142,15 +153,15 @@ onUnmounted(() => {
 
   &__hamburger {
     font-size: 1.8rem;
-    color: white;
+    color: #ffc400;
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 50%;
     transition: background 0.3s ease;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   &__mobile-menu {
@@ -190,6 +201,9 @@ onUnmounted(() => {
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
+    @media (max-width: 767px) {
+      display: none;
+    }
   }
 }
 

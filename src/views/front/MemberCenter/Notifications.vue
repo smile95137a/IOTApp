@@ -205,6 +205,13 @@ onMounted(() => {
         background-color: #f67943;
         color: #fff;
       }
+      @media (max-width: 768px) {
+        padding: 6px 20px;
+        border-radius: 28px;
+        border: 2px solid #bc0100;
+        background: #bc0100;
+        color: #fff;
+      }
     }
   }
 }

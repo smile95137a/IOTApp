@@ -259,8 +259,8 @@ onUnmounted(() => {
 
   .corner {
     width: 20px;
-    height: 20px;
-    border: 4px solid #00ffaa;
+    height: 40px;
+    border: 4px solid #04b8dd;
     position: absolute;
     box-sizing: border-box;
 
@@ -299,7 +299,7 @@ onUnmounted(() => {
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: #00ffaa;
+    background-color: #04b8dd;
     animation: blink 1.5s linear infinite;
   }
 

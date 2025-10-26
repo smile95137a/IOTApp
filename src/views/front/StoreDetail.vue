@@ -1,5 +1,6 @@
 <template>
   <div class="store-detail" v-if="store">
+    <p class="store-detail__subtitle">門市資訊</p>
     <div class="store-detail__header">
       <img
         class="store-detail__logo"
@@ -188,7 +189,9 @@ onMounted(() => {
   max-width: 1080px;
   margin: 0 auto;
   padding: 4rem 2rem;
-
+  @media (max-width: 768px) {
+    padding: 0 2rem;
+  }
   &__header {
     display: flex;
     align-items: center;
@@ -203,6 +206,17 @@ onMounted(() => {
     margin-right: 20px;
     object-fit: cover;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+  &__subtitle {
+    text-align: center;
+    width: 100%;
+    color: #04d5ff;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 22px;
   }
 
   &__info {
@@ -216,11 +230,17 @@ onMounted(() => {
     font-weight: 800;
     color: #fff;
     margin: 0 0 6px;
+    @media (max-width: 768px) {
+      color: #04d5ff;
+    }
   }
 
   &__address {
     font-size: 14px;
     color: #dcdcdc;
+    @media (max-width: 768px) {
+      color: #04d5ff;
+    }
   }
 
   &__card {
@@ -244,7 +264,7 @@ onMounted(() => {
 
   &__table-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(163px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 20px;
     justify-content: center;
     margin-top: 28px;
@@ -280,7 +300,7 @@ onMounted(() => {
 
   &__table-btn {
     width: 100%;
-    border-radius: 8px;
+    border-radius: 18px;
     padding: 10px 0;
     font-size: 14px;
     font-weight: 600;
@@ -357,13 +377,10 @@ onMounted(() => {
       font-size: 20px;
       font-weight: 700;
       margin-bottom: 6px;
-      animation: glowPulse 2s infinite;
     }
 
-    // 優惠價：紅色跳動
     &:nth-child(2) .price {
-      color: #ff5252;
-      animation: glowPulseRed 1.8s infinite;
+      color: #dcaf21;
     }
 
     .desc {
@@ -371,41 +388,32 @@ onMounted(() => {
       opacity: 0.9;
       margin-bottom: 4px;
     }
-
+    &:nth-child(2) .desc {
+      color: #dcaf21;
+    }
     .time {
       font-size: 13px;
       opacity: 0.75;
     }
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    height: auto;
-    align-items: stretch;
-    padding: 20px;
-
-    &__label {
-      align-items: center;
-      margin-right: 0;
-      margin-bottom: 16px;
+    &:nth-child(2) .time {
+      color: #dcaf21;
     }
+    @media (max-width: 768px) {
+      .price {
+        font-size: 16px;
+      }
 
-    &__columns {
-      flex-direction: column;
-      gap: 20px;
-    }
+      .desc {
+        font-size: 12px;
+      }
 
-    &__column {
-      border-left: none;
-      padding-left: 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.4);
-      padding-top: 16px;
-
-      &:first-child {
-        border-top: none;
-        padding-top: 0;
+      .time {
+        font-size: 12px;
       }
     }
+  }
+  @media (max-width: 768px) {
+    padding: 12px;
   }
 }
 

@@ -90,9 +90,15 @@ const navigate = (link: string) => {
 const cards = [
   {
     title: '門市探索',
-    desc: '',
+    desc: '探索最近門市',
     icon: 'fas fa-store',
     link: '/store',
+  },
+  {
+    title: '會員專區',
+    desc: '會員資訊/設定',
+    icon: 'fas fa-user',
+    link: '/member-center',
   },
   {
     title: '掃碼開台',
@@ -113,29 +119,32 @@ const cards = [
 .home-main {
   padding: 2rem 1rem;
   color: white;
-
   &__banner {
     margin-bottom: 2rem;
 
     .home-main__banner-img {
       width: 100%;
-      height: 200px;
+      height: 180px;
       object-fit: cover;
       border-radius: 16px;
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 
       @media (min-width: 768px) {
-        height: 280px;
+        height: 260px;
+      }
+
+      @media (min-width: 1200px) {
+        height: 320px;
       }
     }
   }
-
   &__cards {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
 
     @media (min-width: 768px) {
+      display: flex;
       flex-direction: row;
       justify-content: center;
       gap: 2.5rem;

@@ -109,7 +109,7 @@ onMounted(fetchNews);
 .news-card {
   display: flex;
   flex-direction: row;
-  background: #00bfff;
+  background: #01003c;
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
@@ -127,6 +127,7 @@ onMounted(fetchNews);
     object-fit: cover;
     border-radius: 6px;
     margin: 0.75rem;
+    border-radius: 50%;
 
     @media (min-width: 768px) {
       width: 120px;
@@ -139,7 +140,7 @@ onMounted(fetchNews);
     align-items: center;
     width: 100%;
     padding-right: 1rem;
-    background-color: #00bfff;
+    background-color: #01003c;
     border-radius: 0 12px 12px 0;
     gap: 0.5rem;
     overflow: hidden;
@@ -156,7 +157,7 @@ onMounted(fetchNews);
   &__title {
     font-weight: bold;
     font-size: 1rem;
-    color: #000;
+    color: #00bfff;
     margin-bottom: 0.25rem;
     white-space: nowrap;
     overflow: hidden;
@@ -165,7 +166,7 @@ onMounted(fetchNews);
 
   &__desc {
     font-size: 0.85rem;
-    color: #333;
+    color: #00bfff;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -174,11 +175,11 @@ onMounted(fetchNews);
   &__date {
     margin-top: 0.25rem;
     font-size: 0.8rem;
-    color: #f67943;
+    color: #00bfff;
   }
 
   &__arrow {
-    color: #a6a6a6;
+    color: #00bfff;
     font-size: 1rem;
     flex-shrink: 0;
   }

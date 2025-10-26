@@ -29,6 +29,9 @@ import logoP from '@/assets/image/i-Pool_logo_RGB_3.png';
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
+    @media (max-width: 767px) {
+      display: none;
+    }
   }
 
   &__content {
@@ -61,14 +64,14 @@ import logoP from '@/assets/image/i-Pool_logo_RGB_3.png';
   &__text {
     font-size: 0.9rem;
     line-height: 1.6;
-    color: #ccc;
+    color: #01befe;
 
     div {
       margin: 0.2rem 0;
       transition: color 0.3s ease;
 
       &:hover {
-        color: #ffd700;
+        color: #01befe;
       }
     }
   }
